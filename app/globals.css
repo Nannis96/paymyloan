@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   Sistema visual de PayMyLoan.ai
+   Los valores estan tomados tal cual del documento de alcance
+   (paymyloan-alcance.html). No se redondean ni se sustituyen por defaults
+   de framework: el documento es la unica pieza con marca PayMyLoan y es
+   la fuente de verdad del color, la tipografia y las reglas.
+   ========================================================================= */
+
+:root {
+  --bg: #F1F3EE;
+  --surface: #FBFBF8;
+  --surface-2: #E9ECE5;
+  --ink: #17201B;
+  --ink-2: #4C574F;
+  --ink-3: #7A847C;
+  --rule: #D6DAD1;
+  --rule-strong: #B6BCB2;
+  --accent: #1D6B45;
+  --accent-soft: #E0EDE5;
+  --amber: #7E5306;
+  --amber-soft: #F2E9D5;
+  --crit: #93302A;
+  --crit-soft: #F3E1DE;
+  --accent-ink: #FBFBF8;
+  --shadow: 0 1px 2px rgba(23, 32, 27, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1512;
+    --surface: #161D19;
+    --surface-2: #1D2621;
+    --ink: #E7EBE6;
+    --ink-2: #A4AFA7;
+    --ink-3: #7C867F;
+    --rule: #2A322C;
+    --rule-strong: #3B453E;
+    --accent: #72C79A;
+    --accent-soft: #1A2A22;
+    --amber: #D9A954;
+    --amber-soft: #2A2317;
+    --crit: #E28A82;
+    --crit-soft: #2E1D1B;
+    --accent-ink: #0F1512;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0F1512;
+  --surface: #161D19;
+  --surface-2: #1D2621;
+  --ink: #E7EBE6;
+  --ink-2: #A4AFA7;
+  --ink-3: #7C867F;
+  --rule: #2A322C;
+  --rule-strong: #3B453E;
+  --accent: #72C79A;
+  --accent-soft: #1A2A22;
+  --amber: #D9A954;
+  --amber-soft: #2A2317;
+  --crit: #E28A82;
+  --crit-soft: #2E1D1B;
+  --accent-ink: #0F1512;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Los tokens semanticos se exponen como utilidades de Tailwind
+   (bg-surface, text-ink-2, border-rule...). Como apuntan a variables CSS,
+   el cambio de tema ocurre solo, sin variantes dark: repartidas por el JSX. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+
+  --font-serif: var(--font-spectral), Georgia, serif;
+  --font-sans: var(--font-plex-sans), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --radius-card: 2px;
+  --shadow-card: var(--shadow);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-plex-sans), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Etiqueta monoespaciada en versalitas: es el recurso que el documento de
+   alcance usa para todo lo que es metadato (eyebrows, encabezados de tabla,
+   pies). Se centraliza aqui porque aparece en casi todas las secciones. */
+.eyebrow {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

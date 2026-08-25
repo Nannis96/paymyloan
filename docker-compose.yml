@@ -1,0 +1,17 @@
+# Produccion: imagen compilada, sin volumenes, sin node_modules en runtime.
+#   docker compose up --build
+services:
+  landing:
+    build:
+      context: .
+      target: runner
+      args:
+        # Se incrustan al compilar. Cambiarlas exige reconstruir la imagen.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+        NEXT_PUBLIC_REGISTRO_ENDPOINT: ${NEXT_PUBLIC_REGISTRO_ENDPOINT:-}
+    image: paymyloan-landing:latest
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production

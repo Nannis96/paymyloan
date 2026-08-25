@@ -1,0 +1,21 @@
+# Desarrollo con recarga en caliente:
+#   docker compose -f docker-compose.dev.yml up --build
+services:
+  landing:
+    build:
+      context: .
+      target: dev
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      # Opcional: la landing arranca sin el, con los valores por defecto.
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: development
+    volumes:
+      # El codigo se monta; node_modules y .next se quedan los del contenedor.
+      - .:/app
+      - /app/node_modules
+      - /app/.next

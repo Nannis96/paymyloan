@@ -1,0 +1,869 @@
+<title>PayMyLoan.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --bg:#F1F3EE;
+  --surface:#FBFBF8;
+  --surface-2:#E9ECE5;
+  --ink:#17201B;
+  --ink-2:#4C574F;
+  --ink-3:#7A847C;
+  --rule:#D6DAD1;
+  --rule-strong:#B6BCB2;
+  --accent:#1D6B45;
+  --accent-soft:#E0EDE5;
+  --amber:#7E5306;
+  --amber-soft:#F2E9D5;
+  --crit:#93302A;
+  --crit-soft:#F3E1DE;
+  --shadow:0 1px 2px rgba(23,32,27,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1512;
+    --surface:#161D19;
+    --surface-2:#1D2621;
+    --ink:#E7EBE6;
+    --ink-2:#A4AFA7;
+    --ink-3:#7C867F;
+    --rule:#2A322C;
+    --rule-strong:#3B453E;
+    --accent:#72C79A;
+    --accent-soft:#1A2A22;
+    --amber:#D9A954;
+    --amber-soft:#2A2317;
+    --crit:#E28A82;
+    --crit-soft:#2E1D1B;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1512;
+  --surface:#161D19;
+  --surface-2:#1D2621;
+  --ink:#E7EBE6;
+  --ink-2:#A4AFA7;
+  --ink-3:#7C867F;
+  --rule:#2A322C;
+  --rule-strong:#3B453E;
+  --accent:#72C79A;
+  --accent-soft:#1A2A22;
+  --amber:#D9A954;
+  --amber-soft:#2A2317;
+  --crit:#E28A82;
+  --crit-soft:#2E1D1B;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- shell ---------- */
+.shell{
+  max-width:78rem;
+  margin:0 auto;
+  padding:0 1.5rem 6rem;
+}
+@media (min-width:1080px){
+  .shell{
+    display:grid;
+    grid-template-columns:14rem minmax(0,48rem);
+    gap:4rem;
+    justify-content:center;
+    align-items:start;
+  }
+  .masthead{grid-column:1 / -1;}
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom:2px solid var(--ink);
+  padding:3.5rem 0 1.25rem;
+  margin-bottom:2.5rem;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.7rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin:0 0 .9rem;
+}
+.masthead h1{
+  font-family:Spectral,Georgia,serif;
+  font-weight:600;
+  font-size:clamp(2.4rem,6vw,3.6rem);
+  line-height:1.04;
+  letter-spacing:-.015em;
+  margin:0 0 .5rem;
+  text-wrap:balance;
+}
+.masthead .deck{
+  font-size:1.06rem;
+  color:var(--ink-2);
+  max-width:44rem;
+  margin:0 0 1.75rem;
+}
+.meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.4rem 2.25rem;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.74rem;
+  color:var(--ink-3);
+}
+.meta b{
+  color:var(--ink-2);
+  font-weight:500;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+/* ---------- nav ---------- */
+.toc{display:none;}
+@media (min-width:1080px){
+  .toc{
+    display:block;
+    position:sticky;
+    top:2rem;
+    font-size:.82rem;
+    line-height:1.4;
+  }
+  .toc p{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.68rem;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+    margin:0 0 .9rem;
+    padding-bottom:.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  .toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem;}
+  .toc a{
+    color:var(--ink-2);
+    text-decoration:none;
+    display:grid;
+    grid-template-columns:1.6rem 1fr;
+    transition:color .15s;
+  }
+  .toc a span{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.72rem;
+    color:var(--ink-3);
+  }
+  .toc a:hover,.toc a:focus-visible{color:var(--accent);}
+}
+
+/* ---------- prose ---------- */
+main{min-width:0;}
+section{margin-bottom:3.5rem;scroll-margin-top:1.5rem;}
+h2{
+  font-family:Spectral,Georgia,serif;
+  font-weight:600;
+  font-size:1.6rem;
+  line-height:1.2;
+  letter-spacing:-.01em;
+  margin:0 0 1.1rem;
+  padding-top:1rem;
+  border-top:1px solid var(--rule-strong);
+  text-wrap:balance;
+}
+h2 span{
+  display:block;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.7rem;
+  font-weight:500;
+  letter-spacing:.14em;
+  color:var(--accent);
+  margin-bottom:.55rem;
+}
+h3{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-weight:600;
+  font-size:1.02rem;
+  letter-spacing:.005em;
+  margin:2rem 0 .6rem;
+}
+h4{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-weight:500;
+  font-size:.72rem;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  margin:1.6rem 0 .5rem;
+}
+p{margin:0 0 1rem;max-width:42rem;}
+ul,ol{margin:0 0 1rem;padding-left:1.25rem;max-width:42rem;}
+li{margin-bottom:.4rem;}
+li::marker{color:var(--ink-3);}
+strong{font-weight:600;}
+a{color:var(--accent);}
+code{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.85em;
+  background:var(--surface-2);
+  padding:.1em .35em;
+  border-radius:2px;
+}
+.lead{
+  font-size:1.08rem;
+  color:var(--ink-2);
+  border-left:2px solid var(--accent);
+  padding-left:1.1rem;
+  margin-bottom:1.5rem;
+}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:0 0 1.5rem;border:1px solid var(--rule);background:var(--surface);}
+table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:34rem;}
+th{
+  text-align:left;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-weight:500;
+  font-size:.68rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  padding:.7rem .9rem;
+  border-bottom:1px solid var(--rule-strong);
+  background:var(--surface-2);
+  white-space:nowrap;
+}
+td{
+  padding:.7rem .9rem;
+  border-bottom:1px solid var(--rule);
+  vertical-align:top;
+  line-height:1.5;
+}
+tbody tr:last-child td{border-bottom:0;}
+td.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
+
+/* ---------- tags ---------- */
+.tag{
+  display:inline-block;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.64rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:.18em .5em;
+  border-radius:2px;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.t-ok{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+.t-mod{background:var(--amber-soft);color:var(--amber);border-color:var(--amber);}
+.t-new{background:var(--surface-2);color:var(--ink-2);border-color:var(--rule-strong);}
+
+/* ---------- callouts ---------- */
+.note{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-left:3px solid var(--rule-strong);
+  padding:1rem 1.1rem;
+  margin:0 0 1.5rem;
+  font-size:.92rem;
+}
+.note p:last-child{margin-bottom:0;}
+.note .lbl{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.66rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  display:block;
+  margin-bottom:.45rem;
+}
+.note.warn{border-left-color:var(--amber);background:var(--amber-soft);border-color:var(--amber-soft);}
+.note.warn .lbl{color:var(--amber);}
+.note.crit{border-left-color:var(--crit);background:var(--crit-soft);border-color:var(--crit-soft);}
+.note.crit .lbl{color:var(--crit);}
+.note.good{border-left-color:var(--accent);background:var(--accent-soft);border-color:var(--accent-soft);}
+.note.good .lbl{color:var(--accent);}
+
+/* ---------- flow diagram ---------- */
+.flows{display:flex;flex-direction:column;gap:1.25rem;margin:0 0 1.5rem;}
+.flow{
+  border:1px solid var(--rule);
+  background:var(--surface);
+  padding:1rem 1.1rem 1.15rem;
+}
+.flow-head{
+  display:flex;
+  align-items:baseline;
+  gap:.7rem;
+  flex-wrap:wrap;
+  margin-bottom:.9rem;
+}
+.flow-head h4{margin:0;color:var(--ink);font-size:.72rem;}
+.chain{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  flex-wrap:wrap;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.72rem;
+}
+.node{
+  border:1px solid var(--rule-strong);
+  background:var(--bg);
+  padding:.35rem .6rem;
+  border-radius:2px;
+  white-space:nowrap;
+}
+.node.hi{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.node.risk{border-color:var(--crit);color:var(--crit);background:var(--crit-soft);}
+.arrow{color:var(--ink-3);}
+.flow p{font-size:.88rem;margin:.9rem 0 0;color:var(--ink-2);}
+
+/* ---------- question list ---------- */
+.qlist{list-style:none;padding:0;margin:0;max-width:none;counter-reset:q;}
+.qlist li{
+  counter-increment:q;
+  display:grid;
+  grid-template-columns:2.2rem 1fr;
+  gap:.5rem;
+  padding:.95rem 0;
+  border-bottom:1px solid var(--rule);
+  margin:0;
+}
+.qlist li::before{
+  content:"Q" counter(q);
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.7rem;
+  color:var(--ink-3);
+  padding-top:.25rem;
+}
+.qlist .q{font-weight:600;display:block;margin-bottom:.15rem;}
+.qlist .why{font-size:.88rem;color:var(--ink-2);}
+
+footer{
+  border-top:2px solid var(--ink);
+  padding-top:1.25rem;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.72rem;
+  color:var(--ink-3);
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
+</style>
+
+<div class="shell">
+
+<header class="masthead">
+  <p class="eyebrow">Documento de alcance · Borrador para revisión</p>
+  <h1>PayMyLoan.ai</h1>
+  <p class="deck">Plataforma de servicing de préstamos privados con garantía inmobiliaria: el prestatario paga por ACH, el prestamista ve exactamente qué se pagó y de qué propiedad, y ambos trabajan sobre los mismos términos, documentos y saldo.</p>
+  <div class="meta">
+    <span><b>Entidad</b> Subsidiaria de Dueño a Dueño LLC</span>
+    <span><b>Base técnica</b> Proyecto Owner</span>
+    <span><b>Versión</b> 0.1</span>
+    <span><b>Fecha</b> 18 ago 2026</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contenido">
+  <p>Contenido</p>
+  <ol>
+    <li><a href="#s1"><span>1</span>Resumen</a></li>
+    <li><a href="#s2"><span>2</span>Qué ya está decidido</a></li>
+    <li><a href="#s3"><span>3</span>Usuarios y roles</a></li>
+    <li><a href="#s4"><span>4</span>Alcance funcional</a></li>
+    <li><a href="#s5"><span>5</span>Por dónde pasa el dinero</a></li>
+    <li><a href="#s6"><span>6</span>Qué se reutiliza de Owner</a></li>
+    <li><a href="#s7"><span>7</span>Modelo de datos</a></li>
+    <li><a href="#s8"><span>8</span>Economía del producto</a></li>
+    <li><a href="#s9"><span>9</span>Riesgos y legal</a></li>
+    <li><a href="#s10"><span>10</span>Fases</a></li>
+    <li><a href="#s11"><span>11</span>Preguntas abiertas</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="s1">
+  <h2><span>Sección 01</span>Resumen ejecutivo</h2>
+
+  <p class="lead">Hoy un préstamo privado entre dos personas se administra con hojas de cálculo, transferencias sueltas y correos. Nadie tiene una sola fuente de verdad sobre cuánto se debe, cuánto de eso fue capital y cuándo vence el préstamo.</p>
+
+  <p>PayMyLoan.ai resuelve eso con tres piezas que trabajan juntas:</p>
+
+  <ol>
+    <li><strong>El préstamo como acuerdo, no como archivo.</strong> Prestamista y prestatario capturan los términos (propiedad, monto, tasa, plazo, vencimiento) y <em>ambos los aceptan</em> dentro de la plataforma antes de que exista un solo pago.</li>
+    <li><strong>El pago por ACH.</strong> Débito bancario directo, con costo de 0.8% topado en $5.00 por transacción — barato comparado con tarjeta, que es lo que hace viable cobrar mensualidades de miles de dólares.</li>
+    <li><strong>El expediente vivo.</strong> Amortización, saldo, documentos (pagaré, deed of trust, settlement statement), solicitudes de payoff y reportes por correo a quien haga falta, incluido el contador.</li>
+  </ol>
+
+  <p>El punto de partida no es cero: el proyecto <strong>Owner</strong> ya tiene resuelto el 60–70% de la plomería (autenticación con 2FA, generación de tablas de amortización, Stripe Checkout con <code>us_bank_account</code> ya declarado, subida de archivos a S3, bitácora de auditoría). Lo que falta no es infraestructura de pago: es <strong>el modelo de dos partes</strong> — prestamista y prestatario como iguales, con dinero que va de uno al otro y no a la plataforma.</p>
+
+  <div class="note crit">
+    <span class="lbl">La decisión que bloquea todo lo demás</span>
+    <p>Owner cobra dinero <em>hacia</em> la empresa. PayMyLoan tiene que mover dinero <em>entre dos terceros</em>. Eso no es una diferencia de features, es una diferencia de arquitectura y de riesgo regulatorio. Se resuelve en la <a href="#s5">Sección 5</a> y es lo primero que hay que cerrar con Spencer.</p>
+  </div>
+</section>
+
+<section id="s2">
+  <h2><span>Sección 02</span>Qué ya está decidido</h2>
+
+  <p>Extraído de la conversación entre Spencer y Alexis. Estas decisiones se toman como dadas; el resto del documento construye sobre ellas.</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Tema</th><th>Decisión</th></tr></thead>
+    <tbody>
+      <tr><td>Producto</td><td>Portal de pago y administración de préstamos privados garantizados con inmuebles</td></tr>
+      <tr><td>Marca y dominio</td><td><strong>paymyloan.ai</strong> — dominio ya adquirido</td></tr>
+      <tr><td>Hosting</td><td>Sitio propio e independiente. <em>No</em> vive dentro de ownertodueno.com</td></tr>
+      <tr><td>Entidad legal</td><td>Subsidiaria de Dueño a Dueño LLC, para no reestructurar nada</td></tr>
+      <tr><td>Método de pago</td><td>ACH Direct Debit vía Stripe. Falta habilitarlo en la cuenta</td></tr>
+      <tr><td>Costo de proceso</td><td>0.8% con tope de $5.00 por transacción; cualquier monto sobre $625 paga el tope</td></tr>
+      <tr><td>Base técnica</td><td>Se reutiliza la infraestructura de pagos ya construida en Owner</td></tr>
+      <tr><td>Correo del sistema</td><td><strong>servicing@paymyloan.ai</strong> para reportes y notificaciones</td></tr>
+      <tr><td>Prioridad transversal</td><td>Seguridad — declarada explícitamente por Spencer</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note good">
+    <span class="lbl">Dato favorable</span>
+    <p>El tope de $5.00 significa que el costo de procesamiento es prácticamente irrelevante frente al tamaño de las mensualidades. Un pago de $2,400 cuesta $5.00 — 0.2% efectivo. La misma transacción con tarjeta costaría cerca de $70. Esto vuelve al ACH no solo viable sino el argumento comercial del producto.</p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span>Sección 03</span>Usuarios y roles</h2>
+
+  <p>La conversación menciona cuatro tipos de persona. Conviene separarlos con claridad porque determinan permisos, y los permisos son donde se juega la "seguridad" que pidió Spencer.</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Rol</th><th>Puede</th><th>No puede</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Prestamista</strong><br><span class="tag t-new">Lender</span></td>
+        <td>Crear préstamos, invitar al prestatario, aceptar términos, aprobar payoffs, ver todos sus préstamos y su rendimiento, subir documentos, recibir los fondos</td>
+        <td>Modificar términos ya aceptados sin nueva aceptación de la contraparte</td>
+      </tr>
+      <tr>
+        <td><strong>Prestatario</strong><br><span class="tag t-new">Borrower</span></td>
+        <td>Aceptar términos, conectar su cuenta bancaria, pagar, activar autopay, solicitar cotización de payoff, ver su amortización y saldo, descargar documentos</td>
+        <td>Editar términos, montos, o marcar pagos como recibidos</td>
+      </tr>
+      <tr>
+        <td><strong>Invitado</strong><br><span class="tag t-new">Viewer</span></td>
+        <td>Solo lectura sobre los préstamos a los que fue invitado; recibir reportes. Pensado para el contador o un socio</td>
+        <td>Pagar, aprobar, editar, o invitar a nadie más</td>
+      </tr>
+      <tr>
+        <td><strong>Operador</strong><br><span class="tag t-new">Admin</span></td>
+        <td>Soporte, corrección de datos, conciliación de pagos devueltos, acceso a la bitácora</td>
+        <td>Nada queda fuera de la bitácora de auditoría</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>La misma persona con dos sombreros</h3>
+  <p>Un usuario puede ser prestamista en un préstamo y prestatario en otro. Owner ya resuelve esto: un <code>User</code> con varios perfiles conectados, y la sesión lleva un arreglo de perfiles. Aquí se simplifica todavía más — <strong>el rol no vive en la persona, vive en la relación persona ↔ préstamo</strong>. Es la decisión de modelado más importante de la Sección 7.</p>
+
+  <h3>Cómo entra alguien nuevo</h3>
+  <p>Spencer lo describió así: cualquiera de las dos partes da de alta la propiedad e invita a la otra. El flujo:</p>
+  <ol>
+    <li>A crea el préstamo en estado <em>borrador</em> y captura los términos.</li>
+    <li>A invita a B por correo. B recibe un enlace de acceso único y crea su contraseña.</li>
+    <li>B revisa los términos. Los acepta, o los rechaza con comentario.</li>
+    <li>Con las dos aceptaciones registradas —con fecha, hora e IP— el préstamo pasa a <em>activo</em> y se genera el calendario de pagos.</li>
+  </ol>
+  <p>Owner ya tiene este flujo completo (<code>VerificationToken</code> + la ruta <code>/welcome/[token]</code>); se reutiliza casi tal cual.</p>
+</section>
+
+<section id="s4">
+  <h2><span>Sección 04</span>Alcance funcional</h2>
+
+  <p>Ocho módulos. Cada uno lleva una etiqueta de origen respecto a Owner:
+  <span class="tag t-ok">Existe</span> se reutiliza,
+  <span class="tag t-mod">Adaptar</span> existe pero cambia,
+  <span class="tag t-new">Nuevo</span> se construye desde cero.</p>
+
+  <h3>4.1 Propiedad <span class="tag t-mod">Adaptar</span></h3>
+  <p>En Owner la propiedad es una ficha de marketing: título y descripción bilingües, galería, SEO, mapa, precio de lista. Aquí la propiedad es simplemente <strong>la garantía</strong>: dirección, ciudad, estado, código postal, tipo, y opcionalmente número de parcela. Se debe recortar el modelo, no arrastrarlo — cada campo de más es superficie de mantenimiento sin uso.</p>
+
+  <h3>4.2 Términos del préstamo y aceptación bilateral <span class="tag t-mod">Adaptar</span></h3>
+  <p>Spencer nombró dos estructuras: <strong>interest only</strong> y <strong>term loan</strong> a 5, 7 o 20 años. Owner solo sabe generar amortización francesa completa. Hay que soportar al menos tres formas de calcular:</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Estructura</th><th>Pago mensual</th><th>Al vencimiento</th></tr></thead>
+    <tbody>
+      <tr><td>Interest only</td><td class="num">capital × tasa ÷ 12</td><td>Capital completo (balloon)</td></tr>
+      <tr><td>Amortizado a plazo</td><td class="num">Fórmula PMT estándar</td><td>Saldo cero</td></tr>
+      <tr><td>Amortizado con balloon</td><td class="num">PMT calculado a 30 años</td><td>Saldo remanente al año 5 / 7</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>El tercer caso es el más común en préstamo privado y no aparece en la conversación, pero conviene confirmarlo: pago calculado como si fuera a 30 años, con vencimiento real a 5 o 7. Campos mínimos del préstamo: monto financiado, tasa, estructura, plazo, día de corte, fecha del primer pago, <strong>fecha de vencimiento</strong>, y regla de mora.</p>
+
+  <p>La <strong>aceptación</strong> es lo que Spencer llamó "each person can agree upon the terms for the setup". Se registra como evento firmado: quién, qué versión de los términos, cuándo, desde qué IP. Si alguien propone un cambio después, se genera una <em>nueva versión</em> que requiere aceptación de ambos. Los términos aceptados nunca se editan en su lugar.</p>
+
+  <h3>4.3 Calendario y aplicación de pagos <span class="tag t-ok">Existe</span></h3>
+  <p>Owner ya genera la tabla completa con desglose de capital, interés y saldo remanente, y ya la exporta a PDF. Se reutiliza el cálculo. Dos ajustes:</p>
+  <ul>
+    <li>Owner marca automáticamente como <em>pagadas</em> todas las filas con fecha anterior a hoy. Eso sirve para migrar contratos viejos, y es <strong>incorrecto</strong> para un préstamo nuevo. Se quita.</li>
+    <li>Un pago real puede no coincidir con la fila del calendario: pagos parciales, pagos adelantados, abonos a capital. Hay que separar el <em>calendario</em> (lo que se debe) de las <em>transacciones</em> (lo que efectivamente entró) y aplicar cada transacción con una regla de prelación explícita: mora → interés → capital.</li>
+  </ul>
+
+  <h3>4.4 Pagos ACH <span class="tag t-mod">Adaptar</span></h3>
+  <p>El código de Owner ya declara <code>payment_method_types: ['card', 'us_bank_account']</code> en la creación del Checkout. Alexis tiene razón: falta habilitar ACH del lado de Stripe. Pero hay un detalle técnico que sí requiere trabajo:</p>
+
+  <div class="note warn">
+    <span class="lbl">Hallazgo técnico · webhook</span>
+    <p>El ACH <strong>no es instantáneo</strong>: liquida en días hábiles y puede devolverse después (fondos insuficientes, cuenta cerrada). El webhook actual de Owner solo escucha <code>checkout.session.completed</code> y marca el pago como <code>PAID</code> de inmediato. Con ACH ese evento llega mientras el cobro <em>sigue en proceso</em>. Tal como está, el sistema le diría al prestamista que ya cobró cuando todavía no.</p>
+    <p>Hay que manejar el ciclo completo: <code>processing</code> → <code>succeeded</code> o <code>failed</code>, con un estado intermedio visible en la interfaz ("en tránsito"), y política definida para devoluciones.</p>
+  </div>
+
+  <p>Además se necesita <strong>autopay</strong>. Owner crea sesiones de pago de una sola vez; para cobrar mensualmente hay que guardar el método de pago autorizado y cobrar fuera de sesión en la fecha de corte, con aviso previo al prestatario. Y hay que decidir cómo se verifica la cuenta bancaria: micro-depósitos (gratis, tarda días) o verificación instantánea vía Financial Connections (inmediata, con costo por cuenta).</p>
+
+  <h3>4.5 Payoff <span class="tag t-new">Nuevo</span></h3>
+  <p>Es la función que Spencer describió con más detalle y no existe en Owner. El flujo que pidió:</p>
+  <ol>
+    <li>El prestatario oprime <strong>Solicitar payoff</strong> y elige una fecha de vigencia.</li>
+    <li>El sistema calcula: capital + interés devengado a esa fecha + mora pendiente + cargos.</li>
+    <li>El prestamista revisa y aprueba, o ajusta.</li>
+    <li>La carta de payoff sale por correo <strong>para firma</strong>.</li>
+    <li>Firmada, la cotización queda en firme hasta la fecha de vigencia.</li>
+  </ol>
+  <p>Spencer dudó entre "cotizar el payoff" y "pagar el payoff por el sitio". Son cosas distintas y la segunda tiene un límite práctico: <strong>Stripe impone límites de monto por transacción ACH</strong>, y un payoff de seis cifras probablemente no pase. Recomendación: en el MVP, cotización + firma dentro de la plataforma, liquidación por wire fuera de ella, y registro manual del cierre. Cobrar payoffs por ACH se evalúa después con los límites reales de la cuenta.</p>
+
+  <h3>4.6 Documentos <span class="tag t-ok">Existe</span></h3>
+  <p>Pagaré, deed of trust, settlement statement. Owner ya tiene subida a S3 con URLs prefirmadas y un sistema de carpetas y archivos; Alexis lo dimensionó bien con "we can add a bucket for that". El único cambio real es de acceso: los documentos son <strong>privados por préstamo</strong>, y se sirven con URL prefirmada de corta vida, nunca con URL pública. Owner hoy devuelve una URL pública de S3 tras subir — eso hay que cerrarlo.</p>
+
+  <h3>4.7 Reportes por correo <span class="tag t-new">Nuevo</span></h3>
+  <p>Spencer: un botón para enviarse el reporte a sí mismo o a un tercero escribiendo el correo — típicamente el contador. Reportes mínimos: estado de cuenta del préstamo, historial de pagos del periodo, y resumen de cartera para el prestamista con varios préstamos. Formatos PDF y CSV; Owner ya genera PDF con la misma librería.</p>
+
+  <div class="note warn">
+    <span class="lbl">Hueco de infraestructura</span>
+    <p><strong>Owner no tiene proveedor de correo transaccional.</strong> Los enlaces de acceso y recuperación de contraseña salen empujando datos a un webhook de GoHighLevel. Para <code>servicing@paymyloan.ai</code> eso no alcanza: hace falta un proveedor real (SES, Resend o Postmark) con dominio verificado, SPF, DKIM y DMARC. Sin eso los estados de cuenta caen en spam. Es trabajo nuevo y hay que presupuestarlo.</p>
+  </div>
+
+  <h3>4.8 Seguridad <span class="tag t-ok">Existe</span> <span class="tag t-mod">Adaptar</span></h3>
+  <p>Owner aporta una base sólida: contraseñas con bcrypt, 2FA por TOTP, sesión JWT, middleware que protege todas las rutas por omisión, y un modelo <code>AuditLog</code> con actor, entidad, acción y detalle. Lo que hay que agregar por el tipo de dato que se maneja aquí:</p>
+  <ul>
+    <li><strong>2FA obligatorio</strong> para prestamistas — controlan a dónde va el dinero.</li>
+    <li>Autorización a nivel de fila: toda consulta filtrada por participación en el préstamo, no por rol global.</li>
+    <li>Nunca almacenar números de cuenta bancaria — Stripe guarda el método de pago, nosotros guardamos su identificador y los últimos cuatro dígitos.</li>
+    <li>Bitácora obligatoria en cambio de términos, aceptaciones, aprobación de payoff, cambio de cuenta bancaria y descarga de documentos.</li>
+    <li>Alerta al prestatario y al prestamista ante cualquier cambio de datos bancarios — es el vector de fraude clásico en servicing.</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2><span>Sección 05</span>Por dónde pasa el dinero</h2>
+
+  <p class="lead">Owner cobra dinero que le pertenece a la empresa. PayMyLoan cobra dinero que le pertenece al prestamista. Esa sola frase cambia la arquitectura, el onboarding y el perfil regulatorio del producto.</p>
+
+  <div class="flows">
+    <div class="flow">
+      <div class="flow-head"><h4>Opción A · Cuenta única</h4><span class="tag t-mod">Rápido de construir</span></div>
+      <div class="chain">
+        <span class="node">Prestatario</span><span class="arrow">→</span>
+        <span class="node risk">Cuenta Stripe de PayMyLoan</span><span class="arrow">→</span>
+        <span class="node">Transferencia manual</span><span class="arrow">→</span>
+        <span class="node">Prestamista</span>
+      </div>
+      <p>Es lo que hace Owner hoy. Los fondos aterrizan en la cuenta de la plataforma y alguien los transfiere después. Funciona técnicamente y es lo más rápido — pero recibir dinero de A para entregarlo a B es, en varios estados, transmisión de dinero, y además obliga a operar tesorería manual con el dinero de terceros en el balance. No escala.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-head"><h4>Opción B · Stripe Connect</h4><span class="tag t-ok">Recomendado</span></div>
+      <div class="chain">
+        <span class="node">Prestatario</span><span class="arrow">→</span>
+        <span class="node hi">Cuenta conectada del prestamista</span><span class="arrow">→</span>
+        <span class="node">Su banco</span>
+      </div>
+      <p>Cada prestamista abre una cuenta conectada en el alta. El cargo ACH se emite contra esa cuenta y PayMyLoan retiene su comisión como <em>application fee</em>. El dinero nunca toca la cuenta de la plataforma: Stripe es el procesador de récord y absorbe KYC, verificación de identidad y payouts. Cuesta más al inicio —hay onboarding de prestamista que hoy no existe en Owner— y es lo correcto para el segundo préstamo en adelante.</p>
+    </div>
+  </div>
+
+  <p><strong>Recomendación:</strong> Opción B desde el MVP. La Opción A parece un atajo de dos semanas y se convierte en una migración forzada en cuanto haya volumen o en cuanto alguien pregunte por licencias de servicing. Migrar prestamistas y métodos de pago ya en producción es mucho más caro que hacerlo bien la primera vez.</p>
+
+  <div class="note">
+    <span class="lbl">Nota operativa · cuenta de Stripe</span>
+    <p>En la conversación se menciona que ACH "debe habilitarse desde la cuenta principal". Vale la pena definir si PayMyLoan opera bajo <strong>la misma cuenta de Stripe de Owner</strong> o bajo una propia. Al ser una subsidiaria con su propia marca y su propio flujo de fondos, una cuenta separada mantiene la contabilidad limpia y aísla el riesgo de disputas entre los dos negocios. Es una decisión de cinco minutos que después cuesta semanas revertir.</p>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span>Sección 06</span>Qué se reutiliza de Owner</h2>
+
+  <p>Inventario de lo que existe hoy en el repositorio y qué pasa con cada pieza.</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Pieza en Owner</th><th>Estado</th><th>Qué hay que hacer</th></tr></thead>
+    <tbody>
+      <tr><td>Stack: Next.js 16, React 19, Prisma, PostgreSQL, Docker</td><td><span class="tag t-ok">Existe</span></td><td>Se replica igual. Servidor y base de datos independientes</td></tr>
+      <tr><td>Auth con NextAuth v5, bcrypt, 2FA TOTP</td><td><span class="tag t-ok">Existe</span></td><td>Se copia. Se vuelve obligatorio el 2FA para prestamistas</td></tr>
+      <tr><td>Enlaces de acceso e invitación (<code>VerificationToken</code>)</td><td><span class="tag t-ok">Existe</span></td><td>Se copia. Cambia solo el canal de envío del correo</td></tr>
+      <tr><td>Generador de amortización</td><td><span class="tag t-mod">Adaptar</span></td><td>Agregar interest-only y balloon; quitar el auto-marcado de pagos pasados</td></tr>
+      <tr><td>Stripe Checkout con <code>us_bank_account</code></td><td><span class="tag t-mod">Adaptar</span></td><td>Habilitar ACH en Stripe; migrar a Connect; agregar autopay</td></tr>
+      <tr><td>Webhook de Stripe</td><td><span class="tag t-mod">Adaptar</span></td><td>Manejar eventos asíncronos de ACH y devoluciones</td></tr>
+      <tr><td>Subida a S3 con URL prefirmada</td><td><span class="tag t-mod">Adaptar</span></td><td>Bucket privado, lectura también prefirmada, permiso por préstamo</td></tr>
+      <tr><td>Carpetas y archivos (<code>MediaFolder</code> / <code>MediaFile</code>)</td><td><span class="tag t-ok">Existe</span></td><td>Se reusa como expediente documental del préstamo</td></tr>
+      <tr><td>Exportación a PDF</td><td><span class="tag t-ok">Existe</span></td><td>La plantilla de amortización se reusa; se agregan estado de cuenta y carta de payoff</td></tr>
+      <tr><td>Bitácora de auditoría (<code>AuditLog</code>)</td><td><span class="tag t-ok">Existe</span></td><td>Se copia y se amplía a los eventos financieros</td></tr>
+      <tr><td>Modelo <code>Property</code></td><td><span class="tag t-mod">Adaptar</span></td><td>Recortar a datos de garantía. Quitar marketing, SEO, mapa, galería</td></tr>
+      <tr><td>Perfiles Seller / Buyer / Renter / Agent</td><td><span class="tag t-new">Nuevo</span></td><td>Se reemplazan por participación por préstamo (Lender / Borrower / Viewer)</td></tr>
+      <tr><td>Correo transaccional</td><td><span class="tag t-new">Nuevo</span></td><td>No existe. Proveedor real + verificación del dominio</td></tr>
+      <tr><td>Firma electrónica</td><td><span class="tag t-new">Nuevo</span></td><td>No existe. Ver Sección 9</td></tr>
+      <tr><td>Stripe Connect y onboarding de prestamista</td><td><span class="tag t-new">Nuevo</span></td><td>No existe</td></tr>
+      <tr><td>Payoff, transacciones reales, reportes programados</td><td><span class="tag t-new">Nuevo</span></td><td>No existe</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <span class="lbl">Recomendación de arranque</span>
+    <p>Repositorio y base de datos <strong>nuevos</strong>, copiando de Owner los módulos que aplican. No es un módulo dentro de Owner ni un fork que después se sincroniza: Owner es un portal inmobiliario bilingüe con blog, mapa, cursos y CRM, y arrastrar todo eso a un producto financiero es superficie de ataque y de mantenimiento sin ninguna contraparte. Lo que se comparte es el conocimiento y el código puntual, no el ciclo de vida.</p>
+  </div>
+</section>
+
+<section id="s7">
+  <h2><span>Sección 07</span>Modelo de datos propuesto</h2>
+
+  <p>Ocho entidades. El cambio conceptual frente a Owner está en <code>LoanParty</code>: el rol no es un atributo de la persona, es la relación entre una persona y un préstamo.</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Entidad</th><th>Contenido</th></tr></thead>
+    <tbody>
+      <tr><td><strong>User</strong></td><td>Identidad, contraseña, 2FA. Sin rol de negocio</td></tr>
+      <tr><td><strong>Property</strong></td><td>Dirección, ciudad, estado, CP, tipo, parcela. Solo garantía</td></tr>
+      <tr><td><strong>Loan</strong></td><td>Propiedad, capital, tasa, estructura, plazo, día de corte, primer pago, <strong>vencimiento</strong>, regla de mora, estado (borrador · pendiente de aceptación · activo · liquidado · en mora)</td></tr>
+      <tr><td><strong>LoanParty</strong></td><td>Préstamo + usuario + rol (Lender / Borrower / Viewer) + quién invitó + <strong>fecha de aceptación</strong>. Es la tabla de permisos y la de consentimiento a la vez</td></tr>
+      <tr><td><strong>LoanTerms</strong></td><td>Versión de los términos. Inmutable. Una nueva versión reabre la aceptación de ambas partes</td></tr>
+      <tr><td><strong>ScheduledPayment</strong></td><td>Fila del calendario: fecha, monto debido, capital, interés, saldo proyectado</td></tr>
+      <tr><td><strong>Transaction</strong></td><td>Movimiento real: monto, método, <code>PaymentIntent</code> de Stripe, estado (en proceso · liquidado · devuelto · reembolsado), y cómo se aplicó a mora, interés y capital</td></tr>
+      <tr><td><strong>PayoffRequest</strong></td><td>Solicitante, fecha de vigencia, desglose cotizado, estado, aprobación, evidencia de firma</td></tr>
+      <tr><td><strong>Document</strong></td><td>Préstamo, tipo (pagaré · deed of trust · settlement statement · otro), llave en S3, quién subió</td></tr>
+      <tr><td><strong>ReportRecipient</strong></td><td>Correo, periodicidad, préstamos incluidos, quién lo autorizó. Para el contador</td></tr>
+      <tr><td><strong>AuditLog</strong></td><td>Actor, acción, entidad, detalle, IP, fecha. Se hereda de Owner</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>La separación entre <code>ScheduledPayment</code> y <code>Transaction</code> es la corrección más importante respecto a Owner, donde ambas cosas viven en la misma tabla <code>Payment</code>. Sin esa separación no se pueden representar pagos parciales, abonos a capital, ni un ACH devuelto tres días después de haberse mostrado como pagado.</p>
+</section>
+
+<section id="s8">
+  <h2><span>Sección 08</span>Economía del producto</h2>
+
+  <p>Spencer planteó dos cosas: que las comisiones no espanten a las partes, y que "habría algo que cobrar por configurar esto, pero no sé cuánto". Ambas quedan abiertas; aquí está el marco para decidirlas.</p>
+
+  <h4>Costo real por transacción</h4>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Mensualidad</th><th>Comisión Stripe ACH</th><th>% efectivo</th></tr></thead>
+    <tbody>
+      <tr><td class="num">$400</td><td class="num">$3.20</td><td class="num">0.80%</td></tr>
+      <tr><td class="num">$625</td><td class="num">$5.00</td><td class="num">0.80%</td></tr>
+      <tr><td class="num">$1,200</td><td class="num">$5.00</td><td class="num">0.42%</td></tr>
+      <tr><td class="num">$2,500</td><td class="num">$5.00</td><td class="num">0.20%</td></tr>
+      <tr><td class="num">$5,000</td><td class="num">$5.00</td><td class="num">0.10%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note warn">
+    <span class="lbl">Por verificar antes de fijar precio</span>
+    <p>El 0.8% con tope de $5.00 es el costo del pago exitoso. Stripe cobra además por <strong>pago devuelto</strong> y por <strong>disputa</strong>, y el ACH se devuelve con más frecuencia que la tarjeta. Hay que confirmar los montos vigentes en Stripe y decidir quién los absorbe — si un ACH devuelto le cuesta a la plataforma más de lo que ganó en el mes, el modelo se invierte.</p>
+  </div>
+
+  <h4>Modelos de ingreso a evaluar</h4>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Modelo</th><th>Cómo se cobra</th><th>Consideración</th></tr></thead>
+    <tbody>
+      <tr><td>Cuota de alta</td><td>Un pago al activar el préstamo</td><td>Es lo que Spencer intuyó. Ingreso puntual, no recurrente</td></tr>
+      <tr><td>Cuota mensual de servicing</td><td>Monto fijo por préstamo activo</td><td>Ingreso predecible. Owner ya cobra algo así con su <code>SERVICE_FEE</code> de $39</td></tr>
+      <tr><td>Recargo sobre el pago</td><td>Porcentaje o fijo sobre cada mensualidad</td><td>El más visible para el prestatario y el que más fricción genera</td></tr>
+      <tr><td>Por documento generado</td><td>Cargo por carta de payoff o estado certificado</td><td>Corresponde a trabajo real de la plataforma</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Falta además definir <strong>quién paga la comisión de Stripe</strong>: el prestatario la ve encima de su mensualidad, el prestamista la ve descontada de lo que recibe, o la plataforma la absorbe dentro de su cuota. Es la decisión que Spencer nombró como riesgo — "the lenders and borrowers won't like the fees" — y por eso conviene resolverla explícitamente y no por omisión del código.</p>
+</section>
+
+<section id="s9">
+  <h2><span>Sección 09</span>Riesgos y temas legales</h2>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Tema</th><th>Por qué importa</th><th>Acción</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Transmisión de dinero</strong></td>
+        <td>Recibir fondos de A para entregarlos a B puede requerir licencia estatal</td>
+        <td>Adoptar Stripe Connect (Sección 5) y confirmar con abogado</td>
+      </tr>
+      <tr>
+        <td><strong>Licencia de servicing</strong></td>
+        <td>Administrar préstamos hipotecarios de terceros está regulado y varía por estado</td>
+        <td>Definir si la plataforma <em>administra</em> o solo <em>facilita</em>. Cambia el producto</td>
+      </tr>
+      <tr>
+        <td><strong>Préstamo de consumo vs. de inversión</strong></td>
+        <td>Si el prestatario es persona física para su vivienda, aplican reglas federales de estados de cuenta, cartas de payoff y avisos de mora</td>
+        <td>Confirmar el segmento. Si es solo inversión, el alcance regulatorio baja mucho</td>
+      </tr>
+      <tr>
+        <td><strong>Firma electrónica</strong></td>
+        <td>Spencer quiere firma por correo en la aprobación de payoff. Una firma sin rastro probatorio no sostiene una disputa</td>
+        <td>Proveedor externo (DocuSign, Dropbox Sign) o firma propia con certificado de auditoría completo</td>
+      </tr>
+      <tr>
+        <td><strong>Devoluciones ACH</strong></td>
+        <td>Un pago mostrado como recibido y devuelto después rompe la confianza del prestamista</td>
+        <td>Estado "en tránsito" visible, notificación de devolución, política de reintento y de mora</td>
+      </tr>
+      <tr>
+        <td><strong>Cambio de cuenta bancaria</strong></td>
+        <td>Vector de fraude estándar en servicing hipotecario</td>
+        <td>Reautenticación, aviso a ambas partes y periodo de espera</td>
+      </tr>
+      <tr>
+        <td><strong>Reportes fiscales</strong></td>
+        <td>El prestamista necesita el interés cobrado del año; el prestatario, el interés pagado</td>
+        <td>Reporte anual de interés en fase 3. No es MVP pero condiciona el modelo de datos</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="s10">
+  <h2><span>Sección 10</span>Fases</h2>
+
+  <p>Las fases son secuenciales por dependencia real, no por conveniencia: no se puede construir el cobro sin saber a dónde va el dinero, ni el payoff sin que exista un saldo confiable.</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Fase</th><th>Entregable</th><th>Depende de</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>0 · Definición</strong></td>
+        <td>Respuestas a la Sección 11. ACH habilitado en Stripe. Dominio, servidor y correo configurados. Repositorio inicializado desde Owner</td>
+        <td>Spencer</td>
+      </tr>
+      <tr>
+        <td><strong>1 · El préstamo</strong></td>
+        <td>Alta de usuarios e invitación, propiedad, captura de términos, aceptación bilateral, generación del calendario, tablero de prestamista y de prestatario</td>
+        <td>Fase 0</td>
+      </tr>
+      <tr>
+        <td><strong>2 · El dinero</strong></td>
+        <td>Onboarding Connect del prestamista, verificación bancaria, pago manual por ACH, autopay, manejo de estados asíncronos y devoluciones, aplicación de pagos al saldo</td>
+        <td>Decisión de la Sección 5</td>
+      </tr>
+      <tr>
+        <td><strong>3 · El expediente</strong></td>
+        <td>Documentos privados, solicitud y aprobación de payoff, firma, carta de payoff en PDF</td>
+        <td>Fase 1</td>
+      </tr>
+      <tr>
+        <td><strong>4 · Reportes y cobro</strong></td>
+        <td>Estados de cuenta por correo, invitados de solo lectura, envío a contador, cobro de la cuota de la plataforma</td>
+        <td>Fases 2 y 3, y modelo de precio</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Un préstamo de prueba con un prestamista y un prestatario reales al terminar la Fase 2 vale más que cualquier estimación en papel: es el punto donde se descubre lo que falta en el flujo de ACH antes de que haya cartera que migrar.</p>
+</section>
+
+<section id="s11">
+  <h2><span>Sección 11</span>Preguntas abiertas</h2>
+
+  <p class="lead">Estas son las decisiones que la conversación dejó sin cerrar. Están ordenadas por cuánto bloquean el desarrollo — las primeras cuatro impiden empezar.</p>
+
+  <ol class="qlist">
+    <li>
+      <span class="q">¿El dinero pasa por la plataforma o va directo al prestamista?</span>
+      <span class="why">Define la arquitectura completa y el perfil regulatorio. Recomendación: Stripe Connect, fondos directos al prestamista. Sección 5.</span>
+    </li>
+    <li>
+      <span class="q">¿Quién absorbe la comisión de Stripe: el prestatario, el prestamista o la plataforma?</span>
+      <span class="why">Spencer identificó las comisiones como el riesgo comercial principal. Hay que decidirlo, no dejarlo implícito en el código.</span>
+    </li>
+    <li>
+      <span class="q">¿Los préstamos son de inversión o también a consumidores para su vivienda?</span>
+      <span class="why">Cambia por completo el alcance regulatorio: avisos obligatorios, formato de estados de cuenta, reglas de cartas de payoff.</span>
+    </li>
+    <li>
+      <span class="q">¿Cuenta de Stripe propia o la misma de Owner?</span>
+      <span class="why">Afecta contabilidad, aislamiento de riesgo y el onboarding. Barato ahora, caro después.</span>
+    </li>
+    <li>
+      <span class="q">¿Cómo se cobra la plataforma: alta, mensualidad, por transacción, o combinación?</span>
+      <span class="why">Spencer lo dejó abierto. Determina qué se construye en la Fase 4 y si hace falta facturación recurrente.</span>
+    </li>
+    <li>
+      <span class="q">El payoff, ¿es solo cotización con firma o también se cobra por el sitio?</span>
+      <span class="why">Spencer dudó entre las dos. Los límites de monto de ACH probablemente impidan la segunda para montos grandes.</span>
+    </li>
+    <li>
+      <span class="q">¿Se soportan préstamos con balloon —pago calculado a 30 años, vencimiento a 5 o 7—?</span>
+      <span class="why">Es la estructura más común en préstamo privado y no se mencionó. Cambia el generador de amortización.</span>
+    </li>
+    <li>
+      <span class="q">¿Autopay obligatorio, opcional, o no existe en el MVP?</span>
+      <span class="why">Es la diferencia entre guardar un método de pago y cobrar fuera de sesión, o solo generar sesiones de pago manuales.</span>
+    </li>
+    <li>
+      <span class="q">¿La plataforma administra escrow de impuestos y seguro?</span>
+      <span class="why">Owner ya lo calcula dentro de la mensualidad. Si aquí también se cobra, alguien tiene que pagar el predial — eso es servicing real, no software.</span>
+    </li>
+    <li>
+      <span class="q">¿Cuál es la política ante un ACH devuelto: reintento, mora, quién paga el cargo?</span>
+      <span class="why">Va a pasar. Mejor definirlo antes que improvisarlo con un cliente molesto.</span>
+    </li>
+    <li>
+      <span class="q">¿Firma electrónica con proveedor externo o propia?</span>
+      <span class="why">Externa cuesta por sobre firmado pero da valor probatorio inmediato; propia es gratis y hay que construir el certificado de auditoría.</span>
+    </li>
+    <li>
+      <span class="q">¿Un préstamo puede cubrir varias propiedades?</span>
+      <span class="why">Spencer habló de "una dirección". Si hay préstamos blanket, la relación préstamo ↔ propiedad cambia de uno a muchos desde el inicio.</span>
+    </li>
+    <li>
+      <span class="q">¿La interfaz es bilingüe español e inglés?</span>
+      <span class="why">Owner es bilingüe y la base de clientes de Dueño a Dueño lo es. Retrofitear traducción después cuesta el doble.</span>
+    </li>
+    <li>
+      <span class="q">¿Hay préstamos existentes que migrar al arrancar?</span>
+      <span class="why">Determina si hace falta importar saldos e historial desde el día uno, o si todo nace dentro de la plataforma.</span>
+    </li>
+  </ol>
+</section>
+
+<footer>
+  <p>PayMyLoan.ai · Documento de alcance v0.1 · Borrador para revisión de Spencer<br>
+  Basado en la conversación Spencer ↔ Alexis y en el código del proyecto Owner</p>
+</footer>
+
+</main>
+</div>
