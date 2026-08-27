@@ -68,7 +68,7 @@ const es = {
     intentNote:
       "Puedes ser prestamista en un préstamo y prestatario en otro. Esto solo define qué ves al entrar; el rol real vive en cada préstamo, no en tu cuenta.",
     name: "Nombre completo",
-    namePh: "Como aparece en el pagaré",
+    namePh: "Como aparece en el contrato",
     email: "Correo electrónico",
     emailPh: "correo@ejemplo.com",
     phone: "Teléfono",
@@ -287,7 +287,7 @@ const en: Copy = {
     intentNote:
       "You can be the lender on one loan and the borrower on another. This only sets what you see first; the real role lives on each loan, not on your account.",
     name: "Full name",
-    namePh: "As it appears on the note",
+    namePh: "As it appears on the contract",
     email: "Email address",
     emailPh: "email@example.com",
     phone: "Phone",

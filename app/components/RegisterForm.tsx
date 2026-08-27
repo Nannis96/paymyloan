@@ -9,14 +9,13 @@ import {
   REGISTRO_SIMULADO,
   type Intent,
 } from "@/app/lib/registro";
+import { enviarCRM } from "@/app/lib/crm";
 
 type Campo =
   | "intent"
   | "nombre"
   | "correo"
   | "telefono"
-  | "password"
-  | "passwordConfirm"
   | "terminos";
 
 type Errores = Partial<Record<Campo, string>>;
@@ -40,10 +39,7 @@ export default function RegisterForm() {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [terminos, setTerminos] = useState(false);
-  const [verPassword, setVerPassword] = useState(false);
 
   const [errores, setErrores] = useState<Errores>({});
   const [estado, setEstado] = useState<"idle" | "enviando" | "listo">("idle");
@@ -55,13 +51,6 @@ export default function RegisterForm() {
   const limpiar = (campo: Campo) =>
     setErrores((prev) => (prev[campo] ? { ...prev, [campo]: undefined } : prev));
 
-  const reglas = {
-    length: password.length >= 12,
-    case: /[a-z]/.test(password) && /[A-Z]/.test(password),
-    number: /\d/.test(password),
-  };
-  const passwordValida = reglas.length && reglas.case && reglas.number;
-
   function validar(): Errores {
     const e: Errores = {};
     if (!intent) e.intent = f.errors.intent;
@@ -69,9 +58,6 @@ export default function RegisterForm() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo.trim()))
       e.correo = f.errors.email;
     if (telefono.replace(/\D/g, "").length < 10) e.telefono = f.errors.phone;
-    if (!passwordValida) e.password = f.errors.password;
-    else if (password !== passwordConfirm)
-      e.passwordConfirm = f.errors.passwordConfirm;
     if (!terminos) e.terminos = f.errors.terms;
     return e;
   }
@@ -92,12 +78,19 @@ export default function RegisterForm() {
     }
 
     setEstado("enviando");
+    void enviarCRM({
+      intent: intent as Intent,
+      nombre: nombre.trim(),
+      correo: correo.trim(),
+      telefono: telefono.trim(),
+      aceptaTerminos: true,
+      idioma: lang,
+    });
     const resultado = await registrarUsuario({
       intent: intent as Intent,
       nombre: nombre.trim(),
       correo: correo.trim(),
       telefono: telefono.trim(),
-      password,
       aceptaTerminos: true,
       idioma: lang,
     });
@@ -113,8 +106,6 @@ export default function RegisterForm() {
 
   function reiniciar() {
     setEstado("idle");
-    setPassword("");
-    setPasswordConfirm("");
     setCorreo("");
     setErrores({});
   }
@@ -313,96 +304,6 @@ export default function RegisterForm() {
         </div>
       </div>
 
-      <div className="mb-4">
-        <label className={LABEL} htmlFor={`${uid}-password`}>
-          {f.password}
-        </label>
-        <div className="relative">
-          <input
-            id={`${uid}-password`}
-            name="password"
-            type={verPassword ? "text" : "password"}
-            autoComplete="new-password"
-            placeholder={f.passwordPh}
-            value={password}
-            onChange={(e) => {
-            setPassword(e.target.value);
-            limpiar("password");
-            limpiar("passwordConfirm");
-          }}
-            aria-invalid={errores.password ? true : undefined}
-            aria-describedby={`${uid}-reglas`}
-            className={`${INPUT} pr-20 ${errores.password ? INPUT_ERROR : ""}`}
-          />
-          <button
-            type="button"
-            onClick={() => setVerPassword((v) => !v)}
-            className="eyebrow absolute top-0 right-0 flex h-11 items-center gap-1 px-3 text-ink-3 transition-colors hover:text-accent"
-          >
-            {verPassword ? (
-              <EyeOff aria-hidden className="h-[14px] w-[14px]" />
-            ) : (
-              <Eye aria-hidden className="h-[14px] w-[14px]" />
-            )}
-            {verPassword ? f.hide : f.show}
-          </button>
-        </div>
-
-        <ul id={`${uid}-reglas`} className="mt-2 mb-0 list-none space-y-1 p-0">
-          {(
-            [
-              ["length", f.rules.length],
-              ["case", f.rules.case],
-              ["number", f.rules.number],
-            ] as const
-          ).map(([clave, texto]) => (
-            <li
-              key={clave}
-              className={`flex items-center gap-2 text-xs ${
-                reglas[clave] ? "text-accent" : "text-ink-3"
-              }`}
-            >
-              <Check
-                aria-hidden
-                className={`h-3.5 w-3.5 shrink-0 ${reglas[clave] ? "opacity-100" : "opacity-30"}`}
-              />
-              {texto}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="mb-5">
-        <label className={LABEL} htmlFor={`${uid}-password2`}>
-          {f.passwordConfirm}
-        </label>
-        <input
-          id={`${uid}-password2`}
-          name="passwordConfirm"
-          type={verPassword ? "text" : "password"}
-          autoComplete="new-password"
-          placeholder={f.passwordConfirmPh}
-          value={passwordConfirm}
-          onChange={(e) => {
-            setPasswordConfirm(e.target.value);
-            limpiar("passwordConfirm");
-          }}
-          aria-invalid={errores.passwordConfirm ? true : undefined}
-          aria-describedby={
-            errores.passwordConfirm ? `${uid}-password2-err` : undefined
-          }
-          className={`${INPUT} ${errores.passwordConfirm ? INPUT_ERROR : ""}`}
-        />
-        {errores.passwordConfirm ? (
-          <p
-            id={`${uid}-password2-err`}
-            className="mt-1 mb-0 text-xs text-crit"
-          >
-            {errores.passwordConfirm}
-          </p>
-        ) : null}
-      </div>
-
       <label className="mb-5 flex cursor-pointer items-start gap-3 text-sm text-ink-2">
         <input
           type="checkbox"
@@ -443,7 +344,7 @@ export default function RegisterForm() {
         {f.twofaNote}
       </p>
 
-      <div className="mt-5 border-t border-rule pt-4 text-xs text-ink-3">
+      {/* <div className="mt-5 border-t border-rule pt-4 text-xs text-ink-3">
         <p className="m-0">
           {f.inviteNote}{" "}
           <a href="#" className="text-accent underline underline-offset-2">
@@ -457,14 +358,7 @@ export default function RegisterForm() {
             {f.login}
           </a>
         </p>
-      </div>
-
-      {/* Aviso solo en desarrollo: no aparece en la build de producción. */}
-      {process.env.NODE_ENV !== "production" && REGISTRO_SIMULADO ? (
-        <p className="eyebrow mt-4 mb-0 border border-dashed border-amber bg-amber-soft px-3 py-2 text-amber">
-          {f.devNote}
-        </p>
-      ) : null}
+      </div> */}
     </form>
   );
 }
