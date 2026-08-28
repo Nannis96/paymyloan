@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.github
+.vscode
+npm-debug.log*
+
+Dockerfile
+docker-compose*.yml
+nginx
+
+*.md
+paymyloan-alcance.html
+
+.env
+.env.*
+!.env.example

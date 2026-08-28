@@ -31,18 +31,25 @@ Sin Prisma, sin NextAuth, sin Stripe: nada de eso hace falta todavía.
 
 ## Correr con Docker
 
-Producción (imagen compilada, `output: standalone`):
+Producción (imagen compilada, `output: standalone`, detrás de nginx):
 
 ```bash
 cp .env.example .env      # opcional en local
 docker compose up --build
-# http://localhost:3000
+# http://localhost
 ```
+
+`docker-compose.yml` levanta dos servicios: `landing` (la app Next.js, sin
+puertos publicados al host) y `nginx` (reverse proxy que sí publica el
+puerto 80, configurable con `HTTP_PORT`). Solo nginx queda expuesto; la
+landing únicamente es alcanzable dentro de la red interna de compose. La
+configuración de nginx vive en `nginx/nginx.conf` y `nginx/conf.d/`.
 
 Desarrollo con recarga en caliente:
 
 ```bash
 docker compose -f docker-compose.dev.yml up --build
+# http://localhost:3000
 ```
 
 Sin Docker: `npm install && npm run dev`.
