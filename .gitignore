@@ -1,0 +1,6 @@
+# Certificados y retos ACME que genera certbot en el servidor: son secretos
+# y se regeneran solos, no van al repo.
+/certbot/conf/
+/certbot/www/
+
+.env

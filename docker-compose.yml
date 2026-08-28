@@ -1,7 +1,13 @@
 # Produccion: imagen compilada, sin volumenes, sin node_modules en runtime.
-# nginx es el unico servicio publicado al host; "landing" solo es alcanzable
-# dentro de la red interna de compose.
-#   docker compose up --build
+# nginx es el unico servicio publicado al host (80 y 443); "landing" solo
+# es alcanzable dentro de la red interna de compose. "certbot" emite y
+# renueva solo el certificado TLS de paymyloan.ai.
+#
+# Primer arranque en el servidor (una sola vez, con el DNS de paymyloan.ai
+# ya apuntando aqui y el puerto 80 abierto):
+#   ./init-letsencrypt.sh
+# Despues, para levantar o actualizar:
+#   docker compose up --build -d
 services:
   landing:
     build:
@@ -9,7 +15,7 @@ services:
       target: runner
       args:
         # Se incrustan al compilar. Cambiarlas exige reconstruir la imagen.
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://paymyloan.ai}
         NEXT_PUBLIC_REGISTRO_ENDPOINT: ${NEXT_PUBLIC_REGISTRO_ENDPOINT:-}
     image: paymyloan-landing:latest
     restart: unless-stopped
@@ -26,13 +32,30 @@ services:
     depends_on:
       - landing
     ports:
-      # Unico puerto expuesto por ahora.
       - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
     networks:
       - internal
+    # Recarga nginx cada 6h para tomar el certificado apenas certbot lo renueve.
+    entrypoint: >
+      sh -c 'while :; do sleep 6h & wait $$!; nginx -s reload; done & nginx -g "daemon off;"'
+
+  certbot:
+    image: certbot/certbot:latest
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Certbot solo renueva de verdad cuando al certificado le quedan <30
+    # dias; el resto de las corridas no hacen nada. Dos veces al dia es el
+    # intervalo que recomienda la propia documentacion de certbot.
+    entrypoint: >
+      sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $$!; done'
 
 networks:
   internal:

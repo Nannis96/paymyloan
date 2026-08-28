@@ -31,19 +31,46 @@ Sin Prisma, sin NextAuth, sin Stripe: nada de eso hace falta todavía.
 
 ## Correr con Docker
 
-Producción (imagen compilada, `output: standalone`, detrás de nginx):
+Producción (imagen compilada, `output: standalone`, detrás de nginx + TLS):
 
 ```bash
 cp .env.example .env      # opcional en local
 docker compose up --build
-# http://localhost
+# http://localhost (en local, sin certificado)
 ```
 
-`docker-compose.yml` levanta dos servicios: `landing` (la app Next.js, sin
-puertos publicados al host) y `nginx` (reverse proxy que sí publica el
-puerto 80, configurable con `HTTP_PORT`). Solo nginx queda expuesto; la
-landing únicamente es alcanzable dentro de la red interna de compose. La
-configuración de nginx vive en `nginx/nginx.conf` y `nginx/conf.d/`.
+`docker-compose.yml` levanta tres servicios: `landing` (la app Next.js, sin
+puertos publicados al host), `nginx` (reverse proxy que sí publica 80 y
+443, configurables con `HTTP_PORT`/`HTTPS_PORT`) y `certbot` (renueva el
+certificado de Let's Encrypt solo, corriendo `certbot renew` cada 12h). Solo
+nginx queda expuesto; la landing únicamente es alcanzable dentro de la red
+interna de compose. La configuración de nginx vive en `nginx/nginx.conf` y
+`nginx/conf.d/`.
+
+### Dominio y HTTPS en el servidor de producción
+
+El dominio de producción es **paymyloan.ai** (con `www.paymyloan.ai`),
+configurado en `nginx/conf.d/default.conf`. La primera vez que se despliega
+en el servidor real, con el DNS ya apuntando ahí y el puerto 80 abierto:
+
+```bash
+./init-letsencrypt.sh
+```
+
+Este script resuelve el problema de arranque (nginx necesita un certificado
+para levantar el bloque 443, pero Let's Encrypt necesita nginx sirviendo el
+reto ACME por HTTP para emitirlo): genera un certificado temporal, levanta
+nginx, pide el certificado real a Let's Encrypt vía webroot
+(`/.well-known/acme-challenge/`), recarga nginx y deja el stack completo
+corriendo. Se corre **una sola vez**; después de eso, el servicio `certbot`
+se encarga de renovarlo automáticamente y `nginx` recarga su configuración
+cada 6h para tomar el certificado renovado sin downtime. Los parámetros TLS
+(protocolos, cifrados) están fijos en `nginx/conf.d/default.conf`, no se
+descargan de ningún lado.
+
+Los certificados quedan en `./certbot/conf` (bind mount, fuera de git —
+ver `.gitignore`). Para probar el flujo sin gastar el límite de emisiones
+de Let's Encrypt: `STAGING=1 ./init-letsencrypt.sh`.
 
 Desarrollo con recarga en caliente:
 
