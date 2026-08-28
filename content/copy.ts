@@ -111,7 +111,7 @@ const es = {
     success: {
       title: "Revisa tu correo",
       body: "Te enviamos un enlace de verificación a",
-      note: "El enlace vence en 24 horas. Si no llega, revisa spam o escribe a servicing@paymyloan.ai.",
+      note: "El enlace vence en 24 horas. Si no llega, revisa spam.",
       again: "Usar otro correo",
     },
     devNote:
@@ -217,13 +217,11 @@ const es = {
     title: "Da de alta tu primer préstamo.",
     body: "Crea la cuenta, captura los términos e invita a la otra parte. El calendario se genera cuando ambos aceptan.",
     cta: "Crear cuenta",
-    secondary: "Escríbenos a servicing@paymyloan.ai",
   },
 
   footer: {
     tagline: "Servicing de préstamos privados con garantía inmobiliaria.",
     entity: "Subsidiaria de Dueño a Dueño LLC",
-    email: "servicing@paymyloan.ai",
     links: [
       { href: "#", label: "Términos de servicio" },
       { href: "#", label: "Aviso de privacidad" },
@@ -330,7 +328,7 @@ const en: Copy = {
     success: {
       title: "Check your email",
       body: "We sent a verification link to",
-      note: "The link expires in 24 hours. If it does not arrive, check spam or write to servicing@paymyloan.ai.",
+      note: "The link expires in 24 hours. If it does not arrive, check spam.",
       again: "Use a different email",
     },
     devNote:
@@ -436,13 +434,11 @@ const en: Copy = {
     title: "Set up your first loan.",
     body: "Create the account, capture the terms and invite the other party. The schedule is generated once both accept.",
     cta: "Create account",
-    secondary: "Write to servicing@paymyloan.ai",
   },
 
   footer: {
     tagline: "Servicing for private real-estate-secured loans.",
     entity: "A subsidiary of Dueño a Dueño LLC",
-    email: "servicing@paymyloan.ai",
     links: [
       { href: "#", label: "Terms of service" },
       { href: "#", label: "Privacy notice" },

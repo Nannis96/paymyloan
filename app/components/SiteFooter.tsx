@@ -22,12 +22,6 @@ export default function SiteFooter() {
           </div>
 
           <div className="flex flex-col gap-2 font-mono text-[0.72rem] text-ink-3">
-            <a
-              href={`mailto:${t.footer.email}`}
-              className="text-ink-2 no-underline transition-colors hover:text-accent"
-            >
-              {t.footer.email}
-            </a>
             <span>{t.footer.entity}</span>
           </div>
 

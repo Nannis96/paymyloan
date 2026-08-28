@@ -23,12 +23,6 @@ export default function FinalCta() {
               <a href="#registro" className={`${BTN_PRIMARY} no-underline`}>
                 {t.finalCta.cta}
               </a>
-              <a
-                href="mailto:servicing@paymyloan.ai"
-                className="font-mono text-[0.74rem] text-ink-3 underline underline-offset-4 transition-colors hover:text-accent"
-              >
-                {t.finalCta.secondary}
-              </a>
             </div>
           </div>
         </div>

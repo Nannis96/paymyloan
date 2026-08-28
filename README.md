@@ -124,9 +124,11 @@ El contrato que envía es:
   preguntas 2 y 5 del alcance (cuota de la plataforma y quién absorbe la
   comisión). No se inventó un precio. Los enlaces de Términos y Aviso de
   privacidad apuntan a `#` hasta que existan los documentos.
-- **`servicing@paymyloan.ai`** aparece en el pie y en el CTA final. El alcance
-  advierte que todavía no hay proveedor de correo transaccional, así que hoy
-  ese buzón tiene que existir de verdad o cambiarse.
+- **Sin correo de contacto todavía.** El pie, el CTA final y la nota de
+  éxito del formulario mencionaban `servicing@paymyloan.ai`; se quitó
+  porque ese buzón todavía no existe. Cuando haya un canal de soporte real
+  se agrega de vuelta en `content/copy.ts` (`footer.entity`-adjacent,
+  `finalCta` y `form.success.note`).
 
 ## Estructura
 
