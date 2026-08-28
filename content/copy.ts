@@ -224,10 +224,134 @@ const es = {
     entity: "Subsidiaria de Dueño a Dueño LLC",
     links: [
       { href: "#", label: "Términos de servicio" },
-      { href: "#", label: "Aviso de privacidad" },
+      { href: "/aviso-de-privacidad", label: "Aviso de privacidad" },
     ],
-    linksNote: "[PENDIENTES DE REDACCIÓN]",
+    linksNote: "Términos de servicio: [PENDIENTE DE REDACCIÓN]",
     rights: "Todos los derechos reservados.",
+  },
+
+  privacy: {
+    eyebrow: "Legal",
+    title: "Aviso de privacidad",
+    updated: "Última actualización: 28 de agosto de 2026",
+    back: "Volver al inicio",
+    intro: [
+      "Este aviso explica qué datos personales recaba PayMyLoan.ai, para qué los usamos, con quién los compartimos y cómo puedes ejercer tus derechos sobre ellos.",
+      "PayMyLoan.ai está en fase de acceso anticipado: hoy solo recabamos los datos del formulario de lista de espera. Antes de activar el servicing completo de préstamos, actualizaremos este aviso para cubrir los datos del préstamo —propiedad en garantía, términos, pagos y documentos— que se sumarán entonces.",
+    ],
+    sections: [
+      {
+        heading: "1. Quién es responsable de tus datos",
+        paragraphs: [
+          "PayMyLoan.ai es la marca bajo la que Dueño a Dueño LLC opera este sitio y, más adelante, la plataforma de servicing de préstamos privados.",
+          "Domicilio para efectos de este aviso: [PENDIENTE DE DEFINIR].",
+          "Ley aplicable y autoridad ante la que puedes acudir si no resolvemos tu solicitud: [PENDIENTE DE DEFINIR].",
+        ],
+      },
+      {
+        heading: "2. Qué datos recabamos hoy",
+        paragraphs: [
+          "Mientras estamos en acceso anticipado, el único dato que recabamos es el que dejas en el formulario de lista de espera:",
+        ],
+        list: [
+          "Nombre completo",
+          "Correo electrónico",
+          "Teléfono",
+          "Contraseña, que se guarda cifrada; nadie en PayMyLoan.ai puede leerla en texto plano",
+          "Si buscas dar un préstamo o recibir uno (solo define qué ves al entrar; no crea ninguna obligación)",
+          "Que aceptaste los términos de servicio y este aviso, con fecha y hora",
+          "Idioma en el que llenaste el formulario",
+        ],
+      },
+      {
+        heading: "3. Qué datos vamos a recabar cuando actives un préstamo",
+        paragraphs: [
+          "En cuanto dar de alta o aceptar un préstamo esté disponible, se sumarán los datos propios del servicing:",
+        ],
+        list: [
+          "Dirección, tipo y, si aplica, número de parcela de la propiedad en garantía",
+          "Monto, tasa, estructura y vencimiento del préstamo, y cada versión de esos términos que aceptaste",
+          "Historial de pagos: fecha, monto y cómo se aplicó a mora, interés y capital",
+          "El identificador de tu método de pago y sus últimos cuatro dígitos; el número de cuenta completo lo guarda Stripe, no nosotros",
+          "Los documentos del préstamo que aceptaste: pagaré, deed of trust y settlement statement",
+          "Fecha, hora e IP de cada aceptación de términos, cambio de cuenta bancaria y descarga de documento",
+        ],
+      },
+      {
+        heading: "4. Para qué usamos tus datos",
+        paragraphs: [],
+        list: [
+          "Avisarte cuando tu acceso a la plataforma esté listo",
+          "Crear tu cuenta y, más adelante, administrar el préstamo que diste o que estás pagando",
+          "Calcular el saldo, aplicar pagos y generar el calendario de pagos",
+          "Verificar tu identidad y activar la verificación en dos pasos, obligatoria para prestamistas",
+          "Detectar y avisar de cambios sospechosos, como un cambio de cuenta bancaria",
+          "Cumplir obligaciones legales y fiscales relacionadas con el servicing de préstamos",
+        ],
+        note: "No usamos tus datos para publicidad ni los vendemos a terceros.",
+      },
+      {
+        heading: "5. Con quién compartimos tus datos",
+        paragraphs: [],
+        list: [
+          "Con la otra parte del mismo préstamo, pero solo lo necesario para administrarlo: no ve tu contraseña ni el número completo de tu cuenta bancaria",
+          "Con Stripe, que procesa los pagos por ACH y guarda el método de pago; nosotros solo guardamos su identificador y los últimos cuatro dígitos",
+          "Con autoridades, si una ley o una orden judicial nos obliga",
+        ],
+        note: "No compartimos ni vendemos tus datos con fines de mercadotecnia.",
+      },
+      {
+        heading: "6. Cómo protegemos tus datos",
+        paragraphs: [],
+        list: [
+          "Verificación en dos pasos obligatoria para prestamistas, porque son quienes controlan a dónde va el dinero",
+          "Permisos por préstamo: cada consulta se filtra por tu participación en ese préstamo específico, no por un rol que abre todo",
+          "Nunca guardamos números de cuenta completos; eso vive en Stripe",
+          "Bitácora de los eventos que importan: cambios de términos, aceptaciones, aprobación de payoff, cambio de cuenta bancaria y descarga de documentos",
+          "Aviso a ambas partes ante cualquier cambio de cuenta bancaria, el vector de fraude más común en servicing",
+          "Documentos privados por préstamo, servidos con enlaces de vigencia corta, nunca con URL pública",
+        ],
+      },
+      {
+        heading: "7. Cuánto tiempo conservamos tus datos",
+        paragraphs: [
+          "Si estás en la lista de espera, conservamos tus datos hasta que abras una cuenta o hasta que nos pidas eliminarlos.",
+          "Si tienes un préstamo activo, conservamos los datos del préstamo mientras dure la relación y el tiempo adicional que exija la ley aplicable a documentos financieros. Plazo exacto: [PENDIENTE DE DEFINIR].",
+        ],
+      },
+      {
+        heading: "8. Tus derechos y cómo ejercerlos",
+        paragraphs: [
+          "Puedes pedirnos acceder a tus datos, corregirlos, cancelarlos u oponerte a un uso específico. También puedes retirar tu consentimiento en cualquier momento; para la lista de espera basta con que nos lo pidas. Retirar tu consentimiento no afecta el tratamiento que ya hicimos antes de la solicitud.",
+          "Canal para ejercer estos derechos: [PENDIENTE DE DEFINIR — hoy no existe todavía un correo de contacto para PayMyLoan.ai].",
+        ],
+      },
+      {
+        heading: "9. Cookies y almacenamiento local",
+        paragraphs: [
+          "El sitio no usa cookies de rastreo ni de publicidad. Guarda dos preferencias en el almacenamiento local de tu navegador —tema claro u oscuro e idioma— que nunca salen de tu dispositivo. Puedes borrarlas desde la configuración de tu navegador.",
+        ],
+      },
+      {
+        heading: "10. Menores de edad",
+        paragraphs: [
+          "PayMyLoan.ai no está dirigido a menores de edad y no recaba a sabiendas datos de menores de 18 años.",
+        ],
+      },
+      {
+        heading: "11. Cambios a este aviso",
+        paragraphs: [
+          "Si cambiamos este aviso de forma importante —por ejemplo, al activar el servicing completo del préstamo— lo publicaremos aquí con una nueva fecha de actualización antes de tratar los datos nuevos.",
+        ],
+      },
+      {
+        heading: "12. Contacto",
+        paragraphs: [
+          "Correo de contacto para privacidad: [PENDIENTE DE DEFINIR].",
+          "Mientras ese canal no exista, puedes usar el mismo correo con el que te registraste en la lista de espera; te responderemos desde ahí en cuanto esté disponible.",
+        ],
+      },
+    ],
   },
 };
 
@@ -441,10 +565,134 @@ const en: Copy = {
     entity: "A subsidiary of Dueño a Dueño LLC",
     links: [
       { href: "#", label: "Terms of service" },
-      { href: "#", label: "Privacy notice" },
+      { href: "/aviso-de-privacidad", label: "Privacy notice" },
     ],
-    linksNote: "[COPY PENDING]",
+    linksNote: "Terms of service: [COPY PENDING]",
     rights: "All rights reserved.",
+  },
+
+  privacy: {
+    eyebrow: "Legal",
+    title: "Privacy notice",
+    updated: "Last updated: August 28, 2026",
+    back: "Back to home",
+    intro: [
+      "This notice explains what personal data PayMyLoan.ai collects, what we use it for, who we share it with, and how you can exercise your rights over it.",
+      "PayMyLoan.ai is in early access: today we only collect the data from the wait-list sign-up form. Before we turn on full loan servicing, we will update this notice to cover loan data —collateral property, terms, payments and documents— that will be added at that point.",
+    ],
+    sections: [
+      {
+        heading: "1. Who is responsible for your data",
+        paragraphs: [
+          "PayMyLoan.ai is the brand under which Dueño a Dueño LLC operates this site and, later, the private loan servicing platform.",
+          "Address for the purposes of this notice: [TO BE DEFINED].",
+          "Applicable law and the authority you can turn to if we do not resolve your request: [TO BE DEFINED].",
+        ],
+      },
+      {
+        heading: "2. What data we collect today",
+        paragraphs: [
+          "While we are in early access, the only data we collect is what you leave on the wait-list sign-up form:",
+        ],
+        list: [
+          "Full name",
+          "Email address",
+          "Phone number",
+          "Password, stored encrypted; no one at PayMyLoan.ai can read it in plain text",
+          "Whether you are looking to lend or to borrow (this only sets what you see when you log in; it creates no obligation)",
+          "That you accepted the terms of service and this notice, with date and time",
+          "The language you used to fill out the form",
+        ],
+      },
+      {
+        heading: "3. What data we will collect once you open a loan",
+        paragraphs: [
+          "As soon as setting up or accepting a loan is available, servicing-specific data will be added:",
+        ],
+        list: [
+          "Address, type and, if applicable, parcel number of the collateral property",
+          "Amount, rate, structure and maturity of the loan, and every version of those terms you accepted",
+          "Payment history: date, amount, and how it was applied to late fees, interest and principal",
+          "Your payment method's identifier and its last four digits; the full account number is held by Stripe, not by us",
+          "The loan documents you accepted: promissory note, deed of trust and settlement statement",
+          "Date, time and IP address of every term acceptance, bank account change and document download",
+        ],
+      },
+      {
+        heading: "4. What we use your data for",
+        paragraphs: [],
+        list: [
+          "Letting you know when your access to the platform is ready",
+          "Creating your account and, later, administering the loan you gave or are paying",
+          "Computing the balance, applying payments and generating the payment schedule",
+          "Verifying your identity and enabling two-factor authentication, required for lenders",
+          "Detecting and flagging suspicious changes, such as a bank account change",
+          "Meeting legal and tax obligations related to loan servicing",
+        ],
+        note: "We do not use your data for advertising and we do not sell it to third parties.",
+      },
+      {
+        heading: "5. Who we share your data with",
+        paragraphs: [],
+        list: [
+          "The other party on the same loan, but only what is needed to administer it: they never see your password or your full bank account number",
+          "Stripe, which processes ACH payments and holds the payment method; we only store its identifier and the last four digits",
+          "Authorities, if required by law or a court order",
+        ],
+        note: "We do not share or sell your data for marketing purposes.",
+      },
+      {
+        heading: "6. How we protect your data",
+        paragraphs: [],
+        list: [
+          "Two-factor authentication required for lenders, since they control where the money goes",
+          "Permissions per loan: every query is filtered by your participation in that specific loan, never by a role that opens everything",
+          "We never store full account numbers; that lives with Stripe",
+          "An audit log of the events that matter: term changes, acceptances, payoff approvals, bank account changes and document downloads",
+          "Both parties are notified of any bank account change, the most common fraud vector in servicing",
+          "Documents are private per loan, served with short-lived links, never a public URL",
+        ],
+      },
+      {
+        heading: "7. How long we keep your data",
+        paragraphs: [
+          "If you are on the wait list, we keep your data until you open an account or until you ask us to delete it.",
+          "If you have an active loan, we keep the loan data for as long as the relationship lasts, plus any additional time required by law for financial records. Exact period: [TO BE DEFINED].",
+        ],
+      },
+      {
+        heading: "8. Your rights and how to exercise them",
+        paragraphs: [
+          "You can ask us to access your data, correct it, delete it, or object to a specific use. You can also withdraw your consent at any time; for the wait list, simply asking us is enough. Withdrawing consent does not affect processing we already carried out before the request.",
+          "Channel to exercise these rights: [TO BE DEFINED — there is no contact email for PayMyLoan.ai yet].",
+        ],
+      },
+      {
+        heading: "9. Cookies and local storage",
+        paragraphs: [
+          "The site does not use tracking or advertising cookies. It stores two preferences in your browser's local storage —light or dark theme and language— that never leave your device. You can clear them from your browser settings.",
+        ],
+      },
+      {
+        heading: "10. Minors",
+        paragraphs: [
+          "PayMyLoan.ai is not directed at minors and does not knowingly collect data from anyone under 18.",
+        ],
+      },
+      {
+        heading: "11. Changes to this notice",
+        paragraphs: [
+          "If we change this notice in a material way —for example, when we turn on full loan servicing— we will publish it here with a new update date before we process the new data.",
+        ],
+      },
+      {
+        heading: "12. Contact",
+        paragraphs: [
+          "Contact email for privacy: [TO BE DEFINED].",
+          "Until that channel exists, you can use the same email you signed up with on the wait list; we will reply from there as soon as it is available.",
+        ],
+      },
+    ],
   },
 };
 

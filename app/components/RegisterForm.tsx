@@ -324,7 +324,12 @@ export default function RegisterForm() {
             {f.termsLink}
           </a>{" "}
           {f.termsAnd}{" "}
-          <a href="#" className="text-accent underline underline-offset-2">
+          <a
+            href="/aviso-de-privacidad"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent underline underline-offset-2"
+          >
             {f.privacyLink}
           </a>
           .
