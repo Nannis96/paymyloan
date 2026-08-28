@@ -14,7 +14,6 @@ export type RegistroPayload = {
   nombre: string;
   correo: string;
   telefono: string;
-  password: string;
   aceptaTerminos: true;
   /** Idioma en el que se dio de alta: define en qué idioma se le escribe. */
   idioma: "es" | "en";
@@ -30,10 +29,7 @@ export async function registrarUsuario(
   if (!endpoint) {
     await new Promise((resolve) => setTimeout(resolve, 700));
     if (process.env.NODE_ENV !== "production") {
-      // La contraseña nunca se registra en consola, ni en desarrollo.
-      const { password: _omitida, ...seguro } = payload;
-      void _omitida;
-      console.info("[registro] sin endpoint configurado, payload:", seguro);
+      console.info("[registro] sin endpoint configurado, payload:", payload);
     }
     return { ok: true };
   }

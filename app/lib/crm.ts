@@ -14,8 +14,6 @@ export type CRMPayload = {
   nombre: string;
   correo: string;
   telefono: string;
-  password: string;
-  passwordConfirm: string;
   aceptaTerminos: true;
   idioma: "es" | "en";
 };
