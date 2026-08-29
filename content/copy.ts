@@ -33,7 +33,7 @@ const es = {
       { href: "#seguridad", label: "Seguridad" },
     ],
     login: "Iniciar sesión",
-    cta: "Crear cuenta",
+    cta: "Quiero acceso anticipado",
     themeToggle: "Cambiar tema",
     langToggle: "Cambiar idioma",
   },
@@ -57,16 +57,16 @@ const es = {
 
   form: {
     eyebrow: "Alta de usuario",
-    title: "Crear cuenta",
+    title: "Sé de los primeros en probarlo",
     subtitle:
-      "Con una sola cuenta administras los préstamos que diste y los que estás pagando.",
-    intentLabel: "¿Qué vas a hacer primero?",
+      "Déjanos tus datos para ser de los primeros en abrir tu cuenta. Te avisaremos en cuanto la plataforma esté lista para ti.",
+    intentLabel: "¿Para qué deseas una cuenta?",
     intents: [
-      { value: "lender", label: "Doy un préstamo", hint: "Prestamista" },
-      { value: "borrower", label: "Pago un préstamo", hint: "Prestatario" },
+      { value: "lender", label: "Daré un préstamo", hint: "Prestamista" },
+      { value: "borrower", label: "Quiero un préstamo", hint: "Prestatario" },
     ],
     intentNote:
-      "Puedes ser prestamista en un préstamo y prestatario en otro. Esto solo define qué ves al entrar; el rol real vive en cada préstamo, no en tu cuenta.",
+      "No te cobraremos nada ahora. Solo guardaremos tu lugar en la fila.",
     name: "Nombre completo",
     namePh: "Como aparece en el contrato",
     email: "Correo electrónico",
@@ -88,8 +88,8 @@ const es = {
     termsLink: "Términos de servicio",
     termsAnd: "y el",
     privacyLink: "Aviso de privacidad",
-    submit: "Crear cuenta",
-    submitting: "Creando cuenta…",
+    submit: "Quiero acceso anticipado",
+    submitting: "Registrando tu solicitud…",
     twofaNote:
       "Al terminar el registro te pediremos configurar la verificación en dos pasos. Para prestamistas es obligatoria.",
     inviteNote: "¿Te invitaron por correo?",
@@ -250,7 +250,7 @@ const en: Copy = {
       { href: "#seguridad", label: "Security" },
     ],
     login: "Log in",
-    cta: "Create account",
+    cta: "I want early access",
     themeToggle: "Switch theme",
     langToggle: "Switch language",
   },
@@ -274,16 +274,16 @@ const en: Copy = {
 
   form: {
     eyebrow: "Sign up",
-    title: "Create account",
+    title: "Be One of the First to Try It",
     subtitle:
-      "One account covers both the loans you gave and the ones you are paying.",
-    intentLabel: "What will you do first?",
+      "Leave us your information to be among the first to open your account. We’ll let you know as soon as the platform is ready for you.",
+    intentLabel: "What would you like an account for?",
     intents: [
-      { value: "lender", label: "I am lending", hint: "Lender" },
-      { value: "borrower", label: "I am paying a loan", hint: "Borrower" },
+      { value: "lender", label: "I will provide a loan", hint: "Lender" },
+      { value: "borrower", label: "I want a loan", hint: "Borrower" },
     ],
     intentNote:
-      "You can be the lender on one loan and the borrower on another. This only sets what you see first; the real role lives on each loan, not on your account.",
+      "You won’t be charged anything now. We’re simply saving your place in line.",
     name: "Full name",
     namePh: "As it appears on the contract",
     email: "Email address",
@@ -305,8 +305,8 @@ const en: Copy = {
     termsLink: "Terms of service",
     termsAnd: "and the",
     privacyLink: "Privacy notice",
-    submit: "Create account",
-    submitting: "Creating account…",
+    submit: "I want early access",
+    submitting: "Submitting your request…",
     twofaNote:
       "After sign-up we will ask you to set up two-factor authentication. For lenders it is required.",
     inviteNote: "Were you invited by email?",
@@ -433,7 +433,7 @@ const en: Copy = {
     eyebrow: "Get started",
     title: "Set up your first loan.",
     body: "Create the account, capture the terms and invite the other party. The schedule is generated once both accept.",
-    cta: "Create account",
+    cta: "I want early access",
   },
 
   footer: {
