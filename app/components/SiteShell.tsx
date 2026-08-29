@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useSyncExternalStore } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { copy, type Lang } from "@/content/copy";
 import {
   escribir,
@@ -45,7 +51,7 @@ const leerIdioma = () => leer(CLAVE_IDIOMA);
 const sinValor = () => null;
 const sinEsquemaOscuro = () => false;
 
-export default function SiteShell() {
+export default function SiteShell({ children }: { children?: ReactNode }) {
   const temaGuardado = useSyncExternalStore(suscribir, leerTema, sinValor);
   const idiomaGuardado = useSyncExternalStore(suscribir, leerIdioma, sinValor);
   const sistemaOscuro = useSyncExternalStore(
@@ -82,12 +88,16 @@ export default function SiteShell() {
     >
       <SiteHeader />
       <main id="contenido">
-        <Hero />
-        <Benefits />
-        <HowItWorks />
-        <CostTable />
-        <Security />
-        <FinalCta />
+        {children ?? (
+          <>
+            <Hero />
+            <Benefits />
+            <HowItWorks />
+            <CostTable />
+            <Security />
+            <FinalCta />
+          </>
+        )}
       </main>
       <SiteFooter />
     </SiteContext.Provider>
