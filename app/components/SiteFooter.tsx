@@ -35,7 +35,7 @@ export default function SiteFooter() {
                 {link.label}
               </a>
             ))}
-            <span className="text-ink-3">{t.footer.linksNote}</span>
+            {/* <span className="text-ink-3">{t.footer.linksNote}</span> */}
           </div>
         </div>
 
