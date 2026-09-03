@@ -1,28 +1,13 @@
 import type { Metadata } from "next";
-import { Spectral, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { copy } from "@/content/copy";
 
-/* La terna tipográfica es la del documento de alcance: Spectral para los
-   títulos, IBM Plex Sans para el cuerpo, IBM Plex Mono para los metadatos. */
-const spectral = Spectral({
-  variable: "--font-spectral",
+/* La nueva fuente base es Inter para todo el diseño de PML */
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
@@ -68,7 +53,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
       <body
-        className={`${spectral.variable} ${plexSans.variable} ${plexMono.variable} antialiased`}
+        className={`${inter.variable} antialiased`}
       >
         {children}
       </body>

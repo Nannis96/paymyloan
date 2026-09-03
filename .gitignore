@@ -4,3 +4,5 @@
 /certbot/www/
 
 .env
+node_modules
+.next/

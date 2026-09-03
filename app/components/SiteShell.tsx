@@ -16,13 +16,21 @@ import {
   suscribirEsquemaOscuro,
 } from "@/app/lib/preferencias";
 import SiteHeader from "./SiteHeader";
-import Hero from "./Hero";
-import Benefits from "./Benefits";
-import HowItWorks from "./HowItWorks";
-import CostTable from "./CostTable";
-import Security from "./Security";
-import FinalCta from "./FinalCta";
 import SiteFooter from "./SiteFooter";
+
+// Nuevos componentes de PML
+import PmlHeader from "./PmlHeader";
+import PmlHero from "./PmlHero";
+import WhoItHelps from "./WhoItHelps";
+import BeforeAfter from "./BeforeAfter";
+import FeaturesGrid from "./FeaturesGrid";
+import SoundFamiliar from "./SoundFamiliar";
+import DashboardSplit from "./DashboardSplit";
+import LiveActivity from "./LiveActivity";
+import ProfilesDirectory from "./ProfilesDirectory";
+import Marketplace from "./Marketplace";
+import PmlCta from "./PmlCta";
+import PmlFooter from "./PmlFooter";
 
 type Theme = "light" | "dark";
 
@@ -86,20 +94,26 @@ export default function SiteShell({ children }: { children?: ReactNode }) {
     <SiteContext.Provider
       value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme }}
     >
-      <SiteHeader />
+      {/* Usamos el nuevo header si estamos en la landing, si no, se usa el layout que pases por children */}
+      {children ? <SiteHeader /> : <PmlHeader />}
+      
       <main id="contenido">
         {children ?? (
           <>
-            <Hero />
-            <Benefits />
-            <HowItWorks />
-            <CostTable />
-            <Security />
-            <FinalCta />
+            <PmlHero />
+            <WhoItHelps />
+            <BeforeAfter />
+            <SoundFamiliar />
+            <FeaturesGrid />
+            <DashboardSplit />
+            <LiveActivity />
+            <ProfilesDirectory />
+            <Marketplace />
+            <PmlCta />
           </>
         )}
       </main>
-      <SiteFooter />
+      {children ? <SiteFooter /> : <PmlFooter />}
     </SiteContext.Provider>
   );
 }
