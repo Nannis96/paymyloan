@@ -1,7 +1,7 @@
 "use client";
 
 import { useSite } from "./SiteShell";
-import { Container } from "./ui";
+import { Container } from "../ui";
 
 export default function SiteFooter() {
   const { t } = useSite();

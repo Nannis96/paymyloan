@@ -1,6 +1,6 @@
 "use client";
 
-import { useSite } from "./SiteShell";
+import { useSite } from "../layout/SiteShell";
 
 export default function SoundFamiliar() {
   const { t } = useSite();

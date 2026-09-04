@@ -1,6 +1,6 @@
 "use client";
 
-import { useSite } from "./SiteShell";
+import { useSite } from "../layout/SiteShell";
 
 export default function PmlHero() {
   const { t, lang } = useSite();
@@ -15,7 +15,7 @@ export default function PmlHero() {
         {h.subtitle}
       </p>
       <h1 className="mb-6 max-w-[800px] text-[clamp(40px,6vw,68px)] font-black leading-none tracking-tight text-ink">
-        {h.title1}<br />{h.title2.replace("payoff.", "").replace("al pago final.", "")} <em className="not-italic text-accent">{lang === "es" ? "pago final." : "payoff."}</em><br />{h.title3}
+        {h.title1}<br />{h.title2.replace("to payoff.", "").replace("al pago final.", "")} <em className="not-italic text-accent">{lang === "es" ? "al pago final." : "to payoff."}</em><br />{h.title3}
       </h1>
       <p className="-mt-2 mb-10 text-[13px] font-medium text-ink-3">
         {h.by}

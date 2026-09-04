@@ -15,22 +15,22 @@ import {
   suscribir,
   suscribirEsquemaOscuro,
 } from "@/app/lib/preferencias";
-import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
-
-// Nuevos componentes de PML
+import DashboardHeader from "./DashboardHeader";
 import PmlHeader from "./PmlHeader";
-import PmlHero from "./PmlHero";
-import WhoItHelps from "./WhoItHelps";
-import BeforeAfter from "./BeforeAfter";
-import FeaturesGrid from "./FeaturesGrid";
-import SoundFamiliar from "./SoundFamiliar";
-import DashboardSplit from "./DashboardSplit";
-import LiveActivity from "./LiveActivity";
-import ProfilesDirectory from "./ProfilesDirectory";
-import Marketplace from "./Marketplace";
-import PmlCta from "./PmlCta";
 import PmlFooter from "./PmlFooter";
+
+// Componentes de landing
+import PmlHero from "../landing/PmlHero";
+import WhoItHelps from "../landing/WhoItHelps";
+import BeforeAfter from "../landing/BeforeAfter";
+import FeaturesGrid from "../landing/FeaturesGrid";
+import SoundFamiliar from "../landing/SoundFamiliar";
+import DashboardSplit from "../landing/DashboardSplit";
+import LiveActivity from "../landing/LiveActivity";
+import ProfilesDirectory from "../landing/ProfilesDirectory";
+import Marketplace from "../landing/Marketplace";
+import PmlCta from "../landing/PmlCta";
 
 type Theme = "light" | "dark";
 
@@ -59,7 +59,7 @@ const leerIdioma = () => leer(CLAVE_IDIOMA);
 const sinValor = () => null;
 const sinEsquemaOscuro = () => false;
 
-export default function SiteShell({ children }: { children?: ReactNode }) {
+export default function SiteShell({ children, isDashboard = false, isMinimal = false }: { children?: ReactNode; isDashboard?: boolean; isMinimal?: boolean }) {
   const temaGuardado = useSyncExternalStore(suscribir, leerTema, sinValor);
   const idiomaGuardado = useSyncExternalStore(suscribir, leerIdioma, sinValor);
   const sistemaOscuro = useSyncExternalStore(
@@ -94,8 +94,7 @@ export default function SiteShell({ children }: { children?: ReactNode }) {
     <SiteContext.Provider
       value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme }}
     >
-      {/* Usamos el nuevo header si estamos en la landing, si no, se usa el layout que pases por children */}
-      {children ? <SiteHeader /> : <PmlHeader />}
+      {!isMinimal && (isDashboard ? <DashboardHeader /> : <PmlHeader />)}
       
       <main id="contenido">
         {children ?? (
@@ -113,7 +112,7 @@ export default function SiteShell({ children }: { children?: ReactNode }) {
           </>
         )}
       </main>
-      {children ? <SiteFooter /> : <PmlFooter />}
+      {!isMinimal && (children ? <SiteFooter /> : <PmlFooter />)}
     </SiteContext.Provider>
   );
 }

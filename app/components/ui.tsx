@@ -64,3 +64,23 @@ export function SectionHeading({
     </div>
   );
 }
+export function MetricCard({
+  label,
+  value,
+  accent = false,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className={`rounded-xl border border-rule bg-surface p-6 shadow-sm ${accent ? 'border-t-[3px] border-t-accent' : ''}`}>
+      <div className={`mb-2 text-[11px] font-extrabold uppercase tracking-widest ${accent ? 'text-accent' : 'text-ink-3'}`}>
+        {label}
+      </div>
+      <div className="text-3xl font-black tracking-tight text-ink">
+        {value}
+      </div>
+    </div>
+  );
+}

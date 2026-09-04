@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SiteShell from "@/app/components/SiteShell";
+import SiteShell from "@/app/components/layout/SiteShell";
 import PrivacyNotice from "@/app/components/PrivacyNotice";
 import { copy } from "@/content/copy";
 

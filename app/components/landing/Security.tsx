@@ -8,8 +8,8 @@ import {
   ScrollText,
   UserLock,
 } from "lucide-react";
-import { useSite } from "./SiteShell";
-import { Container, SectionHeading } from "./ui";
+import { useSite } from "../layout/SiteShell";
+import { Container, SectionHeading } from "../ui";
 
 const ICONOS = [KeyRound, UserLock, Ban, ScrollText, BellRing, FileLock2];
 

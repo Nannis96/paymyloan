@@ -16,14 +16,14 @@ export default function PmlHeader() {
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          <a href="#features" className="text-sm font-medium text-ink-2 no-underline hover:text-ink">
+          <Link href="/#features" className="text-sm font-medium text-ink-2 no-underline hover:text-ink">
             Features
-          </a>
-          <a href="#how" className="text-sm font-medium text-ink-2 no-underline hover:text-ink">
+          </Link>
+          <Link href="/#how" className="text-sm font-medium text-ink-2 no-underline hover:text-ink">
             How it works
-          </a>
+          </Link>
           
-          {/* Botón de cambio de idioma restaurado */}
+          {/* Boton de cambio de idioma restaurado */}
           <button
             type="button"
             onClick={() => setLang(lang === "es" ? "en" : "es")}

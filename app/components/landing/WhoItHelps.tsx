@@ -1,6 +1,6 @@
 "use client";
 
-import { useSite } from "./SiteShell";
+import { useSite } from "../layout/SiteShell";
 
 // Definimos los colores estéticos de Tailwind para cada tarjeta en orden
 const CARD_COLORS = [

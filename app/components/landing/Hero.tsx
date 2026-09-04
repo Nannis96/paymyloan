@@ -1,9 +1,9 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { useSite } from "./SiteShell";
-import RegisterForm from "./RegisterForm";
-import { Container, Eyebrow } from "./ui";
+import { useSite } from "../layout/SiteShell";
+import RegisterForm from "../RegisterForm";
+import { Container, Eyebrow } from "../ui";
 
 export default function Hero() {
   const { t } = useSite();

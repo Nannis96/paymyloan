@@ -1,7 +1,7 @@
 "use client";
 
-import { useSite } from "./SiteShell";
-import RegisterForm from "./RegisterForm";
+import { useSite } from "../layout/SiteShell";
+import RegisterForm from "../RegisterForm";
 
 export default function PmlCta() {
   const { t } = useSite();

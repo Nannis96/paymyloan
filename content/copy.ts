@@ -33,6 +33,7 @@ const es = {
       { href: "#seguridad", label: "Seguridad" },
     ],
     login: "Iniciar sesión",
+    logout: "Cerrar sesión",
     cta: "Ingresar",
     themeToggle: "Cambiar tema",
     langToggle: "Cambiar idioma",
@@ -128,6 +129,8 @@ const es = {
     submit: "INGRESAR",
     forgot: "OLVIDÉ MI CONTRASEÑA",
     back: "VOLVER AL INICIO",
+    noAccount: "¿Aún no tienes cuenta?",
+    signup: "Regístrate aquí"
   },
 
   pmlHero: {
@@ -672,6 +675,81 @@ const es = {
       },
     ],
   },
+
+  dashboardAdmin: {
+    title: "Panel de Administración",
+    subtitle: "Métricas globales y salud de la plataforma.",
+    metrics: {
+      activeLoans: "Préstamos Activos",
+      totalVolume: "Volumen Procesado (ACH)",
+      platformRevenue: "Ingresos Totales (0.8%)",
+      pendingVerifications: "Verificaciones Pendientes"
+    },
+    recentActivity: "Actividad Reciente del Sistema",
+    addUserBtn: "Agregar Usuario"
+  },
+
+  adminAddUser: {
+    title: "Crear Usuario",
+    subtitle: "Da de alta manualmente a un administrador, prestamista o prestatario.",
+    roleLabel: "Rol en la plataforma",
+    roles: {
+      admin: "Administrador",
+      lender: "Prestamista",
+      borrower: "Prestatario"
+    },
+    nameLabel: "Nombre completo",
+    namePh: "Ej. Jane Doe",
+    emailLabel: "Correo electrónico",
+    emailPh: "correo@ejemplo.com",
+    phoneLabel: "Teléfono",
+    phonePh: "Ej. 555 123 4567",
+    submit: "Registrar cuenta",
+    back: "Volver al panel"
+  },
+dashboardLender: {
+  title: "Panel de Prestamista",
+  subtitle: "Control total sobre tu capital y rendimientos.",
+  metrics: {
+    capitalDeployed: "Capital Desplegado",
+    nextPayments: "Próximos Pagos (30 días)",
+    avgInterest: "Tasa Promedio",
+    activeBorrowers: "Prestatarios Activos"
+  },
+  recentPayments: "Últimos Pagos Recibidos",
+  actions: {
+    marketplace: "Explorar Mercado"
+  },
+  toggle: {
+    open: "Abierto a negocios",
+    closed: "No aceptando préstamos"
+  },
+  table: {
+    date: "Fecha",
+    borrower: "Prestatario",
+    property: "Propiedad",
+    total: "Pago Total",
+    principal: "Capital",
+    interest: "Interés"
+  }
+},
+dashboardBorrower: {
+  title: "Panel de Prestatario",
+  subtitle: "Tus préstamos, propiedades y saldos en un solo lugar.",
+  metrics: {
+    totalOwed: "Saldo Total Pendiente",
+    nextDue: "Próximo Vencimiento",
+    properties: "Propiedades en Garantía",
+    pmlRating: "Calificación PML"
+  },
+  activeLoans: "Mis Préstamos Activos",
+  documents: "Documentos y Cartas de Compromiso",
+  actions: {
+    pitchDeck: "Generar Pitch Deck",
+    payoff: "Solicitar Liquidación",
+    payments: "Gestionar Pagos"
+  }
+}
 };
 
 type Copy = typeof es;
@@ -693,6 +771,7 @@ const en: Copy = {
       { href: "#seguridad", label: "Security" },
     ],
     login: "Log in",
+    logout: "Log out",
     cta: "Log in",
     themeToggle: "Switch theme",
     langToggle: "Switch language",
@@ -789,6 +868,8 @@ const en: Copy = {
     submit: "SIGN IN",
     forgot: "I'VE FORGOTTEN MY PASSWORD",
     back: "BACK TO HOME",
+    noAccount: "Don't have an account yet?",
+    signup: "Sign up here"
   },
 
   pmlHero: {
@@ -1332,6 +1413,81 @@ const en: Copy = {
       },
     ],
   },
+
+  dashboardAdmin: {
+    title: "Admin Dashboard",
+    subtitle: "Global metrics and platform health.",
+    metrics: {
+      activeLoans: "Active Loans",
+      totalVolume: "Processed Volume (ACH)",
+      platformRevenue: "Total Revenue (0.8%)",
+      pendingVerifications: "Pending Verifications"
+    },
+    recentActivity: "Recent System Activity",
+    addUserBtn: "Add User"
+  },
+
+  adminAddUser: {
+    title: "Create User",
+    subtitle: "Manually register an admin, lender, or borrower.",
+    roleLabel: "Platform Role",
+    roles: {
+      admin: "Administrator",
+      lender: "Lender",
+      borrower: "Borrower"
+    },
+    nameLabel: "Full Name",
+    namePh: "E.g. Jane Doe",
+    emailLabel: "Email Address",
+    emailPh: "email@example.com",
+    phoneLabel: "Phone Number",
+    phonePh: "E.g. 555 123 4567",
+    submit: "Register account",
+    back: "Back to dashboard"
+  },
+dashboardLender: {
+  title: "Lender Dashboard",
+  subtitle: "Total control over your capital and yields.",
+  metrics: {
+    capitalDeployed: "Capital Deployed",
+    nextPayments: "Next Payments (30 days)",
+    avgInterest: "Avg. Interest Rate",
+    activeBorrowers: "Active Borrowers"
+  },
+  recentPayments: "Latest Received Payments",
+  actions: {
+    marketplace: "Browse Marketplace"
+  },
+  toggle: {
+    open: "Open to deals",
+    closed: "Not taking loans"
+  },
+  table: {
+    date: "Date",
+    borrower: "Borrower",
+    property: "Property",
+    total: "Total Payment",
+    principal: "Principal",
+    interest: "Interest"
+  }
+},
+dashboardBorrower: {
+  title: "Borrower Dashboard",
+  subtitle: "Your loans, properties, and balances in one place.",
+  metrics: {
+    totalOwed: "Total Outstanding Balance",
+    nextDue: "Next Payment Due",
+    properties: "Collateral Properties",
+    pmlRating: "PML Rating"
+  },
+  activeLoans: "My Active Loans",
+  documents: "Documents & Commitment Letters",
+  actions: {
+    pitchDeck: "Generate Pitch Deck",
+    payoff: "Request Payoff",
+    payments: "Manage Payments"
+  }
+}
 };
 
 export const copy: Record<Lang, Copy> = { es, en };
