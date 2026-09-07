@@ -15,18 +15,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://paymyloan.ai";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: copy.es.meta.title,
-  description: copy.es.meta.description,
+  title: copy.en.meta.title,
+  description: copy.en.meta.description,
   alternates: {
     canonical: "/",
-    languages: { es: "/", en: "/?lang=en" },
+    languages: { en: "/", es: "/?lang=es" },
   },
   openGraph: {
     type: "website",
     url: "/",
     siteName: "PayMyLoan.ai",
-    title: copy.es.meta.title,
-    description: copy.es.meta.description,
+    title: copy.en.meta.title,
+    description: copy.en.meta.description,
   },
   robots: { index: true, follow: true },
 };
@@ -48,7 +48,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>

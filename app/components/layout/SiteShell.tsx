@@ -68,7 +68,8 @@ export default function SiteShell({ children, isDashboard = false, isMinimal = f
     sinEsquemaOscuro,
   );
 
-  const lang: Lang = idiomaGuardado === "en" ? "en" : "es";
+  const lang: Lang = idiomaGuardado === "es" ? "es" : "en";
+
   const temaElegido: Theme | null =
     temaGuardado === "dark" || temaGuardado === "light" ? temaGuardado : null;
   const resolvedTheme: Theme = temaElegido ?? (sistemaOscuro ? "dark" : "light");

@@ -676,7 +676,7 @@ const es = {
     ],
   },
 
-  dashboardAdmin: {
+ dashboardAdmin: {
     title: "Panel de Administración",
     subtitle: "Métricas globales y salud de la plataforma.",
     metrics: {
@@ -686,6 +686,22 @@ const es = {
       pendingVerifications: "Verificaciones Pendientes"
     },
     recentActivity: "Actividad Reciente del Sistema",
+    addUserBtn: "Agregar Usuario",
+    viewUsersBtn: "Ver Usuarios",
+    viewContractsBtn: "Ver Contratos"
+  },
+
+  adminUsersList: {
+    title: "Usuarios del sistema",
+    subtitle: "Directorio de administradores, prestamistas y prestatarios.",
+    table: {
+      name: "Nombre",
+      type: "Tipo",
+      email: "Correo electrónico",
+      phone: "Teléfono",
+      role: "Rol"
+    },
+    back: "Volver al panel",
     addUserBtn: "Agregar Usuario"
   },
 
@@ -718,7 +734,8 @@ dashboardLender: {
   },
   recentPayments: "Últimos Pagos Recibidos",
   actions: {
-    marketplace: "Explorar Mercado"
+    marketplace: "Explorar Mercado",
+    viewContracts: "Ver mis contratos"
   },
   toggle: {
     open: "Abierto a negocios",
@@ -734,22 +751,77 @@ dashboardLender: {
   }
 },
 dashboardBorrower: {
-  title: "Panel de Prestatario",
-  subtitle: "Tus préstamos, propiedades y saldos en un solo lugar.",
-  metrics: {
-    totalOwed: "Saldo Total Pendiente",
-    nextDue: "Próximo Vencimiento",
-    properties: "Propiedades en Garantía",
-    pmlRating: "Calificación PML"
+    title: "Panel de Prestatario",
+    subtitle: "Tus préstamos, propiedades y saldos en un solo lugar.",
+    metrics: {
+      totalOwed: "Saldo Total Pendiente",
+      nextDue: "Próximo Vencimiento",
+      properties: "Propiedades en Garantía",
+      pmlRating: "Calificación PML"
+    },
+    activeLoans: "Mis Préstamos Activos",
+    documents: "Documentos y Cartas de Compromiso",
+    actions: {
+      pitchDeck: "Generar Pitch Deck",
+      payoff: "Solicitar Liquidación",
+      payments: "Gestionar Pagos",
+      viewContracts: "Contratos"
+    }
   },
-  activeLoans: "Mis Préstamos Activos",
-  documents: "Documentos y Cartas de Compromiso",
-  actions: {
-    pitchDeck: "Generar Pitch Deck",
-    payoff: "Solicitar Liquidación",
-    payments: "Gestionar Pagos"
+  contractsList: {
+    title: "Contratos y Préstamos",
+    subtitle: "Listado de acuerdos. Lo que ves aquí depende de tu rol en la plataforma.",
+    table: {
+      id: "ID",
+      concept: "Concepto",
+      property: "Propiedad",
+      client: "Cliente",
+      financials: "Términos Financieros",
+      status: "Estado",
+      actions: "Acciones"
+    },
+    status: { active: "Activo", inactive: "Inactivo" },
+    viewDetails: "Detalles",
+    back: "Volver al panel"
+  },
+  contractDetail: {
+    title: "Detalle del Contrato",
+    subtitle: "Información completa, partes involucradas y tabla de amortización.",
+    parties: "Partes Involucradas",
+    financials: "Términos Financieros",
+    breakdownTitle: "Historial de Pagos",
+    labels: {
+      lender: "Prestamista",
+      borrower: "Prestatario",
+      amount: "Monto Total",
+      term: "Plazo",
+      interest: "Interés",
+      downPayment: "Enganche / Depósito",
+      rent: "Pago Mensual"
+    },
+    table: {
+      date: "Fecha",
+      status: "Estado",
+      totalOwed: "Total",
+      principal: "Capital",
+      interest: "Interés",
+      escrow: "Escrow",
+      balance: "Saldo Restante"
+    },
+    paymentStatus: {
+      paid: "Pagado",
+      pending: "Pendiente",
+      late: "Atrasado",
+      partial: "Parcial"
+    },
+    pagination: {
+      prev: "Anterior",
+      next: "Siguiente",
+      page: "Página",
+      of: "de"
+    },
+    back: "Volver a contratos"
   }
-}
 };
 
 type Copy = typeof es;
@@ -1424,6 +1496,22 @@ const en: Copy = {
       pendingVerifications: "Pending Verifications"
     },
     recentActivity: "Recent System Activity",
+    addUserBtn: "Add User",
+    viewUsersBtn: "View Users",
+    viewContractsBtn: "View Contracts"
+  },
+
+  adminUsersList: {
+    title: "System Users",
+    subtitle: "Directory of administrators, lenders, and borrowers.",
+    table: {
+      name: "Name",
+      type: "Type",
+      email: "Email",
+      phone: "Phone",
+      role: "Role"
+    },
+    back: "Back to dashboard",
     addUserBtn: "Add User"
   },
 
@@ -1456,7 +1544,8 @@ dashboardLender: {
   },
   recentPayments: "Latest Received Payments",
   actions: {
-    marketplace: "Browse Marketplace"
+    marketplace: "Browse Marketplace",
+    viewContracts: "View my contracts"
   },
   toggle: {
     open: "Open to deals",
@@ -1472,22 +1561,77 @@ dashboardLender: {
   }
 },
 dashboardBorrower: {
-  title: "Borrower Dashboard",
-  subtitle: "Your loans, properties, and balances in one place.",
-  metrics: {
-    totalOwed: "Total Outstanding Balance",
-    nextDue: "Next Payment Due",
-    properties: "Collateral Properties",
-    pmlRating: "PML Rating"
+    title: "Borrower Dashboard",
+    subtitle: "Your loans, properties, and balances in one place.",
+    metrics: {
+      totalOwed: "Total Outstanding Balance",
+      nextDue: "Next Payment Due",
+      properties: "Collateral Properties",
+      pmlRating: "PML Rating"
+    },
+    activeLoans: "My Active Loans",
+    documents: "Documents & Commitment Letters",
+    actions: {
+      pitchDeck: "Generate Pitch Deck",
+      payoff: "Request Payoff",
+      payments: "Manage Payments",
+      viewContracts: "Contracts"
+    }
   },
-  activeLoans: "My Active Loans",
-  documents: "Documents & Commitment Letters",
-  actions: {
-    pitchDeck: "Generate Pitch Deck",
-    payoff: "Request Payoff",
-    payments: "Manage Payments"
+  contractsList: {
+    title: "Contracts & Loans",
+    subtitle: "List of agreements. What you see depends on your role.",
+    table: {
+      id: "ID",
+      concept: "Concept",
+      property: "Property",
+      client: "Client",
+      financials: "Financial Terms",
+      status: "Status",
+      actions: "Actions"
+    },
+    status: { active: "Active", inactive: "Inactive" },
+    viewDetails: "Details",
+    back: "Back to dashboard"
+  },
+  contractDetail: {
+    title: "Contract Detail",
+    subtitle: "Full info, parties involved, and payment breakdown.",
+    parties: "Parties Involved",
+    financials: "Financial Terms",
+    breakdownTitle: "Payment History",
+    labels: {
+      lender: "Lender",
+      borrower: "Borrower",
+      amount: "Total Amount",
+      term: "Term",
+      interest: "Interest",
+      downPayment: "Down Payment / Deposit",
+      rent: "Monthly Payment"
+    },
+    table: {
+      date: "Date",
+      status: "Status",
+      totalOwed: "Total",
+      principal: "Principal",
+      interest: "Interest",
+      escrow: "Escrow",
+      balance: "Remaining Balance"
+    },
+    paymentStatus: {
+      paid: "Paid",
+      pending: "Pending",
+      late: "Late",
+      partial: "Partial"
+    },
+    pagination: {
+      prev: "Previous",
+      next: "Next",
+      page: "Page",
+      of: "of"
+    },
+    back: "Back to contracts"
   }
-}
 };
 
 export const copy: Record<Lang, Copy> = { es, en };

@@ -2,7 +2,7 @@
 
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { MetricCard } from "@/app/components/ui";
-
+import Link from "next/link";
 function LenderDashboardContent() {
   const { t } = useSite();
   const d = t.dashboardLender;
@@ -44,6 +44,12 @@ function LenderDashboardContent() {
           </div>
           
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Link
+               href="/contracts"
+               className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-5 py-3 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent"
+            >
+              {d.actions.viewContracts}
+            </Link>
             {/* Toggle de visibilidad */}
             <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-rule bg-surface px-4 py-2 hover:border-accent transition-colors">
               <div className="relative">

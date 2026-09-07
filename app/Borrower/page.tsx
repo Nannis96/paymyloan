@@ -2,7 +2,7 @@
 
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { MetricCard } from "@/app/components/ui";
-
+import Link from "next/link";
 function BorrowerDashboardContent() {
   const { t } = useSite();
   const d = t.dashboardBorrower;
@@ -41,6 +41,9 @@ function BorrowerDashboardContent() {
           <button className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
             + {d.actions.pitchDeck}
           </button>
+          <Link href="/contracts" className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-5 py-3 text-sm font-bold text-accent transition-colors hover:opacity-80">
+            {d.actions.viewContracts}
+          </Link>
           <button className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-5 py-3 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent">
             {d.actions.payoff}
           </button>

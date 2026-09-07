@@ -27,12 +27,20 @@ function AdminDashboardContent() {
             <h1 className="text-[32px] font-black tracking-tight text-ink">{d.title}</h1>
             <p className="text-ink-2">{d.subtitle}</p>
           </div>
-          <Link
-             href="/Admin/add-user"
-             className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
-          >
-            + {d.addUserBtn}
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Link
+               href="/contracts"
+               className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-5 py-3 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent"
+            >
+              {d.viewContractsBtn}
+            </Link>
+            <Link
+               href="/Admin/users"
+               className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
+            >
+              {d.viewUsersBtn} &rarr;
+            </Link>
+          </div>
         </header>
         
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-12">
