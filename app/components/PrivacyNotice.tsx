@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSite } from "./SiteShell";
+import { useSite } from "./layout/SiteShell";
 import { Container, Eyebrow } from "./ui";
 
 export default function PrivacyNotice() {

@@ -9,62 +9,62 @@
    ========================================================================= */
 
 :root {
-  --bg: #F1F3EE;
-  --surface: #FBFBF8;
-  --surface-2: #E9ECE5;
-  --ink: #17201B;
-  --ink-2: #4C574F;
-  --ink-3: #7A847C;
-  --rule: #D6DAD1;
-  --rule-strong: #B6BCB2;
-  --accent: #1D6B45;
-  --accent-soft: #E0EDE5;
-  --amber: #7E5306;
-  --amber-soft: #F2E9D5;
-  --crit: #93302A;
-  --crit-soft: #F3E1DE;
-  --accent-ink: #FBFBF8;
-  --shadow: 0 1px 2px rgba(23, 32, 27, 0.06);
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --surface-2: #f5f5f5;
+  --ink: #0a0a0a;
+  --ink-2: #555555;
+  --ink-3: #888888;
+  --rule: #eeeeee;
+  --rule-strong: #e5e5e5;
+  --accent: #2563eb;
+  --accent-soft: #eff6ff;
+  --amber: #F0C000;
+  --amber-soft: #fef9c3;
+  --crit: #ef4444;
+  --crit-soft: #fee2e2;
+  --accent-ink: #ffffff;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0F1512;
-    --surface: #161D19;
-    --surface-2: #1D2621;
-    --ink: #E7EBE6;
-    --ink-2: #A4AFA7;
-    --ink-3: #7C867F;
-    --rule: #2A322C;
-    --rule-strong: #3B453E;
-    --accent: #72C79A;
-    --accent-soft: #1A2A22;
-    --amber: #D9A954;
-    --amber-soft: #2A2317;
-    --crit: #E28A82;
-    --crit-soft: #2E1D1B;
-    --accent-ink: #0F1512;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-2: #1a1a1a;
+    --ink: #ffffff;
+    --ink-2: #aaaaaa;
+    --ink-3: #666666;
+    --rule: #2a2a2a;
+    --rule-strong: #333333;
+    --accent: #2563eb;
+    --accent-soft: #1e3a8a;
+    --amber: #F0C000;
+    --amber-soft: #713f12;
+    --crit: #ef4444;
+    --crit-soft: #7f1d1d;
+    --accent-ink: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #0F1512;
-  --surface: #161D19;
-  --surface-2: #1D2621;
-  --ink: #E7EBE6;
-  --ink-2: #A4AFA7;
-  --ink-3: #7C867F;
-  --rule: #2A322C;
-  --rule-strong: #3B453E;
-  --accent: #72C79A;
-  --accent-soft: #1A2A22;
-  --amber: #D9A954;
-  --amber-soft: #2A2317;
-  --crit: #E28A82;
-  --crit-soft: #2E1D1B;
-  --accent-ink: #0F1512;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface-2: #1a1a1a;
+  --ink: #ffffff;
+  --ink-2: #aaaaaa;
+  --ink-3: #666666;
+  --rule: #2a2a2a;
+  --rule-strong: #333333;
+  --accent: #2563eb;
+  --accent-soft: #1e3a8a;
+  --amber: #F0C000;
+  --amber-soft: #713f12;
+  --crit: #ef4444;
+  --crit-soft: #7f1d1d;
+  --accent-ink: #ffffff;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
 }
 
 /* Los tokens semanticos se exponen como utilidades de Tailwind
@@ -87,10 +87,10 @@
   --color-crit: var(--crit);
   --color-crit-soft: var(--crit-soft);
 
-  --font-serif: var(--font-spectral), Georgia, serif;
-  --font-sans: var(--font-plex-sans), -apple-system, BlinkMacSystemFont,
+  --font-serif: var(--font-inter), sans-serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-mono: var(--font-inter), ui-monospace, monospace;
 
   --radius-card: 2px;
   --shadow-card: var(--shadow);

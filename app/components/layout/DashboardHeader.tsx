@@ -1,22 +1,14 @@
 "use client";
-
 import Link from "next/link";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, LogOut } from "lucide-react";
 import { useSite } from "./SiteShell";
-import { CONTAINER } from "./ui";
+import { CONTAINER } from "../ui";
 
-export default function SiteHeader() {
+export default function DashboardHeader() {
   const { t, lang, setLang, resolvedTheme, toggleTheme } = useSite();
 
   return (
     <header className="sticky top-0 z-50 border-b border-rule bg-bg/92 backdrop-blur-[6px]">
-      <Link
-        href="/#registro"
-        className="sr-only rounded-[2px] bg-accent px-4 py-2 text-accent-ink focus:not-sr-only focus:absolute focus:top-3 focus:left-6 focus:z-10"
-      >
-        {t.nav.skip}
-      </Link>
-
       <div className={`${CONTAINER} flex h-16 items-center justify-between gap-4`}>
         <Link
           href="/"
@@ -25,21 +17,6 @@ export default function SiteHeader() {
           {t.nav.brand}
           <span className="text-accent">{t.nav.brandSuffix}</span>
         </Link>
-
-        <nav
-          aria-label={t.nav.brand}
-          className="hidden items-center gap-8 lg:flex"
-        >
-          {t.nav.links.map((link) => (
-            <Link
-              key={link.href}
-              href={`/${link.href}`}
-              className="text-sm text-ink-2 no-underline transition-colors hover:text-accent"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
 
         <div className="flex items-center gap-2">
           <button
@@ -50,7 +27,6 @@ export default function SiteHeader() {
           >
             {lang === "es" ? "EN" : "ES"}
           </button>
-
           <button
             type="button"
             onClick={toggleTheme}
@@ -63,12 +39,12 @@ export default function SiteHeader() {
               <Moon aria-hidden className="h-[18px] w-[18px]" />
             )}
           </button>
-
           <Link
-            href="/#registro"
-            className="ml-1 hidden min-h-11 items-center rounded-[2px] bg-accent px-4 text-sm font-medium text-accent-ink no-underline transition-opacity hover:opacity-90 sm:inline-flex"
+            href="/"
+            className="ml-4 flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-crit"
           >
-            {t.nav.cta}
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">{t.nav.logout}</span>
           </Link>
         </div>
       </div>
