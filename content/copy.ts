@@ -821,7 +821,19 @@ dashboardBorrower: {
       of: "de"
     },
     back: "Volver a contratos"
-  }
+  },
+  errors: {
+      code500: "Error Interno",
+      title500: "¡Ups! Algo salió mal",
+      message500: "Parece que algo salió mal de nuestro lado. Estamos trabajando en mejorar la experiencia de nuestros usuarios. Por favor, intenta de nuevo.",
+      tryAgain: "Intentar de nuevo",
+      
+      code404: "Error 404",
+      title404: "Página no encontrada",
+      message404: "No pudimos encontrar la página que buscas. Es posible que el enlace sea incorrecto o la página ya no exista.",
+      goHome: "Volver al inicio",
+    },
+  
 };
 
 type Copy = typeof es;
@@ -1631,7 +1643,18 @@ dashboardBorrower: {
       of: "of"
     },
     back: "Back to contracts"
-  }
+  },
+  errors: {
+      code500: "Internal Error",
+      title500: "Oops! Something went wrong",
+      message500: "It looks like something went wrong on our end. We are working on improving our users' experience. Please try again.",
+      tryAgain: "Try again",
+      
+      code404: "Error 404",
+      title404: "Page not found",
+      message404: "We couldn't find the page you are looking for. The link might be incorrect, or the page may no longer exist.",
+      goHome: "Go to homepage",
+    }
 };
 
 export const copy: Record<Lang, Copy> = { es, en };

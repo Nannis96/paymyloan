@@ -49,17 +49,12 @@ function AdminDashboardContent() {
           <MetricCard label={d.metrics.platformRevenue} value={mockData.metrics.platformRevenue} accent />
           <MetricCard label={d.metrics.pendingVerifications} value={mockData.metrics.pendingVerifications} />
         </div>
-
-        <section>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">{d.recentActivity}</h2>
-          <div className="rounded-xl border border-rule bg-surface p-8 text-center text-ink-2">
-            <p>Logs del sistema y nuevas cuentas creadas.</p>
-          </div>
-        </section>
+        
       </div>
     </div>
   );
 }
+
 
 export default function AdminDashboard() {
   return (

@@ -1,11 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { MetricCard } from "@/app/components/ui";
 import Link from "next/link";
+import PitchDeckModal from "@/app/components/PitchDeckModal";
+
 function BorrowerDashboardContent() {
   const { t } = useSite();
   const d = t.dashboardBorrower;
+  
+  // Estado para controlar la visibilidad del modal
+  const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
 
   // NOTA: Estos datos están hardcodeados para el cascarón visual.
   // Posteriormente deberán ser extraídos de la base de datos / backend.
@@ -38,7 +44,10 @@ function BorrowerDashboardContent() {
 
         {/* Acciones Rápidas */}
         <div className="mb-10 flex flex-wrap items-center gap-3">
-          <button className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
+          <button 
+            onClick={() => setIsPitchModalOpen(true)}
+            className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
+          >
             + {d.actions.pitchDeck}
           </button>
           <Link href="/contracts" className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-5 py-3 text-sm font-bold text-accent transition-colors hover:opacity-80">
@@ -73,6 +82,11 @@ function BorrowerDashboardContent() {
         </section>
 
       </div>
+
+      {/* Modal renderizado condicionalmente */}
+      {isPitchModalOpen && (
+        <PitchDeckModal onClose={() => setIsPitchModalOpen(false)} />
+      )}
     </div>
   );
 }
