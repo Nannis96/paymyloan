@@ -1,37 +1,29 @@
 "use client";
 
 import { useId, useRef, useState, type FormEvent } from "react";
-import { Check, Eye, EyeOff, ShieldCheck } from "lucide-react";
-import { useSite } from "./SiteShell";
-import { BTN_PRIMARY } from "./ui";
+import { Check, ShieldCheck } from "lucide-react";
+import { useSite } from "./layout/SiteShell";
 import {
   registrarUsuario,
-  REGISTRO_SIMULADO,
   type Intent,
 } from "@/app/lib/registro";
 import { enviarCRM } from "@/app/lib/crm";
 
-type Campo =
-  | "intent"
-  | "nombre"
-  | "correo"
-  | "telefono"
-  | "terminos";
-
+type Campo = "intent" | "nombre" | "correo" | "telefono" | "terminos";
 type Errores = Partial<Record<Campo, string>>;
 
 const INPUT =
-  "block h-11 w-full rounded-[2px] border border-rule bg-bg px-3 text-[0.95rem] " +
-  "text-ink placeholder:text-ink-3 outline-none transition-colors " +
+  "block h-[46px] w-full rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] px-4 text-[15px] " +
+  "text-white placeholder:text-gray-500 outline-none transition-colors " +
   "focus:border-accent";
 
-const INPUT_ERROR = "border-crit";
-
-const LABEL = "eyebrow mb-2 block text-ink-3";
+const INPUT_ERROR = "border-red-500 focus:border-red-500";
+const LABEL = "mb-2 block text-[11px] font-bold uppercase tracking-widest text-gray-400";
 
 export default function RegisterForm() {
   const { t, lang } = useSite();
   const f = t.form;
+
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -46,8 +38,6 @@ export default function RegisterForm() {
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
   const [correoEnviado, setCorreoEnviado] = useState("");
 
-  // El error de un campo desaparece en cuanto el visitante lo toca, en vez de
-  // quedarse en rojo hasta el siguiente envio.
   const limpiar = (campo: Campo) =>
     setErrores((prev) => (prev[campo] ? { ...prev, [campo]: undefined } : prev));
 
@@ -68,8 +58,8 @@ export default function RegisterForm() {
 
     const e = validar();
     setErrores(e);
+
     if (Object.keys(e).length > 0) {
-      // Se lleva el foco al primer campo con problema, no solo el color.
       const primero = e.intent
         ? formRef.current?.querySelector<HTMLElement>('input[name="intent"]')
         : formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
@@ -78,6 +68,7 @@ export default function RegisterForm() {
     }
 
     setEstado("enviando");
+
     void enviarCRM({
       intent: intent as Intent,
       nombre: nombre.trim(),
@@ -86,6 +77,7 @@ export default function RegisterForm() {
       aceptaTerminos: true,
       idioma: lang,
     });
+
     const resultado = await registrarUsuario({
       intent: intent as Intent,
       nombre: nombre.trim(),
@@ -114,30 +106,30 @@ export default function RegisterForm() {
     return (
       <div
         id="registro"
-        className="scroll-mt-24 rounded-[2px] border border-rule bg-surface p-7 shadow-card"
+        className="scroll-mt-24 w-full rounded-2xl border border-[#2a2a2a] bg-[#141414] p-8 shadow-2xl"
       >
         <div
-          className="flex h-11 w-11 items-center justify-center rounded-[2px] bg-accent-soft text-accent"
+          className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#1e3a8a]/30 text-accent"
           aria-hidden
         >
-          <Check className="h-5 w-5" />
+          <Check className="h-6 w-6" />
         </div>
-        <h2 className="mt-5 mb-2 font-serif text-[1.5rem] leading-tight font-semibold text-ink">
+        <h2 className="mb-2 text-2xl font-black tracking-tight text-white">
           {f.success.title}
         </h2>
-        <p className="m-0 text-ink-2">
+        <p className="m-0 text-[15px] leading-relaxed text-gray-400">
           {f.success.body}{" "}
-          <strong className="font-medium break-all text-ink">
+          <strong className="break-all font-bold text-white">
             {correoEnviado}
           </strong>
         </p>
-        <p className="mt-4 mb-0 text-sm text-ink-3">{f.success.note}</p>
+        <p className="mt-4 mb-0 text-[13px] text-gray-500">{f.success.note}</p>
         <button
           type="button"
           onClick={reiniciar}
-          className="eyebrow mt-6 text-accent underline underline-offset-4"
+          className="mt-8 text-[11px] font-bold uppercase tracking-widest text-accent transition-colors hover:text-white"
         >
-          {f.success.again}
+          {f.success.again} &rarr;
         </button>
       </div>
     );
@@ -151,25 +143,26 @@ export default function RegisterForm() {
       id="registro"
       onSubmit={onSubmit}
       noValidate
-      className="scroll-mt-24 rounded-[2px] border border-rule bg-surface p-6 shadow-card sm:p-7"
+      className="scroll-mt-24 w-full rounded-2xl border border-[#2a2a2a] bg-[#141414] p-6 shadow-2xl sm:p-8"
     >
-      <p className="eyebrow m-0 text-accent">{f.eyebrow}</p>
-      <h2 className="mt-3 mb-1 font-serif text-[1.6rem] leading-tight font-semibold tracking-[-0.01em] text-ink">
+      <p className="mb-2 text-[11px] font-extrabold uppercase tracking-widest text-accent">
+        {f.eyebrow}
+      </p>
+      <h2 className="mb-2 text-2xl font-black tracking-tight text-white">
         {f.title}
       </h2>
-      <p className="mt-0 mb-6 text-sm text-ink-2">{f.subtitle}</p>
+      <p className="mb-6 text-sm leading-relaxed text-gray-400">
+        {f.subtitle}
+      </p>
 
       <div aria-live="polite">
         {listaErrores.length > 0 || errorEnvio ? (
-          <p className="mb-5 rounded-[2px] border border-crit bg-crit-soft px-3 py-2 text-sm text-crit">
+          <p className="mb-5 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm font-medium text-red-400">
             {errorEnvio ?? f.errors.summary}
           </p>
         ) : null}
       </div>
 
-      {/* Intención de uso. No es un rol: el rol vive en cada préstamo
-          (LoanParty, Sección 7 del alcance). Solo decide qué se muestra
-          al entrar. */}
       <fieldset
         className="m-0 mb-5 border-0 p-0"
         aria-describedby={errores.intent ? `${uid}-intent-err` : undefined}
@@ -181,10 +174,10 @@ export default function RegisterForm() {
             return (
               <label
                 key={opcion.value}
-                className={`flex min-h-11 cursor-pointer flex-col justify-center rounded-[2px] border px-3 py-2 transition-colors ${
+                className={`flex min-h-[52px] cursor-pointer flex-col justify-center rounded-lg border px-4 py-2 transition-colors ${
                   activo
-                    ? "border-accent bg-accent-soft"
-                    : "border-rule bg-bg hover:border-rule-strong"
+                    ? "border-accent bg-[#1e3a8a]/30"
+                    : "border-[#2a2a2a] bg-[#1a1a1a] hover:border-gray-600"
                 } ${errores.intent ? INPUT_ERROR : ""}`}
               >
                 <input
@@ -199,21 +192,25 @@ export default function RegisterForm() {
                   className="sr-only"
                 />
                 <span
-                  className={`text-sm font-medium ${activo ? "text-accent" : "text-ink"}`}
+                  className={`text-sm font-bold ${
+                    activo ? "text-accent" : "text-white"
+                  }`}
                 >
                   {opcion.label}
                 </span>
-                <span className="eyebrow text-ink-3">{opcion.hint}</span>
+                <span className="text-[11px] font-medium text-gray-500">
+                  {opcion.hint}
+                </span>
               </label>
             );
           })}
         </div>
         {errores.intent ? (
-          <p id={`${uid}-intent-err`} className="mt-2 mb-0 text-xs text-crit">
+          <p id={`${uid}-intent-err`} className="mt-2 mb-0 text-xs text-red-400">
             {errores.intent}
           </p>
         ) : null}
-        <p className="mt-2 mb-0 text-xs leading-relaxed text-ink-3">
+        <p className="mt-2 mb-0 text-xs leading-relaxed text-gray-500">
           {f.intentNote}
         </p>
       </fieldset>
@@ -238,13 +235,13 @@ export default function RegisterForm() {
           className={`${INPUT} ${errores.nombre ? INPUT_ERROR : ""}`}
         />
         {errores.nombre ? (
-          <p id={`${uid}-nombre-err`} className="mt-1 mb-0 text-xs text-crit">
+          <p id={`${uid}-nombre-err`} className="mt-1 mb-0 text-xs text-red-400">
             {errores.nombre}
           </p>
         ) : null}
       </div>
 
-      <div className="mb-4 grid gap-4 sm:grid-cols-2">
+      <div className="mb-5 grid gap-4 sm:grid-cols-2">
         <div>
           <label className={LABEL} htmlFor={`${uid}-correo`}>
             {f.email}
@@ -258,15 +255,15 @@ export default function RegisterForm() {
             placeholder={f.emailPh}
             value={correo}
             onChange={(e) => {
-            setCorreo(e.target.value);
-            limpiar("correo");
-          }}
+              setCorreo(e.target.value);
+              limpiar("correo");
+            }}
             aria-invalid={errores.correo ? true : undefined}
             aria-describedby={errores.correo ? `${uid}-correo-err` : undefined}
             className={`${INPUT} ${errores.correo ? INPUT_ERROR : ""}`}
           />
           {errores.correo ? (
-            <p id={`${uid}-correo-err`} className="mt-1 mb-0 text-xs text-crit">
+            <p id={`${uid}-correo-err`} className="mt-1 mb-0 text-xs text-red-400">
               {errores.correo}
             </p>
           ) : null}
@@ -284,9 +281,9 @@ export default function RegisterForm() {
             placeholder={f.phonePh}
             value={telefono}
             onChange={(e) => {
-            setTelefono(e.target.value);
-            limpiar("telefono");
-          }}
+              setTelefono(e.target.value);
+              limpiar("telefono");
+            }}
             aria-invalid={errores.telefono ? true : undefined}
             aria-describedby={
               errores.telefono ? `${uid}-telefono-err` : undefined
@@ -296,7 +293,7 @@ export default function RegisterForm() {
           {errores.telefono ? (
             <p
               id={`${uid}-telefono-err`}
-              className="mt-1 mb-0 text-xs text-crit"
+              className="mt-1 mb-0 text-xs text-red-400"
             >
               {errores.telefono}
             </p>
@@ -304,7 +301,7 @@ export default function RegisterForm() {
         </div>
       </div>
 
-      <label className="mb-5 flex cursor-pointer items-start gap-3 text-sm text-ink-2">
+      <label className="mb-6 flex cursor-pointer items-start gap-3 text-[13px] leading-relaxed text-gray-400">
         <input
           type="checkbox"
           name="terminos"
@@ -314,13 +311,13 @@ export default function RegisterForm() {
             limpiar("terminos");
           }}
           aria-invalid={errores.terminos ? true : undefined}
-          className={`mt-1 h-[18px] w-[18px] shrink-0 accent-[var(--accent)] ${
-            errores.terminos ? "outline outline-2 outline-crit" : ""
+          className={`mt-0.5 h-4 w-4 shrink-0 rounded border-gray-600 bg-[#1a1a1a] text-accent focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-[#141414] ${
+            errores.terminos ? "outline outline-2 outline-red-500" : ""
           }`}
         />
         <span>
           {f.terms}{" "}
-          <a href="#" className="text-accent underline underline-offset-2">
+          <a href="#" className="font-semibold text-accent transition-colors hover:text-white">
             {f.termsLink}
           </a>{" "}
           {f.termsAnd}{" "}
@@ -328,7 +325,7 @@ export default function RegisterForm() {
             href="/aviso-de-privacidad"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-accent underline underline-offset-2"
+            className="font-semibold text-accent transition-colors hover:text-white"
           >
             {f.privacyLink}
           </a>
@@ -339,31 +336,15 @@ export default function RegisterForm() {
       <button
         type="submit"
         disabled={estado === "enviando"}
-        className={`${BTN_PRIMARY} w-full`}
+        className="w-full rounded-lg bg-accent px-5 py-3.5 text-[15px] font-bold text-white transition-all hover:bg-blue-600 disabled:opacity-50"
       >
         {estado === "enviando" ? f.submitting : f.submit}
       </button>
 
-      <p className="mt-4 mb-0 flex items-start gap-2 text-xs leading-relaxed text-ink-3">
-        <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
+      <p className="mt-5 flex items-start gap-2 text-[12px] leading-relaxed text-gray-500">
+        <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
         {f.twofaNote}
       </p>
-
-      {/* <div className="mt-5 border-t border-rule pt-4 text-xs text-ink-3">
-        <p className="m-0">
-          {f.inviteNote}{" "}
-          <a href="#" className="text-accent underline underline-offset-2">
-            {f.inviteLink}
-          </a>{" "}
-          {f.inviteNoteEnd}
-        </p>
-        <p className="mt-2 mb-0">
-          {f.haveAccount}{" "}
-          <a href="#" className="text-accent underline underline-offset-2">
-            {f.login}
-          </a>
-        </p>
-      </div> */}
     </form>
   );
 }

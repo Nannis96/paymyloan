@@ -1,7 +1,7 @@
 "use client";
 
-import { useSite } from "./SiteShell";
-import { BTN_PRIMARY, Container, Eyebrow } from "./ui";
+import { useSite } from "../layout/SiteShell";
+import { BTN_PRIMARY, Container, Eyebrow } from "../ui";
 
 export default function FinalCta() {
   const { t } = useSite();

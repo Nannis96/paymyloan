@@ -1,7 +1,7 @@
 "use client";
 
-import { useSite } from "./SiteShell";
-import { Container, SectionHeading } from "./ui";
+import { useSite } from "../layout/SiteShell";
+import { Container, SectionHeading } from "../ui";
 
 export default function Benefits() {
   const { t } = useSite();
