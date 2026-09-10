@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { Search, ChevronLeft, ChevronRight, User, Shield, Cpu, Calendar } from "lucide-react";
+import { useSite } from "@/app/components/layout/SiteShell";
 
 // Tipos adaptados a PayMyLoan
 export type ActorRole = "ADMIN" | "LENDER" | "BORROWER" | "SYSTEM";
@@ -29,6 +30,9 @@ interface Props {
 }
 
 export function AuditLogsClient({ logs, currentPage, totalPages, totalCount, currentFilters }: Props) {
+  const { t } = useSite();
+  const a = t.auditLogs;
+  
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -58,25 +62,25 @@ export function AuditLogsClient({ logs, currentPage, totalPages, totalCount, cur
       case "SYSTEM": // Ideal para eventos de Webhooks / API
         return (
           <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-purple-500/10 px-2 py-1 text-[11px] font-bold text-purple-500 border border-purple-500/20">
-            <Cpu className="h-3 w-3" /> Sistema / API
+            <Cpu className="h-3 w-3" /> {a.system}
           </span>
         );
       case "ADMIN":
         return (
           <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-accent-soft px-2 py-1 text-[11px] font-bold text-accent border border-accent/20">
-            <Shield className="h-3 w-3" /> Admin
+            <Shield className="h-3 w-3" /> {a.admins}
           </span>
         );
       case "LENDER":
         return (
           <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-amber-soft px-2 py-1 text-[11px] font-bold text-amber border border-amber/20">
-            <User className="h-3 w-3" /> Prestamista
+            <User className="h-3 w-3" /> {a.lenders}
           </span>
         );
       case "BORROWER":
         return (
           <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-green-500/10 px-2 py-1 text-[11px] font-bold text-green-600 border border-green-500/20">
-            <User className="h-3 w-3" /> Prestatario
+            <User className="h-3 w-3" /> {a.borrowers}
           </span>
         );
     }
@@ -90,7 +94,7 @@ export function AuditLogsClient({ logs, currentPage, totalPages, totalCount, cur
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
           <input
             type="text"
-            placeholder="Buscar por acción o descripción..."
+            placeholder={a.searchPlaceholder}
             defaultValue={currentFilters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
             className="w-full rounded-lg border border-rule bg-surface-2 py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none transition-colors"
@@ -102,15 +106,15 @@ export function AuditLogsClient({ logs, currentPage, totalPages, totalCount, cur
           onChange={(e) => handleFilterChange("actorRole", e.target.value)}
           className="rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none transition-colors cursor-pointer"
         >
-          <option value="">Todos los Roles</option>
-          <option value="SYSTEM">Sistema / Webhooks</option>
-          <option value="ADMIN">Administradores</option>
-          <option value="LENDER">Prestamistas</option>
-          <option value="BORROWER">Prestatarios</option>
+          <option value="">{a.allRoles}</option>
+          <option value="SYSTEM">{a.system}</option>
+          <option value="ADMIN">{a.admins}</option>
+          <option value="LENDER">{a.lenders}</option>
+          <option value="BORROWER">{a.borrowers}</option>
         </select>
 
         <div className="flex items-center justify-end rounded-lg border border-rule-strong bg-surface-2 px-4 py-2.5 text-sm text-ink-3">
-          <span>Total de registros:&nbsp;</span>
+          <span>{a.totalRecords}&nbsp;</span>
           <span className="font-bold text-ink">{totalCount}</span>
         </div>
       </div>
@@ -120,17 +124,17 @@ export function AuditLogsClient({ logs, currentPage, totalPages, totalCount, cur
         <table className="w-full min-w-[900px] border-collapse text-left text-[14px]">
           <thead className="border-b border-rule bg-surface-2">
             <tr>
-              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">Fecha / Hora</th>
-              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">Actor</th>
-              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">Acción</th>
-              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">Descripción del Evento</th>
+              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">{a.dateHour}</th>
+              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">{a.actor}</th>
+              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">{a.action}</th>
+              <th className="px-5 py-4 font-bold text-ink-3 text-xs uppercase tracking-wider">{a.description}</th>
             </tr>
           </thead>
           <tbody className="text-ink-2 divide-y divide-rule">
             {logs.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-5 py-12 text-center text-ink-3">
-                  No se encontraron registros de auditoría.
+                  {a.noRecords}
                 </td>
               </tr>
             ) : (
@@ -162,11 +166,11 @@ export function AuditLogsClient({ logs, currentPage, totalPages, totalCount, cur
           </tbody>
         </table>
 
-        {/* Paginación */}
+        {/* Paginacion */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-rule bg-surface-2 px-5 py-4">
             <span className="text-sm text-ink-3">
-              Página <span className="font-bold text-ink">{currentPage}</span> de <span className="font-bold text-ink">{totalPages}</span>
+              {a.page} <span className="font-bold text-ink">{currentPage}</span> {a.of} <span className="font-bold text-ink">{totalPages}</span>
             </span>
             <div className="flex gap-2">
               <button
@@ -174,14 +178,14 @@ export function AuditLogsClient({ logs, currentPage, totalPages, totalCount, cur
                 onClick={() => handlePageChange(currentPage - 1)}
                 className="inline-flex items-center gap-1 rounded-[4px] border border-rule bg-surface px-3 py-1.5 text-xs font-bold text-ink transition-colors hover:bg-surface-2 hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <ChevronLeft className="h-3.5 w-3.5" /> Anterior
+                <ChevronLeft className="h-3.5 w-3.5" /> {a.prev}
               </button>
               <button
                 disabled={currentPage >= totalPages || isPending}
                 onClick={() => handlePageChange(currentPage + 1)}
                 className="inline-flex items-center gap-1 rounded-[4px] border border-rule bg-surface px-3 py-1.5 text-xs font-bold text-ink transition-colors hover:bg-surface-2 hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Siguiente <ChevronRight className="h-3.5 w-3.5" />
+                {a.next} <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>

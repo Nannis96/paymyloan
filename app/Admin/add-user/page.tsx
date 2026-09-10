@@ -35,7 +35,7 @@ function AddUserContent() {
         
         {/* Botón de retroceso */}
         <Link
-           href="/Admin"
+           href="/admin"
            className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {u.back}

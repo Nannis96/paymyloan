@@ -3,15 +3,16 @@
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { MetricCard } from "@/app/components/ui";
 import Link from "next/link";
+import { Bell } from "lucide-react";
+
 function LenderDashboardContent() {
   const { t } = useSite();
   const d = t.dashboardLender;
+  const n = t.notifications;
 
-  // NOTA: Estos datos están hardcodeados para el cascarón visual.
-  // Posteriormente deberán ser extraídos de la base de datos o estado global tras el login.
   const mockData = {
     settings: {
-      isOpenToDeals: true, // Vendrá del perfil del usuario (Lender)
+      isOpenToDeals: true,
     },
     metrics: {
       capitalDeployed: "$1.2M",
@@ -19,6 +20,10 @@ function LenderDashboardContent() {
       avgInterest: "11.5%",
       activeBorrowers: "8",
     },
+    notifications: [
+      { id: 1, text: "Recibiste un pago de $2,500 de Spencer Shadrach.", time: "Ayer", type: "success" },
+      { id: 2, text: "Solicitud de payoff generada para 123 Main St.", time: "Hace 2 dias", type: "info" }
+    ],
     recentPayments: [
       {
         id: "pay_1",
@@ -36,7 +41,6 @@ function LenderDashboardContent() {
     <div className="min-h-screen bg-bg p-6 lg:p-14">
       <div className="mx-auto max-w-[1100px]">
         
-        {/* Cabecera con Título y Controles */}
         <header className="mb-10 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <div>
             <h1 className="text-[32px] font-black tracking-tight text-ink">{d.title}</h1>
@@ -44,13 +48,13 @@ function LenderDashboardContent() {
           </div>
           
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-               href="/contracts"
+            <Link 
+               href="/contracts" 
                className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-5 py-3 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent"
             >
               {d.actions.viewContracts}
             </Link>
-            {/* Toggle de visibilidad */}
+            
             <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-rule bg-surface px-4 py-2 hover:border-accent transition-colors">
               <div className="relative">
                 <input type="checkbox" className="sr-only" defaultChecked={mockData.settings.isOpenToDeals} />
@@ -60,14 +64,32 @@ function LenderDashboardContent() {
               <span className="text-sm font-bold text-ink">{d.toggle.open}</span>
             </label>
             
-            {/* Botón Marketplace */}
-            <button className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
+            <Link href="/marketplace" className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
               {d.actions.marketplace} &rarr;
-            </button>
+            </Link>
           </div>
         </header>
 
-        {/* Métricas Principales */}
+        {/* Panel de Notificaciones (Lender) */}
+        <div className="mb-10 rounded-xl border border-rule bg-surface p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4 border-b border-rule pb-3">
+            <h3 className="text-[12px] font-bold uppercase tracking-widest text-accent flex items-center gap-1.5"><Bell size={14}/> {n.title}</h3>
+            <button className="text-[10px] font-bold text-ink-3 hover:text-ink">{n.markRead}</button>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            {mockData.notifications.length === 0 ? (
+              <p className="text-sm text-ink-3">{n.empty}</p>
+            ) : (
+              mockData.notifications.map(notif => (
+                <div key={notif.id} className="flex-1 rounded-lg bg-surface-2 p-3 border border-rule text-sm">
+                  <div className="font-medium text-ink mb-1">{notif.text}</div>
+                  <div className="text-[11px] text-ink-3">{notif.time}</div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-12">
           <MetricCard label={d.metrics.capitalDeployed} value={mockData.metrics.capitalDeployed} accent />
           <MetricCard label={d.metrics.nextPayments} value={mockData.metrics.nextPayments} />
@@ -75,7 +97,6 @@ function LenderDashboardContent() {
           <MetricCard label={d.metrics.activeBorrowers} value={mockData.metrics.activeBorrowers} />
         </div>
 
-        {/* Historial de Pagos y Desglose */}
         <section>
           <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">
             {d.recentPayments}
@@ -103,12 +124,12 @@ function LenderDashboardContent() {
                     <td className="px-5 py-4 font-mono font-medium text-amber">{payment.interest}</td>
                   </tr>
                 ))}
-                <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-sm text-ink-3">
-                    El resto del historial se renderizará aquí.
-                  </td>
-                </tr>
-              </tbody>
+            <tr>
+              <td colSpan={6} className="px-5 py-8 text-center text-sm text-ink-3">
+                {d.emptyHistory}
+              </td>
+            </tr>
+          </tbody>
             </table>
           </div>
         </section>

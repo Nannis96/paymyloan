@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import DocumentVault from "@/app/components/DocumentVault";
 
-// TODO: BACKEND - Próximos pasos cuando esté la API
+// TODO: BACKEND - Proximos pasos cuando este la API
 // 1. Extraer el ID de los params de la URL (ya lo hacemos abajo con useParams).
 // 2. Hacer un fetch a la API: GET /api/contracts/{params.id}
 // 3. Hacer otro fetch (o usar la misma API) para obtener el historial de pagos: GET /api/contracts/{params.id}/payments?page=1
@@ -22,7 +23,7 @@ function ContractDetailContent() {
 
   // Mock de datos del contrato (Se sustituirá por la respuesta de la API)
   const mockContract = {
-    id: params.id as string,
+    id: (params?.id as string) || "CTR-001",
     lender: "NextGen Growth LLC",
     borrower: "John Smith",
     amount: "$250,000",
@@ -32,7 +33,7 @@ function ContractDetailContent() {
     monthlyRent: "$2,500"
   };
 
-  // Mock de 25 pagos para probar la paginación (Se sustituirá por respuesta del back)
+  // Mock de 25 pagos para probar la paginacion (Se sustituira por respuesta del back)
   const mockPayments = Array.from({ length: 25 }, (_, i) => ({
     id: `pay_${i + 1}`,
     date: `2026-0${(i % 9) + 1}-01`,
@@ -41,7 +42,8 @@ function ContractDetailContent() {
     principal: "$500.00",
     interest: "$2,000.00",
     escrow: "$0.00",
-    balance: `$${(250000 - (i * 500)).toLocaleString()}.00`
+    // Forzamos "en-US" para evitar el error de hidratacion
+    balance: `$${(250000 - (i * 500)).toLocaleString("en-US")}.00`
   }));
 
   // Lógica simple de paginación frontend (Idealmente el back debe devolver la página exacta)
@@ -69,9 +71,22 @@ function ContractDetailContent() {
             <span>&larr;</span> {cd.back}
           </Link>
 
-          <header className="mb-10">
-            <h1 className="text-[32px] font-black tracking-tight text-ink">{cd.title}: {mockContract.id}</h1>
-            <p className="text-ink-2">{cd.subtitle}</p>
+          <header className="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <h1 className="text-[32px] font-black tracking-tight text-ink">{cd.title}: {mockContract.id}</h1>
+              <p className="text-ink-2">{cd.subtitle}</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+            <Link href={`/contracts/${mockContract.id}/issue-commitment`} className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-4 py-2 text-sm font-bold text-accent transition-colors hover:opacity-80">
+              {t.issueCommitment.title}
+            </Link>
+            <Link href={`/contracts/${mockContract.id}/commitment`} className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-4 py-2 text-sm font-bold text-accent transition-colors hover:opacity-80">
+              {t.commitmentLetter.title}
+            </Link>
+            <Link href={`/contracts/${mockContract.id}/payoff`} className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
+              {t.dashboardBorrower.actions.payoff}
+            </Link>
+          </div>
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
@@ -113,6 +128,9 @@ function ContractDetailContent() {
               </div>
             </div>
           </div>
+
+          {/* Boveda de Documentos */}
+          <DocumentVault contractId={mockContract.id} />
 
           <section>
             <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">{cd.breakdownTitle}</h2>
