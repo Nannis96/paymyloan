@@ -35,7 +35,7 @@ function AdminDashboardContent() {
               {d.viewContractsBtn}
             </Link>
             <Link
-               href="/Admin/users"
+               href="/admin/users"
                className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
             >
               {d.viewUsersBtn} &rarr;

@@ -17,12 +17,12 @@ export default function PmlHeader() {
 
         <div className="hidden items-center gap-8 md:flex">
           <Link href="/#features" className="text-sm font-medium text-ink-2 no-underline hover:text-ink">
-            Features
+            {t.nav.features}
           </Link>
           <Link href="/#how" className="text-sm font-medium text-ink-2 no-underline hover:text-ink">
-            How it works
+            {t.nav.howItWorks}
           </Link>
-          
+
           {/* Boton de cambio de idioma restaurado */}
           <button
             type="button"
