@@ -84,11 +84,16 @@ function SettingsContent() {
                 <input type="text" placeholder={s.lender.geographyPh} className={INPUT} />
               </div>
               <div>
+                <label className={LABEL}>{s.lender.availableCapital}</label>
+                <input type="number" min="0" placeholder={s.lender.availableCapitalPh} className={INPUT} />
+              </div>
+              <div>
                 <label className={LABEL}>{s.lender.loanTypes}</label>
                 <select className={`${INPUT} cursor-pointer appearance-none`}>
                   <option value="io_short">{t.loanTypes.interestOnlyShort}</option>
                   <option value="io_long">{t.loanTypes.interestOnlyLong}</option>
                   <option value="amortized">{t.loanTypes.fullyAmortized}</option>
+                  <option value="construction">{t.loanTypes.constructionDraw}</option>
                 </select>
               </div>
 

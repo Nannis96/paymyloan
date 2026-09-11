@@ -21,7 +21,7 @@ function ContractDetailContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Mock de datos del contrato (Se sustituirá por la respuesta de la API)
+  // Mock de datos del contrato (Se sustituira por la respuesta de la API)
   const mockContract = {
     id: (params?.id as string) || "CTR-001",
     lender: "NextGen Growth LLC",
@@ -29,6 +29,7 @@ function ContractDetailContent() {
     amount: "$250,000",
     term: "24 meses",
     interest: "11%",
+    loanType: "Interest Only (Short Term)",
     downPayment: "$50,000",
     monthlyRent: "$2,500"
   };
@@ -125,6 +126,10 @@ function ContractDetailContent() {
                   <div className="text-ink-3 mb-1">{cd.labels.rent}</div>
                   <div className="font-bold text-accent">{mockContract.monthlyRent}</div>
                 </div>
+                <div className="col-span-2 mt-1 border-t border-rule pt-3">
+                  <div className="text-ink-3 mb-1">{cd.labels.loanType}</div>
+                  <div className="font-bold text-ink">{mockContract.loanType}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -133,7 +138,15 @@ function ContractDetailContent() {
           <DocumentVault contractId={mockContract.id} />
 
           <section>
-            <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">{cd.breakdownTitle}</h2>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-ink-3">{cd.breakdownTitle}</h2>
+              <button 
+                onClick={() => alert("Generando reporte CSV/PDF para el CPA...")}
+                className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-xs font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm"
+              >
+                {cd.exportReport} &darr;
+              </button>
+            </div>
             <div className="overflow-x-auto rounded-t-xl border border-rule bg-surface">
               <table className="w-full min-w-[800px] border-collapse text-left text-[14px]">
                 <thead className="border-b border-rule bg-surface-2">

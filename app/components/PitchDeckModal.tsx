@@ -22,6 +22,7 @@ export default function PitchDeckModal({ onClose }: PitchDeckModalProps) {
   const [purchasePrice, setPurchasePrice] = useState("");
   const [rehabAmount, setRehabAmount] = useState("");
   const [loanAmount, setLoanAmount] = useState("");
+  const [loanType, setLoanType] = useState("");
   const [loanTerm, setLoanTerm] = useState("");
   const [propertyAddress, setPropertyAddress] = useState("");
   const [propertyType, setPropertyType] = useState("residential");
@@ -97,18 +98,43 @@ export default function PitchDeckModal({ onClose }: PitchDeckModalProps) {
                       <input type="number" min="0" value={rehabAmount} onChange={(e) => setRehabAmount(e.target.value)} placeholder={p.rehabAmountPh} className={INPUT} required />
                     </div>
                   </div>
-                  <div>
-                    <label className={LABEL}>{p.loanAmount}</label>
-                    <input type="number" min="0" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} placeholder={p.loanAmountPh} className={INPUT} required />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={LABEL}>{p.loanAmount}</label>
+                      <input type="number" min="0" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} placeholder={p.loanAmountPh} className={INPUT} required />
+                    </div>
+                    <div>
+                      <label className={LABEL}>{p.loanType}</label>
+                      <select value={loanType} onChange={(e) => { setLoanType(e.target.value); setLoanTerm(""); }} className={`${INPUT} cursor-pointer appearance-none`} required>
+                        <option value="" disabled>{p.loanTypeSelect}</option>
+                        <option value="io_short">{t.loanTypes.interestOnlyShort}</option>
+                        <option value="io_long">{t.loanTypes.interestOnlyLong}</option>
+                        <option value="amortized">{t.loanTypes.fullyAmortized}</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className={LABEL}>{p.loanTerm}</label>
-                      <select value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} className={`${INPUT} cursor-pointer appearance-none`} required>
+                      <select value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} disabled={!loanType} className={`${INPUT} cursor-pointer appearance-none disabled:opacity-50`} required>
                         <option value="" disabled>{p.loanTermSelect}</option>
-                        <option value="12">{p.term12}</option>
-                        <option value="24">{p.term24}</option>
-                        <option value="36">{p.term36}</option>
+                        {loanType === "amortized" ? (
+                          <>
+                            <option value="60">5 {p.years}</option>
+                            <option value="84">7 {p.years}</option>
+                            <option value="120">10 {p.years}</option>
+                            <option value="180">15 {p.years}</option>
+                            <option value="240">20 {p.years}</option>
+                            <option value="300">25 {p.years}</option>
+                            <option value="360">30 {p.years}</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="12">{p.term12}</option>
+                            <option value="24">{p.term24}</option>
+                            <option value="36">{p.term36}</option>
+                          </>
+                        )}
                       </select>
                     </div>
                     <div>
@@ -146,7 +172,10 @@ export default function PitchDeckModal({ onClose }: PitchDeckModalProps) {
 
                   <div className="rounded-xl bg-surface-2 p-5 border border-rule-strong">
                     <div className="mb-4 flex items-center justify-between">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-ink-2 m-0">{p.rentcastTitle}</label>
+                      <div className="flex flex-col">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-ink-2 m-0">{p.rentcastTitle}</label>
+                        <span className="text-[10px] text-ink-3 mt-0.5">{p.rentcastParams}</span>
+                      </div>
                       <span className="text-[10px] bg-accent/10 text-accent font-bold px-2 py-0.5 rounded">{p.aiEvaluated}</span>
                     </div>
                     

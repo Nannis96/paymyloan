@@ -66,21 +66,21 @@ function IssueCommitmentContent() {
             <h3 className="text-sm font-bold text-ink">{ic.closingFeesTitle}</h3>
             <div>
               <label className={LABEL}>{ic.originationPoints}</label>
-              <input type="number" step="0.1" value={originationPoints} onChange={(e) => setOriginationPoints(e.target.value)} placeholder={ic.phPoints} className={INPUT} required />
+              <input type="number" step="0.1" min="0" value={originationPoints} onChange={(e) => setOriginationPoints(e.target.value)} placeholder={ic.phPoints} className={INPUT} required />
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label className={LABEL}>{ic.processingFee}</label>
-                <input type="number" value={processingFee} onChange={(e) => setProcessingFee(e.target.value)} placeholder={ic.phFee} className={INPUT} />
+                <input type="number" min="0" value={processingFee} onChange={(e) => setProcessingFee(e.target.value)} placeholder={ic.phFee} className={INPUT} />
               </div>
               <div>
                 <label className={LABEL}>{ic.underwritingFee}</label>
-                <input type="number" value={underwritingFee} onChange={(e) => setUnderwritingFee(e.target.value)} placeholder={ic.phFee} className={INPUT} />
+                <input type="number" min="0" value={underwritingFee} onChange={(e) => setUnderwritingFee(e.target.value)} placeholder={ic.phFee} className={INPUT} />
               </div>
               <div>
                 <label className={LABEL}>{ic.docPrepFee}</label>
-                <input type="number" value={docPrepFee} onChange={(e) => setDocPrepFee(e.target.value)} placeholder="0" className={INPUT} />
+                <input type="number" min="0" value={docPrepFee} onChange={(e) => setDocPrepFee(e.target.value)} placeholder="0" className={INPUT} />
               </div>
             </div>
 
@@ -91,7 +91,7 @@ function IssueCommitmentContent() {
               </div>
               <div>
                 <label className={LABEL}>{ic.customFeeAmount}</label>
-                <input type="number" value={customFeeAmount} onChange={(e) => setCustomFeeAmount(e.target.value)} placeholder="0" className={INPUT} />
+                <input type="number" min="0" value={customFeeAmount} onChange={(e) => setCustomFeeAmount(e.target.value)} placeholder="0" className={INPUT} />
               </div>
             </div>
 

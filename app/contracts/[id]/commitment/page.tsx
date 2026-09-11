@@ -1,15 +1,36 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { Building, X } from "lucide-react";
 
 function CommitmentLetterContent() {
   const params = useParams();
+  const router = useRouter();
   const { t } = useSite();
   const cl = t.commitmentLetter;
   const cd = t.contractDetail;
 
-  // TODO: MOCK TEMPORAL. 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState("acc_1");
+
+  const mockAccounts = [
+    { id: "acc_1", bank: "Chase Bank", last4: "4589" }
+  ];
+
+  const handleConfirmSign = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // TODO: BACKEND - Enviar aceptacion y vincular ACH.
+    setTimeout(() => {
+      setIsSubmitting(false);
+      router.push(`/borrower`); // Redirigir al dashboard tras firmar
+    }, 1500);
+  };
+
+  // TODO: MOCK TEMPORAL.
   // Obtener los fees desglosados desde la API cuando este lista.
   // CRITICO: El Connection Fee de PML debe calcularse dinamicamente en el backend
   // (1 punto del loan amount, min $999) SOLO si el trato provino del Marketplace 
@@ -82,12 +103,79 @@ function CommitmentLetterContent() {
             <button className="rounded-lg border border-rule-strong bg-surface px-6 py-3 text-sm font-bold text-ink transition-colors hover:border-crit hover:text-crit">
               {cl.actions.decline}
             </button>
-            <button className="rounded-lg bg-accent px-8 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-md">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="rounded-lg bg-accent px-8 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-md"
+            >
               {cl.actions.accept}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Modal de ACH */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-[500px] overflow-hidden rounded-2xl border border-rule bg-surface shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-ink transition-colors hover:bg-crit hover:text-white"
+            >
+              <X size={18} />
+            </button>
+            
+            <div className="p-6 sm:p-8">
+              <h2 className="mb-2 text-2xl font-black tracking-tight text-ink">
+                {cl.achModal.title}
+              </h2>
+              <p className="mb-6 text-sm leading-relaxed text-ink-2">
+                {cl.achModal.subtitle}
+              </p>
+              
+              <form onSubmit={handleConfirmSign} className="flex flex-col gap-6">
+                <div>
+                  <label className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-ink-3">
+                    {cl.achModal.selectAccount}
+                  </label>
+                  <div className="relative">
+                    <Building className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
+                    <select 
+                      value={selectedAccount}
+                      onChange={(e) => setSelectedAccount(e.target.value)}
+                      className="w-full appearance-none rounded-lg border border-rule bg-surface-2 py-3 pl-10 pr-4 text-[14px] text-ink outline-none transition-colors focus:border-accent cursor-pointer"
+                    >
+                      {mockAccounts.map(acc => (
+                        <option key={acc.id} value={acc.id}>
+                          {acc.bank} (**** {acc.last4})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col gap-3 sm:flex-row mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    disabled={isSubmitting}
+                    className="flex-1 rounded-lg border border-rule-strong bg-surface px-5 py-3.5 text-[15px] font-bold text-ink transition-colors hover:bg-surface-2 disabled:opacity-50"
+                  >
+                    {cl.achModal.cancel}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 rounded-lg bg-accent px-5 py-3.5 text-[15px] font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:opacity-50"
+                  >
+                    {isSubmitting ? "..." : cl.achModal.confirmBtn}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

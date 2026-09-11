@@ -1,9 +1,9 @@
 /**
- * Todo el texto de la landing vive aquí.
+ * Todo el texto de la landing vive aqui.
  *
- * Owner ya resuelve el bilingüismo con un toggle es/en dentro del propio
- * formulario de alta (app/components/signup-form.tsx) y la Sección 11 del
- * alcance deja abierta la pregunta de si PayMyLoan será bilingüe.
+ * Owner ya resuelve el bilinguismo con un toggle es/en dentro del propio
+ * formulario de alta (app/components/signup-form.tsx) y la Seccion 11 del
+ * alcance deja abierta la pregunta de si PayMyLoan sera bilingue.
  * Centralizar el copy cuesta lo mismo hoy y evita el retrofit que el
  * documento advierte que "cuesta el doble".
  *
@@ -29,7 +29,7 @@ const es = {
     brandSuffix: ".ai",
     links: [
       { href: "#como-funciona", label: "Cómo funciona" },
-      { href: "#costo", label: "Costo del pago" },
+      { href: "#costo", label: "Costo de la plataforma" },
       { href: "#seguridad", label: "Seguridad" },
     ],
     features: "Funcionalidades",
@@ -118,7 +118,7 @@ const es = {
       again: "Usar otro correo",
     },
     devNote:
-      "Front únicamente: todavía no hay backend conectado, el envío se simula.",
+      "Front unicamente: todavia no hay backend conectado, el envio se simula.",
   },
   loginPage: {
     title: "Inicia sesión",
@@ -400,24 +400,24 @@ const es = {
 
   profilesDirectory: {
     eyebrow: "Perfiles y Directorio",
-    title1: "Tu reputacion ",
+    title1: "Tu reputación ",
     title2: "te sigue.",
-    desc: "Cada trato, cada pago, cada prestamo construye tu perfil PML. Los prestatarios encuentran prestamistas. Los prestamistas evaluan a los prestatarios. Ambas partes saben exactamente con quien estan tratando.",
+    desc: "Cada trato, cada pago, cada préstamo construye tu perfil PML. Los prestatarios encuentran prestamistas. Los prestamistas evalúan a los prestatarios. Ambas partes saben exactamente con quién están tratando.",
     borrower: {
       badge: "Perfil del Prestatario",
-      name: "Spencer Shadrach",
+      name: "Liam Brown",
       location: "Memphis, TN · Inversor Inmobiliario",
-      stat1Label: "Prestamos Totales",
+      stat1Label: "Préstamos Totales",
       stat1Value: "14",
       stat2Label: "Tasa de Pago a Tiempo",
       stat2Value: "97%",
-      stat3Label: "Calificacion PML",
+      stat3Label: "Calificación PML",
       stat3Value: "A+"
     },
     lender: {
       badge: "Directorio de Prestamistas",
       title: "Encuentra un Prestamista",
-      subtitle: "Busca prestamistas activos en prestamos privados",
+      subtitle: "Busca prestamistas activos en préstamos privados",
       lender1Name: "NextGen Growth LLC",
       lender1Desc: "Memphis, TN · Hasta $500K · 10–13%",
       lender1Deals: "31 tratos",
@@ -486,23 +486,23 @@ const es = {
   },
 
   cost: {
-    eyebrow: "Costo del pago",
-    title: "El ACH tiene tope. Por eso funciona para mensualidades grandes.",
-    lead: "El procesamiento cuesta 0.8% con tope de $5.00 por transacción. Cualquier monto arriba de $625 paga el tope, así que entre más grande la mensualidad, más barato sale en porcentaje.",
-    tableHead: ["Mensualidad", "Comisión ACH", "% efectivo"],
+    eyebrow: "Costo de la plataforma",
+    title: "Estructura transparente, sin comisiones ocultas.",
+    lead: "Los costos están definidos. El procesamiento ACH cuesta el costo base de ACH + $9/mes por préstamo (topado a $99/mes).",
+    tableHead: ["Tipo de Tarifa", "Monto", "Cuándo se cobra"],
     rows: [
-      ["$400", "$3.20", "0.80%"],
-      ["$625", "$5.00", "0.80%"],
-      ["$1,200", "$5.00", "0.42%"],
-      ["$2,500", "$5.00", "0.20%"],
-      ["$5,000", "$5.00", "0.10%"],
+      ["Suscripción Prestatario", "$9.00 / mes", "Mensual tras 7 días de prueba"],
+      ["Aplicación / Vetting", "$99.00", "Pago único al aplicar"],
+      ["Conexión Marketplace", "1% (Mín. $999)", "Solo al cierre (Tratos públicos)"],
+      ["Tratos Privados", "$0.00", "Invitación directa"],
+      ["Procesamiento ACH", "Costo ACH + $9", "Mensual por préstamo (Max $99)"],
     ],
-    compareLabel: "Comparación",
+    compareLabel: "Aviso Legal de la Plataforma",
     compare:
-      "Un pago de $2,400 cuesta $5.00 por ACH. La misma transacción con tarjeta costaría cerca de $70.",
-    pendingLabel: "Pendiente de definir",
+      "Dueño a Dueño LLC opera únicamente como una plataforma de conexión tecnológica. No somos prestamistas ni brókers. Todas las tarifas se desglosan antes del cierre.",
+    pendingLabel: "Sobre las tarifas del Prestamista",
     pending:
-      "Cuota de la plataforma: [POR DEFINIR]. Quién absorbe la comisión de proceso —prestatario, prestamista o plataforma—: [POR DEFINIR].",
+      "Los prestamistas configuran sus propias tarifas (Originación, Procesamiento, Underwriting, Doc Prep) y penalizaciones, las cuales se suman a tu Carta de Compromiso.",
   },
 
   security: {
@@ -725,35 +725,57 @@ const es = {
     submit: "Registrar cuenta",
     back: "Volver al panel"
   },
-dashboardLender: {
-  title: "Panel de Prestamista",
-  subtitle: "Control total sobre tu capital y rendimientos.",
-  metrics: {
-    capitalDeployed: "Capital Desplegado",
-    nextPayments: "Próximos Pagos (30 días)",
-    avgInterest: "Tasa Promedio",
-    activeBorrowers: "Prestatarios Activos"
+
+  dashboardLender: {
+    title: "Panel de Prestamista",
+    subtitle: "Control total sobre tu capital y rendimientos.",
+    metrics: {
+      availableCapital: "Capital (Disponible / Desplegado)",
+      capitalDeployed: "Capital Desplegado",
+      nextPayments: "Próximos Pagos (30 días)",
+      avgInterest: "Tasa Promedio",
+      activeBorrowers: "Prestatarios Activos"
+    },
+    sections: {
+      commitmentLetters: "Cartas de Compromiso Enviadas",
+      upcomingClosings: "Próximos Cierres / Payoffs",
+      activeLoans: "Préstamos Activos (Retorno)",
+    },
+    tableHeaders: {
+      borrower: "Prestatario",
+      amount: "Monto",
+      status: "Estado",
+      type: "Tipo",
+      date: "Fecha",
+      action: "Acción",
+      loan: "Préstamo",
+      rateBalance: "Tasa / Saldo"
+    },
+    labels: {
+      cap: "Cap:",
+      int: "Int:"
+    },
+    recentPayments: "Últimos Pagos Recibidos",
+    actions: {
+      marketplace: "Explorar Mercado",
+      viewContracts: "Ver mis contratos"
+    },
+    toggle: {
+      open: "Abierto a negocios",
+      closed: "No aceptando préstamos"
+    },
+    table: {
+      date: "Fecha",
+      borrower: "Prestatario",
+      property: "Propiedad",
+      total: "Pago Total",
+      principal: "Capital",
+      interest: "Interés"
+    },
+    emptyHistory: "El resto del historial se renderizará aquí."
   },
-  recentPayments: "Últimos Pagos Recibidos",
-  actions: {
-    marketplace: "Explorar Mercado",
-    viewContracts: "Ver mis contratos"
-  },
-  toggle: {
-    open: "Abierto a negocios",
-    closed: "No aceptando préstamos"
-  },
-  table: {
-    date: "Fecha",
-    borrower: "Prestatario",
-    property: "Propiedad",
-    total: "Pago Total",
-    principal: "Capital",
-    interest: "Interés"
-  },
-  emptyHistory: "El resto del historial se renderizara aqui."
-},
-auditLogs: {
+
+  auditLogs: {
   searchPlaceholder: "Buscar por accion o descripcion...",
   allRoles: "Todos los Roles",
   system: "Sistema / Webhooks",
@@ -766,7 +788,7 @@ auditLogs: {
   action: "Accion",
   description: "Descripcion del Evento",
   noRecords: "No se encontraron registros de auditoria.",
-  page: "Pagina",
+  page: "Página",
   of: "de",
   prev: "Anterior",
   next: "Siguiente"
@@ -777,16 +799,19 @@ pitchDeckModal: {
   title: "Crear Nuevo Pitch Deck",
   purchasePrice: "Precio de Compra ($)",
   purchasePricePh: "Ej. 150000",
-  rehabAmount: "Monto de Remodelacion ($)",
+  rehabAmount: "Monto de Remodelación ($)",
   rehabAmountPh: "Ej. 45000",
   loanAmount: "Monto Solicitado ($)",
   loanAmountPh: "Ej. 250000",
-  loanTerm: "Plazo del Prestamo (Meses)",
+  loanType: "Tipo de Préstamo",
+  loanTypeSelect: "Selecciona el tipo",
+  loanTerm: "Plazo del Préstamo",
   loanTermSelect: "Selecciona el plazo",
   term12: "12 Meses",
   term24: "24 Meses",
   term36: "36 Meses",
-  address: "Direccion de la Propiedad",
+  years: "Años",
+  address: "Dirección de la Propiedad",
   addressPh: "Ej. 123 Main St, Austin, TX",
   type: "Tipo",
   typeRes: "Residencial",
@@ -796,18 +821,19 @@ pitchDeckModal: {
   value: "Valor Estimado ($)",
   valuePh: "Ej. 350000",
   privacyLabel: "Privacidad del Trato",
-  public: "Publico (Marketplace)",
+  public: "Público (Marketplace)",
   private: "Privado (Solo invitados)",
   photos: "Fotos de la Propiedad",
-  dragDrop: "Arrastra tus fotos aqui",
+  dragDrop: "Arrastra tus fotos aquí",
   supportedFiles: "Soporta JPG, PNG (Max 5MB)",
   photoGuidelines: "Frente, Cocina, Baños, Patio, Techo",
   rentcastTitle: "Comparables generados (RentCast API)",
+  rentcastParams: "Búsqueda: 0.5 millas, mismos pies cuadrados, últimos 6 meses",
   aiEvaluated: "AI Evaluado",
   saleComps: "Comparables Venta",
   rentComps: "Comparables Renta",
-  rentcastPending: "Pendiente: La API de RentCast poblara esto automaticamente despues de ingresar la direccion.",
-  back: "Atras",
+  rentcastPending: "Pendiente: La API de RentCast poblará esto automáticamente después de ingresar la dirección.",
+  back: "Atrás",
   processing: "Procesando...",
   publish: "Publicar Pitch Deck",
   next: "Siguiente",
@@ -824,17 +850,26 @@ dashboardBorrower: {
       properties: "Propiedades en Garantía",
       pmlRating: "Calificación PML"
     },
-    trackerTitle: "Proximos Cierres",
-    trackerEmpty: "No hay cierres proximos rastreados.",
+    trackerTitle: "Próximos Cierres",
+    trackerEmpty: "No hay cierres próximos rastreados.",
     needFunding: "Necesitan Fondeo (Need Funding)",
     loanApproved: "Aprobados por Prestamista",
-    currentLoans: "Prestamos Actuales (Current Loans)",
+    currentLoans: "Préstamos Actuales (Current Loans)",
     completedLoans: "Completados",
-    emptyTable: "La tabla de prestamos en vivo se renderizara aqui.",
-    emptyDocs: "Las cartas de compromiso y estados de liquidacion generados apareceran aqui.",
+    emptyTable: "La tabla de préstamos en vivo se renderizará aquí.",
+    emptyDocs: "Las cartas de compromiso y estados de liquidación generados aparecerán aquí.",
+    tableHeaders: {
+      property: "Propiedad",
+      amount: "Monto / Saldo",
+      lender: "Prestamista",
+      rate: "Tasa",
+      status: "Estado",
+      date: "Fecha / Próx Pago",
+      action: "Acción"
+    },
     actions: {
       pitchDeck: "Generar Pitch Deck",
-      payoff: "Solicitar Liquidacion",
+      payoff: "Solicitar Liquidación",
       payments: "Gestionar Pagos",
       viewContracts: "Contratos"
     }
@@ -861,12 +896,14 @@ dashboardBorrower: {
     parties: "Partes Involucradas",
     financials: "Términos Financieros",
     breakdownTitle: "Historial de Pagos",
+    exportReport: "Exportar Reporte (CPA Ready)",
     labels: {
       lender: "Prestamista",
       borrower: "Prestatario",
       amount: "Monto Total",
       term: "Plazo",
       interest: "Interés",
+      loanType: "Tipo de Préstamo",
       downPayment: "Enganche / Depósito",
       rent: "Pago Mensual"
     },
@@ -905,37 +942,73 @@ dashboardBorrower: {
       goHome: "Volver al inicio",
     },
   marketplace: {
-    title: "Mercado de Prestamos",
-    subtitle: "Explora solicitudes de prestamo publicas buscando fondeo.",
+    title: "Mercado de Préstamos",
+    subtitle: "Explora solicitudes de préstamo públicas buscando fondeo.",
     table: {
       address: "Propiedad (Ciudad, Estado)",
       amount: "Monto Solicitado",
       term: "Plazo",
-      borrowerScore: "Calificacion PML",
+      borrowerScore: "Calificación PML",
       action: "Ver Trato"
     },
-    empty: "No hay tratos publicos disponibles en este momento."
+    empty: "No hay tratos públicos disponibles en este momento.",
+    dealDetails: {
+      title: "Detalle del Trato",
+      back: "Volver al mercado",
+      overview: "Resumen del Trato",
+      propertyDetails: "Detalles de la Propiedad",
+      borrowerProfile: "Perfil del Prestatario",
+      fundDeal: "Contactar / Enviar Oferta",
+      arv: "Valor Estimado (ARV)",
+      rehab: "Presupuesto de Remodelación",
+      aiComps: "Comparables (RentCast API)",
+      verifiedInvestor: "Inversor Verificado",
+      identityConfirmed: "Identidad confirmada",
+      pmlRating: "Calificación PML",
+      history: "Historial",
+      fundingVerification: "Verificación de Fondeo",
+      completed: "Completada",
+      dealsCompleted: "tratos completados",
+      months: "meses"
+    }
+  },
+  managePayments: {
+    title: "Gestión de Pagos",
+    subtitle: "Administra tus métodos de pago y revisa tus próximos cobros automáticos (ACH).",
+    autopay: "Autopay (ACH)",
+    autopayDesc: "Los pagos se deducirán automáticamente en la fecha de vencimiento configurada en el pagaré.",
+    addAccount: "Vincular Cuenta Bancaria",
+    upcomingTitle: "Próximos Cargos Programados",
+    historyTitle: "Historial de Transacciones",
+    back: "Volver al panel"
   },
   commitmentLetter: {
     title: "Carta de Compromiso",
     subtitle: "Acuerdo vinculante entre el prestatario y el prestamista.",
     fees: {
       title: "Resumen de Tarifas (Al Cierre)",
-      origination: "Puntos de Originacion",
+      origination: "Puntos de Originación",
       processing: "Tarifa de Procesamiento",
       underwriting: "Tarifa de Underwriting",
-      platform: "Tarifa de Conexion PML",
+      platform: "Tarifa de Conexión PML",
       totalDue: "Total a pagar al cierre (Prestatario)"
     },
     actions: {
       accept: "Aceptar y Firmar",
       decline: "Rechazar"
     },
-    disclaimer: "Al aceptar, esta carta se enviara automaticamente a la notaria (Title Company) y a la aseguradora."
+    achModal: {
+      title: "Configurar Domiciliación (ACH)",
+      subtitle: "Para completar la firma, selecciona la cuenta bancaria de donde se descontarán automáticamente tus pagos mensuales a partir de la fecha de inicio.",
+      selectAccount: "Selecciona una cuenta vinculada",
+      confirmBtn: "Confirmar ACH y Firmar",
+      cancel: "Cancelar"
+    },
+    disclaimer: "Al aceptar, esta carta se enviará automáticamente a la notaría (Title Company) y a la aseguradora. Dueño a Dueño LLC opera como un conector tecnológico, no origina, fondea, ni administra el préstamo por sí mismo."
   },
   payoff: {
-    title: "Solicitud de Liquidacion",
-    requestBtn: "Generar Carta de Liquidacion",
+    title: "Solicitud de Liquidación",
+    requestBtn: "Generar Carta de Liquidación",
     expectedDate: "Fecha esperada de cierre",
     successAlert: "Solicitud enviada al prestamista."
   },
@@ -944,37 +1017,37 @@ dashboardBorrower: {
     borrower: "Prestatario",
     lender: "Prestamista",
     stats: {
-      totalLoans: "Prestamos Totales",
+      totalLoans: "Préstamos Totales",
       onTime: "Tasa de Pago a Tiempo",
       totalVolume: "Volumen Total",
-      rating: "Calificacion PML"
+      rating: "Calificación PML"
     },
     history: "Historial de Proyectos",
-    emptyHistory: "No hay proyectos completados aun.",
-    mapHistory: "Mapear historial aqui..."
+    emptyHistory: "No hay proyectos completados aún.",
+    mapHistory: "Mapear historial aquí..."
   },
   vetting: {
-    title: "Aplicacion y Verificacion",
+    title: "Aplicación y Verificación",
     subtitle: "Completa tu perfil para acceder a capital privado.",
-    feeNotice: "Tarifa de aplicacion (no reembolsable)",
+    feeNotice: "Tarifa de aplicación (no reembolsable)",
     form: {
       entityDocs: "Documentos de la Entidad (LLC/Corp)",
-      bankStatements: "Estados de Cuenta (Ultimos 3 meses)",
-      idUpload: "Identificacion Oficial",
+      bankStatements: "Estados de Cuenta (Últimos 3 meses)",
+      idUpload: "Identificación Oficial",
       submitAndPay: "Pagar $99 y Enviar",
       selectFile: "Seleccionar archivo",
       dealHistory: "Historial de Proyectos (Past Deal History)",
       dealHistoryPh: "Describe brevemente tus proyectos anteriores (ej. 3 flips completados en 2025, 2 propiedades de renta...)",
-      consentCredit: "Autorizo a Dueño a Dueño LLC y sus prestamistas asociados a realizar una verificacion de credito (Credit Pull).",
-      consentBackground: "Autorizo a Dueño a Dueño LLC a realizar una verificacion de antecedentes (Background Check).",
-      consentAlert: "Debes aceptar las verificaciones de credito y antecedentes para continuar."
+      consentCredit: "Autorizo a Dueño a Dueño LLC y sus prestamistas asociados a realizar una verificación de crédito (Credit Pull).",
+      consentBackground: "Autorizo a Dueño a Dueño LLC a realizar una verificación de antecedentes (Background Check).",
+      consentAlert: "Debes aceptar las verificaciones de crédito y antecedentes para continuar."
     }
   },
   issueCommitment: {
     title: "Emitir Carta de Compromiso",
     subtitle: "Configura las tarifas para el trato REF:",
     closingFeesTitle: "Tarifas al Cierre (Closing Fees)",
-    originationPoints: "Puntos de Originacion (%)",
+    originationPoints: "Puntos de Originación (%)",
     processingFee: "Tarifa de Procesamiento ($)",
     underwritingFee: "Tarifa de Underwriting ($)",
     docPrepFee: "Doc Prep Fee ($)",
@@ -989,33 +1062,33 @@ dashboardBorrower: {
     phPoints: "Ej. 2",
     phFee: "Ej. 500",
     systemNoteTitle: "Nota del Sistema:",
-    systemNote: "La Tarifa de Conexion del Marketplace (1 punto, min $999) sera agregada automaticamente al resumen final por la plataforma si aplica para este trato.",
+    systemNote: "La Tarifa de Conexión del Marketplace (1 punto, mín $999) será agregada automáticamente al resumen final por la plataforma si aplica para este trato.",
     submit: "Generar y Emitir Carta",
     submitting: "Emitiendo..."
   },
   inviteModal: {
     title: "Invitar al Portal",
-    subtitle: "Comparte este enlace para un trato directo. Los tratos privados (sin marketplace) tienen $0 de tarifa de conexion.",
+    subtitle: "Comparte este enlace para un trato directo. Los tratos privados (sin marketplace) tienen $0 de tarifa de conexión.",
     copyLink: "Copiar enlace",
     linkCopied: "¡Copiado!",
-    emailLabel: "O envia una invitacion por correo:",
+    emailLabel: "O envía una invitación por correo:",
     emailPh: "correo@ejemplo.com",
-    sendBtn: "Enviar Invitacion",
+    sendBtn: "Enviar Invitación",
     sending: "Enviando...",
-    successMsg: "Invitacion enviada exitosamente.",
+    successMsg: "Invitación enviada exitosamente.",
     close: "Cerrar"
   },
   documentVault: {
-    title: "Boveda de Documentos",
+    title: "Bóveda de Documentos",
     subtitle: "Sube, revisa o descarga documentos legales asociados a este trato.",
     uploadBtn: "Subir Documento",
     uploading: "Subiendo...",
-    empty: "No hay documentos en esta boveda.",
+    empty: "No hay documentos en esta bóveda.",
     table: {
       name: "Nombre del Documento",
       date: "Fecha de Subida",
       status: "Estado",
-      action: "Accion"
+      action: "Acción"
     },
     actions: {
       download: "Descargar",
@@ -1028,19 +1101,21 @@ dashboardBorrower: {
     }
   },
   settings: {
-    title: "Configuracion de Perfil",
+    title: "Configuración de Perfil",
     subtitle: "Administra tus preferencias, datos bancarios y contactos de cierre.",
     saveBtn: "Guardar Cambios",
     saving: "Guardando...",
-    success: "Configuracion actualizada.",
+    success: "Configuración actualizada.",
     tabs: {
       lender: "Preferencias de Prestamista",
       borrower: "Preferencias de Prestatario"
     },
     lender: {
-      geography: "Areas Geograficas Preferidas",
+      geography: "Áreas Geográficas Preferidas",
       geographyPh: "Ej. Texas, Florida, Todo US",
-      loanTypes: "Tipos de Prestamo",
+      availableCapital: "Capital Disponible para Desplegar ($)",
+      availableCapitalPh: "Ej. 500000",
+      loanTypes: "Tipos de Préstamo",
       entities: "Entidades Prestamistas (LLC/Corp)",
       entitiesPh: "Ej. NextGen Growth LLC",
       achTitle: "Cuenta Bancaria Asociada (ACH)",
@@ -1048,23 +1123,23 @@ dashboardBorrower: {
       accountNum: "Account Number"
     },
     borrower: {
-      attorneyTitle: "Abogado de Cierre / Titulo",
-      attorneyName: "Nombre de la Compañia o Abogado",
+      attorneyTitle: "Abogado de Cierre / Título",
+      attorneyName: "Nombre de la Compañía o Abogado",
       attorneyEmail: "Correo del Abogado",
-      insuranceTitle: "Compañia de Seguros",
+      insuranceTitle: "Compañía de Seguros",
       insuranceName: "Nombre de la Aseguradora",
       insuranceEmail: "Correo del Agente"
     }
   },
   billing: {
     bannerTitle: "Prueba Gratuita",
-    bannerText: "Te quedan 3 dias de tu prueba gratuita de 7 dias.",
-    bannerCta: "Activar Suscripcion",
-    title: "Suscripcion Mensual",
-    subtitle: "Para continuar usando PayMyLoan.ai como prestatario, activa tu suscripcion de $9/mes.",
+    bannerText: "Te quedan 3 días de tu prueba gratuita de 7 días.",
+    bannerCta: "Activar Suscripción",
+    title: "Suscripción Mensual",
+    subtitle: "Para continuar usando PayMyLoan.ai como prestatario, activa tu suscripción de $9/mes.",
     planName: "Plan Prestatario Activo",
     planPrice: "$9.00 / mes",
-    cardLabel: "Informacion de Tarjeta (Stripe)",
+    cardLabel: "Información de Tarjeta (Stripe)",
     payBtn: "Suscribirse por $9/mes",
     processing: "Procesando...",
     secureNote: "Pagos procesados de forma segura por Stripe. Puedes cancelar en cualquier momento."
@@ -1072,21 +1147,22 @@ dashboardBorrower: {
   loanTypes: {
     interestOnlyShort: "Interest Only (Corto Plazo)",
     interestOnlyLong: "Interest Only (Largo Plazo)",
-    fullyAmortized: "Totalmente Amortizado"
+    fullyAmortized: "Totalmente Amortizado",
+    constructionDraw: "Construction Draw Loan (Próximamente)"
   },
   notifications: {
     title: "Notificaciones",
     empty: "No tienes notificaciones nuevas.",
-    markRead: "Marcar todas como leidas"
+    markRead: "Marcar todas como leídas"
   },
   rateLender: {
     title: "Calificar al Prestamista",
-    subtitle: "Tu prestamo ha finalizado. ¿Como fue tu experiencia con",
-    ratingLabel: "Calificacion",
-    reviewLabel: "Reseña publica (opcional)",
+    subtitle: "Tu préstamo ha finalizado. ¿Cómo fue tu experiencia con",
+    ratingLabel: "Calificación",
+    reviewLabel: "Reseña pública (opcional)",
     reviewPh: "Escribe sobre tu experiencia trabajando con este prestamista...",
-    submit: "Enviar Calificacion",
-    success: "¡Gracias! Tu calificacion ha sido publicada en el perfil del prestamista.",
+    submit: "Enviar Calificación",
+    success: "¡Gracias! Tu calificación ha sido publicada en el perfil del prestamista.",
     close: "Cerrar"
   }
 };
@@ -1106,7 +1182,7 @@ const en: Copy = {
     brandSuffix: ".ai",
     links: [
       { href: "#como-funciona", label: "How it works" },
-      { href: "#costo", label: "Payment cost" },
+      { href: "#costo", label: "Platform cost" },
       { href: "#seguridad", label: "Security" },
     ],
     features: "Features",
@@ -1482,7 +1558,7 @@ const en: Copy = {
     desc: "Every deal, every payment, every loan builds your PML profile. Borrowers find lenders. Lenders vet borrowers. Both sides know exactly who they're dealing with.",
     borrower: {
       badge: "Borrower Profile",
-      name: "Spencer Shadrach",
+      name: "Liam Brown",
       location: "Memphis, TN · Real Estate Investor",
       stat1Label: "Total Loans",
       stat1Value: "14",
@@ -1563,23 +1639,23 @@ const en: Copy = {
   },
 
   cost: {
-    eyebrow: "Payment cost",
-    title: "ACH is capped. That is what makes it work for large payments.",
-    lead: "Processing costs 0.8%, capped at $5.00 per transaction. Anything above $625 pays the cap, so the larger the monthly payment, the cheaper it gets as a percentage.",
-    tableHead: ["Monthly payment", "ACH fee", "Effective %"],
+    eyebrow: "Platform cost",
+    title: "Transparent structure, no hidden fees.",
+    lead: "Costs are clearly defined. ACH processing costs base ACH + $9/month per loan (capped at $99/month).",
+    tableHead: ["Fee Type", "Amount", "When it is charged"],
     rows: [
-      ["$400", "$3.20", "0.80%"],
-      ["$625", "$5.00", "0.80%"],
-      ["$1,200", "$5.00", "0.42%"],
-      ["$2,500", "$5.00", "0.20%"],
-      ["$5,000", "$5.00", "0.10%"],
+      ["Borrower Subscription", "$9.00 / mo", "Monthly after 7-day trial"],
+      ["Application / Vetting", "$99.00", "One-time when applying"],
+      ["Marketplace Connection", "1% (Min $999)", "At closing only (Public deals)"],
+      ["Private Deals", "$0.00", "Direct invitation"],
+      ["ACH Processing", "ACH Cost + $9", "Monthly per loan (Max $99)"],
     ],
-    compareLabel: "For comparison",
+    compareLabel: "Platform Legal Notice",
     compare:
-      "A $2,400 payment costs $5.00 by ACH. The same transaction on a card would cost close to $70.",
-    pendingLabel: "Still to be defined",
+      "Dueño a Dueño LLC operates solely as a technology connection platform. We are not a lender or broker. All platform fees are broken down prior to closing.",
+    pendingLabel: "About Lender Fees",
     pending:
-      "Platform fee: [TO BE DEFINED]. Who absorbs the processing fee —borrower, lender or platform—: [TO BE DEFINED].",
+      "Lenders configure their own fees (Origination, Processing, Underwriting, Doc Prep) and penalties, which are added transparently to your Commitment Letter.",
   },
 
   security: {
@@ -1806,10 +1882,30 @@ dashboardLender: {
   title: "Lender Dashboard",
   subtitle: "Total control over your capital and yields.",
   metrics: {
+    availableCapital: "Capital (Available / Deployed)",
     capitalDeployed: "Capital Deployed",
     nextPayments: "Next Payments (30 days)",
     avgInterest: "Avg. Interest Rate",
     activeBorrowers: "Active Borrowers"
+  },
+  sections: {
+    commitmentLetters: "Sent Commitment Letters",
+    upcomingClosings: "Upcoming Closings / Payoffs",
+    activeLoans: "Active Loans (Return)",
+  },
+  tableHeaders: {
+    borrower: "Borrower",
+    amount: "Amount",
+    status: "Status",
+    type: "Type",
+    date: "Date",
+    action: "Action",
+    loan: "Loan",
+    rateBalance: "Rate / Balance"
+  },
+  labels: {
+    cap: "Prin:",
+    int: "Int:"
   },
   recentPayments: "Latest Received Payments",
   actions: {
@@ -1858,11 +1954,14 @@ pitchDeckModal: {
   rehabAmountPh: "E.g. 45000",
   loanAmount: "Requested Amount ($)",
   loanAmountPh: "E.g. 250000",
-  loanTerm: "Loan Term (Months)",
+  loanType: "Loan Type",
+  loanTypeSelect: "Select loan type",
+  loanTerm: "Loan Term",
   loanTermSelect: "Select the term",
   term12: "12 Months",
   term24: "24 Months",
   term36: "36 Months",
+  years: "Years",
   address: "Property Address",
   addressPh: "E.g. 123 Main St, Austin, TX",
   type: "Type",
@@ -1880,6 +1979,7 @@ pitchDeckModal: {
   supportedFiles: "Supports JPG, PNG (Max 5MB)",
   photoGuidelines: "Front, Kitchen, Baths, Yard, Roof",
   rentcastTitle: "Generated Comparables (RentCast API)",
+  rentcastParams: "Search: 0.5 miles, same sqft, last 6 months",
   aiEvaluated: "AI Evaluated",
   saleComps: "Sale Comps",
   rentComps: "Rent Comps",
@@ -1909,6 +2009,15 @@ dashboardBorrower: {
     completedLoans: "Completed Loans",
     emptyTable: "Live loan table will be rendered here.",
     emptyDocs: "Generated commitment letters and payoff statements will appear here.",
+    tableHeaders: {
+      property: "Property",
+      amount: "Amount / Balance",
+      lender: "Lender",
+      rate: "Rate",
+      status: "Status",
+      date: "Date / Next Pmt",
+      action: "Action"
+    },
     actions: {
       pitchDeck: "Generate Pitch Deck",
       payoff: "Request Payoff",
@@ -1938,12 +2047,14 @@ dashboardBorrower: {
     parties: "Parties Involved",
     financials: "Financial Terms",
     breakdownTitle: "Payment History",
+    exportReport: "Export Report (CPA Ready)",
     labels: {
       lender: "Lender",
       borrower: "Borrower",
       amount: "Total Amount",
       term: "Term",
       interest: "Interest",
+      loanType: "Loan Type",
       downPayment: "Down Payment / Deposit",
       rent: "Monthly Payment"
     },
@@ -1991,7 +2102,36 @@ dashboardBorrower: {
       borrowerScore: "PML Rating",
       action: "View Deal"
     },
-    empty: "No public deals available at the moment."
+    empty: "No public deals available at the moment.",
+    dealDetails: {
+      title: "Deal Details",
+      back: "Back to marketplace",
+      overview: "Deal Overview",
+      propertyDetails: "Property Details",
+      borrowerProfile: "Borrower Profile",
+      fundDeal: "Contact / Send Offer",
+      arv: "Estimated Value (ARV)",
+      rehab: "Rehab Budget",
+      aiComps: "Comparables (RentCast API)",
+      verifiedInvestor: "Verified Investor",
+      identityConfirmed: "Identity confirmed",
+      pmlRating: "PML Rating",
+      history: "Track Record",
+      fundingVerification: "Funding Verification",
+      completed: "Completed",
+      dealsCompleted: "deals completed",
+      months: "months"
+    }
+  },
+  managePayments: {
+    title: "Payment Management",
+    subtitle: "Manage your payment methods and review your upcoming automatic (ACH) charges.",
+    autopay: "Autopay (ACH)",
+    autopayDesc: "Payments will be automatically deducted on the due date set in the promissory note.",
+    addAccount: "Link Bank Account",
+    upcomingTitle: "Upcoming Scheduled Charges",
+    historyTitle: "Transaction History",
+    back: "Back to dashboard"
   },
   commitmentLetter: {
     title: "Commitment Letter",
@@ -2008,7 +2148,14 @@ dashboardBorrower: {
       accept: "Accept & Sign",
       decline: "Decline"
     },
-    disclaimer: "Upon acceptance, this letter will be automatically sent to the Title Company and Insurance Company."
+    achModal: {
+      title: "Set Up Autopay (ACH)",
+      subtitle: "To complete the signature, select the bank account from which your monthly payments will be automatically deducted starting on the commencement date.",
+      selectAccount: "Select a linked account",
+      confirmBtn: "Confirm ACH & Sign",
+      cancel: "Cancel"
+    },
+    disclaimer: "Upon acceptance, this letter will be automatically sent to the Title Company and Insurance Company. Dueño a Dueño LLC operates as a technology connector, and does not originate, fund, or service the loan itself."
   },
   payoff: {
     title: "Payoff Request",
@@ -2117,6 +2264,8 @@ dashboardBorrower: {
     lender: {
       geography: "Preferred Geographic Areas",
       geographyPh: "E.g. Texas, Florida, Nationwide",
+      availableCapital: "Available Capital to Deploy ($)",
+      availableCapitalPh: "E.g. 500000",
       loanTypes: "Preferred Loan Types",
       entities: "Lending Entities (LLC/Corp)",
       entitiesPh: "E.g. NextGen Growth LLC",
@@ -2149,7 +2298,8 @@ dashboardBorrower: {
   loanTypes: {
     interestOnlyShort: "Interest Only (Short Term)",
     interestOnlyLong: "Interest Only (Long Term)",
-    fullyAmortized: "Fully Amortized"
+    fullyAmortized: "Fully Amortized",
+    constructionDraw: "Construction Draw Loan (Coming Soon)"
   },
   notifications: {
     title: "Notifications",

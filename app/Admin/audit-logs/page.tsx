@@ -40,7 +40,7 @@ export default async function AuditLogsPage({ searchParams }: PageProps) {
       actorName: "Webhook LeadConnector",
       action: "CRM_SYNC_SUCCESS",
       entityType: "INTEGRATION",
-      description: "Sincronización exitosa del prospecto Spencer Shadrach hacia GoHighLevel.",
+      description: "Sincronización exitosa del prospecto Liam Brown hacia GoHighLevel.",
       createdAt: new Date().toISOString(),
     },
     {

@@ -28,6 +28,18 @@ function BorrowerDashboardContent() {
       { id: 1, text: "Pago automatico procesado por $4,500.", time: "Hace 2 horas", type: "success" },
       { id: 2, text: "Consulta de NextGen Growth LLC sobre tu Pitch Deck.", time: "Ayer", type: "info" }
     ],
+    upcomingClosings: [
+      { id: "UC-01", property: "105 Maple Dr", type: "Payoff", date: "Sep 20, 2026", status: "Esperando cierre" }
+    ],
+    needFunding: [
+      { id: "NF-01", property: "88 Maple Dr", amount: "$150,000", status: "Publicado" }
+    ],
+    loanApproved: [
+      { id: "LA-01", property: "456 Oak Ave", amount: "$320,000", lender: "NextGen Growth LLC", status: "Firma Pendiente" }
+    ],
+    currentLoans: [
+      { id: "AL-01", property: "123 Main St", lender: "Private Capital Group", balance: "$250,000", rate: "12%", nextPayment: "Oct 1, 2026" }
+    ],
     completedLoans: [
       { id: "CTR-009", lender: "Private Capital Group", property: "105 Maple Dr", payoffDate: "12 Ago 2026" }
     ]
@@ -91,6 +103,9 @@ function BorrowerDashboardContent() {
           <button onClick={() => setIsPitchModalOpen(true)} className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
             + {d.actions.pitchDeck}
           </button>
+          <Link href="/borrower/payments" className="inline-flex items-center justify-center rounded-lg bg-ink px-5 py-3 text-sm font-bold text-bg transition-opacity hover:opacity-90 shadow-sm">
+            {d.actions.payments}
+          </Link>
           <Link href="/contracts" className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-5 py-3 text-sm font-bold text-accent transition-colors hover:opacity-80">
             {d.actions.viewContracts}
           </Link>
@@ -105,29 +120,125 @@ function BorrowerDashboardContent() {
         {/* Tracking */}
         <section className="mb-10">
           <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-accent">{d.trackerTitle}</h2>
-          <div className="rounded-xl border border-rule bg-surface p-8 text-center text-ink-2">
-            <p>{d.trackerEmpty}</p>
+          <div className="overflow-x-auto rounded-xl border border-rule bg-surface shadow-sm">
+            <table className="w-full text-left text-[14px]">
+              <thead className="border-b border-rule bg-surface-2">
+                <tr>
+                  <th className="px-5 py-3 font-bold text-ink-3">{d.tableHeaders?.property}</th>
+                  <th className="px-5 py-3 font-bold text-ink-3">{d.tableHeaders?.status}</th>
+                  <th className="px-5 py-3 font-bold text-ink-3">{d.tableHeaders?.date}</th>
+                </tr>
+              </thead>
+              <tbody className="text-ink-2 divide-y divide-rule">
+                {mockData.upcomingClosings.map(closing => (
+                  <tr key={closing.id} className="hover:bg-surface-2 transition-colors">
+                    <td className="px-5 py-3">
+                      <div className="font-medium text-ink">{closing.property}</div>
+                      <div className="text-[11px] text-ink-3">{closing.type}</div>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="inline-flex rounded-[4px] border border-amber/30 bg-amber-soft px-2 py-0.5 text-[10px] font-bold text-amber">
+                        {closing.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-sm">{closing.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
-        {/* Tablas */}
+        {/* Tablas (Need Funding & Loan Approved) */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 mb-10">
           <section>
             <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">{d.needFunding}</h2>
-            <div className="rounded-xl border border-rule bg-surface p-8 text-center text-ink-2"><p>{d.emptyTable}</p></div>
+            <div className="overflow-x-auto rounded-xl border border-rule bg-surface shadow-sm">
+              <table className="w-full text-left text-[14px]">
+                <thead className="border-b border-rule bg-surface-2">
+                  <tr>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.property}</th>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.amount}</th>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.status}</th>
+                  </tr>
+                </thead>
+                <tbody className="text-ink-2 divide-y divide-rule">
+                  {mockData.needFunding.map((nf) => (
+                    <tr key={nf.id} className="hover:bg-surface-2 transition-colors">
+                      <td className="px-4 py-3 font-medium text-ink">{nf.property}</td>
+                      <td className="px-4 py-3 font-mono font-bold text-accent">{nf.amount}</td>
+                      <td className="px-4 py-3 text-[11px] uppercase tracking-wider text-ink-3">{nf.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </section>
           
           <section>
             <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">{d.loanApproved}</h2>
-            <div className="rounded-xl border border-rule bg-surface p-8 text-center text-ink-2"><p>{d.emptyTable}</p></div>
+            <div className="overflow-x-auto rounded-xl border border-rule bg-surface shadow-sm">
+              <table className="w-full text-left text-[14px]">
+                <thead className="border-b border-rule bg-surface-2">
+                  <tr>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.property}</th>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.lender}</th>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.status}</th>
+                  </tr>
+                </thead>
+                <tbody className="text-ink-2 divide-y divide-rule">
+                  {mockData.loanApproved.map((la) => (
+                    <tr key={la.id} className="hover:bg-surface-2 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-ink">{la.property}</div>
+                        <div className="text-[11px] text-ink-3 font-mono font-bold text-ink">{la.amount}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm">{la.lender}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex rounded-[4px] border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:border-blue-900/40 dark:bg-blue-900/10 dark:text-blue-400">
+                          {la.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </section>
+        </div>
 
+        {/* Current Loans & Completed Loans */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 mb-10">
           <section>
             <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">{d.currentLoans}</h2>
-            <div className="rounded-xl border border-rule bg-surface p-8 text-center text-ink-2"><p>{d.emptyTable}</p></div>
+            <div className="overflow-x-auto rounded-xl border border-rule bg-surface shadow-sm">
+              <table className="w-full text-left text-[14px]">
+                <thead className="border-b border-rule bg-surface-2">
+                  <tr>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.property}</th>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.amount}</th>
+                    <th className="px-4 py-3 font-bold text-ink-3">{d.tableHeaders?.date}</th>
+                  </tr>
+                </thead>
+                <tbody className="text-ink-2 divide-y divide-rule">
+                  {mockData.currentLoans.map((cl) => (
+                    <tr key={cl.id} className="hover:bg-surface-2 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-ink">{cl.property}</div>
+                        <div className="text-[11px] text-ink-3">{cl.lender}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-bold text-ink font-mono">{cl.balance}</div>
+                        <div className="text-[11px] text-accent font-bold">{cl.rate}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm">{cl.nextPayment}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </section>
 
-          {/* Préstamos Completados - Aquí agregamos el botón de calificar prestamista */}
           <section>
             <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-ink-3">{d.completedLoans}</h2>
             <div className="rounded-xl border border-rule bg-surface p-2 shadow-sm overflow-hidden">
@@ -148,6 +259,7 @@ function BorrowerDashboardContent() {
             </div>
           </section>
         </div>
+
       </div>
 
       {isPitchModalOpen && <PitchDeckModal onClose={() => setIsPitchModalOpen(false)} />}
