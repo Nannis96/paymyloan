@@ -39,6 +39,7 @@ const es = {
     cta: "Ingresar",
     themeToggle: "Cambiar tema",
     langToggle: "Cambiar idioma",
+    backToDashboard: "Volver al panel",
   },
 
   hero: {
@@ -132,7 +133,18 @@ const es = {
     forgot: "OLVIDÉ MI CONTRASEÑA",
     back: "VOLVER AL INICIO",
     noAccount: "¿Aún no tienes cuenta?",
-    signup: "Regístrate aquí"
+    signup: "Regístrate aquí",
+    processing: "Procesando...",
+    twoFactorTitle: "VERIFICACIÓN 2FA",
+    twoFactorDesc: "Ingresa el código de 6 dígitos de tu aplicación autenticadora o un código de recuperación.",
+    twoFactorLabel: "Código de verificación",
+    twoFactorPlaceholder: "Ej. 123456",
+    twoFactorVerifying: "Verificando...",
+    twoFactorConfirm: "CONFIRMAR",
+    twoFactorCancel: "Cancelar",
+    errorDefault: "Error al iniciar sesión",
+    error2FA: "Código 2FA incorrecto o expirado",
+    errorNetwork: "Error de red desconocido",
   },
 
   pmlHero: {
@@ -690,7 +702,11 @@ const es = {
     recentActivity: "Actividad Reciente del Sistema",
     addUserBtn: "Agregar Usuario",
     viewUsersBtn: "Ver Usuarios",
-    viewContractsBtn: "Ver Contratos"
+    viewContractsBtn: "Ver Contratos",
+    loading: "Cargando métricas...",
+    errorAuth: "Sesión no válida o no iniciada.",
+    errorFetch: "Error al cargar datos del administrador.",
+    errorNetwork: "Error de red desconocido"
   },
 
   adminUsersList: {
@@ -701,10 +717,19 @@ const es = {
       type: "Tipo",
       email: "Correo electrónico",
       phone: "Teléfono",
-      role: "Rol"
+      role: "Rol",
+      status: "Estado"
     },
     back: "Volver al panel",
-    addUserBtn: "Agregar Usuario"
+    addUserBtn: "Agregar Usuario",
+    loading: "Cargando usuarios...",
+    empty: "No hay usuarios registrados.",
+    errorAuth: "No tienes permisos de administrador o tu sesión expiró.",
+    errorFetch: "Error al obtener usuarios.",
+    errorNetwork: "Error de red desconocido",
+    active: "Activo",
+    inactive: "Inactivo",
+    na: "N/D"
   },
 
   adminAddUser: {
@@ -723,7 +748,16 @@ const es = {
     phoneLabel: "Teléfono",
     phonePh: "Ej. 555 123 4567",
     submit: "Registrar cuenta",
-    back: "Volver al panel"
+    back: "Volver al panel",
+    submitting: "Registrando...",
+    phoneHint: "Debe tener exactamente 10 dígitos (opcional).",
+    errorFetch: "Error al crear el usuario.",
+    errorNetwork: "Error de red desconocido",
+    successTitle: "¡Usuario creado exitosamente!",
+    successDesc1: "Se ha registrado la cuenta para",
+    successTempPw: "Contraseña temporal generada:",
+    successCreateAnother: "Crear otro",
+    successViewList: "Ver listado"
   },
 
   dashboardLender: {
@@ -772,9 +806,18 @@ const es = {
       principal: "Capital",
       interest: "Interés"
     },
-    emptyHistory: "El resto del historial se renderizará aquí."
+    emptyHistory: "El resto del historial se renderizará aquí.",
+    loading: "Cargando dashboard...",
+    errorAuth: "Sesión no válida o no iniciada.",
+    errorFetch: "Error al cargar la información del dashboard",
+    errorNetwork: "Error de red desconocido",
+    unassigned: "Sin asignar",
+    borrowerFallback: "Deudor",
+    emptyCommitments: "No hay compromisos pendientes",
+    emptyClosings: "No hay cierres próximos en el sistema.",
+    emptyLoans: "Sin préstamos activos",
+    emptyPayments: "No hay pagos procesados recientemente."
   },
-
   auditLogs: {
   searchPlaceholder: "Buscar por accion o descripcion...",
   allRoles: "Todos los Roles",
@@ -841,6 +884,29 @@ pitchDeckModal: {
   successDesc: "Tu solicitud ha sido enviada. Los prestamistas ahora pueden ver tu trato y enviar ofertas.",
   backToDash: "Volver al Dashboard"
 },
+dashboardBookkeeper: {
+    title: "Panel de Contabilidad",
+    subtitle: "Registros claros y exportables de capital e intereses para el cierre contable.",
+    metrics: {
+      activeLoans: "Préstamos Activos",
+      totalInterest: "Intereses Pagados (YTD)",
+      totalPrincipal: "Capital Pagado (YTD)"
+    },
+    exportBtn: "Exportar Reporte Anual",
+    tableHeaders: {
+      property: "Propiedad",
+      borrower: "Prestatario",
+      lender: "Prestamista",
+      interest: "Interés",
+      principal: "Capital",
+      action: "Acción"
+    },
+    loading: "Cargando registros contables...",
+    empty: "No hay registros disponibles.",
+    errorAuth: "Sesión no válida o sin permisos de contabilidad.",
+    errorFetch: "Error al cargar los datos contables.",
+    errorNetwork: "Error de red desconocido"
+  },
 dashboardBorrower: {
     title: "Panel de Prestatario",
     subtitle: "Tus préstamos, propiedades y saldos en un solo lugar.",
@@ -872,7 +938,18 @@ dashboardBorrower: {
       payoff: "Solicitar Liquidación",
       payments: "Gestionar Pagos",
       viewContracts: "Contratos"
-    }
+    },
+    loading: "Cargando dashboard...",
+    errorAuth: "Sesión no válida o no iniciada.",
+    errorFetch: "Error al cargar la información del dashboard",
+    errorNetwork: "Error de red desconocido",
+    lenderFallback: "Empresa Prestamista",
+    emptyNeedFunding: "Sin solicitudes pendientes",
+    emptyApproved: "Sin préstamos por aceptar",
+    emptyActive: "Sin préstamos activos",
+    emptyCompleted: "Sin préstamos completados",
+    reviewCommitment: "REVISAR COMPROMISO",
+    paidOff: "Liquidado:"
   },
   contractsList: {
     title: "Contratos y Préstamos",
@@ -888,7 +965,18 @@ dashboardBorrower: {
     },
     status: { active: "Activo", inactive: "Inactivo" },
     viewDetails: "Detalles",
-    back: "Volver al panel"
+    back: "Volver al panel",
+    loading: "Cargando contratos...",
+    empty: "No se encontraron contratos.",
+    errorAuth: "No tienes permisos para ver estos contratos o tu sesión expiró.",
+    errorFetch: "Error al obtener contratos",
+    errorNetwork: "Error de red desconocido",
+    unassigned: "Sin asignar",
+    borrowerFallback: "Deudor",
+    noTerms: "Sin términos",
+    total: "Total:",
+    perMonth: "/mes",
+    interest: "% Int.",
   },
   contractDetail: {
     title: "Detalle del Contrato",
@@ -928,7 +1016,18 @@ dashboardBorrower: {
       page: "Página",
       of: "de"
     },
-    back: "Volver a contratos"
+    back: "Volver a contratos",
+    loading: "Cargando detalles del contrato...",
+    errorNotFound: "No se encontró el contrato.",
+    errorAuth: "No tienes permisos para ver este contrato.",
+    errorFetch: "Error al cargar el contrato",
+    errorNetwork: "Error de red desconocido",
+    months: "meses",
+    noTerms: "Sin términos",
+    emptyPayments: "No hay pagos registrados para este contrato.",
+    generateReportAlert: "Generando reporte CSV/PDF para el CPA...",
+    lenderFallback: "Empresa Prestamista",
+    borrowerFallback: "Prestatario (Deudor)",
   },
   errors: {
       code500: "Error Interno",
@@ -942,6 +1041,7 @@ dashboardBorrower: {
       goHome: "Volver al inicio",
     },
   marketplace: {
+    back: "Volver al panel",
     title: "Mercado de Préstamos",
     subtitle: "Explora solicitudes de préstamo públicas buscando fondeo.",
     table: {
@@ -949,9 +1049,14 @@ dashboardBorrower: {
       amount: "Monto Solicitado",
       term: "Plazo",
       borrowerScore: "Calificación PML",
-      action: "Ver Trato"
+      action: "Ver Trato",
+      closingDate: "Cierre (Est.)"
     },
     empty: "No hay tratos públicos disponibles en este momento.",
+    loading: "Cargando tratos...",
+    errorAuth: "Sesión no válida o no iniciada.",
+    errorFetch: "Error al obtener tratos",
+    errorNetwork: "Error de red desconocido",
     dealDetails: {
       title: "Detalle del Trato",
       back: "Volver al mercado",
@@ -1004,13 +1109,27 @@ dashboardBorrower: {
       confirmBtn: "Confirmar ACH y Firmar",
       cancel: "Cancelar"
     },
-    disclaimer: "Al aceptar, esta carta se enviará automáticamente a la notaría (Title Company) y a la aseguradora. Dueño a Dueño LLC opera como un conector tecnológico, no origina, fondea, ni administra el préstamo por sí mismo."
+    disclaimer: "Al aceptar, esta carta se enviará automáticamente a la notaría (Title Company) y a la aseguradora. Dueño a Dueño LLC opera como un conector tecnológico, no origina, fondea, ni administra el préstamo por sí mismo.",
+    loading: "Cargando carta de compromiso...",
+    errorAuth: "Sesión no válida o no iniciada.",
+    errorFetch: "Error al obtener los términos del contrato",
+    errorAccept: "Error al aceptar los términos",
+    errorReject: "Error al rechazar los términos",
+    errorNetwork: "Error de red desconocido",
+    paidTo: "Pagado a Dueño a Dueño LLC",
+    customFeeFallback: "Tarifa",
+    rejectCommentPh: "Motivo del rechazo (opcional)...",
+    rejecting: "Rechazando...",
+    accepting: "Aceptando..."
   },
   payoff: {
     title: "Solicitud de Liquidación",
     requestBtn: "Generar Carta de Liquidación",
     expectedDate: "Fecha esperada de cierre",
-    successAlert: "Solicitud enviada al prestamista."
+    successAlert: "Solicitud enviada al prestamista.",
+    processing: "Procesando...",
+    errorFetch: "Error al procesar la solicitud",
+    errorNetwork: "Error de red desconocido"
   },
   profile: {
     title: "Perfil PML",
@@ -1064,7 +1183,9 @@ dashboardBorrower: {
     systemNoteTitle: "Nota del Sistema:",
     systemNote: "La Tarifa de Conexión del Marketplace (1 punto, mín $999) será agregada automáticamente al resumen final por la plataforma si aplica para este trato.",
     submit: "Generar y Emitir Carta",
-    submitting: "Emitiendo..."
+    submitting: "Emitiendo...",
+    errorFetch: "Error al emitir la carta de compromiso",
+    errorNetwork: "Error de red desconocido"
   },
   inviteModal: {
     title: "Invitar al Portal",
@@ -1192,6 +1313,7 @@ const en: Copy = {
     cta: "Log in",
     themeToggle: "Switch theme",
     langToggle: "Switch language",
+    backToDashboard: "Back to dashboard",
   },
 
   hero: {
@@ -1286,7 +1408,18 @@ const en: Copy = {
     forgot: "I'VE FORGOTTEN MY PASSWORD",
     back: "BACK TO HOME",
     noAccount: "Don't have an account yet?",
-    signup: "Sign up here"
+    signup: "Sign up here",
+    processing: "Processing...",
+    twoFactorTitle: "2FA VERIFICATION",
+    twoFactorDesc: "Enter the 6-digit code from your authenticator app or a recovery code.",
+    twoFactorLabel: "Verification code",
+    twoFactorPlaceholder: "E.g. 123456",
+    twoFactorVerifying: "Verifying...",
+    twoFactorConfirm: "CONFIRM",
+    twoFactorCancel: "Cancel",
+    errorDefault: "Failed to log in",
+    error2FA: "Incorrect or expired 2FA code",
+    errorNetwork: "Unknown network error",
   },
 
   pmlHero: {
@@ -1843,7 +1976,11 @@ const en: Copy = {
     recentActivity: "Recent System Activity",
     addUserBtn: "Add User",
     viewUsersBtn: "View Users",
-    viewContractsBtn: "View Contracts"
+    viewContractsBtn: "View Contracts",
+    loading: "Loading metrics...",
+    errorAuth: "Invalid or expired session.",
+    errorFetch: "Failed to load admin data.",
+    errorNetwork: "Unknown network error"
   },
 
   adminUsersList: {
@@ -1854,10 +1991,19 @@ const en: Copy = {
       type: "Type",
       email: "Email",
       phone: "Phone",
-      role: "Role"
+      role: "Role",
+      status: "Status"
     },
     back: "Back to dashboard",
-    addUserBtn: "Add User"
+    addUserBtn: "Add User",
+    loading: "Loading users...",
+    empty: "No users registered.",
+    errorAuth: "You don't have admin permissions or your session expired.",
+    errorFetch: "Error fetching users.",
+    errorNetwork: "Unknown network error",
+    active: "Active",
+    inactive: "Inactive",
+    na: "N/A"
   },
 
   adminAddUser: {
@@ -1876,7 +2022,16 @@ const en: Copy = {
     phoneLabel: "Phone Number",
     phonePh: "E.g. 555 123 4567",
     submit: "Register account",
-    back: "Back to dashboard"
+    back: "Back to dashboard",
+    submitting: "Registering...",
+    phoneHint: "Must be exactly 10 digits (optional).",
+    errorFetch: "Failed to create user.",
+    errorNetwork: "Unknown network error",
+    successTitle: "User created successfully!",
+    successDesc1: "An account has been registered for",
+    successTempPw: "Temporary password generated:",
+    successCreateAnother: "Create another",
+    successViewList: "View list"
   },
 dashboardLender: {
   title: "Lender Dashboard",
@@ -1917,16 +2072,26 @@ dashboardLender: {
     closed: "Not taking loans"
   },
   table: {
-    date: "Date",
-    borrower: "Borrower",
-    property: "Property",
-    total: "Total Payment",
-    principal: "Principal",
-    interest: "Interest"
+      date: "Date",
+      borrower: "Borrower",
+      property: "Property",
+      total: "Total Payment",
+      principal: "Principal",
+      interest: "Interest"
+    },
+    emptyHistory: "The rest of the history will be rendered here.",
+    loading: "Loading dashboard...",
+    errorAuth: "Invalid or expired session.",
+    errorFetch: "Error loading dashboard information",
+    errorNetwork: "Unknown network error",
+    unassigned: "Unassigned",
+    borrowerFallback: "Borrower",
+    emptyCommitments: "No pending commitments",
+    emptyClosings: "No upcoming closings in the system.",
+    emptyLoans: "No active loans",
+    emptyPayments: "No recently processed payments."
   },
-  emptyHistory: "The rest of the history will be rendered here."
-},
-auditLogs: {
+  auditLogs: {
   searchPlaceholder: "Search by action or description...",
   allRoles: "All Roles",
   system: "System / Webhooks",
@@ -1992,6 +2157,29 @@ pitchDeckModal: {
   successDesc: "Your request has been submitted. Lenders can now view your deal and send offers.",
   backToDash: "Back to Dashboard"
 },
+dashboardBookkeeper: {
+    title: "Bookkeeper Dashboard",
+    subtitle: "Clean, exportable principal and interest records for accounting.",
+    metrics: {
+      activeLoans: "Active Loans",
+      totalInterest: "Interest Paid (YTD)",
+      totalPrincipal: "Principal Paid (YTD)"
+    },
+    exportBtn: "Export Year-End Report",
+    tableHeaders: {
+      property: "Property",
+      borrower: "Borrower",
+      lender: "Lender",
+      interest: "Interest",
+      principal: "Principal",
+      action: "Action"
+    },
+    loading: "Loading accounting records...",
+    empty: "No records available.",
+    errorAuth: "Invalid session or no bookkeeping permissions.",
+    errorFetch: "Error loading accounting data.",
+    errorNetwork: "Unknown network error"
+  },
 dashboardBorrower: {
     title: "Borrower Dashboard",
     subtitle: "Your loans, properties, and balances in one place.",
@@ -2023,7 +2211,18 @@ dashboardBorrower: {
       payoff: "Request Payoff",
       payments: "Manage Payments",
       viewContracts: "Contracts"
-    }
+    },
+    loading: "Loading dashboard...",
+    errorAuth: "Invalid or expired session.",
+    errorFetch: "Error loading dashboard information",
+    errorNetwork: "Unknown network error",
+    lenderFallback: "Lending Company",
+    emptyNeedFunding: "No pending requests",
+    emptyApproved: "No loans pending acceptance",
+    emptyActive: "No active loans",
+    emptyCompleted: "No completed loans",
+    reviewCommitment: "REVIEW COMMITMENT",
+    paidOff: "Paid off:"
   },
   contractsList: {
     title: "Contracts & Loans",
@@ -2039,7 +2238,18 @@ dashboardBorrower: {
     },
     status: { active: "Active", inactive: "Inactive" },
     viewDetails: "Details",
-    back: "Back to dashboard"
+    back: "Back to dashboard",
+    loading: "Loading contracts...",
+    empty: "No contracts found.",
+    errorAuth: "You don't have permission to view these contracts or your session expired.",
+    errorFetch: "Failed to fetch contracts",
+    errorNetwork: "Unknown network error",
+    unassigned: "Unassigned",
+    borrowerFallback: "Borrower",
+    noTerms: "No terms",
+    total: "Total:",
+    perMonth: "/mo",
+    interest: "% Int.",
   },
   contractDetail: {
     title: "Contract Detail",
@@ -2079,7 +2289,18 @@ dashboardBorrower: {
       page: "Page",
       of: "of"
     },
-    back: "Back to contracts"
+    back: "Back to contracts",
+    loading: "Loading contract details...",
+    errorNotFound: "Contract not found.",
+    errorAuth: "You don't have permission to view this contract.",
+    errorFetch: "Failed to load contract",
+    errorNetwork: "Unknown network error",
+    months: "months",
+    noTerms: "No terms",
+    emptyPayments: "No payments recorded for this contract.",
+    generateReportAlert: "Generating CSV/PDF report for CPA...",
+    lenderFallback: "Lending Company",
+    borrowerFallback: "Borrower",
   },
   errors: {
       code500: "Internal Error",
@@ -2093,6 +2314,7 @@ dashboardBorrower: {
       goHome: "Go to homepage",
     },
   marketplace: {
+    back: "Back to dashboard",
     title: "Loan Marketplace",
     subtitle: "Browse public loan requests looking for funding.",
     table: {
@@ -2100,9 +2322,14 @@ dashboardBorrower: {
       amount: "Requested Amount",
       term: "Term",
       borrowerScore: "PML Rating",
-      action: "View Deal"
+      action: "View Deal",
+      closingDate: "Closing Date (Est.)"
     },
     empty: "No public deals available at the moment.",
+    loading: "Loading deals...",
+    errorAuth: "Invalid or expired session.",
+    errorFetch: "Error fetching deals",
+    errorNetwork: "Unknown network error",
     dealDetails: {
       title: "Deal Details",
       back: "Back to marketplace",
@@ -2155,13 +2382,27 @@ dashboardBorrower: {
       confirmBtn: "Confirm ACH & Sign",
       cancel: "Cancel"
     },
-    disclaimer: "Upon acceptance, this letter will be automatically sent to the Title Company and Insurance Company. Dueño a Dueño LLC operates as a technology connector, and does not originate, fund, or service the loan itself."
+    disclaimer: "Upon acceptance, this letter will be automatically sent to the Title Company and Insurance Company. Dueño a Dueño LLC operates as a technology connector, and does not originate, fund, or service the loan itself.",
+    loading: "Loading commitment letter...",
+    errorAuth: "You don't have permission to view this commitment letter or your session expired.",
+    errorFetch: "Failed to fetch commitment letter",
+    errorAccept: "Failed to accept terms",
+    errorReject: "Failed to decline terms",
+    errorNetwork: "Unknown network error",
+    paidTo: "Paid to Dueño a Dueño LLC ",
+    customFeeFallback: "Fee",
+    rejectCommentPh: "Reason for declining (optional)...",
+    rejecting: "Declining...",
+    accepting: "Accepting...",
   },
   payoff: {
     title: "Payoff Request",
     requestBtn: "Generate Payoff Letter",
     expectedDate: "Expected closing date",
-    successAlert: "Request sent to lender."
+    successAlert: "Request sent to lender.",
+    processing: "Processing...",
+    errorFetch: "Failed to process request",
+    errorNetwork: "Unknown network error"
   },
   profile: {
     title: "PML Profile",
@@ -2215,7 +2456,9 @@ dashboardBorrower: {
     systemNoteTitle: "System Note:",
     systemNote: "The Marketplace Connection Fee (1 point, min $999) will be automatically added to the final summary by the platform if applicable to this deal.",
     submit: "Generate and Issue Letter",
-    submitting: "Issuing..."
+    submitting: "Issuing...",
+    errorFetch: "Failed to issue commitment letter",
+    errorNetwork: "Unknown network error"
   },
   inviteModal: {
     title: "Invite to Portal",

@@ -2,7 +2,11 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+
+// URL base de la API
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function IssueCommitmentPage() {
   return (
@@ -14,9 +18,11 @@ export default function IssueCommitmentPage() {
 
 function IssueCommitmentContent() {
   const params = useParams();
+  const contractId = params?.id as string;
   const router = useRouter();
+  
   const { t } = useSite();
-  const cd = t.contractDetail; 
+  const cd = t.contractDetail;
   const ic = t.issueCommitment;
 
   const [originationPoints, setOriginationPoints] = useState("2");
@@ -29,46 +35,62 @@ function IssueCommitmentContent() {
   const [prePayPenalty, setPrePayPenalty] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const LABEL = "mb-2 block text-[11px] font-bold uppercase tracking-widest text-ink-3";
   const INPUT = "w-full rounded-lg border border-rule bg-surface-2 px-4 py-3 text-[15px] text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-accent";
 
-  const handleIssueLetter = (e: React.FormEvent) => {
+  const handleIssueLetter = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // TODO: BACKEND - Enviar payload
-    const contractId = params?.id || 'CTR-001';
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      // TODO: BACKEND - Integrar la logica real de creacion/modificacion de fees.
+      // Ej. POST a /api/contracts/{contractId}/terms/{termsId}/fees con los valores del state.
+      // const token = localStorage.getItem("accessToken") || "";
+      // const response = await fetch(`${API_URL}/api/contracts/${contractId}/terms`, { ... })
+
+      // Simulacion temporal de la peticion
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      router.push(`/contracts/${contractId || 'CTR-001'}/commitment`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : ic.errorNetwork);
+    } finally {
       setIsSubmitting(false);
-      router.push(`/contracts/${contractId}/commitment`);
-    }, 1200);
+    }
   };
 
   return (
     <div className="min-h-screen bg-bg p-6 lg:p-14">
       <div className="mx-auto max-w-[600px]">
-        <button
-          onClick={() => window.history.back()}
+        <Link
+          href={`/contracts/${contractId || ''}`}
           className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {cd.back}
-        </button>
-
+        </Link>
         <div className="rounded-2xl border border-rule bg-surface p-8 shadow-xl sm:p-10">
           <header className="mb-8 border-b border-rule pb-6">
             <h1 className="text-[28px] font-black tracking-tight text-ink">{ic.title}</h1>
-            <p className="text-ink-2 mt-2">{ic.subtitle} {params?.id || 'CTR-001'}</p>
+            <p className="text-ink-2 mt-2">{ic.subtitle} {contractId || 'CTR-001'}</p>
           </header>
 
+          {error && (
+            <div className="mb-6 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm text-red-500 text-center">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleIssueLetter} className="flex flex-col gap-6">
-            
             <h3 className="text-sm font-bold text-ink">{ic.closingFeesTitle}</h3>
+            
             <div>
               <label className={LABEL}>{ic.originationPoints}</label>
               <input type="number" step="0.1" min="0" value={originationPoints} onChange={(e) => setOriginationPoints(e.target.value)} placeholder={ic.phPoints} className={INPUT} required />
             </div>
-
+            
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label className={LABEL}>{ic.processingFee}</label>
@@ -83,7 +105,7 @@ function IssueCommitmentContent() {
                 <input type="number" min="0" value={docPrepFee} onChange={(e) => setDocPrepFee(e.target.value)} placeholder="0" className={INPUT} />
               </div>
             </div>
-
+            
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 border-t border-rule pt-6">
               <div>
                 <label className={LABEL}>{ic.customFeeName}</label>
@@ -96,6 +118,7 @@ function IssueCommitmentContent() {
             </div>
 
             <h3 className="text-sm font-bold text-ink border-t border-rule pt-6 mt-2">{ic.penaltiesTitle}</h3>
+            
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label className={LABEL}>{ic.latePenalty}</label>

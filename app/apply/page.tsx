@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { UploadCloud } from "lucide-react";
-
+import BackToDashboard from "../components/BackToDashboard";
 function VettingApplicationContent() {
   const { t } = useSite();
   const v = t.vetting;
@@ -36,8 +36,10 @@ function VettingApplicationContent() {
 
   return (
     <div className="min-h-screen bg-bg p-6 lg:p-14 flex items-center justify-center">
-      <div className="w-full max-w-[600px] rounded-2xl border border-rule bg-surface p-8 shadow-xl sm:p-12">
-        <header className="mb-8 text-center">
+      <div className="w-full max-w-[600px]">
+        <BackToDashboard />
+        <div className="rounded-2xl border border-rule bg-surface p-8 shadow-xl sm:p-12">
+          <header className="mb-8 text-center">
           <h1 className="text-[28px] font-black tracking-tight text-ink">{v.title}</h1>
           <p className="text-ink-2 mt-2">{v.subtitle}</p>
         </header>
@@ -91,6 +93,7 @@ function VettingApplicationContent() {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

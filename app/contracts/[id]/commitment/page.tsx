@@ -1,64 +1,183 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { Building, X } from "lucide-react";
 
+// URL base de la API
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+// Interfaces basadas en la respuesta de Prisma
+interface FeeItem {
+  id: string;
+  category: string;
+  code: string;
+  label: string;
+  computedAmount: number | string;
+}
+
+interface ContractData {
+  id: string;
+  contractNumber: string;
+  currentTermsId: string | null;
+  currentTerms: {
+    id: string;
+    principalAmount: number | string;
+    feeItems: FeeItem[];
+  } | null;
+}
+
 function CommitmentLetterContent() {
   const params = useParams();
+  const contractId = params?.id as string;
   const router = useRouter();
   const { t } = useSite();
   const cl = t.commitmentLetter;
   const cd = t.contractDetail;
 
+  const [contract, setContract] = useState<ContractData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState("acc_1");
 
   const mockAccounts = [
     { id: "acc_1", bank: "Chase Bank", last4: "4589" }
   ];
 
-  const handleConfirmSign = (e: React.FormEvent) => {
+  useEffect(() => {
+    async function fetchContract() {
+      if (!contractId) return;
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        const response = await fetch(`${API_URL}/api/contracts/${contractId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) throw new Error(cl.errorAuth);
+          throw new Error(`HTTP ${response.status}: ${cl.errorFetch}`);
+        }
+
+        const json = await response.json();
+        if (json.success) {
+          setContract(json.data);
+        } else {
+          throw new Error(json.error?.message || cl.errorFetch);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : cl.errorNetwork);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchContract();
+  }, [contractId, cl.errorAuth, cl.errorFetch, cl.errorNetwork]);
+
+  const handleConfirmSign = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!contract?.currentTerms?.id) return;
+    
     setIsSubmitting(true);
-    // TODO: BACKEND - Enviar aceptacion y vincular ACH.
-    setTimeout(() => {
+    setError(null);
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const termsId = contract.currentTerms.id;
+      
+      const response = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/accept`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+      });
+
+      const json = await response.json();
+      if (!response.ok) throw new Error(json.error?.message || cl.errorAccept);
+
+      router.push(`/borrower`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : cl.errorNetwork);
       setIsSubmitting(false);
-      router.push(`/borrower`); // Redirigir al dashboard tras firmar
-    }, 1500);
+      setIsModalOpen(false);
+    }
   };
 
-  // TODO: MOCK TEMPORAL.
-  // Obtener los fees desglosados desde la API cuando este lista.
-  // CRITICO: El Connection Fee de PML debe calcularse dinamicamente en el backend
-  // (1 punto del loan amount, min $999) SOLO si el trato provino del Marketplace 
-  // publico. Si fue invitacion directa, el costo es $0 (segun specs).
-  const mockFees = {
-    loanAmount: "$100,000.00",
-    origination: "$2,000.00", // 2 pts
-    processing: "$500.00",
-    underwriting: "$500.00",
-    platformFee: "$1,000.00", // 1 pt (min $999)
-    totalDue: "$4,000.00"
+  const handleReject = async () => {
+    if (!contract?.currentTerms?.id) return;
+    
+    const comment = window.prompt(cl.rejectCommentPh);
+    if (comment === null) return; // El usuario canceló el prompt
+
+    setIsRejecting(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const termsId = contract.currentTerms.id;
+      
+      const response = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/reject`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ comment })
+      });
+
+      const json = await response.json();
+      if (!response.ok) throw new Error(json.error?.message || cl.errorReject);
+
+      router.push(`/borrower`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : cl.errorNetwork);
+      setIsRejecting(false);
+    }
   };
+
+  const formatCurrency = (amount: number | string) => {
+    return Number(amount).toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-bg p-6 lg:p-14 flex items-center justify-center">
+        <p className="text-ink-3">{cl.loading}</p>
+      </div>
+    );
+  }
+
+  const feeItems = contract?.currentTerms?.feeItems || [];
+  const totalFees = feeItems.reduce((sum, item) => sum + Number(item.computedAmount), 0);
 
   return (
     <div className="min-h-screen bg-bg p-6 lg:p-14">
       <div className="mx-auto max-w-[800px]">
-        <button
-          onClick={() => window.history.back()}
+        <Link
+          href={`/contracts/${contractId || ''}`}
           className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {cd.back}
-        </button>
-
+        </Link>
         <div className="rounded-2xl border border-rule bg-surface p-8 shadow-xl sm:p-12">
           <header className="mb-10 border-b border-rule pb-8 text-center">
             <h1 className="text-[28px] font-black tracking-tight text-ink">{cl.title}</h1>
-            <p className="text-ink-2 mt-2">REF: {params?.id || 'CTR-001'}</p>
+            <p className="text-ink-2 mt-2">REF: {contract?.contractNumber || contractId}</p>
           </header>
+
+          {error && (
+            <div className="mb-6 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm text-red-500 text-center">
+              {error}
+            </div>
+          )}
 
           <section className="mb-10">
             <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-accent">
@@ -67,28 +186,30 @@ function CommitmentLetterContent() {
             <div className="overflow-hidden rounded-xl border border-rule">
               <table className="w-full text-left text-sm">
                 <tbody className="divide-y divide-rule">
-                  <tr className="bg-bg">
-                    <td className="px-5 py-4 font-medium text-ink-2">{cl.fees.origination}</td>
-                    <td className="px-5 py-4 text-right font-mono text-ink">{mockFees.origination}</td>
-                  </tr>
-                  <tr className="bg-bg">
-                    <td className="px-5 py-4 font-medium text-ink-2">{cl.fees.processing}</td>
-                    <td className="px-5 py-4 text-right font-mono text-ink">{mockFees.processing}</td>
-                  </tr>
-                  <tr className="bg-bg">
-                    <td className="px-5 py-4 font-medium text-ink-2">{cl.fees.underwriting}</td>
-                    <td className="px-5 py-4 text-right font-mono text-ink">{mockFees.underwriting}</td>
-                  </tr>
-                  <tr className="bg-surface-2">
-                    <td className="px-5 py-4 font-medium text-ink-2">
-                      {cl.fees.platform}
-                      <div className="text-xs text-ink-3 mt-1">Paid to Dueño a Dueño LLC</div>
-                    </td>
-                    <td className="px-5 py-4 text-right font-mono text-ink">{mockFees.platformFee}</td>
-                  </tr>
+                  {feeItems.length === 0 ? (
+                    <tr className="bg-bg">
+                      <td colSpan={2} className="px-5 py-4 text-center text-ink-3">Sin tarifas registradas</td>
+                    </tr>
+                  ) : (
+                    feeItems.map((fee) => (
+                      <tr key={fee.id} className="bg-bg">
+                        <td className="px-5 py-4 font-medium text-ink-2">
+                          {fee.label || cl.customFeeFallback}
+                          {fee.code === "MARKETPLACE_CONNECTION" && (
+                            <div className="text-xs text-ink-3 mt-1">{cl.paidTo}</div>
+                          )}
+                        </td>
+                        <td className="px-5 py-4 text-right font-mono text-ink">
+                          {formatCurrency(fee.computedAmount)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                   <tr className="bg-ink text-bg">
                     <td className="px-5 py-4 font-bold">{cl.fees.totalDue}</td>
-                    <td className="px-5 py-4 text-right font-mono font-bold">{mockFees.totalDue}</td>
+                    <td className="px-5 py-4 text-right font-mono font-bold">
+                      {formatCurrency(totalFees)}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -100,12 +221,17 @@ function CommitmentLetterContent() {
           </p>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <button className="rounded-lg border border-rule-strong bg-surface px-6 py-3 text-sm font-bold text-ink transition-colors hover:border-crit hover:text-crit">
-              {cl.actions.decline}
+            <button 
+              onClick={handleReject}
+              disabled={isRejecting || isSubmitting}
+              className="rounded-lg border border-rule-strong bg-surface px-6 py-3 text-sm font-bold text-ink transition-colors hover:border-crit hover:text-crit disabled:opacity-50"
+            >
+              {isRejecting ? cl.rejecting : cl.actions.decline}
             </button>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="rounded-lg bg-accent px-8 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-md"
+              disabled={isRejecting || isSubmitting || !contract?.currentTerms}
+              className="rounded-lg bg-accent px-8 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-md disabled:opacity-50"
             >
               {cl.actions.accept}
             </button>
@@ -168,7 +294,7 @@ function CommitmentLetterContent() {
                     disabled={isSubmitting}
                     className="flex-1 rounded-lg bg-accent px-5 py-3.5 text-[15px] font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
-                    {isSubmitting ? "..." : cl.achModal.confirmBtn}
+                    {isSubmitting ? cl.accepting : cl.achModal.confirmBtn}
                   </button>
                 </div>
               </form>
