@@ -2,7 +2,7 @@
 
 import { Check } from "lucide-react";
 import { useSite } from "../layout/SiteShell";
-import RegisterForm from "../RegisterForm";
+import RegisterForm from "./RegisterForm";
 import { Container, Eyebrow } from "../ui";
 
 export default function Hero() {

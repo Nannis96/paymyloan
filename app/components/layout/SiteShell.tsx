@@ -97,7 +97,7 @@ export default function SiteShell({ children, isDashboard = false, isMinimal = f
     >
       {!isMinimal && (isDashboard ? <DashboardHeader /> : <PmlHeader />)}
       
-      <main id="contenido">
+      <main id="contenido" className={isDashboard ? "dashboard-wrapper" : ""}>
         {children ?? (
           <>
             <PmlHero />

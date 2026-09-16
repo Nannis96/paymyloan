@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import SiteShell from "@/app/components/layout/SiteShell";
-import PrivacyNotice from "@/app/components/PrivacyNotice";
+import PrivacyNotice from "@/app/components/landing/PrivacyNotice";
 import { copy } from "@/content/copy";
 
 export const metadata: Metadata = {

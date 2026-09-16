@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
-import DocumentVault from "@/app/components/DocumentVault";
+import DocumentVault from "@/app/components/ambos/DocumentVault";
 
 // URL base de la API. Toma la variable de entorno o usa localhost:4000 por defecto
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -130,7 +130,7 @@ function ContractDetailContent() {
     switch(status?.toLowerCase()) {
       case 'paid': return 'text-green-600 dark:text-green-400';
       case 'pending': return 'text-amber';
-      case 'late': return 'text-red-500';
+      case 'late': return 'text-red-600 font-black flex items-center gap-1 bg-red-100 px-2 py-0.5 rounded';
       case 'partially_paid': return 'text-blue-500';
       default: return 'text-ink';
     }

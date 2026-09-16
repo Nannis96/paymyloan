@@ -3,7 +3,7 @@
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { useEffect, useState } from "react";
-import BackToDashboard from "../components/BackToDashboard";
+import BackToDashboard from "@/app/components/ambos/BackToDashboard";
 // URL base de la API. Toma la variable de entorno o usa localhost:4000 por defecto
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -112,12 +112,13 @@ function ContractsContent() {
   // Helper para mapear el estado a estilos y textos
   const getStatusDisplay = (status: string) => {
     const isActiveType = ["ACTIVE", "PAID_OFF"].includes(status);
-    const isWarningType = ["DELINQUENT", "PENDING_ACCEPTANCE"].includes(status);
+    const isPendingType = ["PENDING_ACCEPTANCE"].includes(status);
+    const isErrorType = ["DELINQUENT", "RETURNED_PAYMENT", "LATE"].includes(status);
     
     let colorClass = "bg-gray-100 border-gray-200 text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400";
     if (isActiveType) colorClass = "bg-green-100 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400";
-    if (isWarningType) colorClass = "bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400";
-
+    if (isPendingType) colorClass = "bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400";
+    if (isErrorType) colorClass = "bg-red-600 text-white font-black animate-pulse shadow-sm"; // Alerta roja crítica para pagos tardíos/retornados
     return { label: status, colorClass };
   };
 

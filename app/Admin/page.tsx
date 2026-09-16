@@ -4,9 +4,7 @@ import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { MetricCard } from "@/app/components/ui";
 import { useState, useEffect } from "react";
-
-// URL base de la API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import { API_ROUTES } from "@/app/lib/endpoints";
 
 // Interfaces basadas en la base de datos
 interface UserItem {
@@ -35,7 +33,7 @@ function AdminDashboardContent() {
         // El backend actual permite a los ADMIN consultar /api/users.
         // Las metricas financieras globales requeriran un endpoint dedicado en el futuro
         // (ej. /api/admin/stats) ya que /api/contracts esta restringido a Lender/Borrower.
-        const usersRes = await fetch(`${API_URL}/api/users`, { headers });
+        const usersRes = await fetch(API_ROUTES.users.base, { headers });
 
         if (!usersRes.ok) {
           if (usersRes.status === 401 || usersRes.status === 403) {

@@ -3,9 +3,8 @@
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { useState, useEffect } from "react";
-import BackToDashboard from "../components/BackToDashboard";
-// URL base de la API. Toma la variable de entorno o usa localhost:4000 por defecto
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import BackToDashboard from "@/app/components/ambos/BackToDashboard";
+import { API_ROUTES } from "../lib/endpoints";
 
 // Interfaces para mapear la respuesta de la API segun el esquema de Prisma
 interface PropertyData {
@@ -33,7 +32,7 @@ function MarketplaceContent() {
     async function fetchDeals() {
       try {
         const token = localStorage.getItem("accessToken") || "";
-        const response = await fetch(`${API_URL}/api/marketplace/loan-requests`, {
+        const response = await fetch(API_ROUTES.marketplace.loanRequests, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

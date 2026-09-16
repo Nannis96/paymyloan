@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-/* =========================================================================
-   Sistema visual de PayMyLoan.ai
-   Los valores estan tomados tal cual del documento de alcance
-   (paymyloan-alcance.html). No se redondean ni se sustituyen por defaults
-   de framework: el documento es la unica pieza con marca PayMyLoan y es
-   la fuente de verdad del color, la tipografia y las reglas.
-   ========================================================================= */
-
 :root {
   --bg: #ffffff;
   --surface: #fafafa;
@@ -140,4 +132,34 @@ body {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* =========================================================================
+   DASHBOARD LIGHT MODE OVERRIDES
+   "White background with black boxes" solicitado para ser más amigable a la vista
+   ========================================================================= */
+:root:not([data-theme="dark"]) .dashboard-wrapper {
+  --bg: #ffffff;
+}
+
+/* Invierte los colores dentro de las cajas (bg-surface) en el modo claro */
+:root:not([data-theme="dark"]) .dashboard-wrapper .bg-surface,
+:root:not([data-theme="dark"]) .dashboard-wrapper .bg-surface-2 {
+  background-color: #0a0a0a;
+  border-color: #2a2a2a;
+  color: #ffffff;
+  
+  /* Redefine las variables de texto y lineas para que todos los hijos hereden el contraste correcto */
+  --surface: #0a0a0a;
+  --surface-2: #141414;
+  --ink: #ffffff;
+  --ink-2: #aaaaaa;
+  --ink-3: #666666;
+  --rule: #2a2a2a;
+  --rule-strong: #333333;
+}
+
+:root:not([data-theme="dark"]) .dashboard-wrapper .bg-surface-2 {
+  background-color: #141414;
+  border-color: #333333;
 }

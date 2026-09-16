@@ -916,6 +916,12 @@ dashboardBorrower: {
       properties: "Propiedades en Garantía",
       pmlRating: "Calificación PML"
     },
+    tabs: {
+      needsFunding: "Necesitan Fondeo",
+      approved: "Aprobados",
+      funded: "Fondeados / Cerrados",
+      completed: "Completados"
+    },
     trackerTitle: "Próximos Cierres",
     trackerEmpty: "No hay cierres próximos rastreados.",
     needFunding: "Necesitan Fondeo (Need Funding)",
@@ -927,11 +933,13 @@ dashboardBorrower: {
     tableHeaders: {
       property: "Propiedad",
       amount: "Monto / Saldo",
+      rehabDrawn: "Rehab Retirado",
       lender: "Prestamista",
       rate: "Tasa",
       status: "Estado",
       date: "Fecha / Próx Pago",
-      action: "Acción"
+      action: "Acción",
+      history: "Historial"
     },
     actions: {
       pitchDeck: "Generar Pitch Deck",
@@ -1079,10 +1087,20 @@ dashboardBorrower: {
   },
   managePayments: {
     title: "Gestión de Pagos",
-    subtitle: "Administra tus métodos de pago y revisa tus próximos cobros automáticos (ACH).",
+    subtitle: "Administra tus cuentas bancarias por entidad y revisa tus próximos cobros automáticos (ACH).",
     autopay: "Autopay (ACH)",
-    autopayDesc: "Los pagos se deducirán automáticamente en la fecha de vencimiento configurada en el pagaré.",
-    addAccount: "Vincular Cuenta Bancaria",
+    autopayDesc: "Los pagos se deducirán automáticamente de la cuenta asociada a la entidad prestataria en su fecha de vencimiento.",
+    addAccount: "Vincular Cuenta a Entidad",
+    entityLabel: "Entidad:",
+    addAccountModal: {
+      title: "Vincular Cuenta Bancaria",
+      subtitle: "Selecciona la entidad prestataria y vincula su cuenta bancaria de forma segura.",
+      selectEntity: "Selecciona la entidad (LLC/Corp)",
+      routingLabel: "Número de Ruta (Routing)",
+      accountLabel: "Número de Cuenta (Account)",
+      submit: "Vincular con Stripe",
+      cancel: "Cancelar"
+    },
     upcomingTitle: "Próximos Cargos Programados",
     historyTitle: "Historial de Transacciones",
     back: "Volver al panel"
@@ -1124,7 +1142,7 @@ dashboardBorrower: {
   },
   payoff: {
     title: "Solicitud de Liquidación",
-    requestBtn: "Generar Carta de Liquidación",
+    requestBtn: "Solicitar Liquidación",
     expectedDate: "Fecha esperada de cierre",
     successAlert: "Solicitud enviada al prestamista.",
     processing: "Procesando...",
@@ -1147,19 +1165,27 @@ dashboardBorrower: {
   },
   vetting: {
     title: "Aplicación y Verificación",
-    subtitle: "Completa tu perfil para acceder a capital privado.",
+    subtitle: "Completa este proceso una sola vez para acceder a capital privado.",
     feeNotice: "Tarifa de aplicación (no reembolsable)",
     form: {
-      entityDocs: "Documentos de la Entidad (LLC/Corp)",
       bankStatements: "Estados de Cuenta (Últimos 3 meses)",
       idUpload: "Identificación Oficial",
       submitAndPay: "Pagar $99 y Enviar",
       selectFile: "Seleccionar archivo",
-      dealHistory: "Historial de Proyectos (Past Deal History)",
-      dealHistoryPh: "Describe brevemente tus proyectos anteriores (ej. 3 flips completados en 2025, 2 propiedades de renta...)",
+      dealHistory: "Historial de Proyectos",
+      dealHistoryDesc: "Ingresa hasta 5 direcciones de proyectos recientes.",
+      addressLabel: "Dirección",
+      addressPh: "Ej. 123 Main St, Austin, TX",
+      addAddress: "+ Agregar otra dirección",
       consentCredit: "Autorizo a Dueño a Dueño LLC y sus prestamistas asociados a realizar una verificación de crédito (Credit Pull).",
       consentBackground: "Autorizo a Dueño a Dueño LLC a realizar una verificación de antecedentes (Background Check).",
-      consentAlert: "Debes aceptar las verificaciones de crédito y antecedentes para continuar."
+      consentAlert: "Debes aceptar las verificaciones de crédito y antecedentes para continuar.",
+      step: "Paso",
+      of: "de",
+      next: "Siguiente",
+      back: "Atrás",
+      saveAndContinueLater: "Guardar y continuar después",
+      savedAlert: "Tu progreso ha sido guardado. Puedes regresar en cualquier momento."
     }
   },
   issueCommitment: {
@@ -2189,6 +2215,12 @@ dashboardBorrower: {
       properties: "Collateral Properties",
       pmlRating: "PML Rating"
     },
+    tabs: {
+      needsFunding: "Needs Funding",
+      approved: "Loans Approved",
+      funded: "Funded / Closed",
+      completed: "Completed"
+    },
     trackerTitle: "Upcoming Closings",
     trackerEmpty: "No upcoming closings tracked.",
     needFunding: "Need Funding",
@@ -2200,11 +2232,13 @@ dashboardBorrower: {
     tableHeaders: {
       property: "Property",
       amount: "Amount / Balance",
+      rehabDrawn: "Rehab Drawn",
       lender: "Lender",
       rate: "Rate",
       status: "Status",
       date: "Date / Next Pmt",
-      action: "Action"
+      action: "Action",
+      history: "History"
     },
     actions: {
       pitchDeck: "Generate Pitch Deck",
@@ -2352,10 +2386,20 @@ dashboardBorrower: {
   },
   managePayments: {
     title: "Payment Management",
-    subtitle: "Manage your payment methods and review your upcoming automatic (ACH) charges.",
+    subtitle: "Manage your bank accounts by entity and review your upcoming automatic (ACH) charges.",
     autopay: "Autopay (ACH)",
-    autopayDesc: "Payments will be automatically deducted on the due date set in the promissory note.",
-    addAccount: "Link Bank Account",
+    autopayDesc: "Payments will be automatically deducted from the account associated with the borrowing entity on its due date.",
+    addAccount: "Link Account to Entity",
+    entityLabel: "Entity:",
+    addAccountModal: {
+      title: "Link Bank Account",
+      subtitle: "Select the borrowing entity and securely link its bank account.",
+      selectEntity: "Select Entity (LLC/Corp)",
+      routingLabel: "Routing Number",
+      accountLabel: "Account Number",
+      submit: "Link via Stripe",
+      cancel: "Cancel"
+    },
     upcomingTitle: "Upcoming Scheduled Charges",
     historyTitle: "Transaction History",
     back: "Back to dashboard"
@@ -2397,7 +2441,7 @@ dashboardBorrower: {
   },
   payoff: {
     title: "Payoff Request",
-    requestBtn: "Generate Payoff Letter",
+    requestBtn: "Request Payoff",
     expectedDate: "Expected closing date",
     successAlert: "Request sent to lender.",
     processing: "Processing...",
@@ -2420,19 +2464,27 @@ dashboardBorrower: {
   },
   vetting: {
     title: "Vetting Application",
-    subtitle: "Complete your profile to access private capital.",
+    subtitle: "Complete this process once to access private capital.",
     feeNotice: "Application fee (non-refundable)",
     form: {
-      entityDocs: "Entity Documents (LLC/Corp)",
       bankStatements: "Bank Statements (Last 3 months)",
       idUpload: "Official ID",
       submitAndPay: "Pay $99 & Submit",
       selectFile: "Select file",
       dealHistory: "Past Deal History",
-      dealHistoryPh: "Briefly describe your previous projects (e.g. 3 completed flips in 2025, 2 rental properties...)",
+      dealHistoryDesc: "Enter up to 5 recent project addresses.",
+      addressLabel: "Address",
+      addressPh: "E.g. 123 Main St, Austin, TX",
+      addAddress: "+ Add another address",
       consentCredit: "I authorize Dueño a Dueño LLC and its partnered lenders to run a Credit Pull.",
       consentBackground: "I authorize Dueño a Dueño LLC to run a Background Check.",
-      consentAlert: "You must accept the credit and background checks to continue."
+      consentAlert: "You must accept the credit and background checks to continue.",
+      step: "Step",
+      of: "of",
+      next: "Next",
+      back: "Back",
+      saveAndContinueLater: "Save & continue later",
+      savedAlert: "Your progress has been saved. You can come back anytime."
     }
   },
   issueCommitment: {

@@ -238,12 +238,14 @@ export default function PitchDeckModal({ onClose }: PitchDeckModalProps) {
                 </button>
                                   
                 <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-lg bg-accent px-6 py-2.5 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:opacity-50"
-                >
-                  {isSubmitting ? p.processing : step === 3 ? p.publish : p.next}
-                </button>
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`inline-flex items-center justify-center rounded-lg px-6 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 ${
+                      step === 3 ? "bg-green-600 text-white shadow-md" : "bg-accent text-accent-ink"
+                    }`}
+                  >
+                    {isSubmitting ? p.processing : step === 3 ? p.publish : p.next}
+                  </button>
               </div>
 
             </form>

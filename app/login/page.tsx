@@ -5,10 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
-import RegisterForm from "@/app/components/RegisterForm";
-
-// URL base de la API. Toma la variable de entorno o usa localhost:4000 por defecto
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import RegisterForm from "@/app/components/landing/RegisterForm";
+import { API_ROUTES } from "@/app/lib/endpoints";
 
 function LoginContent() {
   const { t: siteT } = useSite();
@@ -57,7 +55,7 @@ function LoginContent() {
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(API_ROUTES.auth.login, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -89,7 +87,7 @@ function LoginContent() {
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login/2fa`, {
+      const response = await fetch(API_ROUTES.auth.login2fa, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pendingToken, code: totpCode }),

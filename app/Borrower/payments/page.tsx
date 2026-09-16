@@ -1,16 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { CreditCard, CalendarClock, Building } from "lucide-react";
+import AddAccountModal from "@/app/components/borrower/AddAccountModal";
 
 function ManagePaymentsContent() {
   const { t } = useSite();
   const mp = t.managePayments;
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Mock de datos de pagos
+  // Mock de datos de pagos agrupados por entidad registrada
   const mockAccounts = [
-    { id: "acc_1", bank: "Chase Bank", last4: "4589", status: "Activa (Stripe ACH)" }
+    { id: "acc_1", entity: "Texas Properties LLC", bank: "Chase Bank", last4: "4589", status: "Activa (Stripe ACH)" },
+    { id: "acc_2", entity: "NextGen Growth Corp", bank: "Wells Fargo", last4: "1234", status: "Pendiente de Verificacion" }
   ];
 
   const mockUpcoming = [
@@ -44,17 +48,24 @@ function ManagePaymentsContent() {
               </h2>
               <div className="space-y-3 mb-6">
                 {mockAccounts.map(acc => (
-                  <div key={acc.id} className="p-4 rounded-lg bg-surface-2 border border-rule-strong">
+                  <div key={acc.id} className="p-4 rounded-lg bg-surface-2 border border-rule-strong flex flex-col relative">
+                    <div className="mb-3 border-b border-rule pb-2">
+                      <span className="text-[10px] uppercase tracking-widest text-ink-3 block mb-0.5">{mp.entityLabel}</span>
+                      <span className="text-xs font-bold text-ink">{acc.entity}</span>
+                    </div>
                     <div className="font-bold text-ink">{acc.bank}</div>
                     <div className="text-sm font-mono text-ink-2 mt-1">**** **** {acc.last4}</div>
-                    <div className="mt-3 text-[10px] font-bold uppercase tracking-widest text-green-600">
+                    <div className={`mt-3 text-[10px] font-bold uppercase tracking-widest ${acc.status.includes('Activa') ? 'text-green-600' : 'text-amber'}`}>
                       {acc.status}
                     </div>
                   </div>
                 ))}
               </div>
-              <button className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-rule-strong bg-bg px-4 py-3 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent">
-                <CreditCard className="w-4 h-4" /> {mp.addAccount}
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-rule-strong bg-surface-2 px-4 py-3 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm"
+              >
+                <CreditCard className="w-4 h-4" /> + {mp.addAccount}
               </button>
             </div>
 
@@ -105,6 +116,8 @@ function ManagePaymentsContent() {
 
         </div>
       </div>
+
+      {isModalOpen && <AddAccountModal onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 }

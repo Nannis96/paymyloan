@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState, type FormEvent } from "react";
 import { Check, ShieldCheck } from "lucide-react";
-import { useSite } from "./layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import {
   registrarUsuario,
   type Intent,
