@@ -21,6 +21,9 @@ import PmlHeader from "./PmlHeader";
 import PmlFooter from "./PmlFooter";
 
 // Componentes de landing
+import WelcomeModal from "../landing/WelcomeModal";
+import LenderLandingView from "../landing/LenderLandingView"; 
+import BorrowerLandingView from "../landing/BorrowerLandingView";
 import PmlHero from "../landing/PmlHero";
 import WhoItHelps from "../landing/WhoItHelps";
 import BeforeAfter from "../landing/BeforeAfter";
@@ -32,7 +35,10 @@ import ProfilesDirectory from "../landing/ProfilesDirectory";
 import Marketplace from "../landing/Marketplace";
 import PmlCta from "../landing/PmlCta";
 
+import { useState } from "react";
+
 type Theme = "light" | "dark";
+type AppMode = "general" | "lender" | "borrower";
 
 const CLAVE_TEMA = "pml-theme";
 const CLAVE_IDIOMA = "pml-lang";
@@ -41,9 +47,12 @@ type SiteContextValue = {
   lang: Lang;
   setLang: (lang: Lang) => void;
   t: (typeof copy)[Lang];
-  /** Tema realmente pintado: el elegido por el visitante, si no el del sistema. */
   resolvedTheme: Theme;
   toggleTheme: () => void;
+  appMode: AppMode;
+  setAppMode: (mode: AppMode) => void;
+  activeTab: number;
+  setActiveTab: (tab: number) => void;
 };
 
 const SiteContext = createContext<SiteContextValue | null>(null);
@@ -73,12 +82,14 @@ export default function SiteShell({ children, isDashboard = false, isMinimal = f
   const temaElegido: Theme | null =
     temaGuardado === "dark" || temaGuardado === "light" ? temaGuardado : null;
   const resolvedTheme: Theme = temaElegido ?? (sistemaOscuro ? "dark" : "light");
+  
+  const [appMode, setAppMode] = useState<AppMode>("general");
+  const [activeTab, setActiveTab] = useState<number>(0);
 
   const setLang = (valor: Lang) => escribir(CLAVE_IDIOMA, valor);
   const toggleTheme = () =>
     escribir(CLAVE_TEMA, resolvedTheme === "dark" ? "light" : "dark");
 
-  // Único efecto: reflejar el estado en el DOM. No cambia estado de React.
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
@@ -93,23 +104,31 @@ export default function SiteShell({ children, isDashboard = false, isMinimal = f
 
   return (
     <SiteContext.Provider
-      value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme }}
+      value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme, appMode, setAppMode, activeTab, setActiveTab }}
     >
       {!isMinimal && (isDashboard ? <DashboardHeader /> : <PmlHeader />)}
       
       <main id="contenido" className={isDashboard ? "dashboard-wrapper" : ""}>
+        {!isMinimal && !isDashboard && <WelcomeModal />}
+        
         {children ?? (
           <>
-            <PmlHero />
-            <WhoItHelps />
-            <BeforeAfter />
-            <SoundFamiliar />
-            <FeaturesGrid />
-            <DashboardSplit />
-            <LiveActivity />
-            <ProfilesDirectory />
-            <Marketplace />
-            <PmlCta />
+            {appMode === "general" && (
+              <>
+                <PmlHero />
+                <WhoItHelps />
+                <BeforeAfter />
+                <SoundFamiliar />
+                <FeaturesGrid />
+                <DashboardSplit />
+                <LiveActivity />
+                <ProfilesDirectory />
+                <Marketplace />
+                <PmlCta />
+              </>
+            )}
+            {appMode === "lender" && <LenderLandingView />}
+            {appMode === "borrower" && <BorrowerLandingView />}
           </>
         )}
       </main>

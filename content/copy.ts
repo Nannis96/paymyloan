@@ -23,6 +23,99 @@ const es = {
       "Préstamos privados con garantía inmobiliaria administrados en un solo lugar: el prestatario paga por ACH, el prestamista ve qué se pagó y de qué propiedad, y ambos trabajan sobre los mismos términos, documentos y saldo.",
   },
 
+  prototype: {
+    lenderDeals: {
+      eyebrow: "Mercado de Fondeo",
+      title: "Explorar Tratos en Vivo",
+      subtitle: "Cada trato está pre-evaluado. Busca por tipo, ubicación o calificación — crea una cuenta gratis para conectar con el prestatario.",
+      search: {
+        type: "Cualquier Tipo",
+        locationPh: "📍 Ciudad, Estado o ZIP",
+        score: "Cualquier Calificación",
+        ltv: "Cualquier LTV",
+        btn: "Buscar →"
+      },
+      mapTitle: "Tratos Cerca de Ti",
+      legendActive: "Trato Activo",
+      legendFunded: "Fondeado / Cerrado",
+      fundedTitle: "Fondeados Recientemente",
+      blurText: "+ 24 tratos más en vivo",
+      blurBtn: "Crea tu Cuenta Gratis para Desbloquear →",
+      btnConnect: "Conectar con Prestatario →"
+    },
+    borrowerMap: {
+      eyebrow: "Directorio de Prestamistas",
+      title: "Encuentra Prestamistas en tu Área",
+      subtitle: "Ve qué prestamistas buscan activamente tratos cerca de ti y cuáles ya han fondeado en tu mercado. Crea una cuenta gratis para conectar.",
+      search: {
+        type: "Cualquier Tipo",
+        locationPh: "📍 Ciudad, Estado o ZIP",
+        amount: "Cualquier Monto",
+        btn: "Buscar Prestamistas →"
+      },
+      mapTitle: "Prestamistas en tu Área",
+      legendActive: "Buscando Tratos Activ.",
+      legendPast: "Ha Fondeado en esta Área",
+      fundedTitle: "Prestamistas Recientes",
+      blurText: "+ 18 prestamistas más en tu área",
+      blurBtn: "Crea tu Cuenta Gratis para Desbloquear →",
+      btnConnect: "Solicitar Introducción →"
+    },
+    modes: {
+      lender: "💰 Tengo Fondos",
+      borrower: "🏗️ Busco Fondeo"
+    },
+    tabs: {
+      lender: ["Tratos en Vivo", "Demo", "Problemas que Resolvemos", "Para Quién Es", "Diferenciadores"],
+      borrower: ["Encontrar Prestamistas", "Demo", "Problemas que Resolvemos", "Para Quién Es", "Diferenciadores"]
+    },
+    sidebar: {
+      title: "Comienza Gratis",
+      subLender: "Gratis para siempre para prestamistas.",
+      subBorrower: "Publica tu primer trato gratis.",
+      emailPh: "Correo electrónico",
+      passPh: "Contraseña",
+      btnCreate: "Crear Cuenta Gratis →",
+      or: "o",
+      btnSignIn: "Iniciar Sesión",
+      noteLender: "Gratis para siempre. Sin tarjeta de crédito.",
+      noteBorrower: "Gratis por 7 días. Tarjeta requerida para activar.",
+      postLenderQ: "¿Buscas fondear un trato?",
+      postLenderA: "→ Explorar Tratos",
+      postBorrowerQ: "¿Ya tienes cuenta?",
+      postBorrowerA: "→ Publicar un Trato"
+    },
+    placeholders: {
+      liveDeals: "La vista del Mapa y las Tarjetas de Tratos irán aquí...",
+      demo: "El video demo irá aquí...",
+      problems: "El grid de problemas irá aquí...",
+      who: "Las tarjetas de para quién es irán aquí...",
+      diff: "La tabla comparativa irá aquí..."
+    }
+  },
+
+  welcomeModal: {
+    brand: "PayMyLoan",
+    brandSuffix: ".ai",
+    tagline: "Préstamos privados — simplificados.",
+    question: "¿Cómo podemos ayudarte hoy?",
+    lender: {
+      icon: "💰",
+      title: "¿Tienes fondos para desplegar?",
+      sub: "Quiero fondear tratos inmobiliarios"
+    },
+    borrower: {
+      icon: "🏗️",
+      title: "¿Quieres fondear un trato?",
+      sub: "Necesito capital para mi siguiente trato"
+    },
+    signin: {
+      icon: "🔑",
+      title: "Iniciar sesión",
+      sub: "Accede a tu portal"
+    }
+  },
+
   nav: {
     skip: "Saltar al formulario de registro",
     brand: "PayMyLoan",
@@ -1321,6 +1414,99 @@ const en: Copy = {
     title: "PayMyLoan.ai — Private loan servicing",
     description:
       "Private real-estate-secured loans handled in one place: the borrower pays by ACH, the lender sees exactly what was paid and on which property, and both work from the same terms, documents and balance.",
+  },
+
+  prototype: {
+    lenderDeals: {
+      eyebrow: "Funding Marketplace",
+      title: "Browse Live Deals",
+      subtitle: "Every deal is pre-vetted. Search by type, location, or borrower score — create a free account to connect with the borrower.",
+      search: {
+        type: "All Loan Types",
+        locationPh: "📍 City, State or ZIP",
+        score: "Any Borrower Score",
+        ltv: "Any LTV",
+        btn: "Search →"
+      },
+      mapTitle: "Deals Near You",
+      legendActive: "Active Deal",
+      legendFunded: "Funded / Closed",
+      fundedTitle: "Recently Funded",
+      blurText: "+ 24 more live deals",
+      blurBtn: "Create Free Account to Unlock →",
+      btnConnect: "Connect with Borrower →"
+    },
+    borrowerMap: {
+      eyebrow: "Lender Marketplace",
+      title: "Find Lenders in Your Area",
+      subtitle: "See which lenders are actively looking for deals near you — and which have already funded in your market. Create a free account to connect.",
+      search: {
+        type: "All Loan Types",
+        locationPh: "📍 City, State or ZIP",
+        amount: "Any Loan Amount",
+        btn: "Find Lenders →"
+      },
+      mapTitle: "Lenders In Your Area",
+      legendActive: "Actively Seeking Deals",
+      legendPast: "Has Funded in This Area",
+      fundedTitle: "Recently Active Lenders",
+      blurText: "+ 18 more lenders in your area",
+      blurBtn: "Create Free Account to Unlock →",
+      btnConnect: "Request Introduction →"
+    },
+    modes: {
+      lender: "💰 Have Funds",
+      borrower: "🏗️ Need Funding"
+    },
+    tabs: {
+      lender: ["Live Deals", "Demo", "Problems We Solve", "Who Is This For", "What Makes Us Different"],
+      borrower: ["Find Lenders", "Demo", "Problems We Solve", "Who Is This For", "What Makes Us Different"]
+    },
+    sidebar: {
+      title: "Start for Free",
+      subLender: "Free forever for lenders.",
+      subBorrower: "Post your first deal free.",
+      emailPh: "Email address",
+      passPh: "Password",
+      btnCreate: "Create Free Account →",
+      or: "or",
+      btnSignIn: "Sign In",
+      noteLender: "Free forever for lenders. No credit card.",
+      noteBorrower: "Free for 7 days. Credit card required to activate.",
+      postLenderQ: "Looking to fund a deal?",
+      postLenderA: "→ Browse All Deals",
+      postBorrowerQ: "Already have an account?",
+      postBorrowerA: "→ Post a Deal"
+    },
+    placeholders: {
+      liveDeals: "Map and Deal Cards view will go here...",
+      demo: "Demo video will go here...",
+      problems: "Problems grid will go here...",
+      who: "Who is this for cards will go here...",
+      diff: "Comparison table will go here..."
+    }
+  },
+
+  welcomeModal: {
+    brand: "PayMyLoan",
+    brandSuffix: ".ai",
+    tagline: "Private money lending — simplified.",
+    question: "How can we help you today?",
+    lender: {
+      icon: "💰",
+      title: "Have Funds to Deploy?",
+      sub: "I want to fund real estate deals"
+    },
+    borrower: {
+      icon: "🏗️",
+      title: "Want a Deal Funded?",
+      sub: "I need capital for my next deal"
+    },
+    signin: {
+      icon: "🔑",
+      title: "User Sign In",
+      sub: "Access your portal"
+    }
   },
 
   nav: {
