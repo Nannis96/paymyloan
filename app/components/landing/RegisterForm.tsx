@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Check, ShieldCheck } from "lucide-react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import {
@@ -13,21 +13,29 @@ type Campo = "intent" | "nombre" | "correo" | "telefono" | "terminos";
 type Errores = Partial<Record<Campo, string>>;
 
 const INPUT =
-  "block h-[46px] w-full rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] px-4 text-[15px] " +
-  "text-white placeholder:text-gray-500 outline-none transition-colors " +
+  "block h-[46px] w-full rounded-lg border border-rule bg-surface-2 px-4 text-[15px] " +
+  "text-ink placeholder:text-ink-3 outline-none transition-colors " +
   "focus:border-accent";
 
-const INPUT_ERROR = "border-red-500 focus:border-red-500";
-const LABEL = "mb-2 block text-[11px] font-bold uppercase tracking-widest text-gray-400";
+const INPUT_ERROR = "border-crit focus:border-crit";
 
-export default function RegisterForm() {
+const LABEL = "mb-2 block text-[11px] font-bold uppercase tracking-widest text-ink-3";
+
+export default function RegisterForm({ 
+   idPrefix = "rf", 
+   initialIntent = null, 
+   isCompact = false 
+ }: { 
+   idPrefix?: string; 
+   initialIntent?: Intent | null; 
+   isCompact?: boolean; 
+ }) {
   const { t, lang } = useSite();
   const f = t.form;
+  const uid = idPrefix;
 
-  const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
-
-  const [intent, setIntent] = useState<Intent | null>(null);
+  const [intent, setIntent] = useState<Intent | null>(initialIntent);
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [telefono, setTelefono] = useState("");
@@ -58,7 +66,6 @@ export default function RegisterForm() {
 
     const e = validar();
     setErrores(e);
-
     if (Object.keys(e).length > 0) {
       const primero = e.intent
         ? formRef.current?.querySelector<HTMLElement>('input[name="intent"]')
@@ -68,7 +75,7 @@ export default function RegisterForm() {
     }
 
     setEstado("enviando");
-
+    
     void enviarCRM({
       intent: intent as Intent,
       nombre: nombre.trim(),
@@ -105,29 +112,33 @@ export default function RegisterForm() {
   if (estado === "listo") {
     return (
       <div
-        id="registro"
-        className="scroll-mt-24 w-full rounded-2xl border border-[#2a2a2a] bg-[#141414] p-8 shadow-2xl"
+        id={isCompact ? undefined : "registro"}
+        className={
+          isCompact
+            ? "w-full"
+            : "scroll-mt-24 w-full rounded-2xl border border-rule bg-surface p-8 shadow-2xl"
+        }
       >
         <div
-          className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#1e3a8a]/30 text-accent"
+          className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-accent"
           aria-hidden
         >
           <Check className="h-6 w-6" />
         </div>
-        <h2 className="mb-2 text-2xl font-black tracking-tight text-white">
+        <h2 className="mb-2 text-2xl font-black tracking-tight text-ink">
           {f.success.title}
         </h2>
-        <p className="m-0 text-[15px] leading-relaxed text-gray-400">
+        <p className="m-0 text-[15px] leading-relaxed text-ink-2">
           {f.success.body}{" "}
-          <strong className="break-all font-bold text-white">
+          <strong className="break-all font-bold text-ink">
             {correoEnviado}
           </strong>
         </p>
-        <p className="mt-4 mb-0 text-[13px] text-gray-500">{f.success.note}</p>
+        <p className="mt-4 mb-0 text-[13px] text-ink-3">{f.success.note}</p>
         <button
           type="button"
           onClick={reiniciar}
-          className="mt-8 text-[11px] font-bold uppercase tracking-widest text-accent transition-colors hover:text-white"
+          className="mt-8 text-[11px] font-bold uppercase tracking-widest text-accent transition-colors hover:text-ink"
         >
           {f.success.again} &rarr;
         </button>
@@ -140,24 +151,32 @@ export default function RegisterForm() {
   return (
     <form
       ref={formRef}
-      id="registro"
+      id={isCompact ? undefined : "registro"}
       onSubmit={onSubmit}
       noValidate
-      className="scroll-mt-24 w-full rounded-2xl border border-[#2a2a2a] bg-[#141414] p-6 shadow-2xl sm:p-8"
+      className={
+        isCompact
+          ? "w-full"
+          : "scroll-mt-24 w-full rounded-2xl border border-rule bg-surface p-6 shadow-2xl sm:p-8"
+      }
     >
-      <p className="mb-2 text-[11px] font-extrabold uppercase tracking-widest text-accent">
-        {f.eyebrow}
-      </p>
-      <h2 className="mb-2 text-2xl font-black tracking-tight text-white">
-        {f.title}
-      </h2>
-      <p className="mb-6 text-sm leading-relaxed text-gray-400">
-        {f.subtitle}
-      </p>
+      {!isCompact && (
+        <>
+          <p className="mb-2 text-[11px] font-extrabold uppercase tracking-widest text-accent">
+            {f.eyebrow}
+          </p>
+          <h2 className="mb-2 text-2xl font-black tracking-tight text-ink">
+            {f.title}
+          </h2>
+          <p className="mb-6 text-sm leading-relaxed text-ink-2">
+            {f.subtitle}
+          </p>
+        </>
+      )}
 
       <div aria-live="polite">
         {listaErrores.length > 0 || errorEnvio ? (
-          <p className="mb-5 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm font-medium text-red-400">
+          <p className="mb-5 rounded-lg border border-crit/30 bg-crit-soft px-4 py-3 text-sm font-medium text-crit">
             {errorEnvio ?? f.errors.summary}
           </p>
         ) : null}
@@ -176,8 +195,8 @@ export default function RegisterForm() {
                 key={opcion.value}
                 className={`flex min-h-[52px] cursor-pointer flex-col justify-center rounded-lg border px-4 py-2 transition-colors ${
                   activo
-                    ? "border-accent bg-[#1e3a8a]/30"
-                    : "border-[#2a2a2a] bg-[#1a1a1a] hover:border-gray-600"
+                    ? "border-accent bg-accent-soft"
+                    : "border-rule bg-surface-2 hover:border-rule-strong"
                 } ${errores.intent ? INPUT_ERROR : ""}`}
               >
                 <input
@@ -193,12 +212,12 @@ export default function RegisterForm() {
                 />
                 <span
                   className={`text-sm font-bold ${
-                    activo ? "text-accent" : "text-white"
+                    activo ? "text-accent" : "text-ink"
                   }`}
                 >
                   {opcion.label}
                 </span>
-                <span className="text-[11px] font-medium text-gray-500">
+                <span className="text-[11px] font-medium text-ink-3">
                   {opcion.hint}
                 </span>
               </label>
@@ -206,11 +225,11 @@ export default function RegisterForm() {
           })}
         </div>
         {errores.intent ? (
-          <p id={`${uid}-intent-err`} className="mt-2 mb-0 text-xs text-red-400">
+          <p id={`${uid}-intent-err`} className="mt-2 mb-0 text-xs text-crit">
             {errores.intent}
           </p>
         ) : null}
-        <p className="mt-2 mb-0 text-xs leading-relaxed text-gray-500">
+        <p className="mt-2 mb-0 text-xs leading-relaxed text-ink-3">
           {f.intentNote}
         </p>
       </fieldset>
@@ -235,7 +254,7 @@ export default function RegisterForm() {
           className={`${INPUT} ${errores.nombre ? INPUT_ERROR : ""}`}
         />
         {errores.nombre ? (
-          <p id={`${uid}-nombre-err`} className="mt-1 mb-0 text-xs text-red-400">
+          <p id={`${uid}-nombre-err`} className="mt-1 mb-0 text-xs text-crit">
             {errores.nombre}
           </p>
         ) : null}
@@ -263,7 +282,7 @@ export default function RegisterForm() {
             className={`${INPUT} ${errores.correo ? INPUT_ERROR : ""}`}
           />
           {errores.correo ? (
-            <p id={`${uid}-correo-err`} className="mt-1 mb-0 text-xs text-red-400">
+            <p id={`${uid}-correo-err`} className="mt-1 mb-0 text-xs text-crit">
               {errores.correo}
             </p>
           ) : null}
@@ -293,7 +312,7 @@ export default function RegisterForm() {
           {errores.telefono ? (
             <p
               id={`${uid}-telefono-err`}
-              className="mt-1 mb-0 text-xs text-red-400"
+              className="mt-1 mb-0 text-xs text-crit"
             >
               {errores.telefono}
             </p>
@@ -301,7 +320,7 @@ export default function RegisterForm() {
         </div>
       </div>
 
-      <label className="mb-6 flex cursor-pointer items-start gap-3 text-[13px] leading-relaxed text-gray-400">
+      <label className="mb-6 flex cursor-pointer items-start gap-3 text-[13px] leading-relaxed text-ink-2">
         <input
           type="checkbox"
           name="terminos"
@@ -311,13 +330,13 @@ export default function RegisterForm() {
             limpiar("terminos");
           }}
           aria-invalid={errores.terminos ? true : undefined}
-          className={`mt-0.5 h-4 w-4 shrink-0 rounded border-gray-600 bg-[#1a1a1a] text-accent focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-[#141414] ${
-            errores.terminos ? "outline outline-2 outline-red-500" : ""
+          className={`mt-0.5 h-4 w-4 shrink-0 rounded border-rule-strong bg-surface-2 text-accent focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface ${
+            errores.terminos ? "outline outline-2 outline-crit" : ""
           }`}
         />
         <span>
           {f.terms}{" "}
-          <a href="#" className="font-semibold text-accent transition-colors hover:text-white">
+          <a href="#" className="font-semibold text-accent transition-colors hover:text-ink">
             {f.termsLink}
           </a>{" "}
           {f.termsAnd}{" "}
@@ -325,7 +344,7 @@ export default function RegisterForm() {
             href="/aviso-de-privacidad"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-accent transition-colors hover:text-white"
+            className="font-semibold text-accent transition-colors hover:text-ink"
           >
             {f.privacyLink}
           </a>
@@ -336,13 +355,13 @@ export default function RegisterForm() {
       <button
         type="submit"
         disabled={estado === "enviando"}
-        className="w-full rounded-lg bg-accent px-5 py-3.5 text-[15px] font-bold text-white transition-all hover:bg-blue-600 disabled:opacity-50"
+        className="w-full rounded-lg bg-accent px-5 py-3.5 text-[15px] font-bold text-accent-ink transition-all hover:opacity-90 disabled:opacity-50"
       >
         {estado === "enviando" ? f.submitting : f.submit}
       </button>
 
-      <p className="mt-5 flex items-start gap-2 text-[12px] leading-relaxed text-gray-500">
-        <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+      <p className="mt-5 flex items-start gap-2 text-[12px] leading-relaxed text-ink-3">
+        <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-ink-3" />
         {f.twofaNote}
       </p>
     </form>

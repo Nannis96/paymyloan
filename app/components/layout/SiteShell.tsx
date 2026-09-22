@@ -51,6 +51,7 @@ type SiteContextValue = {
   toggleTheme: () => void;
   appMode: AppMode;
   setAppMode: (mode: AppMode) => void;
+  lastAppMode: "lender" | "borrower" | null;
   activeTab: number;
   setActiveTab: (tab: number) => void;
 };
@@ -71,20 +72,25 @@ const sinEsquemaOscuro = () => false;
 export default function SiteShell({ children, isDashboard = false, isMinimal = false }: { children?: ReactNode; isDashboard?: boolean; isMinimal?: boolean }) {
   const temaGuardado = useSyncExternalStore(suscribir, leerTema, sinValor);
   const idiomaGuardado = useSyncExternalStore(suscribir, leerIdioma, sinValor);
-  const sistemaOscuro = useSyncExternalStore(
-    suscribirEsquemaOscuro,
-    esquemaOscuroDelSistema,
-    sinEsquemaOscuro,
-  );
-
+  // El idioma empezara en ingles por defecto si no hay nada guardado
   const lang: Lang = idiomaGuardado === "es" ? "es" : "en";
-
   const temaElegido: Theme | null =
     temaGuardado === "dark" || temaGuardado === "light" ? temaGuardado : null;
-  const resolvedTheme: Theme = temaElegido ?? (sistemaOscuro ? "dark" : "light");
+
+  // Forzamos modo claro por defecto la primera vez, ignorando el sistema
+  const resolvedTheme: Theme = temaElegido ?? "light";
   
   const [appMode, setAppMode] = useState<AppMode>("general");
+  const [lastAppMode, setLastAppMode] = useState<"lender" | "borrower" | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
+
+  // Interceptamos el setAppMode para guardar el historial
+  const handleSetAppMode = (mode: AppMode) => {
+    if (appMode !== "general" && mode === "general") {
+      setLastAppMode(appMode);
+    }
+    setAppMode(mode);
+  };
 
   const setLang = (valor: Lang) => escribir(CLAVE_IDIOMA, valor);
   const toggleTheme = () =>
@@ -95,16 +101,14 @@ export default function SiteShell({ children, isDashboard = false, isMinimal = f
   }, [lang]);
 
   useEffect(() => {
-    if (!temaElegido) {
-      document.documentElement.removeAttribute("data-theme");
-      return;
-    }
-    document.documentElement.setAttribute("data-theme", temaElegido);
-  }, [temaElegido]);
+    // Forzamos que siempre se inyecte el tema resuelto ("light" por defecto o el guardado)
+    // ignorando la configuración del sistema operativo.
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+  }, [resolvedTheme]);
 
   return (
     <SiteContext.Provider
-      value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme, appMode, setAppMode, activeTab, setActiveTab }}
+      value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme, appMode, setAppMode: handleSetAppMode, lastAppMode, activeTab, setActiveTab }}
     >
       {!isMinimal && (isDashboard ? <DashboardHeader /> : <PmlHeader />)}
       

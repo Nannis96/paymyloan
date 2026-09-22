@@ -3,7 +3,7 @@ import { Moon, Sun } from "lucide-react";
 import { useSite } from "./SiteShell";
 
 export default function PmlHeader() {
-  const { t, lang, setLang, resolvedTheme, toggleTheme, appMode, setAppMode, activeTab, setActiveTab } = useSite();
+  const { t, lang, setLang, resolvedTheme, toggleTheme, appMode, setAppMode, lastAppMode, activeTab, setActiveTab } = useSite();
   const p = t.prototype;
 
   const tabs = appMode === "lender" ? p.tabs.lender : appMode === "borrower" ? p.tabs.borrower : [];
@@ -12,9 +12,17 @@ export default function PmlHeader() {
     <header className="sticky top-0 z-50 bg-bg/95 backdrop-blur-sm border-b border-rule">
       <nav className="mx-auto flex w-full max-w-[1400px] items-center px-4 py-3 lg:px-8">
         
-        {/* LOGO: Al hacer clic regresa al modo "General" */}
+        {/* LOGO: Al hacer clic intercala entre modo General y el ultimo modo especializado */}
         <button 
-          onClick={() => { setAppMode("general"); setActiveTab(0); window.scrollTo({ top: 0 }); }} 
+          onClick={() => { 
+            if (appMode === "general" && lastAppMode) {
+              setAppMode(lastAppMode);
+            } else {
+              setAppMode("general"); 
+            }
+            setActiveTab(0); 
+            window.scrollTo({ top: 0 }); 
+          }} 
           className="mr-8 text-xl font-extrabold tracking-tight text-ink no-underline hover:opacity-80"
         >
           PML<span className="text-accent">.ai</span>
