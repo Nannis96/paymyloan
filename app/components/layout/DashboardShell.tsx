@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Moon, Sun, LayoutDashboard, Wallet, CreditCard, Users, FileText, Send, Building, FileSignature, Settings, FileBarChart, LogOut } from "lucide-react";
+import { LayoutDashboard, Wallet, CreditCard, Users, FileText, Send, Building, FileSignature, Settings, FileBarChart, LogOut } from "lucide-react";
 import { useSite } from "./SiteShell";
+import ThemeToggle from "../ambos/ThemeToggle";
+import LangToggle from "../ambos/LangToggle";
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const { t, lang, setLang, resolvedTheme, toggleTheme } = useSite();
@@ -28,18 +30,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setLang(lang === "es" ? "en" : "es")}
-            className="rounded-full border border-rule bg-surface-2 px-3 py-1.5 text-[11px] font-bold text-ink-2 transition-colors hover:border-accent hover:text-ink"
-          >
-            {lang === "es" ? "EN" : "ES"}
-          </button>
-          <button
-            onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-rule bg-surface-2 text-ink-2 transition-colors hover:border-accent hover:text-ink"
-          >
-            {resolvedTheme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
+          <LangToggle className="rounded-full border border-rule bg-surface-2 px-3 py-1.5 text-[11px] font-bold text-ink-2 hover:border-accent hover:text-ink" />
+          <ThemeToggle className="h-9 w-9 rounded-full border border-rule bg-surface-2 text-ink-2 hover:border-accent hover:text-ink" iconSize={16} />
           <div className="ml-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-accent text-xs font-black text-accent-ink">
             AG
           </div>

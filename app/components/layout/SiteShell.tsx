@@ -15,14 +15,15 @@ import {
   suscribir,
   suscribirEsquemaOscuro,
 } from "@/app/lib/preferencias";
+
 import SiteFooter from "./SiteFooter";
 import DashboardHeader from "./DashboardHeader";
-import PmlHeader from "./PmlHeader";
 import PmlFooter from "./PmlFooter";
+import LandingHeader from "../landing/LandingHeader"; // <-- Importación actualizada
 
 // Componentes de landing
 import WelcomeModal from "../landing/WelcomeModal";
-import LenderLandingView from "../landing/LenderLandingView"; 
+import LenderLandingView from "../landing/LenderLandingView";
 import BorrowerLandingView from "../landing/BorrowerLandingView";
 import PmlHero from "../landing/PmlHero";
 import WhoItHelps from "../landing/WhoItHelps";
@@ -34,12 +35,11 @@ import LiveActivity from "../landing/LiveActivity";
 import ProfilesDirectory from "../landing/ProfilesDirectory";
 import Marketplace from "../landing/Marketplace";
 import PmlCta from "../landing/PmlCta";
-
+import WhyPml from "../landing/WhyPml"; 
 import { useState } from "react";
 
 type Theme = "light" | "dark";
-type AppMode = "general" | "lender" | "borrower";
-
+type AppMode = "general" | "lender" | "borrower" | "why-pml";
 const CLAVE_TEMA = "pml-theme";
 const CLAVE_IDIOMA = "pml-lang";
 
@@ -51,7 +51,7 @@ type SiteContextValue = {
   toggleTheme: () => void;
   appMode: AppMode;
   setAppMode: (mode: AppMode) => void;
-  lastAppMode: "lender" | "borrower" | null;
+  lastAppMode: "lender" | "borrower" |"why-pml"| null;
   activeTab: number;
   setActiveTab: (tab: number) => void;
 };
@@ -69,19 +69,30 @@ const leerIdioma = () => leer(CLAVE_IDIOMA);
 const sinValor = () => null;
 const sinEsquemaOscuro = () => false;
 
-export default function SiteShell({ children, isDashboard = false, isMinimal = false }: { children?: ReactNode; isDashboard?: boolean; isMinimal?: boolean }) {
+export default function SiteShell({
+  children,
+  isDashboard = false,
+  isMinimal = false,
+}: {
+  children?: ReactNode;
+  isDashboard?: boolean;
+  isMinimal?: boolean;
+}) {
   const temaGuardado = useSyncExternalStore(suscribir, leerTema, sinValor);
   const idiomaGuardado = useSyncExternalStore(suscribir, leerIdioma, sinValor);
-  // El idioma empezara en ingles por defecto si no hay nada guardado
+
+  // El idioma empezará en inglés por defecto si no hay nada guardado
   const lang: Lang = idiomaGuardado === "es" ? "es" : "en";
   const temaElegido: Theme | null =
     temaGuardado === "dark" || temaGuardado === "light" ? temaGuardado : null;
 
   // Forzamos modo claro por defecto la primera vez, ignorando el sistema
   const resolvedTheme: Theme = temaElegido ?? "light";
-  
+
   const [appMode, setAppMode] = useState<AppMode>("general");
-  const [lastAppMode, setLastAppMode] = useState<"lender" | "borrower" | null>(null);
+  const [lastAppMode, setLastAppMode] = useState<"lender" | "borrower" |"why-pml"| null>(
+    null
+  );
   const [activeTab, setActiveTab] = useState<number>(0);
 
   // Interceptamos el setAppMode para guardar el historial
@@ -101,20 +112,31 @@ export default function SiteShell({ children, isDashboard = false, isMinimal = f
   }, [lang]);
 
   useEffect(() => {
-    // Forzamos que siempre se inyecte el tema resuelto ("light" por defecto o el guardado)
-    // ignorando la configuración del sistema operativo.
+    // Forzamos que siempre se inyecte el tema resuelto
     document.documentElement.setAttribute("data-theme", resolvedTheme);
   }, [resolvedTheme]);
 
   return (
     <SiteContext.Provider
-      value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme, appMode, setAppMode: handleSetAppMode, lastAppMode, activeTab, setActiveTab }}
+      value={{
+        lang,
+        setLang,
+        t: copy[lang],
+        resolvedTheme,
+        toggleTheme,
+        appMode,
+        setAppMode: handleSetAppMode,
+        lastAppMode,
+        activeTab,
+        setActiveTab,
+      }}
     >
-      {!isMinimal && (isDashboard ? <DashboardHeader /> : <PmlHeader />)}
-      
+      {/* Se utiliza LandingHeader en lugar del PmlHeader eliminado */}
+      {!isMinimal && (isDashboard ? <DashboardHeader /> : <LandingHeader />)}
+
       <main id="contenido" className={isDashboard ? "dashboard-wrapper" : ""}>
         {!isMinimal && !isDashboard && <WelcomeModal />}
-        
+
         {children ?? (
           <>
             {appMode === "general" && (
@@ -132,10 +154,11 @@ export default function SiteShell({ children, isDashboard = false, isMinimal = f
               </>
             )}
             {appMode === "lender" && <LenderLandingView />}
-            {appMode === "borrower" && <BorrowerLandingView />}
-          </>
-        )}
-      </main>
+              {appMode === "borrower" && <BorrowerLandingView />}
+              {appMode === "why-pml" && <WhyPml />}
+            </>
+          )}
+        </main>
       {!isMinimal && (children ? <SiteFooter /> : <PmlFooter />)}
     </SiteContext.Provider>
   );

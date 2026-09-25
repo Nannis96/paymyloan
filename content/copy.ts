@@ -29,6 +29,26 @@ const es = {
       offers: "ofertas",
       offer: "oferta",
       makeOffer: "Hacer oferta"
+    },
+    scoreCard: {
+      tapToSee: "Toca para ver prestatario",
+      seeScore: "Ver calificación",
+      seeDeal: "Ver info del trato",
+      underCap: "Límite 75%",
+      matchedStrip: "Conectado — Tratos directos sin comisión",
+      lockedStrip: "Conecta para ver el perfil",
+      scoreLbl: "Score PML",
+      scoreHidden: "Score oculto",
+      deals: "Tratos",
+      onTime: "A tiempo",
+      funded: "Fondeado",
+      extensions: "Ext.",
+      cardTiers: "Niveles de tarjeta",
+      rookie: { name: "Novato", desc: "0–2 tratos · blanco/azul" },
+      pro: { name: "Pro", desc: "3–9 tratos · oro oscuro" },
+      allStar: { name: "Estrella", desc: "10+ tratos · holográfico" },
+      limited: { name: "Limitada", desc: "10+ tratos · 0 atrasos" },
+      fields: { loan: "Monto", rate: "Tasa", term: "Plazo", arv: "ARV", type: "Tipo", market: "Mercado" }
     }
   },
 
@@ -113,6 +133,69 @@ const es = {
       ]
     },
 
+    lenderLanding: {
+      hero: {
+        badge: "Para Prestamistas Privados",
+        title1: "Conviértete en un",
+        title2: " Imán de Tratos.",
+        sub: "Escanea tratos en tu mercado, despliega tu capital y déjanos el resto a nosotros. Evaluación de prestatarios, análisis del trato, rastreo de pagos, cartas de liquidación — todo listo. Tú solo di que sí.",
+        btn1: "Explorar tratos abiertos",
+        btn2: "Crear cuenta gratis"
+      },
+      ribbon: {
+        title: "PML usa IA para potenciar todo tu negocio de préstamos",
+        items: [
+          { short: "VP", title: "Verificar Prestatarios", desc: "Te conecta con los mejores clientes" },
+          { short: "AT", title: "Análisis de Tratos", desc: "Toma decisiones en segundos" },
+          { short: "CA", title: "Comunicación Automática", desc: "Papeleo de oficina resuelto" },
+          { short: "1 hr/sem", title: "Gestiona tu Negocio", desc: "Adminístralo en una hora a la semana" },
+          { short: "MF", title: "Mercado de Fondeo", desc: "Accede a tratos en todo el país" },
+          { short: "SPA", title: "Sistema de Pagos Automáticos", desc: "Pagos gestionados automáticamente" },
+          { short: "1-Clic", title: "Liquidación en 1 Clic", desc: "Cartas de liquidación al instante" }
+        ]
+      },
+      features: {
+        label: "Lo que obtienes",
+        title: "Conviértete en un Profesional.",
+        sub: "Cada herramienta que necesitas para encontrar grandes prestatarios, analizar rápido y recibir tus pagos a tiempo — siempre.",
+        cards: [
+          { title: "No más pagos perdidos", desc: "PML envía recordatorios automáticos a tus prestatarios antes de cada fecha de vencimiento. Las penalizaciones por atraso se rastrean automáticamente. Te notificamos en el momento en que se procesa un pago — sin perseguir a nadie, sin hojas de cálculo, sin llamadas incómodas." },
+          { title: "Presta más dinero", desc: "Establece tus criterios una vez y deja que el flujo de tratos llegue a ti. Entre más capital despliegues a través de PML, más crece tu perfil de prestamista — atrayendo mejores prestatarios con historiales sólidos. Escala tu cartera sin escalar tus costos operativos." },
+          { title: "Busca a los mejores prestatarios en todo el país", desc: "Filtra tratos por estado, tamaño del préstamo, LTV, tipo de propiedad y calificación del prestatario. Cada prestatario en PML tiene su identidad verificada con un historial de pagos real. Encuentra al operador adecuado para tu capital — sin importar en qué parte del país estén." },
+          { title: "Analiza tratos y prestatarios en minutos — con IA", desc: "La IA de PML detecta señales de alerta antes de que fondees — advertencias de LTV, puntajes de confianza del ARV, brechas en el alcance y análisis del historial del prestatario. Lo que antes tomaba horas de debida diligencia, ahora toma minutos. Toma mejores decisiones, más rápido. Próximamente." }
+        ]
+      },
+      how: {
+        label: "Cómo funciona",
+        title: "Tres pasos. Cero complicaciones.",
+        sub: "Tú pones el capital. PML hace el resto.",
+        steps: [
+          { title: "Configura tus criterios una vez", desc: "Dile a PML tus preferencias de préstamo — estados, tamaños de préstamo, LTV máximo, tipos de propiedad, tasa mínima. Toma 5 minutos. Tu feed mostrará automáticamente tratos de prestatarios verificados que encajen." },
+          { title: "Explora tratos y haz ofertas", desc: "Cada trato muestra finanzas completas — precio de compra, ARV, LTV, presupuesto de remodelación, calificación del prestatario. Entra, establece tus términos, envía una hoja de términos. El prestatario acepta, hace contraoferta o rechaza. Todo en la plataforma." },
+          { title: "Recibe pagos. PML hace el resto.", desc: "Una vez fondeado, PML rastrea cada pago, envía recordatorios al prestatario, gestiona aprobaciones de retiros, genera cartas de liquidación y te notifica de toda actividad. Tú revisas y apruebas. Así de simple." }
+        ]
+      },
+      calc: {
+        title: "Ve lo que tu dinero puede ganar.",
+        sub: "Los prestamistas privados en PML promedian un 10–13% anual. Cero carga administrativa. Ajusta los controles para ver tus retornos proyectados.",
+        cap: "Capital a desplegar",
+        rate: "Tasa de interés promedio",
+        loans: "Número de préstamos",
+        mo: "Ingreso mensual por interés",
+        moSub: "Pagos de solo interés de los prestatarios",
+        yr: "Ingreso anual por interés",
+        yrSub: "Asumiendo despliegue completo",
+        total: "Retorno total del año 1",
+        totalSub: "Los prestamistas conservan el 90% del interés en tratos conectados por PML",
+        loansSuffix: "préstamos"
+      },
+      cta: {
+        title: "Conviértete en un Imán de Tratos.",
+        sub: "Escanea tratos. Despliega tu capital. Nosotros hacemos el resto. Los prestamistas siempre usan PayMyLoan.ai gratis.",
+        btn1: "Crear cuenta gratis",
+        btn2: "Explorar tratos abiertos"
+      }
+    },
     // --- NUEVO OBJETO INFO PRESTAMISTA ---
     lenderInfo: {
       demo: {
@@ -158,122 +241,52 @@ const es = {
       }
     },
 
-    borrowerMap: {
-      eyebrow: "Directorio de Prestamistas",
-      title: "Encuentra Prestamistas en tu Área",
-      subtitle: "Ve qué prestamistas buscan activamente tratos cerca de ti y cuáles ya han fondeado en tu mercado. Crea una cuenta gratis para conectar.",
-      search: { type: "Cualquier Tipo", locationPh: "📍 Ciudad, Estado o ZIP", amount: "Cualquier Monto", btn: "Buscar Prestamistas →" },
-      mapTitle: "Prestamistas en tu Área",
-      legendActive: "Buscando Tratos Activ.", legendPast: "Ha Fondeado en esta Área", fundedTitle: "Prestamistas Recientes",
-      blurText: "+ 18 prestamistas más en tu área", blurBtn: "Crea tu Cuenta Gratis para Desbloquear →", btnConnect: "Solicitar Introducción →"
-    },
-    borrowerDemo: {
-      eyebrow: "Demo",
-      title: "Mira cómo funciona para Prestatarios",
-      subtitle: "Ve cómo PML te lleva del trato al fondeo — más rápido, más fácil y con los prestamistas viniendo a ti.",
-      videoTitle: "Video Recorrido para Prestatario",
-      videoSub: "Publica un trato, empareja con prestamistas, cierra rápido — demo completa",
-      videoComing: "Video Próximamente",
-      steps: [
-        { num: "1", label: "Crea tu Perfil" }, { num: "2", label: "Publica Gratis" },
-        { num: "3", label: "Piden tu Perfil" }, { num: "4", label: "Elige Términos" }, { num: "5", label: "Sube Calificación" }
-      ],
-      benefits: [
-        { icon: "🤖", title: "Pitch con IA", desc: "La IA construye tu perfil de trato listo para prestamistas automáticamente. Profesional en minutos." },
-        { icon: "📊", title: "Evaluación con IA", desc: "Comps, ARV y calificación del trato auto-generados. Tus números son a prueba de balas." },
-        { icon: "🗺️", title: "Acceso al Mercado", desc: "Publica una vez, llega a cada prestamista en la plataforma. Ellos vienen a ti." },
-        { icon: "⭐", title: "Construye tu Calificación", desc: "Cada trato cerrado y pago a tiempo construye un score en el que los prestamistas confían a primera vista." },
-        { icon: "🏦", title: "Automatiza tus Pagos", desc: "ACH configurado al cierre. Nunca un pago atrasado. Nunca una relación dañada." },
-        { icon: "📄", title: "Cartas Automáticas", desc: "Enviadas a la notaría y seguro automáticamente. Sin papeleo, sin retrasos." }
-      ],
-      ctaTitle1: "¿Listo para Fondear tu ", ctaTitle2: "Siguiente Trato?",
-      ctaSub: "Publica gratis por 7 días. Sin cargo hasta que conectes con un prestamista.",
-      btn1: "Publicar Trato Gratis →", btn2: "Encontrar Prestamistas"
-    },
-    borrowerProblems: {
-      eyebrow: "Problemas que Resolvemos",
-      title: "Deja de vender en frío. Empieza a cerrar rápido.",
-      subtitle: "Cada prestatario ha vivido estos problemas. PML fue construido para eliminarlos todos.",
-      probs: [
-        { num: "01", icon: "🤖", title: "Armar el Pitch Toma una Eternidad", pain: '"Paso 2 horas dando formato a un resumen cada vez..."', solution: "La IA genera tu perfil de trato automáticamente...", tag: "✓ Pitch de Trato IA" },
-        { num: "02", icon: "📊", title: "No Confían en tus Números", pain: '"Todos quieren verificar el ARV..."', solution: "La evaluación IA extrae comps, ARV y genera calificación...", tag: "✓ Evaluación de IA" },
-        { num: "03", icon: "📤", title: "Contactarlos es Exhaustivo", pain: '"Envío 20 correos, recibo 3 respuestas..."', solution: "Publica una vez. Tu trato se muestra a todos los prestamistas...", tag: "✓ Publica y Llega a Todos" },
-        { num: "04", icon: "🔎", title: "No Encuentras Nuevos Prestamistas", pain: '"Vuelvo a los mismos 2 de siempre..."', solution: "Navega el mapa — ve quién está prestando activamente...", tag: "✓ Mapa de Descubrimiento" },
-        { num: "05", icon: "🏦", title: "Olvidar Pagar al Prestamista", pain: '"Olvidé un pago por estar ocupado..."', solution: "Configura ACH al cierre. Corre en automático cada mes...", tag: "✓ Pagos ACH" },
-        { num: "06", icon: "📚", title: "Contadores Pidiendo Registros", pain: '"Mi contador necesita estados cada trimestre..."', solution: "Invita al contador a tu portal. Cada pago, saldo y tabla...", tag: "✓ Acceso a Contadores" },
-        { num: "07", icon: "🚀", title: "No Te Conocen y Te Dicen NO", pain: '"He hecho 15 tratos pero tengo que explicar mi historial..."', solution: "Tu Calificación PML cuenta tu historia...", tag: "✓ Tu Calificación Vende por Ti", gold: true }
-      ]
-    },
-    borrowerWho: {
-      eyebrow: "Para Quién Es",
-      title: "Para Inversores que se Mueven Rápido",
-      subtitle: "Ya sea que estés en tu primer trato o el número 50, PML te da las herramientas para fondear más rápido.",
-      cards: [
-        { icon: "🏠", title: "Inversores Fix & Flip", bullets: ["Compras, remodelas y vendes — rápido", "Necesitas capital en días, no semanas", "Haces tratos pero te cuesta hallar prestamistas", "Quieres que tu historial hable por ti"], btn: "Este Soy Yo →" },
-        { icon: "🏘️", title: "Inversores Buy & Hold", bullets: ["Construyes portafolio de renta a largo plazo", "Necesitas préstamos puente o tipo DSCR", "Quieres gestionar todo tu hard money en un lugar", "Requieres registros limpios para el contador"], btn: "Este Soy Yo →" },
-        { icon: "📈", title: "Inversores Escalando", bullets: ["Haces 5–20+ tratos al año y requieres volumen", "Necesitas prestamistas compitiendo por tus tratos", "Tu calificación PML te pone primero en la fila", "Buscas automatizar para enfocarte en los tratos"], btn: "Este Soy Yo →" }
-      ]
-    },
-    borrowerDiff: {
-      eyebrow: "Qué Nos Hace Diferentes",
-      title: "Ninguna Otra Plataforma Construye Tu Credibilidad",
-      subtitle: "Otras plataformas son solo formularios. PML es un perfil completo, motor de evaluación y sistema de gestión de préstamos en uno.",
-      table: {
-        hPml: "PayMyLoan.ai", hC1: "Hard Money Lender", hC2: "Red de Brokers", hC3: "Búsqueda Directa",
-        rows: [
-          { label: "Gratis para publicar", pml: "✅ Prueba 7 días", c1: "❌ Puntos por delante", c2: "❌ Tarifa de broker", c3: "❌ Tu tiempo" },
-          { label: "Evaluación con IA", pml: "✅ Auto-generado", c1: "❌ Su criterio", c2: "❌ Manual", c3: "❌ Lo haces tú" },
-          { label: "Score de prestatario", pml: "✅ Sube con el tiempo", c1: "❌ Inicia desde cero", c2: "❌ Nada", c3: "❌ Nada" },
-          { label: "Acceso a múltiples prestamistas", pml: "✅ Todo el mercado", c1: "❌ Un prestamista", c2: "⚠️ Red limitada", c3: "❌ Uno a la vez" },
-          { label: "Pagos automáticos (ACH)", pml: "✅ Integrado", c1: "❌ Manual", c2: "❌ Manual", c3: "❌ Manual" },
-          { label: "Cartas automáticas", pml: "✅ A notaría y seguro", c1: "❌ Manual", c2: "❌ Manual", c3: "❌ Tú lo manejas" }
+    borrowerLanding: {
+      hero: {
+        badge: "Para Prestatarios Inmobiliarios",
+        title1: "Tú traes el trato.",
+        title2: " Nosotros el resto.",
+        sub: "Muestra a los prestamistas quién eres, de qué trata el trato y por qué cuadran los números — en minutos. Consigue fondeo, mantén feliz a tu prestamista y pasa al siguiente trato. PML se encarga de todo lo demás.",
+        btn1: "Publicar trato gratis",
+        btn2: "Mira cómo funciona"
+      },
+      proof: {
+        items: [
+          { val: "24–72 hrs", label: "Tiempo prom. para 1ra oferta" },
+          { val: "$0", label: "Al publicar con enlace afiliado" },
+          { val: "Sin buró", label: "Solo préstamos sobre activos" },
+          { val: "1-clic", label: "Cartas de liquidación y retiros" }
         ]
       },
-      mantra: { h1: "Los prestamistas quieren un retorno ", h2: "sobre", h3: " su dinero.", h4: "Muéstrales que les darás el retorno ", h5: "de", h6: " su dinero.", p: "Tu Calificación PML es la prueba. Constrúyela con cada trato. Deja que abra puertas antes de que digas una sola palabra." },
-      csEyebrow: "Mantra", csTitle: "", csCards: []
-    },
-
-    // --- NUEVO OBJETO INFO PRESTATARIO ---
-    borrowerInfo: {
-      demo: {
-        eyebrow: "Cómo funciona",
-        title: "Prestamistas listos para fondear tu trato.",
-        subtitle: "Los prestamistas privados ya están en PML buscando tratos en tu código postal. Publica tu trato y ellos te encontrarán a ti.",
-        steps: [ { num: "1", label: "Crea tu Perfil" }, { num: "2", label: "Publica en 5 minutos" }, { num: "3", label: "Piden tu Perfil" }, { num: "4", label: "Los prestamistas compiten" }, { num: "5", label: "Cierra, rastrea y paga" } ],
-        benefits: [ { title: "Auto-completado de detalles con registros públicos" }, { title: "Calculadora en vivo de tu pago mensual" }, { title: "Compara todas las ofertas lado a lado" }, { title: "Los prestamistas compiten sin ver otras ofertas" }, { title: "Firma digitalmente tu carta de compromiso" }, { title: "Estados de cuenta mensuales automáticos" } ],
-        ctaTitle1: "Prestamistas ", ctaTitle2: "buscan en tu área.",
-        ctaSub: "Los prestamistas privados en PayMyLoan.ai están buscando activamente tratos en tu mercado. Publica tu trato y deja que compitan — sin bancos, sin burocracia.",
-        btn1: "Publicar trato gratis →", btn2: "Ver cómo funciona"
-      },
-      problems: {
-        eyebrow: "Problemas que Resolvemos",
-        title: "Deja de vender en frío. Empieza a cerrar rápido.",
-        subtitle: "Cada prestatario ha vivido estos problemas. PML fue construido para eliminarlos todos.",
-        probs: [
-          { solution: "Ingresa la dirección, el monto del préstamo, el ARV y el presupuesto de remodelación. Nuestro asistente te guía paso a paso sin jerga técnica." },
-          { solution: "La evaluación IA extrae comps, ARV y genera calificación. Números a prueba de balas." },
-          { solution: "Tu trato se publica en el mercado de PML. Prestamistas privados verificados lo revisan y te envían hojas de términos en 24-72 horas. Tú eliges la mejor oferta." },
-          { solution: "Acepta, haz contraoferta o rechaza con un solo clic. Ellos compiten sin ver a los demás." },
-          { solution: "Al aceptar una oferta, PML genera los documentos, administra el calendario de pagos y envía tus estados de cuenta. Tu portal muestra todo tu historial." },
-          { solution: "Invita al contador a tu portal. Cada pago, saldo y tabla de amortización siempre accesible." },
-          { solution: "Tu Calificación PML cuenta tu historia. Cada trato cerrado y pago puntual construye un perfil de confianza. Mejor score = mejores tasas y aprobaciones rápidas." }
+      features: {
+        label: "Lo que obtienes",
+        title: "Conviértete en un Profesional.",
+        sub: "Todo lo que necesitas para encontrar dinero rápido, cerrar limpio y seguir volviendo.",
+        cards: [
+          { title: "No más errores ni desorganización", desc: "Cada documento, trato y pago vive en un solo lugar. Hojas de términos, retiros, extensiones, cartas de liquidación — organizados automáticamente. No más buscar en correos o perder papeleo." },
+          { title: "No más pagos perdidos", desc: "Recordatorios automáticos antes de cada vencimiento. Tu panel muestra exactamente qué se debe y cuándo. Paga a tiempo siempre — protege tu relación con el prestamista y tu calificación." },
+          { title: "Liquidaciones en minutos", desc: "Elige la fecha y PML genera el monto exacto al instante — calculado a la tasa original de tu contrato en un año de 360 días. PDF oficial listo en segundos. Sin llamadas ni matemáticas." },
+          { title: "Construye tu Score PML", desc: "Cada pago a tiempo, liquidación limpia y retiro completado construye tu calificación. Los prestamistas lo ven antes de fondear. Mejor score = aprobaciones rápidas, mejores tasas y más competencia por tus tratos." },
+          { title: "Únete al mercado de fondeo", desc: "Publica tu trato y entra a un mercado de prestamistas privados verificados buscando desplegar capital. Sin brokers. Sin intermediarios. Los prestamistas compiten — tú eliges la mejor oferta." },
+          { title: "Usa IA para presentar tus tratos", desc: "La IA de PML analiza tu trato y te ayuda a presentarlo de la mejor manera — confianza en ARV, claridad del alcance, LTV. Entra al mercado con un pitch que destaque. Próximamente." }
         ]
       },
-      diff: {
-        title: "PML vs. la forma antigua",
-        subtitle: "Brókers, aplicaciones bancarias y llamadas en frío — o una plataforma que lo hace todo.",
-        table: {
-          hPml: "PayMyLoan.ai", hC1: "La forma antigua",
-          rows: [
-            { label: "Proceso de fondeo", pml: "Publica una vez y los prestamistas vienen a ti", c1: "Llamar a 10 prestamistas esperando respuesta" },
-            { label: "Tiempo de respuesta", pml: "Primeras ofertas en 24-72 horas", c1: "Esperar semanas por una hoja de términos" },
-            { label: "Transparencia de tasas", pml: "Compara ofertas compitiendo lado a lado", c1: "Adivinar cuáles son las tasas reales del mercado" },
-            { label: "Firma de contratos", pml: "Carta de compromiso digital — firma en minutos", c1: "Caos de contratos en papel y DocuSign" },
-            { label: "Liquidación final", pml: "Solicitud de liquidación en un solo clic, 24/7", c1: "Perseguir al prestamista rogando por la carta" },
-            { label: "Administración", pml: "Panel completo con estados de cuenta y pagos", c1: "Sin historial de pagos ni panel de control" }
-          ]
-        },
-        mantra: { h1: "Prestamistas locales ", h2: "esperan", h3: " tu siguiente trato.", h4: "Publica gratis ", h5: "hoy", h6: " y haz que compitan.", p: "Publica gratis tu primer trato con un código de referido, o paga $99/mes. Los prestamistas de tu mercado te encontrarán." }
+      how: {
+        label: "Cómo funciona",
+        title: "Publica tu trato. Consigue fondeo. Repite.",
+        sub: "Sin bancos. Sin brokers. Sin rodeos.",
+        steps: [
+          { title: "Publica tu trato en 5 minutos", desc: "Ingresa la dirección, monto, ARV y presupuesto de remodelación. Tu trato se publica de inmediato — prestamistas verificados en tu mercado lo ven y pueden enviarte ofertas." },
+          { title: "Los prestamistas compiten. Tú eliges.", desc: "Múltiples prestamistas pueden enviarte hojas de términos. Compara tasas, plazos, puntos y tarifas lado a lado. Acepta, contraoferta o rechaza con un clic. Sin brokers en el medio." },
+          { title: "PML maneja todo después del cierre.", desc: "Recordatorios de pago, retiros, cartas de liquidación, extensiones — todo en tu panel. Mantén feliz a tu prestamista, construye tu calificación y vuelve para tu siguiente trato con un historial más fuerte." }
+        ]
+      },
+      cta: {
+        title1: "Tú traes el trato.",
+        title2: "Nosotros el resto.",
+        sub: "Publica gratis con un código de referido, o $99/mes. Sin bancos, sin revisión de crédito, sin rodeos. Los prestamistas en tu mercado están listos ahora mismo.",
+        btn1: "Publicar trato gratis",
+        btn2: "Ver una demo en vivo"
       }
     },
 
@@ -293,8 +306,63 @@ const es = {
 
   welcomeModal: { brand: "PayMyLoan", brandSuffix: ".ai", tagline: "Préstamos privados — simplificados.", question: "¿Cómo podemos ayudarte hoy?", lender: { icon: "💰", title: "¿Tienes fondos para desplegar?", sub: "Quiero fondear tratos inmobiliarios" }, borrower: { icon: "🏗️", title: "¿Quieres fondear un trato?", sub: "Necesito capital para mi siguiente trato" }, signin: { icon: "🔑", title: "Iniciar sesión", sub: "Accede a tu portal" } },
   nav: { skip: "Saltar al formulario de registro", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "Cómo funciona" }, { href: "#costo", label: "Costo de la plataforma" }, { href: "#seguridad", label: "Seguridad" }, ], features: "Funcionalidades", howItWorks: "Cómo funciona", login: "Iniciar sesión", logout: "Cerrar sesión", cta: "Ingresar", themeToggle: "Cambiar tema", langToggle: "Cambiar idioma", backToDashboard: "Volver al panel", },
+  landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why: "Por qué PML", demo: "Demo", affiliates: "Afiliados", signIn: "Iniciar sesión", getStarted: "Comenzar gratis" },
   hero: { eyebrow: "Servicing de préstamos privados", title: "Un solo saldo en el que ambos confían.", deck: "PayMyLoan.ai administra préstamos privados con garantía inmobiliaria: el prestatario paga por ACH, el prestamista ve exactamente qué se pagó y de qué propiedad, y ambos trabajan sobre los mismos términos, documentos y saldo.", points: [ "Pago por ACH: 0.8% con tope de $5.00 por transacción", "Términos aceptados por las dos partes, con fecha, hora e IP", "Verificación en dos pasos obligatoria para prestamistas", ], trustLabel: "Operado por", trust: [ "Dueño a Dueño LLC", "Pagos procesados por Stripe", "ACH Direct Debit", ], },
-  form: { eyebrow: "Alta de usuario", title: "Sé de los primeros en probarlo", subtitle: "Déjanos tus datos para ser de los primeros en abrir tu cuenta. Te avisaremos en cuanto la plataforma esté lista para ti.", intentLabel: "¿Para qué deseas una cuenta?", intents: [ { value: "lender", label: "Daré un préstamo", hint: "Prestamista" }, { value: "borrower", label: "Quiero un préstamo", hint: "Prestatario" }, ], intentNote: "No te cobraremos nada ahora. Solo guardaremos tu lugar en la fila.", name: "Nombre completo", namePh: "Como aparece en el contrato", email: "Correo electrónico", emailPh: "correo@ejemplo.com", phone: "Teléfono", phonePh: "Ej. 555 123 4567", password: "Contraseña", passwordPh: "Mínimo 12 caracteres", passwordConfirm: "Confirmar contraseña", passwordConfirmPh: "Repite la contraseña", show: "Mostrar", hide: "Ocultar", rules: { length: "12 caracteres o más", case: "Una mayúscula y una minúscula", number: "Al menos un número", }, terms: "Acepto los", termsLink: "Términos de servicio", termsAnd: "y el", privacyLink: "Aviso de privacidad", submit: "Quiero Registrarme", submitting: "Registrando tu solicitud…", twofaNote: "Al terminar el registro te pediremos configurar la verificación en dos pasos. Para prestamistas es obligatoria.", inviteNote: "¿Te invitaron por correo?", inviteLink: "Abre el enlace de tu invitación", inviteNoteEnd: "para unirte directo al préstamo.", haveAccount: "¿Ya tienes cuenta?", login: "Inicia sesión", errors: { summary: "Revisa los campos marcados.", name: "Escribe tu nombre completo.", email: "Escribe un correo válido.", phone: "Escribe un teléfono de al menos 10 dígitos.", password: "La contraseña no cumple los requisitos.", passwordConfirm: "Las contraseñas no coinciden.", terms: "Necesitas aceptar los términos para crear la cuenta.", intent: "Elige qué vas a hacer primero.", submit: "No pudimos crear la cuenta. Intenta de nuevo en unos segundos.", }, success: { title: "Revisa tu correo", body: "Te enviamos un enlace de verificación a", note: "El enlace vence en 24 horas. Si no llega, revisa spam.", again: "Usar otro correo", }, devNote: "Front unicamente: todavia no hay backend conectado, el envio se simula.", },
+  form: {
+    title: "Crea tu cuenta",
+    subtitle: "Unete gratis. No requiere tarjeta de credito.",
+    intents: [
+      { value: "borrower", label: "Tengo un trato", hint: "Prestatario" },
+      { value: "lender", label: "Tengo capital", hint: "Prestamista" }
+    ],
+    firstName: "Nombre",
+    firstNamePh: "Juan",
+    lastName: "Apellido",
+    lastNamePh: "Perez",
+    email: "Correo electronico",
+    emailPh: "juan@ejemplo.com",
+    phone: "Telefono celular",
+    phonePh: "(901) 555-0100",
+    phoneHint: "Para alertas de tratos y seguridad de la cuenta.",
+    password: "Contraseña",
+    passwordPh: "Al menos 8 caracteres",
+    submit: "Crear cuenta",
+    submitting: "Creando...",
+    or: "o",
+    googleAuth: "Continuar con Google",
+    termsPre: "Al crear una cuenta, aceptas nuestros ",
+    termsLink: "Terminos de Servicio",
+    termsAnd: " y ",
+    privacyLink: "Aviso de Privacidad",
+    termsPost: ".",
+    haveAccount: "¿Ya tienes cuenta?",
+    login: "Inicia sesion",
+    errors: {
+      summary: "Revisa los campos marcados.",
+      firstName: "Ingresa tu nombre.",
+      lastName: "Ingresa tu apellido.",
+      email: "Ingresa un correo valido.",
+      phone: "Ingresa un telefono de 10 digitos.",
+      password: "La contraseña debe tener al menos 8 caracteres.",
+      intent: "Elige tu tipo de cuenta.",
+      submit: "Error al crear la cuenta. Intenta de nuevo.",
+    },
+    success: {
+      title: "Revisa tu correo",
+      subtitle: "Enviamos un enlace de confirmacion a",
+      step1Pre: "Abre el correo de ",
+      step1Bold: "PayMyLoan.ai",
+      step2Pre: "Haz clic en ",
+      step2Bold: "Confirmar mi correo electronico",
+      step3: "Seras llevado directamente a tu panel",
+      resend: "Reenviar correo de confirmacion",
+      resendDone: "¡Enviado!",
+      spamPre: "¿No lo encuentras? Revisa tu ",
+      spamBold: "carpeta de spam",
+      spamPost: " y marcanos como seguros.",
+      again: "Usar otro correo"
+    }
+  },
   loginPage: { title: "Inicia sesión", subtitle: "Ingresa tus credenciales para administrar préstamos.", cardTitle: "ACCESO SEGURO", emailLabel: "Correo electrónico", emailPlaceholder: "correo@ejemplo.com", passwordLabel: "Contraseña", passwordPlaceholder: "Ingresa tu contraseña", submit: "INGRESAR", forgot: "OLVIDÉ MI CONTRASEÑA", back: "VOLVER AL INICIO", noAccount: "¿Aún no tienes cuenta?", signup: "Regístrate aquí", processing: "Procesando...", twoFactorTitle: "VERIFICACIÓN 2FA", twoFactorDesc: "Ingresa el código de 6 dígitos de tu aplicación autenticadora o un código de recuperación.", twoFactorLabel: "Código de verificación", twoFactorPlaceholder: "Ej. 123456", twoFactorVerifying: "Verificando...", twoFactorConfirm: "CONFIRMAR", twoFactorCancel: "Cancelar", errorDefault: "Error al iniciar sesión", error2FA: "Código 2FA incorrecto o expirado", errorNetwork: "Error de red desconocido", },
   pmlHero: { badge: "Gestión de Préstamos con IA", subtitle: "PML — Prestamista de Dinero Privado. PayMyLoan.ai. Ambas partes del acuerdo.", title1: "De la propuesta", title2: "al pago final.", title3: "Una sola plataforma.", by: "por PayMyLoan.ai", desc: "La propuesta. La solicitud de préstamo. El compromiso. El procesamiento de pagos. La liquidación. Todo en un solo lugar — tanto para prestatarios como para prestamistas.", cta1: "Quiero acceso anticipado", cta2: "Ver cómo funciona", },
   whoItHelps: { eyebrow: "A quién ayuda", title1: "Una plataforma.", title2: "Seis problemas resueltos.", lead: "PML elimina el caos de los préstamos privados — dando a los prestatarios claridad y a los prestamistas control, para que cada trato se cierre limpiamente.", cards: [ { role: "Prestatario", icon: "🏗️", title: "Del pitch al pago en un solo lugar", points: [ "Todos los préstamos en un solo panel", "Genera pitches y cartas de compromiso", "Pagos automatizados — nunca más te atrases", "Pagos finales instantáneos y calificación PML" ] }, { role: "Prestamista", icon: "🏦", title: "Sabe quién pagó, qué se debe y qué sigue", points: [ "Seguimiento de pagos de todos los prestatarios", "Evalúa prestatarios antes de comprometer capital", "Genera cartas de compromiso y pagos finales", "Controla tu visibilidad en el mercado" ] }, { role: "Contador Interno", icon: "📒", title: "Registros limpios, cero persecuciones", points: [ "División de capital vs interés en cada pago", "Cada préstamo vinculado a una propiedad", "Registros exportables — sin captura manual", "No más correos mensuales pidiendo detalles" ] }, { role: "Contador Público", icon: "🧾", title: "Listo para el cierre anual — a un clic", points: [ "Ingresos y gastos por intereses separados claramente", "Cada préstamo documentado por propiedad", "Reporte anual completo — exportable al instante", "No más rebuscar en correos para obtener registros" ] }, { role: "Compañía de Títulos", icon: "🏛️", title: "Pagos finales antes del cierre — no después", points: [ "Estados de liquidación enviados directamente", "Ambas partes confirmadas con la misma cifra", "Sin apuros de último minuto en la mesa de firma", "Cierres limpios en cada ocasión" ] }, { role: "Aseguradora", icon: "🛡️", title: "Cláusula hipotecaria — precisa siempre", points: [ "Datos del prestamista extraídos de su perfil PML", "Cláusula de acreedor hipotecario siempre al día", "Sin solicitudes manuales de detalles del prestamista", "Cada propiedad y préstamo documentado" ] } ], stats: [ { value: "< 30s", label: "Pago final generado" }, { value: "2", label: "Lados. Una plataforma." }, { value: "0", label: "Hojas de cálculo necesarias" }, { value: "100%", label: "Listo para el CPA a fin de año" } ] },
@@ -317,6 +385,148 @@ const es = {
   dashboardAdmin: { title: "Panel de Administración", subtitle: "Métricas globales y salud de la plataforma.", metrics: { activeLoans: "Préstamos Activos", totalVolume: "Volumen Procesado (ACH)", platformRevenue: "Ingresos Totales (0.8%)", pendingVerifications: "Verificaciones Pendientes" }, recentActivity: "Actividad Reciente del Sistema", addUserBtn: "Agregar Usuario", viewUsersBtn: "Ver Usuarios", viewContractsBtn: "Ver Contratos", loading: "Cargando métricas...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar datos del administrador.", errorNetwork: "Error de red desconocido" },
   adminUsersList: { title: "Usuarios del sistema", subtitle: "Directorio de administradores, prestamistas y prestatarios.", table: { name: "Nombre", type: "Tipo", email: "Correo electrónico", phone: "Teléfono", role: "Rol", status: "Estado" }, back: "Volver al panel", addUserBtn: "Agregar Usuario", loading: "Cargando usuarios...", empty: "No hay usuarios registrados.", errorAuth: "No tienes permisos de administrador o tu sesión expiró.", errorFetch: "Error al obtener usuarios.", errorNetwork: "Error de red desconocido", active: "Activo", inactive: "Inactivo", na: "N/D" },
   adminAddUser: { title: "Crear Usuario", subtitle: "Da de alta manualmente a un administrador, prestamista o prestatario.", roleLabel: "Rol en la plataforma", roles: { admin: "Administrador", lender: "Prestamista", borrower: "Prestatario" }, nameLabel: "Nombre completo", namePh: "Ej. Jane Doe", emailLabel: "Correo electrónico", emailPh: "correo@ejemplo.com", phoneLabel: "Teléfono", phonePh: "Ej. 555 123 4567", submit: "Registrar cuenta", back: "Volver al panel", submitting: "Registrando...", phoneHint: "Debe tener exactamente 10 dígitos (opcional).", errorFetch: "Error al crear el usuario.", errorNetwork: "Error de red desconocido", successTitle: "¡Usuario creado exitosamente!", successDesc1: "Se ha registrado la cuenta para", successTempPw: "Contraseña temporal generada:", successCreateAnother: "Crear otro", successViewList: "Ver listado" },
+  twoFactorPage: {
+    securityAlert: { title: "Verificacion de seguridad requerida", desc: "Cualquier cambio en la informacion bancaria, contraseñas o detalles de contacto requiere confirmacion de identidad." },
+    contexts: {
+      login: { title: "Verifica tu identidad", sub: "Enviamos un codigo de 6 digitos a tu telefono. Ingresalo abajo para continuar." },
+      publish: { title: "Confirma tu identidad para publicar", sub: "Tu trato esta listo para publicarse. Confirma tu identidad." },
+      bank: { title: "Confirma el cambio bancario", sub: "Ingresa el codigo enviado a tu telefono para autorizar este cambio bancario." },
+      password: { title: "Confirma el cambio de contraseña", sub: "Ingresa el codigo enviado a tu telefono para confirmar tu nueva contraseña." },
+      phone: { title: "Verifica tu nuevo numero", sub: "Ingresa el codigo enviado a tu NUEVO telefono para completar la actualizacion." },
+      email: { title: "Confirma el cambio de correo", sub: "Ingresa el codigo enviado a tu telefono para confirmar este cambio de correo." }
+    },
+    codeSent: "Codigo enviado al",
+    expiresIn: "El codigo expira en",
+    expired: "Expirado",
+    verifyBtn: "Verificar",
+    verifying: "Verificando...",
+    noCode: "¿No recibiste el codigo?",
+    resend: "Reenviar",
+    wrongDevice: "¿Usas otro dispositivo?",
+    backLogin: "Volver a iniciar sesion",
+    report: "Reportar actividad sospechosa"
+  },
+  competitive: {
+    hero: {
+      label: "Posicionamiento Competitivo",
+      title1: "$80 mil millones al año.",
+      title2: "Aún operando en hojas de cálculo.",
+      sub: "En 15,000 cierres inmobiliarios, ni un solo prestamista privado tenía software diseñado para él. Hojas de cálculo. Pagos manuales. Sin verificación. Sin ACH. PayMyLoan arregla eso."
+    },
+    values: [
+      { num: "$80B+", label: "Originaciones de préstamos privados al año", desc: "Más de 300,000 préstamos inmobiliarios privados cierran cada año en EE. UU. — construido por un prestatario que ha estado en ambos lados." },
+      { num: "10,000+", label: "Prestamistas activos sin software", desc: "Más de 10,000 prestamistas de dinero privado activos en EE. UU. Ninguno tenía un sistema construido para ellos. PML es ese sistema.", highlight: true },
+      { num: "100%", label: "Gratis para prestamistas — siempre", desc: "Sin tarifa de plataforma, sin cargo mensual, sin porcentaje de retornos. Los prestamistas no pagan nada." }
+    ],
+    pain: {
+      title: "El problema que resuelve PML",
+      before: "Antes de PayMyLoan",
+      after: "Con PayMyLoan",
+      rows: [
+        { b: "Rastrear préstamos en una hoja de cálculo — sin alertas, sin automatización", a: "Panel de préstamos en vivo — cada trato, cada pago, cada estado en un solo lugar" },
+        { b: "Calcular liquidaciones (payoffs) manualmente cada vez — propenso a errores, consume tiempo", a: "Cartas de liquidación a un clic con cálculo por día automático a la tasa original del contrato" },
+        { b: "Perseguir a los prestatarios para los pagos — sin recordatorios automáticos", a: "Cobros ACH el día 1 — automatizado, cumple con Nacha, con rastro de auditoría completo" },
+        { b: "Sin formato de trato estándar — cada prestatario envía información diferente", a: "Envío de tratos estandarizado — chequeo LTV, autocompletado ARV de RentCast, paquete de evaluación completo" },
+        { b: "Sin verificación — préstale a cualquiera, averigua después", a: "Score PML, historial de pagos, verificación de antecedentes + crédito, verificación de entidad" },
+        { b: "Sin rastro de mensajes — tratos cerrados por texto y correo", a: "Mensajería atada al trato — hilo de conversación completo, intercambio de archivos, bloqueo de información de contacto" },
+        { b: "Documentos de cierre en hilos de correo — imposibles de encontrar después", a: "Subida tokenizada de la notaría — documentos archivados en la carpeta del trato automáticamente al cierre" },
+        { b: "Encontrar tratos solo de boca en boca", a: "Mercado de tratos — navega por tratos de prestatarios verificados que coincidan con tus criterios" }
+      ]
+    },
+    comparison: {
+      title: "Cómo se compara PayMyLoan",
+      cols: { pml: "PayMyLoan", alt1: "LenderKit / Peer Lending", alt2: "CRM Genérico", alt3: "Hoja de Cálculo" },
+      rows: [
+        { label: "Construido para préstamos privados", pml: "yes", c1: "partial", c2: "no", c3: "no" },
+        { label: "Gratis para prestamistas", pml: "yes", c1: "no", c2: "no", c3: "yes" },
+        { label: "Pagos automatizados ACH", pml: "yes", c1: "partial", c2: "no", c3: "no" },
+        { label: "Cartas de liquidación a un clic", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "Mercado de prestatarios / flujo de tratos", pml: "yes", c1: "partial", c2: "no", c3: "no" },
+        { label: "Verificación de prestatarios (score + antecedentes)", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "Barreras de seguridad 2FA (banco, login)", pml: "yes", c1: "no", c2: "partial", c3: "no" },
+        { label: "Mercado institucional de refi (3.0)", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "Automatización subida docs por notaría", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "Compatible con móviles", pml: "yes", c1: "partial", c2: "partial", c3: "no" }
+      ]
+    },
+    mantra: {
+      q1: "\"La mayoría de los inversores quieren un retorno SOBRE su dinero. Los mejores quieren el retorno DE su dinero.\"",
+      main1: "Deja de administrar tu negocio de préstamos ",
+      main2: "en una hoja de cálculo.",
+      q2: "\"Construido para Main Street. Por fin.\""
+    },
+    cta: {
+      lender: "Soy prestamista — comenzar gratis",
+      borrower: "Soy prestatario"
+    }
+  },
+  founderStory: {
+    hero: {
+      label: "La historia detrás de PayMyLoan.ai",
+      title: "Construido por un prestatario que se cansó de ver a los prestamistas batallar.",
+      sub: "Después de pedir prestado casi $100 millones a prestamistas privados durante una década en bienes raíces, noté algo. Todos y cada uno de ellos administraban su negocio de la misma forma rota. Así que construí lo que necesitaban — desde el lado del prestatario en la mesa."
+    },
+    sections: { s1: "Dónde empezó esto", s2: "Cómo lo construimos", s3: "Qué construimos" },
+    p1: "He estado pidiendo dinero privado para tratos inmobiliarios por más de diez años. Decenas de millones de dólares en cientos de transacciones. En algún momento el número se acercó a los cien millones de dólares prestados por prestamistas privados en Tennessee y más allá.",
+    p2: "Y en todo ese tiempo, a través de todos esos tratos, nunca trabajé con un solo prestamista no institucional que tuviera algún tipo de sistema para administrar su negocio de préstamos.",
+    painList: {
+      title: "Cómo se veía realmente \"administrar un negocio de préstamos privados\"",
+      items: [
+        "Hojas de cálculo en Excel para rastrear préstamos, pagos y saldos",
+        "Revisar una cuenta bancaria para ver si un prestatario pagó este mes",
+        "Cadenas de correo entrecortadas en lugar de hojas de términos reales",
+        "Correos de ida y vuelta para recolectar el seguro antes del cierre",
+        "Sin una forma estándar de verificar a un nuevo prestatario — solo referencias e intuición",
+        "Prestatarios que no tenían idea de cómo presentar un trato en un formato claro",
+        "Sin pagos automáticos configurados al cierre",
+        "Sin correos automatizados cuando los pagos vencían, se hacían o se atrasaban",
+        "Escarbar en documentos de cierre para recordar los términos originales para una liquidación",
+        "Cartas de compromiso enviadas tarde — o nunca"
+      ]
+    },
+    p3Pre: "Comencé a trabajar con prestamistas institucionales — compañías de hard money, fondos regionales — y la diferencia era del día a la noche. Tenían sistemas. Tenían software. Tenían listas de verificación, formatos de trato estandarizados, rastreo de pagos automatizado. ",
+    p3Bold: "Habían construido infraestructura alrededor de sus operaciones de préstamo.",
+    p4: "Main Street no había hecho eso. Nadie estaba ayudando al prestamista privado cotidiano a administrar su negocio de la forma en que los prestamistas institucionales administran el suyo.",
+    quote1: {
+      text: "\"Le pregunté a mis abogados — de 15,000 cierres con prestamistas privados, ¿acaso uno solo de ellos tenía algún sistema, proceso o software para administrar su operación de préstamos?\"",
+      cite: "— Spencer Shadrach, Fundador"
+    },
+    p5: "La respuesta fue no. Ni uno solo.",
+    p6: "Esa era la brecha. Y yo estaba en una posición única para llenarla — porque había visto ambos lados. Sabía lo que los prestatarios necesitaban para comunicarse claramente. Sabía lo que los prestamistas necesitaban para sentirse seguros y mantenerse organizados. Y tenía las relaciones, el historial de tratos y el equipo para construir la solución.",
+    p7: "Comenzamos con lo básico — las cosas que causaban la mayor fricción diaria en ambos lados.",
+    milestones: [
+      { title: "El problema de la carta de compromiso", desc: "Prestatario y prestamista acuerdan los términos. ¿Y luego? Usualmente un correo entrecortado, un PDF hecho en Word, o nada en absoluto. Lo automatizamos. Oferta aceptada — carta de compromiso generada y enviada a todas las partes en segundos." },
+      { title: "El problema del rastreo de pagos", desc: "Nadie debería revisar su cuenta bancaria para ver si le pagaron. Construimos un rastreo de pagos ACH que confirma el pago en el momento en que se procesa — con notificaciones automáticas a ambos lados. No más incertidumbre." },
+      { title: "El problema de la liquidación (payoff)", desc: "El prestatario llama, dice que está listo para vender. El prestamista busca el pagaré original, encuentra el documento de cierre, hace las matemáticas a mano, envía un número por correo. Toma horas. Lo redujimos a segundos — liquidación exacta al centavo, PDF fechado, enviado directamente a la notaría." },
+      { title: "El problema de presentar el trato (pitch)", desc: "Los prestatarios reconocen un buen trato cuando lo ven. Plasmar ese conocimiento en papel — en un formato que un prestamista pueda evaluar en minutos — es una habilidad diferente. Construimos el Analizador de Tratos. Ingresa la dirección, y la plataforma extrae detalles de la propiedad, comparables y datos de renta automáticamente. Los prestatarios pueden analizar y presentar un trato en minutos, en un formato estandarizado que todo prestamista puede leer de la misma forma." },
+      { title: "El problema del mercado", desc: "Todo prestatario quiere más prestamistas. Todo prestamista quiere más tratos de calidad. Así que construimos el Mercado de Fondeo — un lugar donde los prestatarios pueden publicar tratos verificados y los prestamistas de todo el país pueden encontrarlos y fondearlos. Préstamos privados sin fronteras." },
+      { title: "El problema de la verificación", desc: "He pedido prestado casi $100 millones a prestamistas privados. La mayoría no tenía idea. Sin verificación de antecedentes. Sin historial. Sin revisión de crédito. Solo una referencia y un apretón de manos. Construimos el Score PML para Prestatarios — un puntaje de reputación basado en historial de pagos real, historial de tratos, antecedentes y reseñas de prestamistas. Un prestamista en California ahora puede fondear a un prestatario en Tennessee y saber exactamente con quién está tratando." }
+    ],
+    quote2: {
+      text: "\"Lo que se necesitaba era un prestatario que pudiera verlo desde ambas perspectivas — contratar a un equipo de desarrolladores y construir el software que los prestamistas de dinero privado nunca construyeron para sí mismos.\"",
+      cite: "— Spencer Shadrach, Fundador"
+    },
+    solutionList: [
+      "Deja de administrar tu negocio de préstamos en hojas de cálculo",
+      "Deja de perseguir cheques de prestatarios y rezar para que pasen",
+      "Deja de escarbar en documentos de cierre para recordar términos",
+      "Verifica a cada prestatario — crédito, antecedentes, historial — antes de fondear",
+      "Evalúa cada trato en un formato estandarizado construido para decisiones",
+      "Pagos automáticos — ACH programado al cierre, rastreado en tiempo real",
+      "Cartas de compromiso generadas y enviadas en segundos",
+      "Liquidaciones calculadas al centavo con un solo clic",
+      "Un mercado donde el capital nuevo te encuentra a ti",
+      "Gratis para prestamistas. Siempre."
+    ],
+    closing1: "Así es como se ven los préstamos privados cuando son construidos por alguien que ha estado en ambos lados de la mesa — y se rehusó a aceptar que \"hojas de cálculo e intuición\" era suficiente.",
+    closing2: "PayMyLoan.ai. Construido para Main Street. Por fin.",
+    ctaBand: {
+      title: "¿Listo para administrar tu negocio de préstamos como un negocio real?",
+      sub: "Gratis para prestamistas. Siempre. Crea tu cuenta y explora tratos en vivo en minutos.",
+      btnLight: "Ver la demo primero",
+      btnPurple: "Crear tu cuenta de prestamista"
+    }
+  },
   dashboardLender: { title: "Panel de Prestamista", subtitle: "Control total sobre tu capital y rendimientos.", metrics: { availableCapital: "Capital (Disponible / Desplegado)", capitalDeployed: "Capital Desplegado", nextPayments: "Próximos Pagos (30 días)", avgInterest: "Tasa Promedio", activeBorrowers: "Prestatarios Activos" }, sections: { commitmentLetters: "Cartas de Compromiso Enviadas", upcomingClosings: "Próximos Cierres / Payoffs", activeLoans: "Préstamos Activos (Retorno)", }, tableHeaders: { borrower: "Prestatario", amount: "Monto", status: "Estado", type: "Tipo", date: "Fecha", action: "Acción", loan: "Préstamo", rateBalance: "Tasa / Saldo" }, labels: { cap: "Cap:", int: "Int:" }, recentPayments: "Últimos Pagos Recibidos", actions: { marketplace: "Explorar Mercado", viewContracts: "Ver mis contratos" }, toggle: { open: "Abierto a negocios", closed: "No aceptando préstamos" }, table: { date: "Fecha", borrower: "Prestatario", property: "Propiedad", total: "Pago Total", principal: "Capital", interest: "Interés" }, emptyHistory: "El resto del historial se renderizará aquí.", loading: "Cargando dashboard...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar la información del dashboard", errorNetwork: "Error de red desconocido", unassigned: "Sin asignar", borrowerFallback: "Deudor", emptyCommitments: "No hay compromisos pendientes", emptyClosings: "No hay cierres próximos en el sistema.", emptyLoans: "Sin préstamos activos", emptyPayments: "No hay pagos procesados recientemente." },
   auditLogs: { searchPlaceholder: "Buscar por accion o descripcion...", allRoles: "Todos los Roles", system: "Sistema / Webhooks", admins: "Administradores", lenders: "Prestamistas", borrowers: "Prestatarios", totalRecords: "Total de registros:", dateHour: "Fecha / Hora", actor: "Actor", action: "Accion", description: "Descripcion del Evento", noRecords: "No se encontraron registros de auditoria.", page: "Página", of: "de", prev: "Anterior", next: "Siguiente" },
   pitchDeckModal: { step: "Paso", of: "de", title: "Crear Nuevo Pitch Deck", purchasePrice: "Precio de Compra ($)", purchasePricePh: "Ej. 150000", rehabAmount: "Monto de Remodelación ($)", rehabAmountPh: "Ej. 45000", loanAmount: "Monto Solicitado ($)", loanAmountPh: "Ej. 250000", loanType: "Tipo de Préstamo", loanTypeSelect: "Selecciona el tipo", loanTerm: "Plazo del Préstamo", loanTermSelect: "Selecciona el plazo", term12: "12 Meses", term24: "24 Meses", term36: "36 Meses", years: "Años", address: "Dirección de la Propiedad", addressPh: "Ej. 123 Main St, Austin, TX", type: "Tipo", typeRes: "Residencial", typeCom: "Comercial", typeLand: "Terreno", arvLabel: "ARV / ", value: "Valor Estimado ($)", valuePh: "Ej. 350000", privacyLabel: "Privacidad del Trato", public: "Público (Marketplace)", private: "Privado (Solo invitados)", photos: "Fotos de la Propiedad", dragDrop: "Arrastra tus fotos aquí", supportedFiles: "Soporta JPG, PNG (Max 5MB)", photoGuidelines: "Frente, Cocina, Baños, Patio, Techo", rentcastTitle: "Comparables generados (RentCast API)", rentcastParams: "Búsqueda: 0.5 millas, mismos pies cuadrados, últimos 6 meses", aiEvaluated: "AI Evaluado", saleComps: "Comparables Venta", rentComps: "Comparables Renta", rentcastPending: "Pendiente: La API de RentCast poblará esto automáticamente después de ingresar la dirección.", back: "Atrás", processing: "Procesando...", publish: "Publicar Pitch Deck", next: "Siguiente", successTitle: "Pitch Deck Publicado!", successDesc: "Tu solicitud ha sido enviada. Los prestamistas ahora pueden ver tu trato y enviar ofertas.", backToDash: "Volver al Dashboard" },
@@ -516,13 +726,255 @@ const es = {
   issueCommitment: { title: "Emitir Carta de Compromiso", subtitle: "Configura las tarifas para el trato REF:", closingFeesTitle: "Tarifas al Cierre (Closing Fees)", originationPoints: "Puntos de Originación (%)", processingFee: "Tarifa de Procesamiento ($)", underwritingFee: "Tarifa de Underwriting ($)", docPrepFee: "Doc Prep Fee ($)", customFeeName: "Nombre Tarifa Custom", customFeeNamePh: "Ej. Appraisal Fee", customFeeAmount: "Monto Custom ($)", penaltiesTitle: "Penalizaciones (Post-Cierre)", latePenalty: "Late Payment Penalty", latePenaltyPh: "Ej. 5% o $50", prePayPenalty: "Pre-Pay Penalty", prePayPenaltyPh: "Ej. 1% del saldo", phPoints: "Ej. 2", phFee: "Ej. 500", systemNoteTitle: "Nota del Sistema:", systemNote: "La Tarifa de Conexión del Marketplace (1 punto, mín $999) será agregada automáticamente al resumen final por la plataforma si aplica para este trato.", submit: "Generar y Emitir Carta", submitting: "Emitiendo...", errorFetch: "Error al emitir la carta de compromiso", errorNetwork: "Error de red desconocido" },
   inviteModal: { title: "Invitar al Portal", subtitle: "Comparte este enlace para un trato directo. Los tratos privados (sin marketplace) tienen $0 de tarifa de conexión.", copyLink: "Copiar enlace", linkCopied: "¡Copiado!", emailLabel: "O envía una invitación por correo:", emailPh: "correo@ejemplo.com", sendBtn: "Enviar Invitación", sending: "Enviando...", successMsg: "Invitación enviada exitosamente.", close: "Cerrar" },
   documentVault: { title: "Bóveda de Documentos", subtitle: "Sube, revisa o descarga documentos legales asociados a este trato.", uploadBtn: "Subir Documento", uploading: "Subiendo...", empty: "No hay documentos en esta bóveda.", table: { name: "Nombre del Documento", date: "Fecha de Subida", status: "Estado", action: "Acción" }, actions: { download: "Descargar", sign: "Firmar" }, status: { signed: "Firmado", pending: "Firma Pendiente", file: "Archivo" } },
-  settings: { title: "Configuración de Perfil", subtitle: "Administra tus preferencias, datos bancarios y contactos de cierre.", saveBtn: "Guardar Cambios", saving: "Guardando...", success: "Configuración actualizada.", tabs: { lender: "Preferencias de Prestamista", borrower: "Preferencias de Prestatario" }, lender: { geography: "Áreas Geográficas Preferidas", geographyPh: "Ej. Texas, Florida, Todo US", availableCapital: "Capital Disponible para Desplegar ($)", availableCapitalPh: "Ej. 500000", loanTypes: "Tipos de Préstamo", entities: "Entidades Prestamistas (LLC/Corp)", entitiesPh: "Ej. NextGen Growth LLC", achTitle: "Cuenta Bancaria Asociada (ACH)", routingNum: "Routing Number", accountNum: "Account Number" }, borrower: { attorneyTitle: "Abogado de Cierre / Título", attorneyName: "Nombre de la Compañía o Abogado", attorneyEmail: "Correo del Abogado", insuranceTitle: "Compañía de Seguros", insuranceName: "Nombre de la Aseguradora", insuranceEmail: "Correo del Agente" } },
+  settings: {
+    title: "Configuración",
+    subtitle: "Gestiona tu cuenta, preferencias y configuraciones de producto.",
+    banner: "Permite que cualquier miembro del equipo vea préstamos, pagos y actividad.",
+    inviteBtn: "Invitar miembros →",
+    sections: {
+      personal: "Configuración personal",
+      account: "Configuración de cuenta",
+      product: "Configuración de producto"
+    },
+    cards: {
+      personalDetails: { title: "Detalles personales", desc: "Información de contacto, contraseña, métodos de autenticación y sesiones activas." },
+      communication: { title: "Preferencias de comunicación", desc: "Personaliza los correos, SMS y notificaciones push que recibes." },
+      developers: { title: "Desarrolladores", desc: "Claves API, endpoints de webhooks y configuraciones de integración." },
+      businessProfile: { title: "Perfil del negocio", desc: "Detalles de la cuenta, tipo de entidad, información pública y dominios." },
+      banking: { title: "Bancos y pagos", desc: "Cuentas bancarias, configuración ACH, instrucciones para transferencias." },
+      team: { title: "Equipo y seguridad", desc: "Miembros del equipo, roles, seguridad de la cuenta y recursos compartidos." },
+      notifications: { title: "Notificaciones", desc: "Gestiona quién en tu equipo recibe correos de pagos, liquidaciones y retrasos." },
+      billing: { title: "Suscripción y tarifas", desc: "Tu plan actual, ciclo de facturación, códigos promocionales y desglose de comisiones." },
+      affiliate: { title: "Programa de afiliados", desc: "Tu enlace de referido, ganancias, historial de pagos y panel de afiliado." },
+      compliance: { title: "Cumplimiento y documentos", desc: "IDs subidos, documentos LLC, contratos firmados y exportaciones heredadas." },
+      features: { title: "Funciones de la cuenta", desc: "Administra las funciones de tu cuenta, vistas previas y configuraciones beta." },
+      perks: { title: "Beneficios", desc: "Descuentos y herramientas de socios disponibles para miembros de PayMyLoan.ai." },
+      bridgeLoans: { title: "Préstamos puente", desc: "Términos por defecto, reglas de comisiones de originación y preferencias de liquidación." },
+      slowFlip: { title: "Slow flip / Financiamiento", desc: "Configuraciones de amortización, preferencias de estados PITI, escrow y cobros." },
+      wireSecurity: { title: "Seguridad de transferencias", desc: "Administra tu cuenta receptora, verificación telefónica y configuraciones de fraude." },
+      reporting: { title: "Reportes", desc: "Reportes programados, exportaciones de datos y analíticas de pagos." },
+      payments: { title: "Pagos y ACH", desc: "Métodos de pago, procesamiento ACH, moneda y configuración de checkout." },
+      dealMap: { title: "Mapa de tratos y descubrimiento", desc: "Duración de ventana privada, mapa vs lista y configuraciones de visibilidad de tratos." }
+    },
+    footer: { feedback: "Enviar comentarios", shortcuts: "Atajos de teclado", privacy: "Aviso de privacidad", terms: "Términos de servicio" }
+  },
   billing: { bannerTitle: "Prueba Gratuita", bannerText: "Te quedan 3 días de tu prueba gratuita de 7 días.", bannerCta: "Activar Suscripción", title: "Suscripción Mensual", subtitle: "Para continuar usando PayMyLoan.ai como prestatario, activa tu suscripción de $9/mes.", planName: "Plan Prestatario Activo", planPrice: "$9.00 / mes", cardLabel: "Información de Tarjeta (Stripe)", payBtn: "Suscribirse por $9/mes", processing: "Procesando...", secureNote: "Pagos procesados de forma segura por Stripe. Puedes cancelar en cualquier momento." },
   loanTypes: { interestOnlyShort: "Interest Only (Corto Plazo)", interestOnlyLong: "Interest Only (Largo Plazo)", fullyAmortized: "Totalmente Amortizado", constructionDraw: "Construction Draw Loan (Próximamente)" },
   notifications: { title: "Notificaciones", empty: "No tienes notificaciones nuevas.", markRead: "Marcar todas como leídas" },
   rateLender: { title: "Calificar al Prestamista", subtitle: "Tu préstamo ha finalizado. ¿Cómo fue tu experiencia con", ratingLabel: "Calificación", reviewLabel: "Reseña pública (opcional)", reviewPh: "Escribe sobre tu experiencia trabajando con este prestamista...", submit: "Enviar Calificación", success: "¡Gracias! Tu calificación ha sido publicada en el perfil del prestamista.", close: "Cerrar" },
   dashboardLayout: { overview: "General", deals: "Tratos", products: "Productos", account: "Cuenta", nav: { home: "Inicio", balances: "Saldos", payments: "Pagos", lenders: "Prestamistas", myDeals: "Mis Tratos", submitDeal: "Publicar un Trato", bridgeLoans: "Préstamos Puente", termSheets: "Term Sheets", affiliates: "Afiliados", settings: "Configuración", billing: "Facturación", reporting: "Reportes" } },
-  bankModal: { title: "Agregar Cuenta Bancaria", subtitle: "Requerido para pagos ACH y cobro de tarifas mensuales. Encriptación bancaria de 256 bits.", securityNote: "Tu información bancaria está encriptada y nunca se comparte con prestamistas o prestatarios.", tabs: { instant: "⚡ Conexión Instantánea", manual: "Entrada Manual" }, instant: { desc: "Conecta tu banco al instante. No necesitas números de ruta, solo inicia sesión en tu banco.", plaidBtn: "Conectar con Plaid", orManual: "— o ingresa manualmente —", manualBtn: "Ingresar Detalles de Cuenta Manualmente" }, manual: { holder: "Nombre del Titular", bankName: "Nombre del Banco", routing: "Número de Ruta", account: "Número de Cuenta", confirmAccount: "Confirmar Número de Cuenta", type: "Tipo de Cuenta", types: ["Cheques", "Ahorros", "Cheques Negocio"], microNote: "⚡ Enviaremos dos micro-depósitos (menos de $1) para verificar tu cuenta en 1–2 días hábiles. Confirmarás los montos para completar la configuración.", submitBtn: "Guardar y Verificar Cuenta" }, success: { title: "Cuenta Bancaria Conectada", desc: "Tu cuenta está verificada y lista para pagos ACH. Las tarifas mensuales se cobrarán automáticamente el día 1 de cada mes.", doneBtn: "Aceptar" } }
+  bankModal: { title: "Agregar Cuenta Bancaria", subtitle: "Requerido para pagos ACH y cobro de tarifas mensuales. Encriptación bancaria de 256 bits.", securityNote: "Tu información bancaria está encriptada y nunca se comparte con prestamistas o prestatarios.", tabs: { instant: "⚡ Conexión Instantánea", manual: "Entrada Manual" }, instant: { desc: "Conecta tu banco al instante. No necesitas números de ruta, solo inicia sesión en tu banco.", plaidBtn: "Conectar con Plaid", orManual: "— o ingresa manualmente —", manualBtn: "Ingresar Detalles de Cuenta Manualmente" }, manual: { holder: "Nombre del Titular", bankName: "Nombre del Banco", routing: "Número de Ruta", account: "Número de Cuenta", confirmAccount: "Confirmar Número de Cuenta", type: "Tipo de Cuenta", types: ["Cheques", "Ahorros", "Cheques Negocio"], microNote: "⚡ Enviaremos dos micro-depósitos (menos de $1) para verificar tu cuenta en 1–2 días hábiles. Confirmarás los montos para completar la configuración.", submitBtn: "Guardar y Verificar Cuenta" }, success: { title: "Cuenta Bancaria Conectada", desc: "Tu cuenta está verificada y lista para pagos ACH. Las tarifas mensuales se cobrarán automáticamente el día 1 de cada mes.", doneBtn: "Aceptar" } },
+  whyPml: {
+      hero: {
+        eyebrow: "Por qué PayMyLoan.ai",
+        title: "¿Quién eres?",
+        subtitle: "Elige tu rol y te mostraremos exactamente qué hace PML por ti."
+      },
+      roles: {
+        lender: "Soy Prestamista",
+        borrower: "Soy Prestatario"
+      },
+      lender: {
+        hero: {
+          badge: "Para Prestamistas Privados",
+          title1: "Administra todo tu negocio de préstamos",
+          title2: "desde tu pantalla.",
+          subtitle: "La mayoría de los prestamistas privados siguen usando hojas de cálculo y correos. PML lo reemplaza todo: los prestatarios hacen el trabajo pesado, tú tomas las decisiones."
+        },
+        cards: [
+          {
+            title: "Evalúa al prestatario sin mover un dedo",
+            desc: "Cada prestatario completa verificación de identidad antes de publicar un trato. Verás su calificación PML, basada en su historial real de pagos dentro de la plataforma.",
+            points: ["Identidad y entidad verificadas en el registro", "Score PML visible en cada tarjeta de trato", "Los pagos atrasados bajan su score permanentemente", "Requiere verificación de identidad antes de fondear"]
+          },
+          {
+            title: "Evalúa el trato con números reales",
+            desc: "Los prestatarios ingresan precio de compra, ARV y presupuesto de remodelación. PML calcula el LTV automáticamente. Tu feed solo muestra tratos que coinciden con tus criterios.",
+            points: ["Barra de LTV con tope automático ajustable", "Filtra por estado, monto, LTV y tipo de propiedad", "Negocia o envía contraofertas directamente", "Finanzas completas visibles antes de dar clic"]
+          },
+          {
+            title: "Nunca más pierdas un pago",
+            desc: "PML rastrea cada fecha de vencimiento y envía recordatorios al prestatario. Si hay un atraso, te notificamos y se registra en su score. No tienes que perseguir a nadie.",
+            points: ["Recordatorios automáticos antes del vencimiento", "Cargos por mora aplicados automáticamente", "Notificación instantánea al registrarse el pago", "Panel de historial de pagos mes a mes"]
+          },
+          {
+            title: "Genera liquidaciones (payoffs) en segundos",
+            desc: "El prestatario solicita su liquidación en la plataforma y PML calcula el monto exacto basado en la tasa original en un año de 360 días. PDF fechado y generado al instante.",
+            points: ["El prestatario elige la fecha, PML hace la matemática", "Cálculo en base a año de 360 días", "PDF oficial de liquidación listo en segundos", "Tasa de contrato original — sin sorpresas"]
+          },
+          {
+            title: "Solicitudes de retiro (Draws) simplificadas",
+            desc: "El prestatario envía fotos, video con GPS y lista de verificación por la plataforma. Tú revisas y apruebas con un clic. El dinero se libera vía ACH. Sin correos perdidos.",
+            points: ["Requiere mínimo 6 fotos y video de 60s", "Verificación GPS y de fecha/hora en multimedia", "Lista de inspección requerida antes de enviar", "Transferencia ACH automática al aprobar"]
+          },
+          {
+            title: "Extensiones seguras y protegidas",
+            desc: "Si el proyecto se retrasa, el prestatario solicita una extensión a la misma tasa y términos. Firma electrónicamente y autoriza el pago de tarifas. Tu dinero sigue protegido.",
+            points: ["Misma tasa y términos, un plazo adicional completo", "Firma electrónica y autorización ACH inicial", "Cobro de comisión de extensión automático", "Nuevo calendario de pagos autogenerado"]
+          }
+        ],
+        mantra: {
+          quote: "La mayoría quiere un retorno SOBRE su dinero. Los mejores quieren el retorno DE su dinero.",
+          author: "PayMyLoan.ai — Construido para Main Street, no Wall Street"
+        },
+        cta: {
+          title: "Los prestamistas usan PML gratis siempre.",
+          subtitle: "Sin tarifas mensuales. Sin costos ocultos. Solo retornos y una plataforma que trabaja tan duro como tú.",
+          btnGhost: "Explorar tratos",
+          btnPrimary: "Crear cuenta gratis →"
+        }
+      },
+      borrower: {
+        hero: {
+          badge: "Para Prestatarios Inmobiliarios",
+          title1: "Deja de perseguir prestamistas.",
+          title2: "Deja que ellos vengan a ti.",
+          subtitle: "Otras plataformas te ponen en la silla fría: correos, comisiones y esperas de semanas. PML lo cambia: publica una vez y los prestamistas en tu área te encontrarán."
+        },
+        cards: [
+          {
+            title: "Sin bancos. Sin revisión de crédito.",
+            desc: "El dinero privado se basa en activos, no en crédito. A los prestamistas de PML les importa el valor de la propiedad, tu ARV y tu plan, no tu score FICO o tu relación deuda/ingreso.",
+            points: ["Sin W-2s, declaraciones de impuestos ni solicitudes bancarias", "Los prestamistas evalúan el trato, no tu historial crediticio", "Cierres en días, no en meses", "Funciona para LLCs, corporaciones e individuos"]
+          },
+          {
+            title: "Los prestamistas compiten. Tú eliges.",
+            desc: "Publica una vez y deja que el mercado trabaje. Prestamistas privados verificados ven tu trato y envían hojas de términos. Compara, negocia y acepta sin intermediarios.",
+            points: ["Ve todas las ofertas lado a lado (tasa, puntos, plazo)", "Contraoferta directamente en la plataforma", "Sin tarifas de brokers ni intermediarios", "Las primeras ofertas suelen llegar en 24–72 horas"]
+          },
+          {
+            title: "Nunca más olvides un pago",
+            desc: "Tu panel de PML muestra cada pago, monto y fecha de vencimiento. Recordatorios automáticos te avisan con tiempo. Pagar a tiempo sube tu score como prestatario.",
+            points: ["Recordatorios automáticos antes del vencimiento", "Historial de pagos completo siempre visible", "Los pagos a tiempo mejoran tu Score PML", "Los pagos atrasados se registran permanentemente"]
+          },
+          {
+            title: "Genera tu propia carta de liquidación",
+            desc: "¿Listo para vender o refinanciar? Selecciona la fecha y PML generará el monto exacto de liquidación en un PDF al instante. Sin llamadas ni esperas por tu prestamista.",
+            points: ["Elige cualquier fecha, PML hace el cálculo", "Carta oficial en PDF lista en segundos", "Cálculo exacto basado en año de 360 días", "Tasa de contrato original — sin tasas de castigo"]
+          },
+          {
+            title: "Retiros (Draws) rápidos y simples",
+            desc: "Sube fotos, un video rápido y completa el checklist directamente desde tu teléfono. PML lo verifica y lo envía al prestamista. Al aprobar, los fondos llegan vía ACH.",
+            points: ["Sube fotos, video y checklist desde el celular", "El prestamista revisa y aprueba en la plataforma", "Fondos liberados automáticamente vía ACH", "Historial completo de retiros por proyecto"]
+          },
+          {
+            title: "¿Necesitas más tiempo? Pide una extensión.",
+            desc: "Si tu proyecto toma más tiempo, solicita una extensión antes del vencimiento. Obtienes un término adicional con las mismas condiciones. Lo firmas, se aprueba y estás cubierto.",
+            points: ["Misma tasa y términos — sin renegociar", "Firma electrónica directamente en el panel", "El prestamista aprueba sin llamadas incómodas", "Nuevo calendario de pagos se genera al aprobar"]
+          }
+        ],
+        mantra: {
+          quote: "Construido para Main Street, no Wall Street.",
+          author: "PayMyLoan.ai — Dinero privado, hecho simple."
+        },
+        cta: {
+          title: "Los prestamistas en tu mercado te esperan.",
+          subtitle: "Publica gratis tu primer trato con un código de referido, o paga $99/mes. Sin bancos. Sin brokers. Sin esperas.",
+          btnGhost: "Buscar prestamistas",
+          btnPrimary: "Publicar trato gratis →"
+        }
+      }
+    },
+    lenderFaq: {
+      hero: { 
+        label: "Confianza y Seguridad", 
+        title: "¿Está seguro mi dinero en PayMyLoan?", 
+        sub: "Cada pregunta que un prestamista inteligente se hace antes de invertir su capital — respondida directamente." 
+      },
+      trustBadges: [
+        { title: "2FA en todos los cambios", sub: "Banco, contraseña, correo — protegidos" },
+        { title: "Prestatario verificado", sub: "Antecedentes + crédito + entidad" },
+        { title: "Documentos archivados", sub: "Pagaré + deed of trust" },
+        { title: "Garantía inmobiliaria", sub: "Límite estricto de 75% LTV" },
+        { title: "ACH automatizado", sub: "Cobros el día 1 de cada mes" }
+      ],
+      faqGroups: [
+        {
+          title: "Sobre PayMyLoan",
+          items: [
+            { q: "¿Qué es PayMyLoan y quién lo construyó?", a: "PayMyLoan fue construido por un inversor inmobiliario que ha pedido prestado aproximadamente $100 millones a prestamistas privados en 15,000 cierres. Tras ver a cada uno de esos prestamistas administrar sus préstamos en hojas de cálculo —sin software, sin automatización, sin un proceso estandarizado— construimos la infraestructura que debieron haber tenido desde el principio.<br><br>PayMyLoan no es un fondo. No retenemos tu dinero. Somos el sistema operativo entre prestatarios y prestamistas." },
+            { q: "¿PayMyLoan retiene o toca mi dinero?", a: "No. PayMyLoan es una plataforma, no un fondo ni un custodio. Transfieres tu capital directamente a la compañía de títulos al cierre. Los pagos mensuales se debitan por ACH directamente desde la cuenta del prestatario a la tuya. PML nunca retiene tu capital.<br><br><strong>El único dinero que recauda PML</strong> son las tarifas de la plataforma cobradas a los prestatarios (suscripción + tarifa de conexión en la hoja de liquidación). Tu capital va directo." },
+            { q: "¿Es PayMyLoan un prestamista o broker con licencia?", a: "PayMyLoan es una plataforma tecnológica que facilita conexiones entre prestamistas privados y prestatarios. No somos un broker hipotecario, prestamista con licencia, ni agente de valores. Todas las decisiones de préstamo se toman directamente entre el prestamista y el prestatario. Debes consultar a un abogado con licencia en tu estado antes de otorgar préstamos privados si tienes dudas sobre los requisitos legales." }
+          ]
+        },
+        {
+          title: "Tu dinero y seguridad",
+          items: [
+            { q: "¿Cómo está protegida mi cuenta bancaria contra el fraude?", a: "Cada cambio en la cuenta bancaria o información ACH pasa por un filtro de seguridad de 3 capas:<br><ul><li><strong>SMS 2FA</strong> — código enviado a tu teléfono registrado. Debe ingresarse para continuar.</li><li><strong>Correo de alerta inmediata</strong> — enviado a tu dirección de correo actual en el momento en que se intenta un cambio, incluso antes de confirmarse.</li><li><strong>Retención de seguridad de 24 horas</strong> — la nueva información bancaria no entra en vigor hasta 24 horas después, dándote tiempo para detectar y detener cambios no autorizados.</li></ul><br>Si recibes un correo de alerta sobre un cambio que no solicitaste, llámanos de inmediato. Podemos congelar tu cuenta al instante." },
+            { q: "¿Qué sucede si un prestatario deja de pagar?", a: "PayMyLoan automatiza las notificaciones y el rastro de documentos, pero el cobro del préstamo es tu derecho como prestamista — tu pagaré y escritura de fideicomiso (deed of trust) son tus instrumentos legales.<br><ul><li>Día 1 de retraso: el prestatario recibe correo + alerta SMS</li><li>Día 15: aviso formal al prestatario Y al prestamista registrado</li><li>Pago devuelto/Sin fondos: ambas partes son notificadas de inmediato, y se registra en el historial de pagos del prestatario</li></ul><br>PML no realiza cobranzas en tu nombre. Tu préstamo está garantizado por una escritura de fideicomiso contra la propiedad. Trabaja con tu abogado para los procedimientos formales de incumplimiento y ejecución hipotecaria si es necesario.", highlight: "Prestamistas inteligentes: el título y la escritura de fideicomiso son tu protección — no la plataforma. Siempre trabaja a través de una compañía de títulos autorizada al cierre." },
+            { q: "¿Cómo me protege el límite del 75% LTV?", a: "Para prestatarios no verificados, PayMyLoan impone un límite estricto del 75% LTV (Préstamo ÷ ARV). Esto significa que incluso si el prestatario incumple y la propiedad se vende con descuento, hay un colchón de capital del 25% antes de que tu capital esté en riesgo.<br><br>Como prestamista, puedes establecer un umbral de LTV más alto para prestatarios que ya conoces y confías — pero el 75% es el límite por defecto para nuevas relaciones." },
+            { q: "¿Puede alguien acceder a mi cuenta desde un dispositivo nuevo sin mi conocimiento?", a: "No. Cada inicio de sesión desde un dispositivo no reconocido activa un código SMS a tu teléfono. Sin ese código, el acceso se bloquea. También verás un registro de todas las sesiones activas en tu configuración de seguridad — y puedes revocar cualquier sesión al instante desde cualquier dispositivo." }
+          ]
+        },
+        {
+          title: "Evaluación de prestatarios",
+          items: [
+            { q: "¿Cómo evalúa PayMyLoan a los prestatarios?", a: "Los prestatarios pasan por hasta 4 filtros de verificación a medida que avanza su trato:<ul><li><strong>Filtro 1 — Registro:</strong> nombre, correo, teléfono</li><li><strong>Filtro 2 — Perfil:</strong> nombre de la entidad, EIN, años de experiencia</li><li><strong>Filtro 3 — Publicar:</strong> verificación telefónica 2FA, historial</li><li><strong>Filtro 4 — Identidad (cuando un prestamista quiere fondear):</strong> SSN, ID oficial, verificación de antecedentes, revisión de crédito suave — tarifa única de $99 para el prestatario</li></ul><br>Hasta que se complete la verificación de identidad, el prestatario aparece como \"No verificado\" y los prestamistas pueden ver ese estado en cada tarjeta de trato." },
+            { q: "¿Qué me dice el Score PML?", a: "El Score PML refleja el historial verificado de un prestatario en la plataforma: número de tratos fondeados, tasa de pagos a tiempo, extensiones solicitadas y liquidaciones completadas. Se actualiza después de cada trato cerrado y cada pago.<br><ul><li><strong>Novato (0–2 tratos):</strong> nuevo en la plataforma</li><li><strong>Pro (3–9 tratos):</strong> historial establecido</li><li><strong>Estrella (10+ tratos):</strong> historial comprobado</li><li><strong>Edición Limitada:</strong> 10+ tratos, cero pagos atrasados, cero extensiones</li></ul><br>El score no reemplaza tu debida diligencia — pero te da una señal estandarizada que ningún prestamista basado en hojas de cálculo ha tenido antes." },
+            { q: "¿Puedo ver el puntaje de crédito de un prestatario?", a: "Sí — para prestatarios con identidad verificada. PML realiza una <strong>revisión suave (soft pull)</strong> (no afecta el puntaje de crédito del prestatario). Verás el número de puntaje real y el nivel (750+ Excelente · 700–749 Bueno · 650–699 Regular · menos de 650 Pobre).<br><br>Un puntaje bajo muestra una advertencia amarilla en la tarjeta del trato pero NO bloquea automáticamente un acuerdo. Muchos inversores inmobiliarios experimentados tienen crédito personal más bajo pero historiales sólidos. Tú decides." }
+          ]
+        },
+        {
+          title: "Pagos y liquidaciones",
+          items: [
+            { q: "¿Cómo funciona el ACH — cuándo llega el dinero a mi cuenta?", a: "Los pagos mensuales de intereses se debitan de la cuenta bancaria del prestatario el día 1 de cada mes a través de Stripe ACH Debit + verificación bancaria de Plaid. La liquidación en tu cuenta generalmente toma 2–3 días hábiles.<br><br>El <strong>período inicial (stub period)</strong> (el mes parcial desde la fecha de cierre hasta fin de mes) se cobra en la hoja de liquidación al cierre en efectivo — no vía ACH. Tu primer débito ACH es el día 1 del mes siguiente al mes de cierre.<br><br>Ejemplo: Cierre el 15 de Septiembre → primer ACH el 1 de Noviembre." },
+            { q: "¿Cómo funcionan las liquidaciones (payoffs)?", a: "Cuando un prestatario solicita una liquidación, PML genera una carta de liquidación automáticamente utilizando la tasa de interés original del contrato (no una tasa de penalización). Recibirás:<ul><li>Monto de liquidación válido hasta una fecha específica</li><li>Monto por día (per diem) para días adicionales</li><li>Carta de liquidación en PDF firmada</li><li>Alerta SMS inmediata</li></ul><br><strong>Protección contra fraude de transferencias:</strong> Las instrucciones completas de transferencia nunca se envían por correo electrónico. La carta de liquidación muestra solo los últimos 4 dígitos de tu cuenta. Prestatarios y compañías de títulos deben llamarte directamente para recibir los detalles completos.", highlight: "Siempre verifica los cambios en las instrucciones de transferencia llamando — nunca te bases solo en un correo electrónico." },
+            { q: "¿Cuáles son las tarifas? ¿Me cobran algo como prestamista?", a: "<strong>Los prestamistas no pagan nada. Nunca.</strong><br><br>PML cobra a los prestatarios:<ul><li>Suscripción de $99/mes (comienza al publicar un trato)</li><li>Tarifa única de verificación de identidad de $99</li><li>10% del interés mensual — solo cuando PML conectó el trato</li><li>1% de tarifa de conexión al prestamista — cobrada al cierre en la hoja de liquidación cuando PML conectó el trato</li></ul><br>Tratos por invitación directa (tú invitaste al prestatario o ellos a ti) — tanto el 10% del interés mensual como el 1% de conexión son condonados para el prestatario." }
+          ]
+        }
+      ],
+      cta: { 
+        title: "¿Listo para poner tu capital a trabajar?", 
+        sub: "Las cuentas de prestamista siempre son gratis. Explora tratos en menos de 2 minutos.", 
+        btn: "Crear cuenta gratis de prestamista" 
+      }
+    },
+    lenderOptin: {
+      hero: {
+        eyebrow: "Gratis para prestamistas privados",
+        title1: "Despliega tu capital ",
+        title2: "más rápido.",
+        body: "Obtén la checklist de 7 puntos que todo prestamista privado debe revisar antes de transferir fondos — además de un curso de 5 correos sobre cómo construir un sistema que proteja tu capital y lo mantenga trabajando.",
+        proofs: ["Gratis. Sin tarjeta de crédito.", "PML siempre es gratis para prestamistas", "Cancela tu suscripción en cualquier momento"]
+      },
+      form: {
+        title: "Obtén la checklist",
+        sub: "Enviada al instante a tu bandeja de entrada",
+        previewTitle: "Qué incluye — Checklist de 7 puntos",
+        items: ["El título de propiedad está limpio", "El seguro está en orden", "El ARV es justificable", "El LTV es igual o menor a 75%", "El prestatario tiene capital en riesgo", "Proceso de retiros acordado por escrito", "Liquidación calculada correctamente"],
+        fName: "Nombre",
+        fNamePh: "Juan",
+        email: "Correo electrónico",
+        emailPh: "juan@ejemplo.com",
+        capitalLabel: "¿Cuánto capital despliegas al año?",
+        capSelect: "Selecciona un rango",
+        capOptions: ["Menos de $250K", "$250K – $500K", "$500K – $1M", "$1M – $5M", "$5M+"],
+        submit: "Enviarme la checklist",
+        sending: "Enviando...",
+        disclaimer: "Cero spam. Solo contenido útil para prestamistas privados. Cancela cuando quieras."
+      },
+      gets: {
+        title: "Qué obtienes",
+        sub: "La checklist más 5 correos que te enseñan a construir un sistema de préstamos real",
+        cards: [
+          { icon: "✓", title: "La checklist de 7 puntos", body: "Todo lo que debes verificar antes de transferir — título, seguro, LTV, retiros, liquidación. Entregada inmediatamente." },
+          { icon: "📈", title: "El desglose de ROI", body: "Exactamente cuánto te generan $100K, $250K y $500K prestados al 12% por mes — y cómo maximizarlo." },
+          { icon: "🎯", title: "Acceso a tratos en vivo", body: "Explora tratos publicados por prestatarios en PayMyLoan.ai. Ve el LTV, el mercado y el monto antes de crear una cuenta." }
+        ]
+      },
+      sequence: {
+        title: "La secuencia de 5 correos",
+        sub: "Enviados durante 10 días — práctico, sin relleno",
+        dayLabel: "Día",
+        steps: [
+          { day: "0", subject: "Tu checklist de prestamista privado (7 cosas a verificar antes de transferir)", desc: "Entrega instantánea — la checklist + intro a PML", tag: "Lead magnet", tagColor: "purple" },
+          { day: "2", subject: "La mayoría de los prestamistas pierden dinero por este error", desc: "El costo real de no tener un sistema — y qué hacer al respecto", tag: "Punto de dolor", tagColor: "purple" },
+          { day: "4", subject: "Tienes capital. Hay tratos publicados esta semana.", desc: "Explora tratos en vivo — no requiere cuenta", tag: "Prueba social", tagColor: "purple" },
+          { day: "7", subject: "¿Cuánto estás ganando por cada dólar desplegado?", desc: "Las matemáticas detrás de $100K, $250K, $500K desplegados al 12%", tag: "ROI / Mates", tagColor: "purple" },
+          { day: "10", subject: "Una pregunta antes de dejar de escribirte", desc: "Vía rápida o envío lento — tú eliges", tag: "Bifurcación", tagColor: "green" }
+        ]
+      }
+    }
 };
 
 type Copy = typeof es;
@@ -551,6 +1003,26 @@ const en: Copy = {
       offers: "offers",
       offer: "offer",
       makeOffer: "Make offer"
+    },
+    scoreCard: {
+      tapToSee: "Tap to see borrower",
+      seeScore: "See borrower score",
+      seeDeal: "See deal info",
+      underCap: "Under 75% cap",
+      matchedStrip: "Matched — Direct deals fee-free",
+      lockedStrip: "Match to unlock profile",
+      scoreLbl: "PML Score",
+      scoreHidden: "Score hidden",
+      deals: "Deals",
+      onTime: "On-time",
+      funded: "Funded",
+      extensions: "Ext.",
+      cardTiers: "Card tiers",
+      rookie: { name: "Rookie", desc: "0–2 deals · white/blue" },
+      pro: { name: "Pro", desc: "3–9 deals · dark gold" },
+      allStar: { name: "All-Star", desc: "10+ deals · black holographic" },
+      limited: { name: "Limited", desc: "10+ deals · 0 late" },
+      fields: { loan: "Loan", rate: "Rate", term: "Term", arv: "ARV", type: "Type", market: "Market" }
     }
   },
 
@@ -635,6 +1107,69 @@ const en: Copy = {
       ]
     },
 
+    lenderLanding: {
+      hero: {
+        badge: "For Private Lenders",
+        title1: "Become a",
+        title2: " Deal Magnet.",
+        sub: "Scan for deals in your market, deploy your capital, and let us handle everything else. Borrower vetting, deal underwriting, payment tracking, payoff letters — all done. You just say yes.",
+        btn1: "Browse open deals",
+        btn2: "Create free account"
+      },
+      ribbon: {
+        title: "PML uses AI to power your entire lending business",
+        items: [
+          { short: "VB", title: "Vet Borrowers", desc: "Match you with top clients" },
+          { short: "DU", title: "Deal Underwriting", desc: "Make a decision in seconds" },
+          { short: "ACOP", title: "Auto Communication", desc: "Office paperwork handled" },
+          { short: "1 hr/wk", title: "Manage Your Business", desc: "Run it in an hour a week" },
+          { short: "DFM", title: "Deal Funding Marketplace", desc: "Access live deals nationwide" },
+          { short: "AMPS", title: "Auto Payment System", desc: "Payments managed automatically" },
+          { short: "1-Click", title: "Single Click Payoff", desc: "Instant payoff letters, done" }
+        ]
+      },
+      features: {
+        label: "What you get",
+        title: "Become a Lending Pro.",
+        sub: "Every tool you need to find great borrowers, underwrite fast, and get paid on time — every time.",
+        cards: [
+          { title: "No more missed payments", desc: "PML sends automated reminders to your borrowers before every due date. Late fees are tracked automatically. You are notified the moment a payment posts — no chasing, no spreadsheets, no uncomfortable calls." },
+          { title: "Lend more money", desc: "Set your criteria once and let the deal flow come to you. The more capital you deploy through PML, the more your lender profile builds — attracting better borrowers with stronger track records. Scale your book without scaling your overhead." },
+          { title: "Search for the best borrowers nationwide", desc: "Filter deals by state, loan size, LTV, property type, and borrower score. Every borrower on PML is identity-verified with a real payment history. Find the right operator for your capital — wherever they are in the country." },
+          { title: "Underwrite deals and borrowers in minutes — powered by AI", desc: "PML's AI surfaces red flags before you fund — LTV warnings, ARV confidence scores, scope gaps, and borrower history analysis. What used to take hours of due diligence now takes minutes. Make better decisions, faster. Coming soon." }
+        ]
+      },
+      how: {
+        label: "How it works",
+        title: "Three steps. Zero overhead.",
+        sub: "You bring the capital. PML does the rest.",
+        steps: [
+          { title: "Set your criteria once", desc: "Tell PML your lending preferences — states, loan sizes, max LTV, property types, minimum rate. Takes 5 minutes. Your feed automatically surfaces matching deals from verified borrowers." },
+          { title: "Browse deals and make offers", desc: "Every deal shows full financials — purchase price, ARV, LTV, rehab budget, borrower score. Click in, set your terms, send a term sheet. Borrower accepts, counters, or declines. All in the platform." },
+          { title: "Get paid. PML handles the rest.", desc: "Once funded, PML tracks every payment, sends borrower reminders, handles draw approvals, generates payoff letters, and notifies you of every activity. You review and approve. That's it." }
+        ]
+      },
+      calc: {
+        title: "See what your money can earn.",
+        sub: "Private lenders on PML average 10–13% annually. Zero management overhead. Adjust the sliders to see your projected returns.",
+        cap: "Capital to deploy",
+        rate: "Average interest rate",
+        loans: "Number of loans",
+        mo: "Monthly interest income",
+        moSub: "IO payments from borrowers",
+        yr: "Annual interest income",
+        yrSub: "Assuming full deployment",
+        total: "Total year-1 return",
+        totalSub: "Lenders keep 90% of interest on PML-connected deals",
+        loansSuffix: "loans"
+      },
+      cta: {
+        title: "Become a Deal Magnet.",
+        sub: "Scan for deals. Deploy your capital. We handle the rest. Lenders are always free on PayMyLoan.ai.",
+        btn1: "Create free lender account",
+        btn2: "Browse open deals"
+      }
+    },
     // --- NEW LENDER INFO OBJECT ---
     lenderInfo: {
       demo: {
@@ -680,122 +1215,52 @@ const en: Copy = {
       }
     },
 
-    borrowerMap: {
-      eyebrow: "Lender Marketplace",
-      title: "Find Lenders in Your Area",
-      subtitle: "See which lenders are actively looking for deals near you — and which have already funded in your market. Create a free account to connect.",
-      search: { type: "All Loan Types", locationPh: "📍 City, State or ZIP", amount: "Any Loan Amount", btn: "Find Lenders →" },
-      mapTitle: "Lenders In Your Area",
-      legendActive: "Actively Seeking Deals", legendPast: "Has Funded in This Area", fundedTitle: "Recently Active Lenders",
-      blurText: "+ 18 more lenders in your area", blurBtn: "Create Free Account to Unlock →", btnConnect: "Request Introduction →"
-    },
-    borrowerDemo: {
-      eyebrow: "Demo",
-      title: "See How It Works for Borrowers",
-      subtitle: "Watch how PML takes you from deal to funded — faster, easier, and with lenders coming to you.",
-      videoTitle: "Borrower Walkthrough Video",
-      videoSub: "Post a deal, get matched with lenders, close fast — full platform demo",
-      videoComing: "Video Coming Soon",
-      steps: [
-        { num: "1", label: "Create Your Profile" }, { num: "2", label: "Post Your Deal Free" },
-        { num: "3", label: "Lenders Request Profile" }, { num: "4", label: "Approve & Choose" }, { num: "5", label: "Close & Build Score" }
-      ],
-      benefits: [
-        { icon: "🤖", title: "AI Deal Pitching", desc: "AI builds your lender-ready deal profile automatically. Professional in minutes." },
-        { icon: "📊", title: "AI Deal Underwriting", desc: "Comps, ARV, and deal score auto-generated. Your numbers are bulletproof." },
-        { icon: "🗺️", title: "Access Marketplace", desc: "Post once, reach every lender on the platform. They come to you." },
-        { icon: "⭐", title: "Build Your PML Score", desc: "Every deal closed, every payment made builds a score lenders trust on sight." },
-        { icon: "🏦", title: "Automate Payments", desc: "ACH set up at closing. Never a missed payment. Never a damaged relationship." },
-        { icon: "📄", title: "Auto Commitment", desc: "Sent to title and insurance automatically. No paperwork, no delays." }
-      ],
-      ctaTitle1: "Ready to Get Your ", ctaTitle2: "Next Deal Funded?",
-      ctaSub: "Post free for 7 days. No charge until a lender matches.",
-      btn1: "Post Your Deal Free →", btn2: "Find Lenders in My Area"
-    },
-    borrowerProblems: {
-      eyebrow: "Problems We Solve",
-      title: "Stop Pitching Cold. Start Closing Fast.",
-      subtitle: "Every borrower has lived these. PML was built to kill them all.",
-      probs: [
-        { num: "01", icon: "🤖", title: "Building Pitches Takes Forever", pain: '"I spend 2 hours formatting a deal summary every time..."', solution: "AI deal pitching builds your lender-ready profile automatically in minutes.", tag: "✓ AI-Powered Deal Pitch" },
-        { num: "02", icon: "📊", title: "They Don't Trust Your Numbers", pain: '"Every lender wants to verify ARV themselves..."', solution: "AI deal underwriting pulls comps and ARV automatically. Bulletproof numbers.", tag: "✓ AI Deal Underwriting" },
-        { num: "03", icon: "📤", title: "Pitching Is Exhausting", pain: '"I email 20 lenders, get 3 responses..."', solution: "Post once. Your deal goes live to every lender. One shareable link.", tag: "✓ Post Once, Reach Everyone" },
-        { num: "04", icon: "🔎", title: "Can't Find New Lenders", pain: '"I keep going back to the same 2 lenders..."', solution: "Browse the lender map — see who's actively lending near you and connect directly.", tag: "✓ Lender Discovery Map" },
-        { num: "05", icon: "🏦", title: "Remembering to Pay", pain: '"I missed a payment because I was deep in a rehab..."', solution: "Set up ACH at closing. Payments run automatically every month.", tag: "✓ ACH Auto-Payment" },
-        { num: "06", icon: "📚", title: "Bookkeeper Asking for Records", pain: '"My accountant needs loan statements..."', solution: "Invite your bookkeeper directly. Every payment and schedule is always accessible.", tag: "✓ Bookkeeper Access" },
-        { num: "07", icon: "🚀", title: "They Don't Know You", pain: '"I\'ve done 15 deals but have to explain my track record..."', solution: "Your PML Score tells your story automatically. Higher score = better rates, faster yes.", tag: "✓ Your Score Sells You", gold: true }
-      ]
-    },
-    borrowerWho: {
-      eyebrow: "Who Is This For",
-      title: "For Investors Who Move Fast",
-      subtitle: "Whether you're on your first deal or your fiftieth, PML gives you the tools to fund faster.",
-      cards: [
-        { icon: "🏠", title: "Fix & Flip Investors", bullets: ["You buy, rehab, and sell — fast", "You need capital in days, not weeks", "You struggle to find new lenders", "You want your track record to work for you"], btn: "This Is Me →" },
-        { icon: "🏘️", title: "Buy & Hold Investors", bullets: ["You're building a rental portfolio", "You need bridge loans and DSCR financing", "You want one place to manage hard money", "You need clean records for your CPA"], btn: "This Is Me →" },
-        { icon: "📈", title: "Scaling Investors", bullets: ["You're doing 5–20+ deals a year", "You need multiple lenders competing", "Your PML score puts you at the front", "You want automated everything"], btn: "This Is Me →" }
-      ]
-    },
-    borrowerDiff: {
-      eyebrow: "What Makes Us Different",
-      title: "No Other Platform Builds Your Credibility",
-      subtitle: "Other platforms are just lead forms. PML is a full borrower profile, underwriting engine, and loan management system in one.",
-      table: {
-        hPml: "PayMyLoan.ai", hC1: "Hard Money Lender", hC2: "Broker Network", hC3: "Direct Outreach",
-        rows: [
-          { label: "Free to post a deal", pml: "✅ 7-day free trial", c1: "❌ Points upfront", c2: "❌ Broker fee", c3: "❌ Your time" },
-          { label: "AI deal underwriting", pml: "✅ Auto-generated", c1: "❌ Their criteria", c2: "❌ Manual", c3: "❌ You do it" },
-          { label: "Borrower score", pml: "✅ Builds over time", c1: "❌ Starts over each deal", c2: "❌ None", c3: "❌ None" },
-          { label: "Access multiple lenders", pml: "✅ Whole marketplace", c1: "❌ One lender", c2: "⚠️ Limited network", c3: "❌ One at a time" },
-          { label: "Automated ACH payments", pml: "✅ Built-in", c1: "❌ Manual", c2: "❌ Manual", c3: "❌ Manual" },
-          { label: "Auto commitment letters", pml: "✅ To title + insurance", c1: "❌ Manual", c2: "❌ Manual", c3: "❌ You handle it" }
+    borrowerLanding: {
+      hero: {
+        badge: "For Real Estate Borrowers",
+        title1: "You bring the deal.",
+        title2: " We do the rest.",
+        sub: "Show lenders who you are, what the deal is, and why it pencils — in minutes. Get funded, keep your lender happy, and move on to the next deal. PML handles everything in between.",
+        btn1: "Post your deal free",
+        btn2: "See how it works"
+      },
+      proof: {
+        items: [
+          { val: "24–72 hrs", label: "Average time to first offer" },
+          { val: "$0", label: "Due at posting with affiliate link" },
+          { val: "No credit", label: "Asset-based lending only" },
+          { val: "1-click", label: "Payoff letters, draw requests" }
         ]
       },
-      mantra: { h1: "Lenders want a return ", h2: "on", h3: " their money.", h4: "Show them you'll give them the return ", h5: "of", h6: " their money.", p: "Your PML Borrower Score is proof. Build it with every deal. Let it open doors before you say a word." },
-      csEyebrow: "Mantra", csTitle: "", csCards: []
-    },
-
-    // --- NEW BORROWER INFO OBJECT ---
-    borrowerInfo: {
-      demo: {
-        eyebrow: "How it works",
-        title: "Lenders in your area are ready to fund your deal.",
-        subtitle: "Private lenders are already on PML searching for deals in your ZIP code. Post your deal, they find you — not the other way around.",
-        steps: [ { num: "1", label: "Create Your Profile" }, { num: "2", label: "Post your deal in 5 minutes" }, { num: "3", label: "Lenders Request Profile" }, { num: "4", label: "Lenders compete for your deal" }, { num: "5", label: "Close, track, and pay — all in one place" } ],
-        benefits: [ { title: "Address auto-fills property details from public records" }, { title: "Live cost calculator shows your monthly payment instantly" }, { title: "See all offers side-by-side — rate, term, points" }, { title: "Lenders can't see each other's offers until you decide" }, { title: "Digitally sign your term sheet — no printing, no notary" }, { title: "Monthly statements sent automatically" } ],
-        ctaTitle1: "Lenders are ", ctaTitle2: "looking in your area.",
-        ctaSub: "Private lenders on PayMyLoan.ai are actively searching for deals in your market right now. Post your deal and let them compete for you — no banks, no credit checks, no runaround.",
-        btn1: "Post your deal free →", btn2: "See how it works"
-      },
-      problems: {
-        eyebrow: "Problems We Solve",
-        title: "Stop Pitching Cold. Start Closing Fast.",
-        subtitle: "Every borrower has lived these. PML was built to kill them all.",
-        probs: [
-          { solution: "Enter the property address, loan amount, ARV, and rehab budget. Our wizard walks you through every field. No jargon, no confusion." },
-          { solution: "AI deal underwriting pulls comps and ARV automatically. Bulletproof numbers." },
-          { solution: "Your deal goes live on the PML marketplace. Verified private lenders — not banks — review it and send you term sheets within 24–72 hours. You pick the best offer." },
-          { solution: "Accept, counter, or decline with one click. They compete, you win." },
-          { solution: "Once you accept an offer, PML generates the term sheet, handles the payment schedule, and sends your monthly PITI statement automatically. Your lender portal shows your full loan history." },
-          { solution: "Invite your bookkeeper directly. Every payment and schedule is always accessible." },
-          { solution: "Your PML Score tells your story automatically. Higher score = better rates, faster yes." }
+      features: {
+        label: "What you get",
+        title: "Become a Borrowing Pro.",
+        sub: "Everything you need to find money fast, close clean, and keep coming back.",
+        cards: [
+          { title: "No more clerical errors or disorganization", desc: "Every document, deal, and payment lives in one place. Term sheets, draw requests, extensions, payoff letters — organized automatically. No more digging through emails or losing paperwork." },
+          { title: "No more missed payments", desc: "Automated reminders before every due date. Your dashboard shows exactly what is owed and when. Pay on time, every time — protect your lender relationship and your borrower score." },
+          { title: "Payoffs in minutes", desc: "Pick your payoff date and PML generates the exact amount instantly — calculated at your original contract rate on a 360-day year. Official payoff letter PDF ready in seconds. No calls, no waiting, no math." },
+          { title: "Build your PML Credit Score", desc: "Every on-time payment, clean payoff, and completed draw builds your PML borrower score. Lenders see it before they fund. A higher score means faster approvals, better rates, and more lenders competing for your deals." },
+          { title: "Join the funding marketplace", desc: "Post your deal and step into a marketplace of verified private lenders actively looking to deploy capital in your market. No broker. No middleman. Lenders compete for your deal — you pick the best offer." },
+          { title: "Use AI to pitch your deals", desc: "PML's AI analyzes your deal and helps you present it in the strongest possible light — ARV confidence, scope clarity, LTV positioning. Walk into the marketplace with a pitch that stands out. Coming soon." }
         ]
       },
-      diff: {
-        title: "PML vs. the old way",
-        subtitle: "Hard money brokers, bank applications, and cold calls — or one platform that does it all.",
-        table: {
-          hPml: "PayMyLoan.ai", hC1: "The old way",
-          rows: [
-            { label: "Sourcing capital", pml: "Post once — lenders come to you", c1: "Call 10 lenders hoping someone picks up" },
-            { label: "Turnaround time", pml: "First offers in 24–72 hours", c1: "Wait 2–3 weeks for a term sheet" },
-            { label: "Rate transparency", pml: "See competing offers side by side", c1: "No idea what market rates actually are" },
-            { label: "Contract signing", pml: "Digital term sheet — sign in minutes", c1: "Paper contracts, faxes, DocuSign chaos" },
-            { label: "Payoff letters", pml: "One-click payoff request, any time", c1: "Chase lender for payoff letter every time" },
-            { label: "Loan administration", pml: "Full loan dashboard, statements, history", c1: "No payment history or loan dashboard" }
-          ]
-        },
-        mantra: { h1: "Lenders near you ", h2: "are waiting", h3: " for your next deal.", h4: "Post free ", h5: "today", h6: " and let them compete.", p: "Post your deal free with a referral code, or $99/mo. Lenders in your market will find you." }
+      how: {
+        label: "How it works",
+        title: "Post your deal. Get funded. Do it again.",
+        sub: "No banks. No brokers. No runaround.",
+        steps: [
+          { title: "Post your deal in 5 minutes", desc: "Enter your property address, loan amount, ARV, and rehab budget. Your deal goes live immediately — verified private lenders in your market see it and can send you offers." },
+          { title: "Lenders compete. You pick the best offer.", desc: "Multiple lenders can send you term sheets. Compare rate, term, points, and fees side by side. Accept, counter, or decline with one click. No broker in the middle." },
+          { title: "PML handles everything after closing.", desc: "Payment reminders, draw requests, payoff letters, extensions — all in one dashboard. Keep your lender happy, build your score, and come back for your next deal with a stronger track record." }
+        ]
+      },
+      cta: {
+        title1: "You bring the deal.",
+        title2: "We do the rest.",
+        sub: "Post free with a referral code, or $99/month. No banks, no credit checks, no runaround. Lenders in your market are ready right now.",
+        btn1: "Post your deal free",
+        btn2: "See a live demo"
       }
     },
 
@@ -815,8 +1280,63 @@ const en: Copy = {
 
   welcomeModal: { brand: "PayMyLoan", brandSuffix: ".ai", tagline: "Private money lending — simplified.", question: "How can we help you today?", lender: { icon: "💰", title: "Have Funds to Deploy?", sub: "I want to fund real estate deals" }, borrower: { icon: "🏗️", title: "Want a Deal Funded?", sub: "I need capital for my next deal" }, signin: { icon: "🔑", title: "User Sign In", sub: "Access your portal" } },
   nav: { skip: "Skip to the sign-up form", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "How it works" }, { href: "#costo", label: "Platform cost" }, { href: "#seguridad", label: "Security" }, ], features: "Features", howItWorks: "How it works", login: "Log in", logout: "Log out", cta: "Log in", themeToggle: "Switch theme", langToggle: "Switch language", backToDashboard: "Back to dashboard", },
+  landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML", demo: "Demo", affiliates: "Affiliates", signIn: "Sign in", getStarted: "Get started free" },
   hero: { eyebrow: "Private loan servicing", title: "One balance both sides trust.", deck: "PayMyLoan.ai services private real-estate-secured loans: the borrower pays by ACH, the lender sees exactly what was paid and on which property, and both work from the same terms, documents and balance.", points: [ "ACH payments: 0.8%, capped at $5.00 per transaction", "Terms accepted by both parties, with date, time and IP", "Two-factor authentication required for lenders", ], trustLabel: "Operated by", trust: [ "Dueño a Dueño LLC", "Payments processed by Stripe", "ACH Direct Debit", ], },
-  form: { eyebrow: "Sign up", title: "Be One of the First to Try It", subtitle: "Leave us your information to be among the first to open your account. We’ll let you know as soon as the platform is ready for you.", intentLabel: "What would you like an account for?", intents: [ { value: "lender", label: "I will provide a loan", hint: "Lender" }, { value: "borrower", label: "I want a loan", hint: "Borrower" }, ], intentNote: "You won’t be charged anything now. We’re simply saving your place in line.", name: "Full name", namePh: "As it appears on the contract", email: "Email address", emailPh: "email@example.com", phone: "Phone", phonePh: "E.g. 555 123 4567", password: "Password", passwordPh: "12 characters minimum", passwordConfirm: "Confirm password", passwordConfirmPh: "Repeat the password", show: "Show", hide: "Hide", rules: { length: "12 characters or more", case: "One uppercase and one lowercase letter", number: "At least one number", }, terms: "I accept the", termsLink: "Terms of service", termsAnd: "and the", privacyLink: "Privacy notice", submit: "Create account", submitting: "Submitting your request…", twofaNote: "After sign-up we will ask you to set up two-factor authentication. For lenders it is required.", inviteNote: "Were you invited by email?", inviteLink: "Open your invitation link", inviteNoteEnd: "to join the loan directly.", haveAccount: "Already have an account?", login: "Log in", errors: { summary: "Check the highlighted fields.", name: "Enter your full name.", email: "Enter a valid email address.", phone: "Enter a phone number with at least 10 digits.", password: "The password does not meet the requirements.", passwordConfirm: "The passwords do not match.", terms: "You need to accept the terms to create the account.", intent: "Choose what you will do first.", submit: "We could not create the account. Try again in a moment.", }, success: { title: "Check your email", body: "We sent a verification link to", note: "The link expires in 24 hours. If it does not arrive, check spam.", again: "Use a different email", }, devNote: "Front end only: no backend is wired yet, the submission is simulated.", },
+  form: {
+    title: "Create your account",
+    subtitle: "Free to join. No credit card required.",
+    intents: [
+      { value: "borrower", label: "I have a deal", hint: "Borrower" },
+      { value: "lender", label: "I have capital", hint: "Lender" }
+    ],
+    firstName: "First name",
+    firstNamePh: "John",
+    lastName: "Last name",
+    lastNamePh: "Smith",
+    email: "Email address",
+    emailPh: "john@example.com",
+    phone: "Cell phone",
+    phonePh: "(901) 555-0100",
+    phoneHint: "For deal alerts and account security.",
+    password: "Password",
+    passwordPh: "At least 8 characters",
+    submit: "Create account",
+    submitting: "Creating...",
+    or: "or",
+    googleAuth: "Continue with Google",
+    termsPre: "By creating an account you agree to our ",
+    termsLink: "Terms of Service",
+    termsAnd: " and ",
+    privacyLink: "Privacy Policy",
+    termsPost: ".",
+    haveAccount: "Already have an account?",
+    login: "Sign in",
+    errors: {
+      summary: "Check the highlighted fields.",
+      firstName: "Enter your first name.",
+      lastName: "Enter your last name.",
+      email: "Enter a valid email address.",
+      phone: "Enter a 10-digit phone number.",
+      password: "Password must be at least 8 characters.",
+      intent: "Choose your account type.",
+      submit: "Error creating account. Try again.",
+    },
+    success: {
+      title: "Check your email",
+      subtitle: "We sent a confirmation link to",
+      step1Pre: "Open the email from ",
+      step1Bold: "PayMyLoan.ai",
+      step2Pre: "Click ",
+      step2Bold: "Confirm my email address",
+      step3: "You'll be taken directly to posting your first deal",
+      resend: "Resend confirmation email",
+      resendDone: "Sent!",
+      spamPre: "Can't find it? Check your ",
+      spamBold: "spam or junk folder",
+      spamPost: " and mark us as safe.",
+      again: "Use a different email"
+    }
+  },
   loginPage: { title: "Log In", subtitle: "Enter your credentials to manage your loans.", cardTitle: "SECURE LOGIN", emailLabel: "Email address", emailPlaceholder: "email@example.com", passwordLabel: "Password", passwordPlaceholder: "Enter your password", submit: "SIGN IN", forgot: "I'VE FORGOTTEN MY PASSWORD", back: "BACK TO HOME", noAccount: "Don't have an account yet?", signup: "Sign up here", processing: "Processing...", twoFactorTitle: "2FA VERIFICATION", twoFactorDesc: "Enter the 6-digit code from your authenticator app or a recovery code.", twoFactorLabel: "Verification code", twoFactorPlaceholder: "E.g. 123456", twoFactorVerifying: "Verifying...", twoFactorConfirm: "CONFIRM", twoFactorCancel: "Cancel", errorDefault: "Failed to log in", error2FA: "Incorrect or expired 2FA code", errorNetwork: "Unknown network error", },
   pmlHero: { badge: "AI-Powered Loan Management", subtitle: "PML — Private Money Lender. PayMyLoan.ai. Both sides of the deal.", title1: "From pitch", title2: "to payoff.", title3: "One platform.", by: "by PayMyLoan.ai", desc: "The pitch. The loan request. The commitment. Payment processing. The payoff. All in one place — for borrowers and lenders alike.", cta1: "Get Early Access", cta2: "See how it works", },
   whoItHelps: { eyebrow: "Who It Helps", title1: "One platform.", title2: "Six problems solved.", lead: "PML takes the chaos out of private lending — giving borrowers clarity and lenders control, so every deal closes clean.", cards: [ { role: "Borrower", icon: "🏗️", title: "From pitch to payoff in one place", points: [ "All loans in one dashboard", "Generate pitches & commitment letters", "Automated payments — never miss again", "Instant payoffs & PML rating" ] }, { role: "Lender", icon: "🏦", title: "Know who paid, what's owed, what's next", points: [ "Payment tracking across all borrowers", "Vet borrowers before committing capital", "Generate commitment letters & payoffs", "Control visibility in the marketplace" ] }, { role: "Bookkeeper", icon: "📒", title: "Clean records, zero chasing", points: [ "Principal vs. interest split on every payment", "Every loan tied to a property", "Exportable records — no manual entry", "No more monthly emails asking for details" ] }, { role: "CPA", icon: "🧾", title: "Year-end ready — one click", points: [ "Interest income/expense clearly separated", "Every loan documented by property", "Full year report — exportable instantly", "No digging through emails for records" ] }, { role: "Title Company", icon: "🏛️", title: "Payoffs before closing day — not after", points: [ "Instant payoff statements sent directly", "Both parties confirmed on same number", "No last-minute scrambles at the table", "Clean closing every time" ] }, { role: "Insurance Company", icon: "🛡️", title: "Mortgagee clause — accurate every time", points: [ "Lender info pulled from PML profile", "Mortgagee clause always up to date", "No manual requests for lender details", "Every property, every loan, documented" ] } ], stats: [ { value: "< 30s", label: "Payoff generated" }, { value: "2", label: "Sides. One platform." }, { value: "0", label: "Spreadsheets needed" }, { value: "100%", label: "CPA-ready at year end" } ] },
@@ -839,6 +1359,148 @@ const en: Copy = {
   dashboardAdmin: { title: "Admin Dashboard", subtitle: "Global metrics and platform health.", metrics: { activeLoans: "Active Loans", totalVolume: "Processed Volume (ACH)", platformRevenue: "Total Revenue (0.8%)", pendingVerifications: "Pending Verifications" }, recentActivity: "Recent System Activity", addUserBtn: "Add User", viewUsersBtn: "View Users", viewContractsBtn: "View Contracts", loading: "Loading metrics...", errorAuth: "Invalid or expired session.", errorFetch: "Failed to load admin data.", errorNetwork: "Unknown network error" },
   adminUsersList: { title: "System Users", subtitle: "Directory of administrators, lenders, and borrowers.", table: { name: "Name", type: "Type", email: "Email", phone: "Phone", role: "Role", status: "Status" }, back: "Back to dashboard", addUserBtn: "Add User", loading: "Loading users...", empty: "No users registered.", errorAuth: "You don't have admin permissions or your session expired.", errorFetch: "Error fetching users.", errorNetwork: "Unknown network error", active: "Active", inactive: "Inactive", na: "N/A" },
   adminAddUser: { title: "Create User", subtitle: "Manually register an admin, lender, or borrower.", roleLabel: "Platform Role", roles: { admin: "Administrator", lender: "Lender", borrower: "Borrower" }, nameLabel: "Full Name", namePh: "E.g. Jane Doe", emailLabel: "Email Address", emailPh: "email@example.com", phoneLabel: "Phone Number", phonePh: "E.g. 555 123 4567", submit: "Register account", back: "Back to dashboard", submitting: "Registering...", phoneHint: "Must be exactly 10 digits (optional).", errorFetch: "Failed to create user.", errorNetwork: "Unknown network error", successTitle: "User created successfully!", successDesc1: "An account has been registered for", successTempPw: "Temporary password generated:", successCreateAnother: "Create another", successViewList: "View list" },
+  twoFactorPage: {
+    securityAlert: { title: "Security verification required", desc: "Any change to banking information, passwords, or contact details requires identity confirmation." },
+    contexts: {
+      login: { title: "Verify your identity", sub: "We sent a 6-digit code to your phone. Enter it below to continue." },
+      publish: { title: "Confirm identity to publish deal", sub: "Your deal is ready to go live. Confirm your identity to publish." },
+      bank: { title: "Confirm bank account change", sub: "Enter the code sent to your current phone number to authorize this banking change." },
+      password: { title: "Confirm password change", sub: "Enter the code sent to your phone to confirm your password change." },
+      phone: { title: "Verify your new phone number", sub: "Enter the code sent to your NEW phone number to complete the update." },
+      email: { title: "Confirm email address change", sub: "Enter the code sent to your phone to confirm this email address change." }
+    },
+    codeSent: "Code sent to",
+    expiresIn: "Code expires in",
+    expired: "Expired",
+    verifyBtn: "Verify",
+    verifying: "Verifying...",
+    noCode: "Didn't get a code?",
+    resend: "Resend",
+    wrongDevice: "Using a different device?",
+    backLogin: "Back to login",
+    report: "Report suspicious activity"
+  },
+  competitive: {
+    hero: {
+      label: "Competitive Positioning",
+      title1: "$80 billion a year.",
+      title2: "Still running on spreadsheets.",
+      sub: "In 15,000 real estate closings, not one private lender had software built for them. Spreadsheets. Manual payoffs. No vetting. No ACH. PayMyLoan fixes that."
+    },
+    values: [
+      { num: "$80B+", label: "Annual private loan originations", desc: "300,000+ private real estate loans close every year in the U.S. — built by a borrower who has been on both sides." },
+      { num: "10,000+", label: "Active private lenders with no software", desc: "Over 10,000 active private money lenders in the U.S. Not one had a system built for them. PML is that system.", highlight: true },
+      { num: "100%", label: "Free for lenders — always", desc: "No platform fee, no monthly charge, no percentage of returns. Lenders pay nothing." }
+    ],
+    pain: {
+      title: "The problem PML solves",
+      before: "Before PayMyLoan",
+      after: "With PayMyLoan",
+      rows: [
+        { b: "Track loans on a spreadsheet — no alerts, no automation", a: "Live loan dashboard — every deal, every payment, every status in one place" },
+        { b: "Calculate payoffs manually every time — error-prone, time-consuming", a: "One-click payoff letters with per diem auto-calculated at original contract rate" },
+        { b: "Chase borrowers for payments — no automated reminders", a: "ACH pulls on the 1st — automated, Nacha-compliant, with full paper trail" },
+        { b: "No standard deal format — every borrower sends different info", a: "Standardized deal submission — LTV check, RentCast ARV auto-fill, complete underwriting package" },
+        { b: "No vetting — lend to anyone, find out later", a: "PML Score, payment history, background + credit check, entity verification" },
+        { b: "No messaging trail — deals done by text and email", a: "Deal-tied messaging — full conversation thread, file sharing, contact info blocking" },
+        { b: "Closing docs in email threads — impossible to find later", a: "Tokenized title upload — docs filed to deal folder automatically at closing" },
+        { b: "Find deals by word of mouth only", a: "Deal marketplace — browse verified borrower deals matching your criteria" }
+      ]
+    },
+    comparison: {
+      title: "How PayMyLoan compares",
+      cols: { pml: "PayMyLoan", alt1: "LenderKit / Peer Lending", alt2: "Generic CRM", alt3: "Spreadsheet" },
+      rows: [
+        { label: "Built for private RE lending", pml: "yes", c1: "partial", c2: "no", c3: "no" },
+        { label: "Free for lenders", pml: "yes", c1: "no", c2: "no", c3: "yes" },
+        { label: "ACH automated payments", pml: "yes", c1: "partial", c2: "no", c3: "no" },
+        { label: "One-click payoff letters", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "Borrower marketplace / deal flow", pml: "yes", c1: "partial", c2: "no", c3: "no" },
+        { label: "Borrower vetting (score + background)", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "2FA security gates (bank changes, login)", pml: "yes", c1: "no", c2: "partial", c3: "no" },
+        { label: "Institutional refi marketplace (3.0)", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "Title doc upload automation", pml: "yes", c1: "no", c2: "no", c3: "no" },
+        { label: "Mobile-friendly", pml: "yes", c1: "partial", c2: "partial", c3: "no" }
+      ]
+    },
+    mantra: {
+      q1: "\"Most investors want a return on their money. The best ones want the return of their money.\"",
+      main1: "Stop running your lending business ",
+      main2: "on a spreadsheet.",
+      q2: "\"Built for Main Street. Finally.\""
+    },
+    cta: {
+      lender: "I'm a lender — get started free",
+      borrower: "I'm a borrower"
+    }
+  },
+  founderStory: {
+    hero: {
+      label: "The Story Behind PayMyLoan.ai",
+      title: "Built by a borrower who got tired of watching lenders struggle.",
+      sub: "After borrowing close to $100 million from private lenders over a decade in real estate, I noticed something. Every single one of them was running their business the same broken way. So I built the thing they needed — from the borrower's side of the table."
+    },
+    sections: { s1: "Where this started", s2: "How we built it", s3: "What we built" },
+    p1: "I've been borrowing private money for real estate deals for over ten years. Tens of millions of dollars across hundreds of transactions. At some point the number got close to a hundred million dollars borrowed from private lenders across Tennessee and beyond.",
+    p2: "And in all that time, across all those deals, I never worked with a single non-institutional lender who had any kind of system for running their lending business.",
+    painList: {
+      title: "What \"running a private lending business\" actually looked like",
+      items: [
+        "Excel spreadsheets to track loans, payments, and balances",
+        "Checking a bank account to see if a borrower paid this month",
+        "Choppy email threads instead of real term sheets",
+        "Back-and-forth emails to collect insurance before closing",
+        "No standard way to vet a new borrower — just referrals and gut feeling",
+        "Borrowers who had no idea how to pitch a deal in a clear format",
+        "No automatic payments set up at closing",
+        "No automated emails when payments were due, made, or missed",
+        "Digging up settlement statements to remember original terms for a payoff",
+        "Commitment letters going out late — or not at all"
+      ]
+    },
+    p3Pre: "I started working with institutional lenders — hard money companies, regional funds — and the difference was night and day. They had systems. They had software. They had underwriting checklists, standardized deal formats, automated payment tracking. ",
+    p3Bold: "They had built infrastructure around their lending operations.",
+    p4: "Main Street hadn't done that. Nobody was helping the everyday private lender run their business the way institutional lenders run theirs.",
+    quote1: {
+      text: "\"I asked my attorneys — out of 15,000 closings with private lenders, did a single one of them have any system, process, or software to run their lending operation?\"",
+      cite: "— Spencer Shadrach, Founder"
+    },
+    p5: "The answer was no. Not one.",
+    p6: "That was the gap. And I was in a unique position to fill it — because I'd seen both sides. I knew what borrowers needed to communicate clearly. I knew what lenders needed to feel confident and stay organized. And I had the relationships, the deal history, and the team to build the solution.",
+    p7: "We started with the basics — the things that caused the most daily friction on both sides.",
+    milestones: [
+      { title: "The commitment letter problem", desc: "Borrower and lender agree on terms. Then what? Usually a choppy email, a PDF someone built in Word, or nothing at all. We automated it. Offer accepted — commitment letter generated and sent to all parties in seconds." },
+      { title: "The payment tracking problem", desc: "Nobody should be checking their bank account to see if they got paid. We built ACH payment tracking that confirms payment the moment it posts — with automatic notifications to both sides. No more uncertainty." },
+      { title: "The payoff problem", desc: "Borrower calls, says they're ready to sell. Lender digs up the original note, finds the settlement statement, does the math by hand, emails a number. It takes hours. We brought it down to seconds — exact payoff to the penny, dated PDF, routed directly to title." },
+      { title: "The deal pitch problem", desc: "Borrowers know a good deal when they see it. Getting that knowledge onto paper — in a format a lender can evaluate in minutes — is a different skill. We built the Deal Analyzer. Enter the address, and the platform pulls in property details, comps, and rental data automatically. Borrowers can analyze and pitch a deal in minutes, in a standardized format every lender can read the same way." },
+      { title: "The marketplace problem", desc: "Every borrower wants more lenders. Every lender wants more quality deals. So we built the Funding Marketplace — a place where borrowers can post vetted deals and lenders across the country can find and fund them. Private lending without borders." },
+      { title: "The vetting problem", desc: "I've borrowed close to $100 million from private lenders. Most of them had no idea. No background check. No track record. No credit pull. Just a referral and a handshake. We built the PML Borrower Score — a reputation score built from real payment history, deal history, background checks, and lender reviews. A lender in California can now fund a borrower in Tennessee and know exactly who they're dealing with." }
+    ],
+    quote2: {
+      text: "\"What was needed was a borrower who could look at it from both perspectives — hire a team of developers and build the software that private money lenders never built for themselves.\"",
+      cite: "— Spencer Shadrach, Founder"
+    },
+    solutionList: [
+      "Stop running your lending business on spreadsheets",
+      "Stop chasing borrower checks and hoping they clear",
+      "Stop digging through settlement statements to remember terms",
+      "Vet every borrower — credit, background, track record — before you fund",
+      "Underwrite every deal in a standardized format built for lender decisions",
+      "Automatic payments — ACH scheduled at closing, tracked in real time",
+      "Commitment letters generated and sent in seconds",
+      "Payoffs calculated to the penny with one click",
+      "A marketplace where new capital finds you",
+      "Free for lenders. Always."
+    ],
+    closing1: "This is what private lending looks like when it's built by someone who's been on both sides of the table — and refused to accept that \"spreadsheets and gut feelings\" was good enough.",
+    closing2: "PayMyLoan.ai. Built for Main Street. Finally.",
+    ctaBand: {
+      title: "Ready to run your lending business like a real business?",
+      sub: "Free for lenders. Always. Create your account and browse live deals in minutes.",
+      btnLight: "See the demo first",
+      btnPurple: "Create your lender account"
+    }
+  },
   dashboardLender: { title: "Lender Dashboard", subtitle: "Total control over your capital and yields.", metrics: { availableCapital: "Capital (Available / Deployed)", capitalDeployed: "Capital Deployed", nextPayments: "Next Payments (30 days)", avgInterest: "Avg. Interest Rate", activeBorrowers: "Active Borrowers" }, sections: { commitmentLetters: "Sent Commitment Letters", upcomingClosings: "Upcoming Closings / Payoffs", activeLoans: "Active Loans (Return)", }, tableHeaders: { borrower: "Borrower", amount: "Amount", status: "Status", type: "Type", date: "Date", action: "Action", loan: "Loan", rateBalance: "Rate / Balance" }, labels: { cap: "Prin:", int: "Int:" }, recentPayments: "Latest Received Payments", actions: { marketplace: "Browse Marketplace", viewContracts: "View my contracts" }, toggle: { open: "Open to deals", closed: "Not taking loans" }, table: { date: "Date", borrower: "Borrower", property: "Property", total: "Total Payment", principal: "Principal", interest: "Interest" }, emptyHistory: "The rest of the history will be rendered here.", loading: "Loading dashboard...", errorAuth: "Invalid or expired session.", errorFetch: "Error loading dashboard information", errorNetwork: "Unknown network error", unassigned: "Unassigned", borrowerFallback: "Borrower", emptyCommitments: "No pending commitments", emptyClosings: "No upcoming closings in the system.", emptyLoans: "No active loans", emptyPayments: "No recently processed payments." },
   auditLogs: { searchPlaceholder: "Search by action or description...", allRoles: "All Roles", system: "System / Webhooks", admins: "Administrators", lenders: "Lenders", borrowers: "Borrowers", totalRecords: "Total records:", dateHour: "Date / Time", actor: "Actor", action: "Action", description: "Event Description", noRecords: "No audit records found.", page: "Page", of: "of", prev: "Previous", next: "Next" },
   pitchDeckModal: { step: "Step", of: "of", title: "Create New Pitch Deck", purchasePrice: "Purchase Price ($)", purchasePricePh: "E.g. 150000", rehabAmount: "Rehab Amount ($)", rehabAmountPh: "E.g. 45000", loanAmount: "Requested Amount ($)", loanAmountPh: "E.g. 250000", loanType: "Loan Type", loanTypeSelect: "Select loan type", loanTerm: "Loan Term", loanTermSelect: "Select the term", term12: "12 Months", term24: "24 Months", term36: "36 Months", years: "Years", address: "Property Address", addressPh: "E.g. 123 Main St, Austin, TX", type: "Type", typeRes: "Residential", typeCom: "Commercial", typeLand: "Land", arvLabel: "ARV / ", value: "Estimated Value ($)", valuePh: "E.g. 350000", privacyLabel: "Deal Privacy", public: "Public (Marketplace)", private: "Private (Invite only)", photos: "Property Photos", dragDrop: "Drag and drop your photos here", supportedFiles: "Supports JPG, PNG (Max 5MB)", photoGuidelines: "Front, Kitchen, Baths, Yard, Roof", rentcastTitle: "Generated Comparables (RentCast API)", rentcastParams: "Search: 0.5 miles, same sqft, last 6 months", aiEvaluated: "AI Evaluated", saleComps: "Sale Comps", rentComps: "Rent Comps", rentcastPending: "Pending: The RentCast API will populate this automatically after address input.", back: "Back", processing: "Processing...", publish: "Publish Pitch Deck", next: "Next", successTitle: "Pitch Deck Published!", successDesc: "Your request has been submitted. Lenders can now view your deal and send offers.", backToDash: "Back to Dashboard" },
@@ -1038,13 +1700,255 @@ const en: Copy = {
   issueCommitment: { title: "Issue Commitment Letter", subtitle: "Configure fees for deal REF:", closingFeesTitle: "Closing Fees", originationPoints: "Origination Points (%)", processingFee: "Processing Fee ($)", underwritingFee: "Underwriting Fee ($)", docPrepFee: "Doc Prep Fee ($)", customFeeName: "Custom Fee Name", customFeeNamePh: "E.g. Appraisal Fee", customFeeAmount: "Custom Fee Amount ($)", penaltiesTitle: "Post-Closing Penalties", latePenalty: "Late Payment Penalty", latePenaltyPh: "E.g. 5% or $50", prePayPenalty: "Pre-Pay Penalty", prePayPenaltyPh: "E.g. 1% of balance", phPoints: "E.g. 2", phFee: "E.g. 500", systemNoteTitle: "System Note:", systemNote: "The Marketplace Connection Fee (1 point, min $999) will be automatically added to the final summary by the platform if applicable to this deal.", submit: "Generate and Issue Letter", submitting: "Issuing...", errorFetch: "Failed to issue commitment letter", errorNetwork: "Unknown network error" },
   inviteModal: { title: "Invite to Portal", subtitle: "Share this link for a direct deal. Private/invited deals have a $0 marketplace connection fee.", copyLink: "Copy link", linkCopied: "Copied!", emailLabel: "Or send an email invitation:", emailPh: "email@example.com", sendBtn: "Send Invitation", sending: "Sending...", successMsg: "Invitation sent successfully.", close: "Close" },
   documentVault: { title: "Document Vault", subtitle: "Upload, review, or download legal documents associated with this deal.", uploadBtn: "Upload Document", uploading: "Uploading...", empty: "No documents in this vault.", table: { name: "Document Name", date: "Upload Date", status: "Status", action: "Action" }, actions: { download: "Download", sign: "Sign" }, status: { signed: "Signed", pending: "Pending Signature", file: "File" } },
-  settings: { title: "Profile Settings", subtitle: "Manage your preferences, bank details, and closing contacts.", saveBtn: "Save Changes", saving: "Saving...", success: "Settings updated.", tabs: { lender: "Lender Preferences", borrower: "Borrower Preferences" }, lender: { geography: "Preferred Geographic Areas", geographyPh: "E.g. Texas, Florida, Nationwide", availableCapital: "Available Capital to Deploy ($)", availableCapitalPh: "E.g. 500000", loanTypes: "Preferred Loan Types", entities: "Lending Entities (LLC/Corp)", entitiesPh: "E.g. NextGen Growth LLC", achTitle: "Associated Bank Account (ACH)", routingNum: "Routing Number", accountNum: "Account Number" }, borrower: { attorneyTitle: "Closing Attorney / Title Company", attorneyName: "Company or Attorney Name", attorneyEmail: "Attorney Email", insuranceTitle: "Insurance Company", insuranceName: "Insurance Company Name", insuranceEmail: "Agent Email" } },
+  settings: {
+    title: "Settings",
+    subtitle: "Manage your account, preferences, and product configurations.",
+    banner: "Enable any team member to view loans, payments, and deal activity.",
+    inviteBtn: "Invite team members →",
+    sections: {
+      personal: "Personal settings",
+      account: "Account settings",
+      product: "Product settings"
+    },
+    cards: {
+      personalDetails: { title: "Personal details", desc: "Contact information, password, authentication methods, and your active sessions." },
+      communication: { title: "Communication preferences", desc: "Customize the emails, SMS, and push notifications you receive." },
+      developers: { title: "Developers", desc: "API keys, webhook endpoints, and integration settings." },
+      businessProfile: { title: "Business profile", desc: "Account details, entity type, public info, legal name, and custom domains." },
+      banking: { title: "Banking & payouts", desc: "Bank accounts, ACH setup, wire instructions, and settlement rules." },
+      team: { title: "Team & security", desc: "Team members, roles, account security, authorized apps, and shared resources." },
+      notifications: { title: "Notifications", desc: "Manage who on your team receives payment, payoff, and late-notice emails." },
+      billing: { title: "Subscription & fees", desc: "Your current plan, billing cycle, promo codes, and fee breakdown." },
+      affiliate: { title: "Affiliate program", desc: "Your referral link, earnings, payout history, and affiliate dashboard." },
+      compliance: { title: "Compliance & documents", desc: "Uploaded IDs, LLC docs, signed term sheets, and legacy exports." },
+      features: { title: "Account features", desc: "Manage your account features, previews, and beta settings." },
+      perks: { title: "Perks", desc: "Discounts and partner tools available to PayMyLoan.ai members." },
+      bridgeLoans: { title: "Bridge loans", desc: "Default terms, interest settings, origination fee rules, and payoff preferences." },
+      slowFlip: { title: "Slow flip / owner finance", desc: "Amortization settings, PITI statement preferences, escrow, and monthly billing." },
+      wireSecurity: { title: "Wire security", desc: "Manage your receiving account, phone number for wire verification, and fraud settings." },
+      reporting: { title: "Reporting", desc: "Scheduled reports, data exports, and payment analytics." },
+      payments: { title: "Payments & ACH", desc: "Payment methods, ACH processing, currency, and checkout configuration." },
+      dealMap: { title: "Deal map & discovery", desc: "Private lender window duration, map vs list default, and deal visibility settings." }
+    },
+    footer: { feedback: "Share feedback", shortcuts: "Keyboard shortcuts", privacy: "Privacy policy", terms: "Terms of service" }
+  },
   billing: { bannerTitle: "Free Trial", bannerText: "You have 3 days left on your 7-day free trial.", bannerCta: "Activate Subscription", title: "Monthly Subscription", subtitle: "To continue using PayMyLoan.ai as a borrower, activate your $9/mo subscription.", planName: "Active Borrower Plan", planPrice: "$9.00 / mo", cardLabel: "Card Information (Stripe)", payBtn: "Subscribe for $9/mo", processing: "Processing...", secureNote: "Payments securely processed by Stripe. Cancel anytime." },
   loanTypes: { interestOnlyShort: "Interest Only (Short Term)", interestOnlyLong: "Interest Only (Long Term)", fullyAmortized: "Fully Amortized", constructionDraw: "Construction Draw Loan (Coming Soon)" },
   notifications: { title: "Notifications", empty: "No new notifications.", markRead: "Mark all as read" },
   rateLender: { title: "Rate Lender", subtitle: "Your loan is completed. How was your experience with", ratingLabel: "Rating", reviewLabel: "Public review (optional)", reviewPh: "Write about your experience working with this lender...", submit: "Submit Rating", success: "Thank you! Your rating has been published on the lender's profile.", close: "Close" },
   dashboardLayout: { overview: "Overview", deals: "Deals", products: "Products", account: "Account", nav: { home: "Home", balances: "Balances", payments: "Payments", lenders: "Lenders", myDeals: "My Deals", submitDeal: "Submit a Deal", bridgeLoans: "Bridge Loans", termSheets: "Term Sheets", affiliates: "Affiliates", settings: "Settings", billing: "Billing", reporting: "Reporting" } },
-  bankModal: { title: "Add Bank Account", subtitle: "Required for ACH payments and monthly fee collection. Bank-level 256-bit encryption.", securityNote: "Your banking info is encrypted and never shared with lenders or borrowers.", tabs: { instant: "⚡ Instant Connect", manual: "Manual Entry" }, instant: { desc: "Connect your bank instantly. No routing numbers needed — just log in to your bank.", plaidBtn: "Connect with Plaid", orManual: "— or enter manually —", manualBtn: "Enter Account Details Manually" }, manual: { holder: "Account Holder Name", bankName: "Bank Name", routing: "Routing Number", account: "Account Number", confirmAccount: "Confirm Account Number", type: "Account Type", types: ["Checking", "Savings", "Business Checking"], microNote: "⚡ We'll send two small micro-deposits (under $1) to verify your account within 1–2 business days. You'll confirm the amounts to complete setup.", submitBtn: "Save & Verify Account" }, success: { title: "Bank Account Connected", desc: "Your account is verified and ready for ACH payments. Monthly fees will be auto-collected on the 1st of each month.", doneBtn: "Done" } }
+  bankModal: { title: "Add Bank Account", subtitle: "Required for ACH payments and monthly fee collection. Bank-level 256-bit encryption.", securityNote: "Your banking info is encrypted and never shared with lenders or borrowers.", tabs: { instant: "⚡ Instant Connect", manual: "Manual Entry" }, instant: { desc: "Connect your bank instantly. No routing numbers needed — just log in to your bank.", plaidBtn: "Connect with Plaid", orManual: "— or enter manually —", manualBtn: "Enter Account Details Manually" }, manual: { holder: "Account Holder Name", bankName: "Bank Name", routing: "Routing Number", account: "Account Number", confirmAccount: "Confirm Account Number", type: "Account Type", types: ["Checking", "Savings", "Business Checking"], microNote: "⚡ We'll send two small micro-deposits (under $1) to verify your account within 1–2 business days. You'll confirm the amounts to complete setup.", submitBtn: "Save & Verify Account" }, success: { title: "Bank Account Connected", desc: "Your account is verified and ready for ACH payments. Monthly fees will be auto-collected on the 1st of each month.", doneBtn: "Done" } },
+  whyPml: {
+      hero: {
+        eyebrow: "Why PayMyLoan.ai",
+        title: "Who are you?",
+        subtitle: "Pick your role and we'll show you exactly what PML does for you."
+      },
+      roles: {
+        lender: "I'm a Lender",
+        borrower: "I'm a Borrower"
+      },
+      lender: {
+        hero: {
+          badge: "For Private Lenders",
+          title1: "Run your entire lending business",
+          title2: "from your fingertips.",
+          subtitle: "Most private lenders still rely on spreadsheets, email chains, and handshake deals. PML replaces all of it — borrowers do the heavy lifting, you make the decisions."
+        },
+        cards: [
+          {
+            title: "Vet the borrower — without lifting a finger",
+            desc: "Every borrower completes identity verification and entity documentation before their deal goes live. You see their PML borrower score — a reputation score built from their actual payment history on the platform.",
+            points: ["Government ID and entity docs verified on signup", "PML borrower score visible on every deal card", "Missed payments permanently lower their score", "You can require full identity verification before funding"]
+          },
+          {
+            title: "Vet the deal — the numbers are already there",
+            desc: "Borrowers submit purchase price, ARV, rehab budget, and scope before their deal posts. PML calculates LTV automatically and flags anything above 75%. Your feed only shows deals that match your criteria.",
+            points: ["Live LTV bar with hard 75% default cap", "Filter by state, loan size, LTV, and property type", "Counter-offer or negotiate directly in the platform", "Full financials on every deal card before you click in"]
+          },
+          {
+            title: "Never miss a payment",
+            desc: "PML tracks every payment due date and fires automated reminders to borrowers before the 6th. If a payment is late, you get notified — and the platform logs it permanently against their score. You never have to chase anyone.",
+            points: ["Automated borrower reminders before each due date", "Late fee assessed by you on the 6th — applied automatically", "You're notified the moment a payment is logged", "Full payment history dashboard — every loan, every month"]
+          },
+          {
+            title: "Generate payoffs in seconds",
+            desc: "When a borrower is ready to pay off, they submit the request inside the platform — you never get a phone call asking for a number. PML calculates the exact amount using the original contract rate on a 360-day year and generates a dated PDF automatically.",
+            points: ["Borrower picks the payoff date — PML does the math", "360-day year standard — accurate industry per diem", "Official payoff letter PDF generated and stored instantly", "Original contract rate — no default rate escalation, ever"]
+          },
+          {
+            title: "Draw requests — borrowers do all the work",
+            desc: "When a borrower needs a rehab draw, they submit photos, a 60-second GPS-verified video walkthrough, and a completed stage checklist — all inside the platform. You review the submission and approve or decline with one click.",
+            points: ["Minimum 6 photos and 60-second video per draw request", "GPS and timestamp verified — flags off-site or stale media", "Stage inspection checklist required before submission", "ACH fires automatically on your approval — no manual step"]
+          },
+          {
+            title: "Extensions — protected every time",
+            desc: "When a borrower needs more time, the extension rolls forward at the same rate and terms — no renegotiation. The borrower e-signs and authorizes ACH fee collection upfront. Your money stays protected on the same terms you agreed to.",
+            points: ["Same rate, same payment, one full additional term", "Borrower e-signs extension and fee authorization before approval", "ACH fee collection fires automatically on your approval", "New payment schedule auto-generates — nothing manual"]
+          }
+        ],
+        mantra: {
+          quote: "Most investors want a return on their money. The best ones want the return of their money.",
+          author: "PayMyLoan.ai — Built for Main Street, Not Wall Street"
+        },
+        cta: {
+          title: "Lenders are always free on PML.",
+          subtitle: "No monthly fees. No hidden costs. Just returns — and a platform that works as hard as you do.",
+          btnGhost: "Browse open deals",
+          btnPrimary: "Create free account →"
+        }
+      },
+      borrower: {
+        hero: {
+          badge: "For Real Estate Borrowers",
+          title1: "Stop chasing lenders.",
+          title2: "Let them come to you.",
+          subtitle: "Every other way to find private money puts you in the cold seat — cold calls, broker fees, waiting weeks for a term sheet. PML flips it. Post once and verified lenders in your market find you."
+        },
+        cards: [
+          {
+            title: "No banks. No credit checks. No runaround.",
+            desc: "Private money is asset-based, not credit-based. Lenders on PML care about the property value, your ARV, and your plan — not your FICO score or debt-to-income ratio. The deal either pencils or it doesn't.",
+            points: ["No W-2s, tax returns, or bank applications", "Lenders evaluate the deal, not your credit history", "Close in days, not months", "Works for LLCs, corporations, and individuals"]
+          },
+          {
+            title: "Multiple lenders compete — you pick the best offer",
+            desc: "Post once and let the market work for you. Verified private lenders see your deal and send term sheets. You compare them side by side — rate, term, points, fees — and accept, counter, or decline with one click. No broker taking a cut.",
+            points: ["See all offers side by side — rate, term, points, fees", "Counter-offer or negotiate directly in the platform", "No broker fees, no middlemen", "First offers typically arrive within 24–72 hours"]
+          },
+          {
+            title: "Never miss a payment",
+            desc: "Your PML dashboard shows every payment due date, amount, and status in one place. Automated reminders go out before each due date so you're never caught off guard. Every on-time payment builds your borrower score — and your ability to get funded again.",
+            points: ["Automated reminders before each due date", "Full payment history always visible in your dashboard", "On-time payments raise your PML borrower score", "Late payments logged permanently — protect your score"]
+          },
+          {
+            title: "Generate your payoff in seconds",
+            desc: "Ready to sell or refinance? Go to your deal page, pick your payoff date, and PML generates the exact payoff amount and an official payoff letter PDF — instantly. No phone calls, no waiting for your lender to run the numbers.",
+            points: ["Pick any date — PML calculates the exact amount", "Official payoff letter PDF ready in seconds", "360-day year calculation — accurate per diem every time", "Original contract rate used — no default rate surprises"]
+          },
+          {
+            title: "Request rehab draws — fast and simple",
+            desc: "Submit your draw request with photos, a short video walkthrough, and a stage checklist — all from your phone. PML verifies everything and routes it to your lender for approval. Once approved, funds hit your account via ACH. No spreadsheets, no emails.",
+            points: ["Submit photos, video, and checklist from your phone", "Lender reviews and approves in the platform", "ACH funds disbursed automatically on lender approval", "Full draw history logged for every project"]
+          },
+          {
+            title: "Need more time? Request an extension.",
+            desc: "If your project runs long, request an extension before maturity. You get one full additional term at the same rate and terms — no renegotiation, no awkward calls with your lender. E-sign the request, lender approves, and you're covered.",
+            points: ["Same rate and terms — no renegotiation", "E-sign the request directly in your dashboard", "Lender approves in the platform — no phone tag", "New payment schedule auto-generates on approval"]
+          }
+        ],
+        mantra: {
+          quote: "Built for Main Street, not Wall Street.",
+          author: "PayMyLoan.ai — Private money, made simple."
+        },
+        cta: {
+          title: "Lenders in your market are ready right now.",
+          subtitle: "Post free with a referral code, or $99/month. No banks, no brokers, no waiting.",
+          btnGhost: "Browse lenders",
+          btnPrimary: "Post your deal free →"
+        }
+      }
+    },
+    lenderFaq: {
+      hero: { 
+        label: "Lender Trust & Safety", 
+        title: "Is my money safe on PayMyLoan?", 
+        sub: "Every question a smart lender asks before putting capital to work — answered directly." 
+      },
+      trustBadges: [
+        { title: "2FA on all changes", sub: "Bank, password, email — all gated" },
+        { title: "Borrower verified", sub: "Background + credit + entity" },
+        { title: "Docs on file", sub: "Promissory note + deed of trust" },
+        { title: "Real property security", sub: "Max 75% LTV hard cap" },
+        { title: "ACH automated", sub: "Payments pull on the 1st" }
+      ],
+      faqGroups: [
+        {
+          title: "About PayMyLoan",
+          items: [
+            { q: "What is PayMyLoan and who built it?", a: "PayMyLoan was built by a real estate investor who has borrowed approximately $100 million from private lenders across 15,000 closings. After watching every single one of those lenders manage their loans on spreadsheets — with no software, no automation, no standardized process — we built the infrastructure they should have had all along.<br><br>PayMyLoan is not a fund. We don't hold your money. We are the operating system between borrowers and lenders." },
+            { q: "Does PayMyLoan hold or touch my money?", a: "No. PayMyLoan is a platform — not a fund or a custodian. You wire your capital directly to the title company at closing. Monthly payments ACH directly from the borrower's bank account to yours. PML never holds your principal.<br><br><strong>The only money PML collects</strong> is its platform fees from borrowers (subscription + connection fee on settlement statement). Your capital goes direct." },
+            { q: "Is PayMyLoan a licensed lender or broker?", a: "PayMyLoan is a technology platform that facilitates connections between private lenders and borrowers. We are not a mortgage broker, licensed lender, or securities dealer. All lending decisions are made directly between the lender and borrower. You should consult a licensed attorney in your state before making private loans if you have questions about licensing requirements." }
+          ]
+        },
+        {
+          title: "Your money & security",
+          items: [
+            { q: "How is my bank account protected from fraud?", a: "Every change to bank account or ACH information goes through a 3-layer security gate:<br><ul><li><strong>SMS 2FA</strong> — code sent to your phone on file. Must be entered to proceed.</li><li><strong>Immediate alert email</strong> — sent to your current email address the moment a change is attempted, even before it's confirmed.</li><li><strong>24-hour security hold</strong> — new banking info doesn't go live for 24 hours, giving you time to catch and stop unauthorized changes.</li></ul><br>If you receive an alert email for a change you didn't request, call us immediately. We can freeze your account on the spot." },
+            { q: "What happens if a borrower stops paying?", a: "PayMyLoan automates the notification and documentation trail, but loan enforcement is your right as the lender — your promissory note and deed of trust are your legal instruments.<br><ul><li>Day 1 late: borrower gets email + SMS alert</li><li>Day 15: formal notice to borrower AND lender on record</li><li>NSF/returned payment: both parties notified immediately, logged on borrower's payment history</li></ul><br>PML does not pursue collections on your behalf. Your loan is secured by a deed of trust against the property. Work with your attorney for formal default and foreclosure proceedings if needed.", highlight: "Smart lenders: title and deed of trust are your protection — not the platform. Always work through a licensed title company at closing." },
+            { q: "How does the 75% LTV cap protect me?", a: "For unverified borrowers, PayMyLoan enforces a hard 75% LTV cap (loan ÷ ARV). This means even if the borrower defaults and the property sells at a discount, there's a 25% equity cushion before your principal is at risk.<br><br>As a lender, you can set a higher LTV threshold for borrowers you already know and trust — but 75% is the default floor for new relationships." },
+            { q: "Can someone access my account from a new device without my knowledge?", a: "No. Every login from an unrecognized device triggers an SMS code to your phone. Without that code, the login is blocked. You'll also see a log of all active sessions in your security settings — and can revoke any session instantly from any device." }
+          ]
+        },
+        {
+          title: "Vetting borrowers",
+          items: [
+            { q: "How does PayMyLoan vet borrowers?", a: "Borrowers go through up to 4 verification gates as their deal advances:<ul><li><strong>Gate 1 — Sign up:</strong> name, email, phone</li><li><strong>Gate 2 — Profile:</strong> entity name, EIN, years of experience</li><li><strong>Gate 3 — Publish:</strong> 2FA phone verification, track record</li><li><strong>Gate 4 — Identity (when lender wants to fund):</strong> SSN, government ID, background check, soft credit pull — $99 one-time borrower fee</li></ul><br>Until identity verification is complete, the borrower shows as \"Unverified\" and lenders can see that status on every deal card." },
+            { q: "What does the PML Score tell me?", a: "The PML Score reflects a borrower's verified track record on the platform: number of funded deals, on-time payment rate, extensions requested, and completed payoffs. It updates after every closed deal and every payment.<br><ul><li><strong>Rookie (0–2 deals):</strong> new to the platform</li><li><strong>Pro (3–9 deals):</strong> established history</li><li><strong>All-Star (10+ deals):</strong> proven track record</li><li><strong>Limited Edition:</strong> 10+ deals, zero late payments, zero extensions</li></ul><br>The score doesn't replace your due diligence — but it gives you a standardized signal that no spreadsheet-based lender has ever had before." },
+            { q: "Can I see a borrower's credit score?", a: "Yes — for identity-verified borrowers. PML runs a <strong>soft pull</strong> (does not affect the borrower's credit score). You see the actual score number and tier (750+ Excellent · 700–749 Good · 650–699 Fair · under 650 Poor).<br><br>A low score shows a yellow warning on the deal card but does NOT automatically block a deal. Many experienced real estate investors have lower personal credit but strong track records. You decide." }
+          ]
+        },
+        {
+          title: "Payments & payoffs",
+          items: [
+            { q: "How does ACH work — when does money hit my account?", a: "Monthly interest payments pull from the borrower's bank account on the 1st of each month via Stripe ACH Debit + Plaid bank verification. Settlement to your account typically takes 2–3 business days.<br><br>The <strong>stub period</strong> (partial first month from closing date to month end) is collected on the settlement statement at closing as cash — not via ACH. Your first ACH pull is the 1st of the month after the month following closing.<br><br>Example: Close September 15 → first ACH November 1." },
+            { q: "How do payoffs work?", a: "When a borrower requests a payoff, PML generates a payoff letter automatically using the original contract interest rate (not a default rate). You receive:<ul><li>Payoff amount good through a specific date</li><li>Per diem for each additional day</li><li>Signed payoff letter PDF</li><li>SMS alert immediately</li></ul><br><strong>Wire fraud protection:</strong> Full wire instructions are never sent via email. The payoff letter shows only the last 4 digits of your account. Borrowers and title companies must call you directly to receive complete wire details.", highlight: "Always verify wire instruction changes by calling — never based on email alone." },
+            { q: "What are the fees? Am I charged anything as a lender?", a: "<strong>Lenders pay nothing. Ever.</strong><br><br>PML charges borrowers:<ul><li>$99/month subscription (starts when deal is posted)</li><li>$99 one-time identity verification fee</li><li>10% of monthly interest — only when PML connected the deal</li><li>1% lender connection fee — collected at closing on the settlement statement when PML connected the deal</li></ul><br>Direct invite deals (you invited the borrower or they invited you) — the 10% monthly interest share and 1% connection fee are both waived for the borrower." }
+          ]
+        }
+      ],
+      cta: { 
+        title: "Ready to put your capital to work?", 
+        sub: "Lender accounts are always free. Browse deals in under 2 minutes.", 
+        btn: "Create free lender account" 
+      }
+    },
+    lenderOptin: {
+      hero: {
+        eyebrow: "Free for private lenders",
+        title1: "Deploy your capital ",
+        title2: "faster.",
+        body: "Get the 7-point checklist every private lender should run before wiring funds — plus a 5-email course on building a system that protects your capital and keeps your money working.",
+        proofs: ["Free. No credit card.", "Lenders are always free on PML", "Unsubscribe anytime"]
+      },
+      form: {
+        title: "Get the checklist",
+        sub: "Delivered instantly to your inbox",
+        previewTitle: "What's inside — 7-point checklist",
+        items: ["Title is clear", "Insurance is in place", "ARV is defensible", "LTV is at or below 75%", "Borrower has skin in the game", "Draw process agreed in writing", "Payoff calculated correctly"],
+        fName: "First name",
+        fNamePh: "John",
+        email: "Email address",
+        emailPh: "john@example.com",
+        capitalLabel: "How much capital do you deploy per year?",
+        capSelect: "Select range",
+        capOptions: ["Under $250K", "$250K – $500K", "$500K – $1M", "$1M – $5M", "$5M+"],
+        submit: "Send me the checklist",
+        sending: "Sending...",
+        disclaimer: "No spam. Just useful content for private lenders. Unsubscribe anytime."
+      },
+      gets: {
+        title: "What you get",
+        sub: "The checklist plus 5 emails that show you how to build a real lending system",
+        cards: [
+          { icon: "✓", title: "The 7-point checklist", body: "Everything to verify before you wire — title, insurance, LTV, draws, payoff. Delivered immediately." },
+          { icon: "📈", title: "The ROI breakdown", body: "Exactly how much $100K, $250K, and $500K deployed at 12% earns you per month — and how to maximize it." },
+          { icon: "🎯", title: "Access to live deals", body: "Browse deals posted by borrowers on PayMyLoan.ai. See the LTV, market, and loan size before creating an account." }
+        ]
+      },
+      sequence: {
+        title: "The 5-email sequence",
+        sub: "Sent over 10 days — practical, no fluff",
+        dayLabel: "Day",
+        steps: [
+          { day: "0", subject: "Your private lender checklist (7 things to verify before you wire)", desc: "Instant delivery — the checklist + intro to PML", tag: "Lead magnet", tagColor: "purple" },
+          { day: "2", subject: "Most private lenders lose money on one mistake", desc: "The real cost of having no system — and what to do about it", tag: "Pain point", tagColor: "purple" },
+          { day: "4", subject: "You have capital. There are deals posted this week.", desc: "Browse live deals — no account required", tag: "Social proof", tagColor: "purple" },
+          { day: "7", subject: "How much are you earning per dollar deployed?", desc: "The math behind $100K, $250K, $500K deployed at 12%", tag: "ROI / Math", tagColor: "purple" },
+          { day: "10", subject: "One question before I stop emailing you", desc: "Fast track or slow drip — you choose", tag: "Branch point", tagColor: "green" }
+        ]
+      }
+    }
 };
 
 export const copy: Record<Lang, Copy> = { es, en };

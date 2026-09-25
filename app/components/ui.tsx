@@ -330,3 +330,59 @@ export function DealCard({
     </div>
   );
 }
+
+export function SettingCard({
+  icon,
+  title,
+  description,
+  onClick
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  onClick?: () => void;
+}) {
+  return (
+    <div 
+      onClick={onClick}
+      className="flex items-start gap-3.5 bg-surface p-5 cursor-pointer transition-colors hover:bg-surface-2"
+    >
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent text-base mt-[1px]">
+        {icon}
+      </div>
+      <div>
+        <div className="mb-1 text-sm font-semibold text-accent hover:underline">{title}</div>
+        <div className="text-xs leading-[1.55] text-ink-3">{description}</div>
+      </div>
+    </div>
+  );
+}
+
+export function StatCell({
+  label,
+  value,
+  subtext,
+  subtextHighlight
+}: {
+  label: string;
+  value: string | ReactNode;
+  subtext?: string;
+  subtextHighlight?: string;
+}) {
+  return (
+    <div className="bg-surface p-4 sm:p-5">
+      <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-3">
+        {label}
+      </div>
+      <div className="text-[22px] font-bold tracking-tight text-ink">
+        {value}
+      </div>
+      {(subtext || subtextHighlight) && (
+        <div className="mt-1 text-[11px] text-ink-3">
+          {subtextHighlight && <span className="font-semibold text-green-600 dark:text-green-400 mr-1">{subtextHighlight}</span>}
+          {subtext}
+        </div>
+      )}
+    </div>
+  );
+}

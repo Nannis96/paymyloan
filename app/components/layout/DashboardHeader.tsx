@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
-import { Moon, Sun, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useSite } from "./SiteShell";
 import { CONTAINER } from "../ui";
+import ThemeToggle from "../ambos/ThemeToggle";
+import LangToggle from "../ambos/LangToggle";
 
 export default function DashboardHeader() {
   const { t, lang, setLang, resolvedTheme, toggleTheme } = useSite();
@@ -19,26 +21,8 @@ export default function DashboardHeader() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setLang(lang === "es" ? "en" : "es")}
-            aria-label={t.nav.langToggle}
-            className="eyebrow flex h-11 min-w-11 items-center justify-center rounded-[2px] border border-rule px-2 text-ink-2 transition-colors hover:border-accent hover:text-accent"
-          >
-            {lang === "es" ? "EN" : "ES"}
-          </button>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={t.nav.themeToggle}
-            className="flex h-11 w-11 items-center justify-center rounded-[2px] border border-rule text-ink-2 transition-colors hover:border-accent hover:text-accent"
-          >
-            {resolvedTheme === "dark" ? (
-              <Sun aria-hidden className="h-[18px] w-[18px]" />
-            ) : (
-              <Moon aria-hidden className="h-[18px] w-[18px]" />
-            )}
-          </button>
+          <LangToggle className="eyebrow h-11 min-w-11 rounded-[2px] border border-rule px-2 text-ink-2 hover:border-accent hover:text-accent" />
+          <ThemeToggle className="h-11 w-11 rounded-[2px] border border-rule text-ink-2 hover:border-accent hover:text-accent" iconSize={18} />
           <Link
             href="/"
             className="ml-4 flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-crit"
