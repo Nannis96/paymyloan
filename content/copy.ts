@@ -364,6 +364,46 @@ const es = {
     }
   },
   loginPage: { title: "Inicia sesión", subtitle: "Ingresa tus credenciales para administrar préstamos.", cardTitle: "ACCESO SEGURO", emailLabel: "Correo electrónico", emailPlaceholder: "correo@ejemplo.com", passwordLabel: "Contraseña", passwordPlaceholder: "Ingresa tu contraseña", submit: "INGRESAR", forgot: "OLVIDÉ MI CONTRASEÑA", back: "VOLVER AL INICIO", noAccount: "¿Aún no tienes cuenta?", signup: "Regístrate aquí", processing: "Procesando...", twoFactorTitle: "VERIFICACIÓN 2FA", twoFactorDesc: "Ingresa el código de 6 dígitos de tu aplicación autenticadora o un código de recuperación.", twoFactorLabel: "Código de verificación", twoFactorPlaceholder: "Ej. 123456", twoFactorVerifying: "Verificando...", twoFactorConfirm: "CONFIRMAR", twoFactorCancel: "Cancelar", errorDefault: "Error al iniciar sesión", error2FA: "Código 2FA incorrecto o expirado", errorNetwork: "Error de red desconocido", },
+  verifyEmail: {
+    borrower: {
+      title: "Correo confirmado",
+      sub: "Tu cuenta esta activa. Publica tu primer trato y comienza a recibir fondeo.",
+      nextTitle: "Tus siguientes pasos",
+      steps: [
+        { title: "Publica tu primer trato", desc: "ingresa los detalles, ARV, monto del prestamo y plazos" },
+        { title: "Configura tu perfil", desc: "agrega informacion de tu entidad e historial para generar confianza" },
+        { title: "Espera ofertas", desc: "los prestamistas revisaran tu trato y enviaran hojas de terminos" }
+      ],
+      btnPrimary: "Publicar mi primer trato",
+      btnSecondary: "Ir al panel de control"
+    },
+    lender: {
+      title: "Correo confirmado",
+      sub: "Tu cuenta de prestamista esta activa. Explora tratos y pon tu capital a trabajar.",
+      badge: "Prestar en PayMyLoan es siempre gratis.",
+      nextTitle: "Tus siguientes pasos",
+      steps: [
+        { title: "Configura tus preferencias", desc: "mercados, tipos de trato, rango de tasas, LTV maximo" },
+        { title: "Explora tratos", desc: "ve tratos activos que coincidan con tus criterios" },
+        { title: "Haz una oferta", desc: "envia tus terminos y conecta con un prestatario" }
+      ],
+      btnPrimary: "Explorar tratos ahora",
+      btnSecondary: "Configurar preferencias primero"
+    },
+    expired: {
+      title: "Enlace expirado",
+      sub: "Tu enlace de verificacion expiro despues de 72 horas. Solicita uno nuevo abajo (tu informacion esta a salvo).",
+      emailPh: "Ingresa tu correo electronico",
+      btnPrimary: "Enviar nuevo enlace",
+      btnSecondary: "Volver al inicio de sesion",
+      sentAlert: "Nuevo enlace enviado a"
+    },
+    already: {
+      title: "Ya verificado",
+      sub: "Este correo electronico ya ha sido confirmado. Inicia sesion para acceder a tu cuenta.",
+      btnPrimary: "Iniciar sesion"
+    }
+  },
   pmlHero: { badge: "Gestión de Préstamos con IA", subtitle: "PML — Prestamista de Dinero Privado. PayMyLoan.ai. Ambas partes del acuerdo.", title1: "De la propuesta", title2: "al pago final.", title3: "Una sola plataforma.", by: "por PayMyLoan.ai", desc: "La propuesta. La solicitud de préstamo. El compromiso. El procesamiento de pagos. La liquidación. Todo en un solo lugar — tanto para prestatarios como para prestamistas.", cta1: "Quiero acceso anticipado", cta2: "Ver cómo funciona", },
   whoItHelps: { eyebrow: "A quién ayuda", title1: "Una plataforma.", title2: "Seis problemas resueltos.", lead: "PML elimina el caos de los préstamos privados — dando a los prestatarios claridad y a los prestamistas control, para que cada trato se cierre limpiamente.", cards: [ { role: "Prestatario", icon: "🏗️", title: "Del pitch al pago en un solo lugar", points: [ "Todos los préstamos en un solo panel", "Genera pitches y cartas de compromiso", "Pagos automatizados — nunca más te atrases", "Pagos finales instantáneos y calificación PML" ] }, { role: "Prestamista", icon: "🏦", title: "Sabe quién pagó, qué se debe y qué sigue", points: [ "Seguimiento de pagos de todos los prestatarios", "Evalúa prestatarios antes de comprometer capital", "Genera cartas de compromiso y pagos finales", "Controla tu visibilidad en el mercado" ] }, { role: "Contador Interno", icon: "📒", title: "Registros limpios, cero persecuciones", points: [ "División de capital vs interés en cada pago", "Cada préstamo vinculado a una propiedad", "Registros exportables — sin captura manual", "No más correos mensuales pidiendo detalles" ] }, { role: "Contador Público", icon: "🧾", title: "Listo para el cierre anual — a un clic", points: [ "Ingresos y gastos por intereses separados claramente", "Cada préstamo documentado por propiedad", "Reporte anual completo — exportable al instante", "No más rebuscar en correos para obtener registros" ] }, { role: "Compañía de Títulos", icon: "🏛️", title: "Pagos finales antes del cierre — no después", points: [ "Estados de liquidación enviados directamente", "Ambas partes confirmadas con la misma cifra", "Sin apuros de último minuto en la mesa de firma", "Cierres limpios en cada ocasión" ] }, { role: "Aseguradora", icon: "🛡️", title: "Cláusula hipotecaria — precisa siempre", points: [ "Datos del prestamista extraídos de su perfil PML", "Cláusula de acreedor hipotecario siempre al día", "Sin solicitudes manuales de detalles del prestamista", "Cada propiedad y préstamo documentado" ] } ], stats: [ { value: "< 30s", label: "Pago final generado" }, { value: "2", label: "Lados. Una plataforma." }, { value: "0", label: "Hojas de cálculo necesarias" }, { value: "100%", label: "Listo para el CPA a fin de año" } ] },
   beforeAfter: { eyebrow: "Antes vs Después", title: "Dos inversores. Mismo negocio. Diferentes herramientas.", before: { badge: "Sin PML", icon: "😤", items: [ "Prestatario: ni idea a quién llamar para obtener una respuesta rápida del prestamista", "Prestatario: préstamos dispersos en 3 bancos, 2 prestamistas privados y una hoja de cálculo", "Prestatario: tu contador persiguiéndote cada mes para explicar qué préstamo es cuál", "Prestamista: ni idea de quién pagó, cuánto o cuándo — hasta que algo sale mal", "Prestamista: carrera de último minuto para calcular el pago final mientras la notaría espera" ] }, after: { badge: "Con PML", icon: "😎", items: [ "Prestatario: todos los préstamos en un solo lugar — cada saldo, cada pago, cada propiedad", "Prestatario: envía tu pitch y carta de compromiso a un prestamista en minutos", "Prestatario: pago final generado al instante — sin esperas, sin idas y vueltas", "Prestamista: sabes exactamente quién pagó, qué cantidad y cuándo — en tiempo real", "Prestamista: historial de pagos e intereses listos para entregar directo a tu contador" ] } },
@@ -382,7 +422,90 @@ const es = {
   finalCta: { eyebrow: "Empieza", title: "Da de alta tu primer préstamo.", body: "Crea la cuenta, captura los términos e invita a la otra parte. El calendario se genera cuando ambos aceptan.", cta: "Crear cuenta", },
   footer: { tagline: "Servicing de préstamos privados con garantía inmobiliaria.", entity: "Subsidiaria de Dueño a Dueño LLC", links: [ { href: "#", label: "Términos de servicio" }, { href: "/aviso-de-privacidad", label: "Aviso de privacidad" }, ], linksNote: "Términos de servicio: [PENDIENTE DE REDACCIÓN]", rights: "Todos los derechos reservados.", },
   privacy: { eyebrow: "Legal", title: "Aviso de privacidad", updated: "Última actualización: 28 de agosto de 2026", back: "Volver al inicio", intro: [ "Este aviso explica qué datos personales recaba PayMyLoan.ai, para qué los usamos, con quién los compartimos y cómo puedes ejercer tus derechos sobre ellos.", "PayMyLoan.ai está en fase de acceso anticipado: hoy solo recabamos los datos del formulario de lista de espera. Antes de activar el servicing completo de préstamos, actualizaremos este aviso para cubrir los datos del préstamo —propiedad en garantía, términos, pagos y documentos— que se sumarán entonces.", ], sections: [ { heading: "1. Quién es responsable de tus datos", paragraphs: [ "PayMyLoan.ai es la marca bajo la que Dueño a Dueño LLC opera este sitio y, más adelante, la plataforma de servicing de préstamos privados.", "Domicilio para efectos de este aviso: [PENDIENTE DE DEFINIR].", "Ley aplicable y autoridad ante la que puedes acudir si no resolvemos tu solicitud: [PENDIENTE DE DEFINIR].", ], }, { heading: "2. Qué datos recabamos hoy", paragraphs: [ "Mientras estamos en acceso anticipado, el único dato que recabamos es el que dejas en el formulario de lista de espera:", ], list: [ "Nombre completo", "Correo electrónico", "Teléfono", "Contraseña, que se guarda cifrada; nadie en PayMyLoan.ai puede leerla en texto plano", "Si buscas dar un préstamo o recibir uno (solo define qué ves al entrar; no crea ninguna obligación)", "Que aceptaste los términos de servicio y este aviso, con fecha y hora", "Idioma en el que llenaste el formulario", ], }, { heading: "3. Qué datos vamos a recabar cuando actives un préstamo", paragraphs: [ "En cuanto dar de alta o aceptar un préstamo esté disponible, se sumarán los datos propios del servicing:", ], list: [ "Dirección, tipo y, si aplica, número de parcela de la propiedad en garantía", "Monto, tasa, estructura y vencimiento del préstamo, y cada versión de esos términos que aceptaste", "Historial de pagos: fecha, monto y cómo se aplicó a mora, interés y capital", "El identificador de tu método de pago y sus últimos cuatro dígitos; el número de cuenta completo lo guarda Stripe, no nosotros", "Los documentos del préstamo que aceptaste: pagaré, deed of trust y settlement statement", "Fecha, hora e IP de cada aceptación de términos, cambio de cuenta bancaria y descarga de documento", ], }, { heading: "4. Para qué usamos tus datos", paragraphs: [], list: [ "Avisarte cuando tu acceso a la plataforma esté listo", "Crear tu cuenta y, más adelante, administrar el préstamo que diste o que estás pagando", "Calcular el saldo, aplicar pagos y generar el calendario de pagos", "Verificar tu identidad y activar la verificación en dos pasos, obligatoria para prestamistas", "Detectar y avisar de cambios sospechosos, como un cambio de cuenta bancaria", "Cumplir obligaciones legales y fiscales relacionadas con el servicing de préstamos", ], note: "No usamos tus datos para publicidad ni los vendemos a terceros.", }, { heading: "5. Con quién compartimos tus datos", paragraphs: [], list: [ "Con la otra parte del mismo préstamo, pero solo lo necesario para administrarlo: no ve tu contraseña ni el número completo de tu cuenta bancaria", "Con Stripe, que procesa los pagos por ACH y guarda el método de pago; nosotros solo guardamos su identificador y los últimos cuatro dígitos", "Con autoridades, si una ley o una orden judicial nos obliga", ], note: "No compartimos ni vendemos tus datos con fines de mercadotecnia.", }, { heading: "6. Cómo protegemos tus datos", paragraphs: [], list: [ "Verificación en dos pasos obligatoria para prestamistas, porque son quienes controlan a dónde va el dinero", "Permisos por préstamo: cada consulta se filtra por tu participación en ese préstamo específico, no por un rol que abre todo", "Nunca guardamos números de cuenta completos; eso vive en Stripe", "Bitácora de los eventos que importan: cambios de términos, aceptaciones, aprobación de payoff, cambio de cuenta bancaria y descarga de documentos", "Aviso a ambas partes ante cualquier cambio de cuenta bancaria, el vector de fraude más común en servicing", "Documentos privados por préstamo, servidos con enlaces de vigencia corta, nunca con URL pública", ], }, { heading: "7. Cuánto tiempo conservamos tus datos", paragraphs: [ "Si estás en la lista de espera, conservamos tus datos hasta que abras una cuenta o hasta que nos pidas eliminarlos.", "Si tienes un préstamo activo, conservamos los datos del préstamo mientras dure la relación y el tiempo adicional que exija la ley aplicable a documentos financieros. Plazo exacto: [PENDIENTE DE DEFINIR].", ], }, { heading: "8. Tus derechos y cómo ejercerlos", paragraphs: [ "Puedes pedirnos acceder a tus datos, corregirlos, cancelarlos u oponerte a un uso específico. También puedes retirar tu consentimiento en cualquier momento; para la lista de espera basta con que nos lo pidas. Retirar tu consentimiento no afecta el tratamiento que ya hicimos antes de la solicitud.", "Canal para ejercer estos derechos: [PENDIENTE DE DEFINIR — hoy no existe todavía un correo de contacto para PayMyLoan.ai].", ], }, { heading: "9. Cookies y almacenamiento local", paragraphs: [ "El sitio no usa cookies de rastreo ni de publicidad. Guarda dos preferencias en el almacenamiento local de tu navegador —tema claro u oscuro e idioma— que nunca salen de tu dispositivo. Puedes borrarlas desde la configuración de tu navegador.", ], }, { heading: "10. Menores de edad", paragraphs: [ "PayMyLoan.ai no está dirigido a menores de edad y no recaba a sabiendas datos de menores de 18 años.", ], }, { heading: "11. Cambios a este aviso", paragraphs: [ "Si cambiamos este aviso de forma importante —por ejemplo, al activar el servicing completo del préstamo— lo publicaremos aquí con una nueva fecha de actualización antes de tratar los datos nuevos.", ], }, { heading: "12. Contacto", paragraphs: [ "Correo de contacto para privacidad: [PENDIENTE DE DEFINIR].", "Mientras ese canal no exista, puedes usar el mismo correo con el que te registraste en la lista de espera; te responderemos desde ahí en cuanto esté disponible.", ], }, ], },
-  dashboardAdmin: { title: "Panel de Administración", subtitle: "Métricas globales y salud de la plataforma.", metrics: { activeLoans: "Préstamos Activos", totalVolume: "Volumen Procesado (ACH)", platformRevenue: "Ingresos Totales (0.8%)", pendingVerifications: "Verificaciones Pendientes" }, recentActivity: "Actividad Reciente del Sistema", addUserBtn: "Agregar Usuario", viewUsersBtn: "Ver Usuarios", viewContractsBtn: "Ver Contratos", loading: "Cargando métricas...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar datos del administrador.", errorNetwork: "Error de red desconocido" },
+  dashboardAdmin: {
+    title: "Resumen de Administrador",
+    subtitle: "PayMyLoan.ai · {date}",
+    systemStatus: "Todos los sistemas operacionales",
+    kpi: {
+      activeDeals: "Tratos activos",
+      totalFunded: "Total fondeado",
+      mrr: "MRR",
+      pendingVerif: "Verif. pendientes",
+      latePayments: "Pagos atrasados",
+      thisWeek: "+{n} esta semana",
+      allTime: "Historico",
+      thisMonth: "+${n} este mes",
+      awaitingReview: "Esperando revision",
+      actionNeeded: "Accion requerida"
+    },
+    revenue: {
+      title: "Ingresos este mes",
+      sub: "Suscripciones + tarifas de cierre + comision de interes",
+      subscriptions: "Suscripciones",
+      closingFees: "Tarifas de cierre",
+      interestShare: "Comision de interes",
+      affiliatePayouts: "Pagos a afiliados",
+      netRevenue: "Ingreso neto"
+    },
+    tables: {
+      activeDeals: "Tratos activos",
+      recentSignups: "Registros recientes",
+      viewAll: "Ver todos",
+      viewAllUsers: "Ver todos los usuarios",
+      property: "Propiedad",
+      loan: "Prestamo",
+      status: "Estado",
+      nextPayment: "Proximo pago",
+      name: "Nombre",
+      type: "Tipo",
+      signedUp: "Registro",
+      verified: "Verificado",
+      deals: "Tratos",
+      revenue: "Ingresos",
+      pillActive: "Activo",
+      pillPending: "Pendiente",
+      pillLate: "{n} dias atrasado",
+      pillClosed: "Cerrado"
+    },
+    actions: {
+      title: "Requiere atencion",
+      clearAll: "Limpiar todo",
+      today: "Hoy",
+      items: [
+        { text: "— {n} dias de atraso. Enviar alerta al prestamista." },
+        { text: "— entidades de prestamistas esperando revision." },
+        { text: "— cierre pendiente, tarifa PML aun no confirmada." },
+        { text: "— ${n} en cola para el {date}. Confirmar cuentas bancarias." },
+        { text: "— esperando aprobacion del prestamista en {n} propiedades." }
+      ]
+    },
+    nav: {
+      overview: "Resumen",
+      allDeals: "Todos los Tratos",
+      lenders: "Prestamistas",
+      borrowers: "Prestatarios",
+      revenue: "Ingresos",
+      affiliates: "Afiliados",
+      verifications: "Verificaciones",
+      promoCodes: "Codigos Promo",
+      settings: "Configuracion"
+    },
+    views: {
+      allDeals: { title: "Todos los Tratos", subtitle: "Listado completo de contratos activos, en mora y cerrados." },
+      lenders: { title: "Prestamistas", subtitle: "Directorio de inversores y sus entidades." },
+      borrowers: { title: "Prestatarios", subtitle: "Directorio de clientes y su estado de verificacion." },
+      revenue: { title: "Ingresos", subtitle: "Metricas de facturacion y pagos." },
+      affiliates: { title: "Afiliados", subtitle: "Gestion de referidos y pagos a afiliados." },
+      verifications: { title: "Verificaciones", subtitle: "Solicitudes de identidad y entidades pendientes." },
+      promoCodes: { title: "Codigos Promo", subtitle: "Administracion de descuentos y cupones." },
+      settings: { title: "Configuracion", subtitle: "Ajustes globales de la plataforma." },
+      placeholder: { subtitle: "Esta vista estara disponible proximamente." }
+    },
+    loading: "Cargando panel...",
+    errorAuth: "Sesion invalida.",
+    errorFetch: "Error al cargar datos del administrador.",
+    errorNetwork: "Error de red"
+  },
   adminUsersList: { title: "Usuarios del sistema", subtitle: "Directorio de administradores, prestamistas y prestatarios.", table: { name: "Nombre", type: "Tipo", email: "Correo electrónico", phone: "Teléfono", role: "Rol", status: "Estado" }, back: "Volver al panel", addUserBtn: "Agregar Usuario", loading: "Cargando usuarios...", empty: "No hay usuarios registrados.", errorAuth: "No tienes permisos de administrador o tu sesión expiró.", errorFetch: "Error al obtener usuarios.", errorNetwork: "Error de red desconocido", active: "Activo", inactive: "Inactivo", na: "N/D" },
   adminAddUser: { title: "Crear Usuario", subtitle: "Da de alta manualmente a un administrador, prestamista o prestatario.", roleLabel: "Rol en la plataforma", roles: { admin: "Administrador", lender: "Prestamista", borrower: "Prestatario" }, nameLabel: "Nombre completo", namePh: "Ej. Jane Doe", emailLabel: "Correo electrónico", emailPh: "correo@ejemplo.com", phoneLabel: "Teléfono", phonePh: "Ej. 555 123 4567", submit: "Registrar cuenta", back: "Volver al panel", submitting: "Registrando...", phoneHint: "Debe tener exactamente 10 dígitos (opcional).", errorFetch: "Error al crear el usuario.", errorNetwork: "Error de red desconocido", successTitle: "¡Usuario creado exitosamente!", successDesc1: "Se ha registrado la cuenta para", successTempPw: "Contraseña temporal generada:", successCreateAnother: "Crear otro", successViewList: "Ver listado" },
   twoFactorPage: {
@@ -527,7 +650,19 @@ const es = {
       btnPurple: "Crear tu cuenta de prestamista"
     }
   },
-  dashboardLender: { title: "Panel de Prestamista", subtitle: "Control total sobre tu capital y rendimientos.", metrics: { availableCapital: "Capital (Disponible / Desplegado)", capitalDeployed: "Capital Desplegado", nextPayments: "Próximos Pagos (30 días)", avgInterest: "Tasa Promedio", activeBorrowers: "Prestatarios Activos" }, sections: { commitmentLetters: "Cartas de Compromiso Enviadas", upcomingClosings: "Próximos Cierres / Payoffs", activeLoans: "Préstamos Activos (Retorno)", }, tableHeaders: { borrower: "Prestatario", amount: "Monto", status: "Estado", type: "Tipo", date: "Fecha", action: "Acción", loan: "Préstamo", rateBalance: "Tasa / Saldo" }, labels: { cap: "Cap:", int: "Int:" }, recentPayments: "Últimos Pagos Recibidos", actions: { marketplace: "Explorar Mercado", viewContracts: "Ver mis contratos" }, toggle: { open: "Abierto a negocios", closed: "No aceptando préstamos" }, table: { date: "Fecha", borrower: "Prestatario", property: "Propiedad", total: "Pago Total", principal: "Capital", interest: "Interés" }, emptyHistory: "El resto del historial se renderizará aquí.", loading: "Cargando dashboard...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar la información del dashboard", errorNetwork: "Error de red desconocido", unassigned: "Sin asignar", borrowerFallback: "Deudor", emptyCommitments: "No hay compromisos pendientes", emptyClosings: "No hay cierres próximos en el sistema.", emptyLoans: "Sin préstamos activos", emptyPayments: "No hay pagos procesados recientemente." },
+  dashboardLender: { title: "Panel de Prestamista", subtitle: "Control total sobre tu capital y rendimientos.", metrics: { availableCapital: "Capital (Disponible / Desplegado)", capitalDeployed: "Capital Desplegado", nextPayments: "Próximos Pagos (30 días)", avgInterest: "Tasa Promedio", activeBorrowers: "Prestatarios Activos" }, sections: { commitmentLetters: "Cartas de Compromiso Enviadas", upcomingClosings: "Próximos Cierres / Payoffs", activeLoans: "Préstamos Activos (Retorno)", }, tableHeaders: { borrower: "Prestatario", amount: "Monto", status: "Estado", type: "Tipo", date: "Fecha", action: "Acción", loan: "Préstamo", rateBalance: "Tasa / Saldo" }, labels: { cap: "Cap:", int: "Int:" }, recentPayments: "Últimos Pagos Recibidos", actions: { marketplace: "Explorar Mercado", viewContracts: "Ver mis contratos" }, toggle: { open: "Abierto a negocios", closed: "No aceptando préstamos" }, table: { date: "Fecha", borrower: "Prestatario", property: "Propiedad", total: "Pago Total", principal: "Capital", interest: "Interés" }, emptyHistory: "El resto del historial se renderizará aquí.", loading: "Cargando dashboard...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar la información del dashboard", errorNetwork: "Error de red desconocido", unassigned: "Sin asignar", borrowerFallback: "Deudor", emptyCommitments: "No hay compromisos pendientes", emptyClosings: "No hay cierres próximos en el sistema.", emptyLoans: "Sin préstamos activos", emptyPayments: "No hay pagos procesados recientemente.", mimic: { greeting: "Buenos dias, {name}.", portfolioSub: "{company} — resumen de portafolio.", stats: { capitalDeployed: "Capital desplegado", acrossActive: "En {n} prestamos activos", monthlyIncome: "Ingreso mensual", interestPayments: "Pagos de interes", newDeals: "Nuevos tratos hoy", matchCriteria: "Coinciden con tus criterios", maturingSoon: "Proximos a vencer", within60: "En menos de 60 dias" }, alerts: { maturityTitle: "Alerta de vencimiento", maturityMsg: "{address} vence en {days} dias — {date}", maturitySub: "{amount} al {rate}% · Contacta al prestatario para liquidacion o extension." }, cards: { activeLoans: "Prestamos activos", viewAll: "Ver todos", upcomingPayments: "Proximos pagos", allPayments: "Todos los pagos" }, browseCta: { title: "{n} nuevos tratos coinciden con tus criterios", sub: "Memphis · TN · MS · Hasta 75% LTV · 12%+", btn: "Explorar tratos" }, badges: { active: "Activo", closing: "Cerrando", maturity: "{n}d para vencer", pending: "Pendiente", received: "Recibido" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Fondeado 22 Sept · 12 meses", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mes", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Fondeado 3 Ago · 12 meses", loan2Amt: "$95,000", loan2Rate: "12% · $950/mes", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Cierre en progreso", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mes", pay1Date: "Vence 1 Oct", pay2Date: "Vence 1 Oct", pay3Date: "Pagado 1 Sept", pay4Date: "Pagado 1 Sept" },
+      settings: {
+        title: "Configuracion",
+        sub: "Administra tu cuenta, notificaciones y facturacion.",
+        verifyBanner: { text1: "Tu perfil no esta verificado.", text2: "Completa la verificacion para desbloquear ofertas.", btn: "Verificar ahora — $99" },
+        profile: { title: "Perfil", sub: "Tu nombre, correo y contraseña.", edit: "Editar", name: "Nombre completo", email: "Correo electronico", pass: "Contraseña", phone: "Telefono", unassigned: "No proporcionado" },
+        verification: { title: "Verificacion", sub: "Estado de verificacion de identidad y negocio.", biz: "Negocio verificado", id: "Identidad verificada", unverified: "No verificado" },
+        notifs: { title: "Notificaciones", sub: "Elige que actualizaciones recibes.", offer: "Oferta de prestamista recibida", status: "Actualizaciones de trato", approved: "Verificacion aprobada", news: "Noticias de la plataforma" },
+        billing: { title: "Suscripcion y facturacion", sub: "Tu plan actual y metodo de pago.", manage: "Administrar", plan: "Plan actual", subPlan: "Suscripcion mensual", method: "Metodo de pago", free: "Gratis", notActive: "No activa", none: "Ninguno" },
+        account: { title: "Cuenta", sub: "Cierra o desactiva tu cuenta.", close: "Cerrar cuenta" }
+      }
+    }
+  },
   auditLogs: { searchPlaceholder: "Buscar por accion o descripcion...", allRoles: "Todos los Roles", system: "Sistema / Webhooks", admins: "Administradores", lenders: "Prestamistas", borrowers: "Prestatarios", totalRecords: "Total de registros:", dateHour: "Fecha / Hora", actor: "Actor", action: "Accion", description: "Descripcion del Evento", noRecords: "No se encontraron registros de auditoria.", page: "Página", of: "de", prev: "Anterior", next: "Siguiente" },
   pitchDeckModal: { step: "Paso", of: "de", title: "Crear Nuevo Pitch Deck", purchasePrice: "Precio de Compra ($)", purchasePricePh: "Ej. 150000", rehabAmount: "Monto de Remodelación ($)", rehabAmountPh: "Ej. 45000", loanAmount: "Monto Solicitado ($)", loanAmountPh: "Ej. 250000", loanType: "Tipo de Préstamo", loanTypeSelect: "Selecciona el tipo", loanTerm: "Plazo del Préstamo", loanTermSelect: "Selecciona el plazo", term12: "12 Meses", term24: "24 Meses", term36: "36 Meses", years: "Años", address: "Dirección de la Propiedad", addressPh: "Ej. 123 Main St, Austin, TX", type: "Tipo", typeRes: "Residencial", typeCom: "Comercial", typeLand: "Terreno", arvLabel: "ARV / ", value: "Valor Estimado ($)", valuePh: "Ej. 350000", privacyLabel: "Privacidad del Trato", public: "Público (Marketplace)", private: "Privado (Solo invitados)", photos: "Fotos de la Propiedad", dragDrop: "Arrastra tus fotos aquí", supportedFiles: "Soporta JPG, PNG (Max 5MB)", photoGuidelines: "Frente, Cocina, Baños, Patio, Techo", rentcastTitle: "Comparables generados (RentCast API)", rentcastParams: "Búsqueda: 0.5 millas, mismos pies cuadrados, últimos 6 meses", aiEvaluated: "AI Evaluado", saleComps: "Comparables Venta", rentComps: "Comparables Renta", rentcastPending: "Pendiente: La API de RentCast poblará esto automáticamente después de ingresar la dirección.", back: "Atrás", processing: "Procesando...", publish: "Publicar Pitch Deck", next: "Siguiente", successTitle: "Pitch Deck Publicado!", successDesc: "Tu solicitud ha sido enviada. Los prestamistas ahora pueden ver tu trato y enviar ofertas.", backToDash: "Volver al Dashboard" },
   dashboardBookkeeper: { title: "Panel de Contabilidad", subtitle: "Registros claros y exportables de capital e intereses para el cierre contable.", metrics: { activeLoans: "Préstamos Activos", totalInterest: "Intereses Pagados (YTD)", totalPrincipal: "Capital Pagado (YTD)" }, exportBtn: "Exportar Reporte Anual", tableHeaders: { property: "Propiedad", borrower: "Prestatario", lender: "Prestamista", interest: "Interés", principal: "Capital", action: "Acción" }, loading: "Cargando registros contables...", empty: "No hay registros disponibles.", errorAuth: "Sesión no válida o sin permisos de contabilidad.", errorFetch: "Error al cargar los datos contables.", errorNetwork: "Error de red desconocido" },
@@ -1338,6 +1473,46 @@ const en: Copy = {
     }
   },
   loginPage: { title: "Log In", subtitle: "Enter your credentials to manage your loans.", cardTitle: "SECURE LOGIN", emailLabel: "Email address", emailPlaceholder: "email@example.com", passwordLabel: "Password", passwordPlaceholder: "Enter your password", submit: "SIGN IN", forgot: "I'VE FORGOTTEN MY PASSWORD", back: "BACK TO HOME", noAccount: "Don't have an account yet?", signup: "Sign up here", processing: "Processing...", twoFactorTitle: "2FA VERIFICATION", twoFactorDesc: "Enter the 6-digit code from your authenticator app or a recovery code.", twoFactorLabel: "Verification code", twoFactorPlaceholder: "E.g. 123456", twoFactorVerifying: "Verifying...", twoFactorConfirm: "CONFIRM", twoFactorCancel: "Cancel", errorDefault: "Failed to log in", error2FA: "Incorrect or expired 2FA code", errorNetwork: "Unknown network error", },
+  verifyEmail: {
+    borrower: {
+      title: "Email confirmed",
+      sub: "Your account is active. Post your first deal and start getting funded.",
+      nextTitle: "Your next steps",
+      steps: [
+        { title: "Post your first deal", desc: "fill out your deal details, ARV, loan amount, and timeline" },
+        { title: "Set up your profile", desc: "add entity info and track record to build credibility with lenders" },
+        { title: "Wait for offers", desc: "lenders will review your deal and submit term sheets" }
+      ],
+      btnPrimary: "Post my first deal",
+      btnSecondary: "Go to dashboard"
+    },
+    lender: {
+      title: "Email confirmed",
+      sub: "Your free lender account is active. Browse deals and start putting your capital to work.",
+      badge: "Lending on PayMyLoan is always free.",
+      nextTitle: "Your next steps",
+      steps: [
+        { title: "Set your lending preferences", desc: "markets, deal types, rate range, max LTV" },
+        { title: "Browse deals", desc: "see active borrower deals that match your criteria" },
+        { title: "Make an offer", desc: "submit your terms and connect with a borrower" }
+      ],
+      btnPrimary: "Browse deals now",
+      btnSecondary: "Set my preferences first"
+    },
+    expired: {
+      title: "Link expired",
+      sub: "Your verification link expired after 72 hours. Request a new one below — your account info is saved.",
+      emailPh: "Enter your email address",
+      btnPrimary: "Send new verification link",
+      btnSecondary: "Back to login",
+      sentAlert: "New verification link sent to"
+    },
+    already: {
+      title: "Already verified",
+      sub: "This email address is already confirmed. Log in to access your account.",
+      btnPrimary: "Log in"
+    }
+  },
   pmlHero: { badge: "AI-Powered Loan Management", subtitle: "PML — Private Money Lender. PayMyLoan.ai. Both sides of the deal.", title1: "From pitch", title2: "to payoff.", title3: "One platform.", by: "by PayMyLoan.ai", desc: "The pitch. The loan request. The commitment. Payment processing. The payoff. All in one place — for borrowers and lenders alike.", cta1: "Get Early Access", cta2: "See how it works", },
   whoItHelps: { eyebrow: "Who It Helps", title1: "One platform.", title2: "Six problems solved.", lead: "PML takes the chaos out of private lending — giving borrowers clarity and lenders control, so every deal closes clean.", cards: [ { role: "Borrower", icon: "🏗️", title: "From pitch to payoff in one place", points: [ "All loans in one dashboard", "Generate pitches & commitment letters", "Automated payments — never miss again", "Instant payoffs & PML rating" ] }, { role: "Lender", icon: "🏦", title: "Know who paid, what's owed, what's next", points: [ "Payment tracking across all borrowers", "Vet borrowers before committing capital", "Generate commitment letters & payoffs", "Control visibility in the marketplace" ] }, { role: "Bookkeeper", icon: "📒", title: "Clean records, zero chasing", points: [ "Principal vs. interest split on every payment", "Every loan tied to a property", "Exportable records — no manual entry", "No more monthly emails asking for details" ] }, { role: "CPA", icon: "🧾", title: "Year-end ready — one click", points: [ "Interest income/expense clearly separated", "Every loan documented by property", "Full year report — exportable instantly", "No digging through emails for records" ] }, { role: "Title Company", icon: "🏛️", title: "Payoffs before closing day — not after", points: [ "Instant payoff statements sent directly", "Both parties confirmed on same number", "No last-minute scrambles at the table", "Clean closing every time" ] }, { role: "Insurance Company", icon: "🛡️", title: "Mortgagee clause — accurate every time", points: [ "Lender info pulled from PML profile", "Mortgagee clause always up to date", "No manual requests for lender details", "Every property, every loan, documented" ] } ], stats: [ { value: "< 30s", label: "Payoff generated" }, { value: "2", label: "Sides. One platform." }, { value: "0", label: "Spreadsheets needed" }, { value: "100%", label: "CPA-ready at year end" } ] },
   beforeAfter: { eyebrow: "Before vs After", title: "Two investors. Same business. Different tools.", before: { badge: "Without PML", icon: "😤", items: [ "Borrower: no idea who to call to get a quick answer from the lender", "Borrower: loans scattered across 3 banks, 2 private lenders, and a spreadsheet", "Borrower: bookkeeper hounding you every month to explain which loan is which", "Lender: no idea who paid, how much, or when — until something goes wrong", "Lender: closing day scramble to calculate the payoff while title is waiting" ] }, after: { badge: "With PML", icon: "😎", items: [ "Borrower: all loans in one place — every balance, every payment, every property", "Borrower: send your pitch + commitment letter to a lender in minutes", "Borrower: payoff generated instantly — no waiting, no back-and-forth", "Lender: know exactly who paid, what amount, and when — in real time", "Lender: interest tracking and payment history handed directly to your bookkeeper" ] } },
@@ -1356,7 +1531,90 @@ const en: Copy = {
   finalCta: { eyebrow: "Get started", title: "Set up your first loan.", body: "Create the account, capture the terms and invite the other party. The schedule is generated once both accept.", cta: "Create account", },
   footer: { tagline: "Servicing for private real-estate-secured loans.", entity: "A subsidiary of Dueño a Dueño LLC", links: [ { href: "#", label: "Terms of service" }, { href: "/aviso-de-privacidad", label: "Privacy notice" }, ], linksNote: "Terms of service: [COPY PENDING]", rights: "All rights reserved.", },
   privacy: { eyebrow: "Legal", title: "Privacy notice", updated: "Last updated: August 28, 2026", back: "Back to home", intro: [ "This notice explains what personal data PayMyLoan.ai collects, what we use it for, who we share it with, and how you can exercise your rights over it.", "PayMyLoan.ai is in early access: today we only collect the data from the wait-list sign-up form. Before we turn on full loan servicing, we will update this notice to cover loan data —collateral property, terms, payments and documents— that will be added at that point.", ], sections: [ { heading: "1. Who is responsible for your data", paragraphs: [ "PayMyLoan.ai is the brand under which Dueño a Dueño LLC operates this site and, later, the private loan servicing platform.", "Address for the purposes of this notice: [TO BE DEFINED].", "Applicable law and the authority you can turn to if we do not resolve your request: [TO BE DEFINED].", ], }, { heading: "2. What data we collect today", paragraphs: [ "While we are in early access, the only data we collect is what you leave on the wait-list sign-up form:", ], list: [ "Full name", "Email address", "Phone number", "Password, stored encrypted; no one at PayMyLoan.ai can read it in plain text", "Whether you are looking to lend or to borrow (this only sets what you see when you log in; it creates no obligation)", "That you accepted the terms of service and this notice, with date and time", "The language you used to fill out the form", ], }, { heading: "3. What data we will collect once you open a loan", paragraphs: [ "As soon as setting up or accepting a loan is available, servicing-specific data will be added:", ], list: [ "Address, type and, if applicable, parcel number of the collateral property", "Amount, rate, structure and maturity of the loan, and every version of those terms you accepted", "Payment history: date, amount, and how it was applied to late fees, interest and principal", "Your payment method's identifier and its last four digits; the full account number is held by Stripe, not by us", "The loan documents you accepted: promissory note, deed of trust and settlement statement", "Date, time and IP address of every term acceptance, bank account change and document download", ], }, { heading: "4. What we use your data for", paragraphs: [], list: [ "Letting you know when your access to the platform is ready", "Creating your account and, later, administering the loan you gave or are paying", "Computing the balance, applying payments and generating the payment schedule", "Verifying your identity and enabling two-factor authentication, required for lenders", "Detecting and flagging suspicious changes, such as a bank account change", "Meeting legal and tax obligations related to loan servicing", ], note: "We do not use your data for advertising and we do not sell it to third parties.", }, { heading: "5. Who we share your data with", paragraphs: [], list: [ "The other party on the same loan, but only what is needed to administer it: they never see your password or your full bank account number", "Stripe, which processes ACH payments and holds the payment method; we only store its identifier and the last four digits", "Authorities, if required by law or a court order", ], note: "We do not share or sell your data for marketing purposes.", }, { heading: "6. How we protect your data", paragraphs: [], list: [ "Two-factor authentication required for lenders, since they control where the money goes", "Permissions per loan: every query is filtered by your participation in that specific loan, never by a role that opens everything", "We never store full account numbers; that lives with Stripe", "An audit log of the events that matter: term changes, acceptances, payoff approvals, bank account changes and document downloads", "Both parties are notified of any bank account change, the most common fraud vector in servicing", "Documents are private per loan, served with short-lived links, never a public URL", ], }, { heading: "7. How long we keep your data", paragraphs: [ "If you are on the wait list, we keep your data until you open an account or until you ask us to delete it.", "If you have an active loan, we keep the loan data for as long as the relationship lasts, plus any additional time required by law for financial records. Exact period: [TO BE DEFINED].", ], }, { heading: "8. Your rights and how to exercise them", paragraphs: [ "You can ask us to access your data, correct it, delete it, or object to a specific use. You can also withdraw your consent at any time; for the wait list, simply asking us is enough. Withdrawing consent does not affect processing we already carried out before the request.", "Channel to exercise these rights: [TO BE DEFINED — there is no contact email for PayMyLoan.ai yet].", ], }, { heading: "9. Cookies and local storage", paragraphs: [ "The site does not use tracking or advertising cookies. It stores two preferences in your browser's local storage —light or dark theme and language— that never leave your device. You can clear them from your browser settings.", ], }, { heading: "10. Minors", paragraphs: [ "PayMyLoan.ai is not directed at minors and does not knowingly collect data from anyone under 18.", ], }, { heading: "11. Changes to this notice", paragraphs: [ "If we change this notice in a material way —for example, when we turn on full loan servicing— we will publish it here with a new update date before we process the new data.", ], }, { heading: "12. Contact", paragraphs: [ "Contact email for privacy: [TO BE DEFINED].", "Until that channel exists, you can use the same email you signed up with on the wait list; we will reply from there as soon as it is available.", ], }, ], },
-  dashboardAdmin: { title: "Admin Dashboard", subtitle: "Global metrics and platform health.", metrics: { activeLoans: "Active Loans", totalVolume: "Processed Volume (ACH)", platformRevenue: "Total Revenue (0.8%)", pendingVerifications: "Pending Verifications" }, recentActivity: "Recent System Activity", addUserBtn: "Add User", viewUsersBtn: "View Users", viewContractsBtn: "View Contracts", loading: "Loading metrics...", errorAuth: "Invalid or expired session.", errorFetch: "Failed to load admin data.", errorNetwork: "Unknown network error" },
+  dashboardAdmin: {
+    title: "Admin Overview",
+    subtitle: "PayMyLoan.ai · {date}",
+    systemStatus: "All systems operational",
+    kpi: {
+      activeDeals: "Active deals",
+      totalFunded: "Total funded",
+      mrr: "MRR",
+      pendingVerif: "Pending verif.",
+      latePayments: "Late payments",
+      thisWeek: "+{n} this week",
+      allTime: "All time",
+      thisMonth: "+${n} this month",
+      awaitingReview: "Awaiting review",
+      actionNeeded: "Action needed"
+    },
+    revenue: {
+      title: "Revenue this month",
+      sub: "Subscriptions + closing fees + interest share",
+      subscriptions: "Subscriptions",
+      closingFees: "Closing fees",
+      interestShare: "Interest share",
+      affiliatePayouts: "Affiliate payouts",
+      netRevenue: "Net revenue"
+    },
+    tables: {
+      activeDeals: "Active deals",
+      recentSignups: "Recent signups",
+      viewAll: "View all",
+      viewAllUsers: "View all users",
+      property: "Property",
+      loan: "Loan",
+      status: "Status",
+      nextPayment: "Next payment",
+      name: "Name",
+      type: "Type",
+      signedUp: "Signed up",
+      verified: "Verified",
+      deals: "Deals",
+      revenue: "Revenue",
+      pillActive: "Active",
+      pillPending: "Pending close",
+      pillLate: "{n} days late",
+      pillClosed: "Closed"
+    },
+    actions: {
+      title: "Needs attention",
+      clearAll: "Clear all",
+      today: "Today",
+      items: [
+        { text: "— {n} days past due. Send lender alert." },
+        { text: "— lender entities awaiting review." },
+        { text: "— pending close, PML fee not yet confirmed." },
+        { text: "— ${n} queued for {date}. Confirm bank accounts." },
+        { text: "— awaiting lender approval across {n} properties." }
+      ]
+    },
+    nav: {
+      overview: "Overview",
+      allDeals: "All Deals",
+      lenders: "Lenders",
+      borrowers: "Borrowers",
+      revenue: "Revenue",
+      affiliates: "Affiliates",
+      verifications: "Verifications",
+      promoCodes: "Promo Codes",
+      settings: "Settings"
+    },
+    views: {
+      allDeals: { title: "All Deals", subtitle: "Complete list of active, delinquent, and closed contracts." },
+      lenders: { title: "Lenders", subtitle: "Directory of investors and entities." },
+      borrowers: { title: "Borrowers", subtitle: "Client directory and verification status." },
+      revenue: { title: "Revenue", subtitle: "Billing metrics and payouts." },
+      affiliates: { title: "Affiliates", subtitle: "Referral management and affiliate payouts." },
+      verifications: { title: "Verifications", subtitle: "Pending identity and entity requests." },
+      promoCodes: { title: "Promo Codes", subtitle: "Discount and coupon management." },
+      settings: { title: "Settings", subtitle: "Global platform settings." },
+      placeholder: { subtitle: "This view will be available soon." }
+    },
+    loading: "Loading panel...",
+    errorAuth: "Invalid session.",
+    errorFetch: "Failed to load admin data.",
+    errorNetwork: "Network error"
+  },
   adminUsersList: { title: "System Users", subtitle: "Directory of administrators, lenders, and borrowers.", table: { name: "Name", type: "Type", email: "Email", phone: "Phone", role: "Role", status: "Status" }, back: "Back to dashboard", addUserBtn: "Add User", loading: "Loading users...", empty: "No users registered.", errorAuth: "You don't have admin permissions or your session expired.", errorFetch: "Error fetching users.", errorNetwork: "Unknown network error", active: "Active", inactive: "Inactive", na: "N/A" },
   adminAddUser: { title: "Create User", subtitle: "Manually register an admin, lender, or borrower.", roleLabel: "Platform Role", roles: { admin: "Administrator", lender: "Lender", borrower: "Borrower" }, nameLabel: "Full Name", namePh: "E.g. Jane Doe", emailLabel: "Email Address", emailPh: "email@example.com", phoneLabel: "Phone Number", phonePh: "E.g. 555 123 4567", submit: "Register account", back: "Back to dashboard", submitting: "Registering...", phoneHint: "Must be exactly 10 digits (optional).", errorFetch: "Failed to create user.", errorNetwork: "Unknown network error", successTitle: "User created successfully!", successDesc1: "An account has been registered for", successTempPw: "Temporary password generated:", successCreateAnother: "Create another", successViewList: "View list" },
   twoFactorPage: {
@@ -1501,7 +1759,19 @@ const en: Copy = {
       btnPurple: "Create your lender account"
     }
   },
-  dashboardLender: { title: "Lender Dashboard", subtitle: "Total control over your capital and yields.", metrics: { availableCapital: "Capital (Available / Deployed)", capitalDeployed: "Capital Deployed", nextPayments: "Next Payments (30 days)", avgInterest: "Avg. Interest Rate", activeBorrowers: "Active Borrowers" }, sections: { commitmentLetters: "Sent Commitment Letters", upcomingClosings: "Upcoming Closings / Payoffs", activeLoans: "Active Loans (Return)", }, tableHeaders: { borrower: "Borrower", amount: "Amount", status: "Status", type: "Type", date: "Date", action: "Action", loan: "Loan", rateBalance: "Rate / Balance" }, labels: { cap: "Prin:", int: "Int:" }, recentPayments: "Latest Received Payments", actions: { marketplace: "Browse Marketplace", viewContracts: "View my contracts" }, toggle: { open: "Open to deals", closed: "Not taking loans" }, table: { date: "Date", borrower: "Borrower", property: "Property", total: "Total Payment", principal: "Principal", interest: "Interest" }, emptyHistory: "The rest of the history will be rendered here.", loading: "Loading dashboard...", errorAuth: "Invalid or expired session.", errorFetch: "Error loading dashboard information", errorNetwork: "Unknown network error", unassigned: "Unassigned", borrowerFallback: "Borrower", emptyCommitments: "No pending commitments", emptyClosings: "No upcoming closings in the system.", emptyLoans: "No active loans", emptyPayments: "No recently processed payments." },
+  dashboardLender: { title: "Lender Dashboard", subtitle: "Total control over your capital and yields.", metrics: { availableCapital: "Capital (Available / Deployed)", capitalDeployed: "Capital Deployed", nextPayments: "Next Payments (30 days)", avgInterest: "Avg. Interest Rate", activeBorrowers: "Active Borrowers" }, sections: { commitmentLetters: "Sent Commitment Letters", upcomingClosings: "Upcoming Closings / Payoffs", activeLoans: "Active Loans (Return)", }, tableHeaders: { borrower: "Borrower", amount: "Amount", status: "Status", type: "Type", date: "Date", action: "Action", loan: "Loan", rateBalance: "Rate / Balance" }, labels: { cap: "Prin:", int: "Int:" }, recentPayments: "Latest Received Payments", actions: { marketplace: "Browse Marketplace", viewContracts: "View my contracts" }, toggle: { open: "Open to deals", closed: "Not taking loans" }, table: { date: "Date", borrower: "Borrower", property: "Property", total: "Total Payment", principal: "Principal", interest: "Interest" }, emptyHistory: "The rest of the history will be rendered here.", loading: "Loading dashboard...", errorAuth: "Invalid or expired session.", errorFetch: "Error loading dashboard information", errorNetwork: "Unknown network error", unassigned: "Unassigned", borrowerFallback: "Borrower", emptyCommitments: "No pending commitments", emptyClosings: "No upcoming closings in the system.", emptyLoans: "No active loans", emptyPayments: "No recently processed payments.", mimic: { greeting: "Good morning, {name}.", portfolioSub: "{company} — lender portfolio overview.", stats: { capitalDeployed: "Capital deployed", acrossActive: "Across {n} active loans", monthlyIncome: "Monthly income", interestPayments: "Interest payments", newDeals: "New deals today", matchCriteria: "Match your criteria", maturingSoon: "Maturing soon", within60: "Within 60 days" }, alerts: { maturityTitle: "Maturity alert", maturityMsg: "{address} matures in {days} days — {date}", maturitySub: "{amount} @ {rate}% · Contact borrower to discuss payoff or extension." }, cards: { activeLoans: "Active loans", viewAll: "View all", upcomingPayments: "Upcoming payments", allPayments: "All payments" }, browseCta: { title: "{n} new deals match your criteria", sub: "Memphis · TN · MS · Up to 75% LTV · 12%+", btn: "Browse deals" }, badges: { active: "Active", closing: "Closing", maturity: "{n}d to maturity", pending: "Pending", received: "Received" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Funded Sept 22 · 12 months", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mo", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Funded Aug 3 · 12 months", loan2Amt: "$95,000", loan2Rate: "12% · $950/mo", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Closing in progress", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mo", pay1Date: "Due Oct 1", pay2Date: "Due Oct 1", pay3Date: "Paid Sept 1", pay4Date: "Paid Sept 1" },
+      settings: {
+        title: "Settings",
+        sub: "Manage your account, notifications, and billing.",
+        verifyBanner: { text1: "Your profile is unverified.", text2: "Complete verification to unlock lender offers.", btn: "Verify now — $99" },
+        profile: { title: "Profile", sub: "Your name, email, and password.", edit: "Edit", name: "Full name", email: "Email", pass: "Password", phone: "Phone", unassigned: "Not provided" },
+        verification: { title: "Verification", sub: "Identity and business verification status.", biz: "Business verified", id: "Identity verified", unverified: "Not verified" },
+        notifs: { title: "Notifications", sub: "Choose what updates you receive.", offer: "Lender offer received", status: "Deal status updates", approved: "Verification approved", news: "Platform news and updates" },
+        billing: { title: "Subscription & billing", sub: "Your current plan and payment method.", manage: "Manage", plan: "Current plan", subPlan: "Monthly subscription", method: "Payment method", free: "Free", notActive: "Not active", none: "None on file" },
+        account: { title: "Account", sub: "Close or deactivate your account.", close: "Close account" }
+      }
+    }
+  },
   auditLogs: { searchPlaceholder: "Search by action or description...", allRoles: "All Roles", system: "System / Webhooks", admins: "Administrators", lenders: "Lenders", borrowers: "Borrowers", totalRecords: "Total records:", dateHour: "Date / Time", actor: "Actor", action: "Action", description: "Event Description", noRecords: "No audit records found.", page: "Page", of: "of", prev: "Previous", next: "Next" },
   pitchDeckModal: { step: "Step", of: "of", title: "Create New Pitch Deck", purchasePrice: "Purchase Price ($)", purchasePricePh: "E.g. 150000", rehabAmount: "Rehab Amount ($)", rehabAmountPh: "E.g. 45000", loanAmount: "Requested Amount ($)", loanAmountPh: "E.g. 250000", loanType: "Loan Type", loanTypeSelect: "Select loan type", loanTerm: "Loan Term", loanTermSelect: "Select the term", term12: "12 Months", term24: "24 Months", term36: "36 Months", years: "Years", address: "Property Address", addressPh: "E.g. 123 Main St, Austin, TX", type: "Type", typeRes: "Residential", typeCom: "Commercial", typeLand: "Land", arvLabel: "ARV / ", value: "Estimated Value ($)", valuePh: "E.g. 350000", privacyLabel: "Deal Privacy", public: "Public (Marketplace)", private: "Private (Invite only)", photos: "Property Photos", dragDrop: "Drag and drop your photos here", supportedFiles: "Supports JPG, PNG (Max 5MB)", photoGuidelines: "Front, Kitchen, Baths, Yard, Roof", rentcastTitle: "Generated Comparables (RentCast API)", rentcastParams: "Search: 0.5 miles, same sqft, last 6 months", aiEvaluated: "AI Evaluated", saleComps: "Sale Comps", rentComps: "Rent Comps", rentcastPending: "Pending: The RentCast API will populate this automatically after address input.", back: "Back", processing: "Processing...", publish: "Publish Pitch Deck", next: "Next", successTitle: "Pitch Deck Published!", successDesc: "Your request has been submitted. Lenders can now view your deal and send offers.", backToDash: "Back to Dashboard" },
   dashboardBookkeeper: { title: "Bookkeeper Dashboard", subtitle: "Clean, exportable principal and interest records for accounting.", metrics: { activeLoans: "Active Loans", totalInterest: "Interest Paid (YTD)", totalPrincipal: "Principal Paid (YTD)" }, exportBtn: "Export Year-End Report", tableHeaders: { property: "Property", borrower: "Borrower", lender: "Lender", interest: "Interest", principal: "Principal", action: "Action" }, loading: "Loading accounting records...", empty: "No records available.", errorAuth: "Invalid session or no bookkeeping permissions.", errorFetch: "Error loading accounting data.", errorNetwork: "Unknown network error" },

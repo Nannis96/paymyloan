@@ -24,6 +24,8 @@ Decisiones de diseño detrás de cada endpoint de auth: [plan/07](plan/07-autent
 - [Prestamistas — Admin](#prestamistas--admin-srcappapiadminlenders)
 - [Prestamistas y Deudores — autoservicio](#prestamistas-y-deudores--autoservicio)
 - [Contratos](#contratos-srcappapicontracts)
+- [Pagos](#pagos-srcappapicontractsidpayments-srcappapitransactions)
+- [Auditoría](#auditoría-srcappapiaudit-logs)
 - [Marketplace / Loan Requests](#marketplace--loan-requests-srcappapiborrowersmeloan-requests-srcappapimarketplaceloan-requests)
 - [Catálogo de códigos de error](#catálogo-de-códigos-de-error)
 
@@ -379,12 +381,14 @@ Perfil propio + el detalle de rol correspondiente. Como el JWT no lleva `lenderI
     "success": true,
     "data": {
       "user": /* SafeUser */ {},
-      // presente solo si role === "LENDER"
+      // roles activos (D-P7-1) — puede incluir LENDER y BORROWER a la vez
+      "roles": ["BORROWER", "LENDER"],
+      // presente si existe un LenderProfile (no depende de `user.role`)
       "lenderProfile": {
         "id": "...",
         "lenderCompanies": [ { "id": "...", "companyName": "...", "status": "ACTIVE", "isOpenToDeals": true } ]
       },
-      // presente solo si role === "BORROWER"
+      // presente si existe un BorrowerProfile (no depende de `user.role`)
       "borrowerProfile": {
         "id": "...",
         "lenderCompanies": [ { "id": "...", "companyName": "..." } ]
@@ -715,6 +719,33 @@ Soft-delete de `User` + `LenderProfile` + **todas** sus `LenderCompany` (`delete
 - **Response `200` (`DELETE`)**: `{ "success": true, "data": { "deleted": true } }` — soft-delete de esa sola empresa, no de todo el Lender ni sus otras empresas.
 - **Errores**: `400 VALIDATION_ERROR` (`PATCH`) · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 LENDER_COMPANY_NOT_FOUND` · `409 EIN_TAKEN` (`PATCH`) · `409 LENDER_HAS_ACTIVE_CONTRACTS` (`DELETE`, esa empresa tiene un `Contract` `ACTIVE`/`DELINQUENT`).
 
+### `POST /api/lenders/me/become-borrower`
+
+**¿Para qué sirve?** Para que un Lender que también quiere pedir dinero (rol dual, `D-P7-1`) adquiera el rol BORROWER sin crear una cuenta nueva — completa la dirección que ese rol exige y listo.
+
+`D-P7-1`, nuevo. Crea el `BorrowerProfile` del usuario de la sesión (no existía) con la dirección enviada. Devuelve un `accessToken` nuevo con los `roles` actualizados — el anterior sigue siendo válido hasta que expire, pero no trae `BORROWER` en `roles`.
+
+- **Auth**: Autenticado, rol `LENDER` + 2FA activo (`D-P3-1`, escritura de negocio).
+- **Request body**: dirección completa, todos los campos obligatorios (a diferencia de `PATCH /api/borrowers/me`, acá el perfil no existe todavía).
+
+  ```json
+  { "addressLine1": "500 Lamar Blvd", "city": "Austin", "state": "TX", "postalCode": "78701" }
+  ```
+
+- **Response `201`**:
+  ```jsonc
+  {
+    "success": true,
+    "data": {
+      "user": /* SafeUser */ {},
+      "borrowerProfile": { "id": "...", "addressLine1": "...", "city": "...", "state": "...", "postalCode": "..." },
+      "lenderCompanies": [],
+      "accessToken": "..."
+    }
+  }
+  ```
+- **Errores**: `400 VALIDATION_ERROR` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `409 BORROWER_PROFILE_ALREADY_EXISTS`.
+
 ### ~~`POST /api/lenders/me/borrowers`~~ — ⚠️ deshabilitado (`D-P5-1`, 2026-09-11)
 
 `BE-045`, comentado en `route.ts` a pedido explícito — responde `405` (ningún handler registrado para `POST` en esa ruta). Un `LENDER` ya no puede crear un Borrower directo. El código de servicio (`lenderBorrowersService.createBorrower`) sigue intacto; se documenta el shape original acá por si se reactiva.
@@ -800,6 +831,41 @@ Lista + búsqueda (nombre/email) + paginación, a través de **todas** las `Lend
 
 - **Errores**: `400 VALIDATION_ERROR` (solo `PATCH`) · `401 UNAUTHENTICATED`/`INVALID_TOKEN` · `403 PASSWORD_CHANGE_REQUIRED` (solo `PATCH`) · `404 BORROWER_NOT_FOUND`.
 
+### `POST /api/borrowers/me/become-lender`
+
+**¿Para qué sirve?** Para que un Deudor que también quiere prestar dinero (rol dual, `D-P7-1`) adquiera el rol LENDER sin crear una cuenta nueva — completa los datos de su primera empresa y listo.
+
+`D-P7-1`, nuevo. Crea el `LenderProfile` del usuario de la sesión (no existía) junto con su primera `LenderCompany`, en la misma transacción — mismo body que [`POST /api/lenders/me/companies`](#post-apilendersmecompanies). Devuelve un `accessToken` nuevo con los `roles` actualizados.
+
+- **Auth**: Autenticado, rol `BORROWER` (sin exigir 2FA — todavía no es LENDER al momento de esta llamada).
+- **Request body**: igual que `POST /api/lenders/me/companies` (`companyName`/`ein`/`contactPhone`?/dirección).
+
+  ```json
+  {
+    "companyName": "Lone Star Capital LLC",
+    "ein": "12-3456789",
+    "contactPhone": "5125550100",
+    "addressLine1": "100 Congress Ave",
+    "addressLine2": "Suite 200",
+    "city": "Austin",
+    "state": "TX",
+    "postalCode": "78701"
+  }
+  ```
+
+- **Response `201`**:
+  ```jsonc
+  {
+    "success": true,
+    "data": {
+      "lenderProfileId": "...",
+      "company": /* LenderCompanySummary */ {},
+      "accessToken": "..."
+    }
+  }
+  ```
+- **Errores**: `400 VALIDATION_ERROR` · `401`/`403` · `409 LENDER_PROFILE_ALREADY_EXISTS` · `409 EIN_TAKEN`.
+
 ### `POST /api/borrowers/me/password`
 
 **¿Para qué sirve?** Para que el Deudor cambie su contraseña estando ya logueado — es también la única forma de apagar el aviso "tenés que cambiar tu contraseña temporal" (`mustChangePassword`).
@@ -851,6 +917,8 @@ Lista + búsqueda (nombre/email) + paginación, a través de **todas** las `Lend
 ## Contratos (`src/app/api/contracts/`)
 
 Fase 6 (`BE-051..064`, `PB-020`). Sin endpoint propio de `Property` en el plan (`D-P6-2`): `POST /api/contracts` recibe la dirección/valuación embebida en el mismo body y crea `Property`+`Contract(DRAFT)`+`ContractTerms(v1, DRAFT)` en una sola transacción. Todo endpoint de este módulo pasa por [`requireContractAccess`](plan/07-autenticacion-y-autorizacion.md#75-rbac--aislamiento-multi-tenant--cómo-se-evita-que-un-prestamista-acceda-a-datos-de-otro) (`BE-038`) — `LENDER` dueño de la `LenderCompany` (contra **todas** sus empresas) o `BORROWER` asociado vía `ContractBorrower` activo; un contrato ajeno responde `404`, nunca `403`.
+
+**Fase 7 (2026-09-15, pedido explícito de Spencer)**: `ADMIN` también puede ver **cualquier** contrato (lecturas: lista, detalle, schedule, balance, fees, transactions — sin restricción de tenant) y editarlo (`PATCH`, con 2FA — es una escritura de negocio). `DELETE`/`cancel`/gestión de codeudores/propuesta de términos siguen siendo exclusivas de `LENDER`, no se pidieron para Admin.
 
 ### Cómo funciona: el flujo completo de un contrato
 
@@ -955,22 +1023,22 @@ Crea el contrato en un solo paso.
   Notas: `lenderCompanyId` solo hace falta si el Lender tiene más de una `LenderCompany`; `insuranceCompanyId` y `borrowerProfileIds` son opcionales; `prePayPenaltyType`/`prePayPenaltyAmount` viajan juntos o ninguno de los dos.
 
 - **Response `201`**: `Contract` completo (ver forma abajo), `status: "DRAFT"`, `currentTerms` con `versionNumber: 1` y `status: "DRAFT"`.
-- **Errores**: `400 VALIDATION_ERROR` · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (`lenderCompanyId`/`insuranceCompanyId`/algún `borrowerProfileId` ajeno o no vinculado) · `409 NO_LENDER_COMPANY`.
+- **Errores**: `400 VALIDATION_ERROR` · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (`lenderCompanyId`/`insuranceCompanyId`/algún `borrowerProfileId` ajeno o no vinculado) · `409 NO_LENDER_COMPANY` · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`) · `409 PROPERTY_SELF_ENCUMBERED` (`D-P7-3`).
 
 ### `GET /api/contracts`
 
 **¿Para qué sirve?** Listar los contratos propios — la pantalla de "mis contratos", tanto para el Lender (todos los de sus empresas) como para el Borrower (todos donde es codeudor activo).
 
-Lista + filtro `status` + paginación. `LENDER` ve todas sus `LenderCompany`; `BORROWER` ve donde es `ContractBorrower` activo.
+Lista + filtro `status` + paginación. `LENDER` ve todas sus `LenderCompany`; `BORROWER` ve donde es `ContractBorrower` activo; `ADMIN` ve todos, sin filtro de tenant (Fase 7).
 
-- **Auth**: Autenticado, rol `LENDER` o `BORROWER` (lectura, exenta de 2FA).
+- **Auth**: Autenticado, rol `LENDER`, `BORROWER` o `ADMIN` (lectura, exenta de 2FA).
 - **Response `200`**: `data` = [resultado paginado](#convenciones) de `Contract`.
 
 ### `GET /api/contracts/:id`
 
 **¿Para qué sirve?** Ver el detalle completo de un contrato puntual (propiedad, términos vigentes, codeudores, saldo) — la ficha del contrato.
 
-- **Auth**: Autenticado, rol `LENDER` o `BORROWER` asociado.
+- **Auth**: Autenticado, rol `LENDER`/`BORROWER` asociado, o `ADMIN` (cualquier contrato, Fase 7).
 - **Errores**: `401`/`403` · `404 NOT_FOUND`.
 
 ### `PATCH /api/contracts/:id`
@@ -979,7 +1047,7 @@ Lista + filtro `status` + paginación. `LENDER` ve todas sus `LenderCompany`; `B
 
 `property`/`insuranceCompanyId` editables en cualquier estado del contrato; `terms` solo si la `ContractTerms` vigente está `DRAFT` — para cambiar términos financieros de un contrato ya enviado/activo, usar `POST .../terms` (nueva versión).
 
-- **Auth**: Autenticado, rol `LENDER` + 2FA activo.
+- **Auth**: Autenticado, rol `LENDER` (dueño) o `ADMIN` (cualquier contrato, Fase 7) + 2FA activo.
 - **Request body**: `property` (parcial, mismos campos que la creación), `terms` (parcial, mismos campos que la creación), `insuranceCompanyId` (`string`, o `null` para quitarlo) — todos opcionales, al menos uno.
 
   ```json
@@ -1030,7 +1098,7 @@ Asocia/retira (soft) un `BorrowerProfile` — validado contra `LenderBorrower AC
   { "borrowerProfileId": "01a0c1e2-3b4d-7e5f-8a9b-0c1d2e3f4a5d", "isPrimary": true }
   ```
 
-- **Errores**: `400 VALIDATION_ERROR` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (deudor no vinculado, o ya no asociado en el `DELETE`) · `409 ALREADY_ASSOCIATED`.
+- **Errores**: `400 VALIDATION_ERROR` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (deudor no vinculado, o ya no asociado en el `DELETE`) · `409 ALREADY_ASSOCIATED` · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`, solo `POST`).
 
 ### `GET /api/contracts/:id/terms` / `POST /api/contracts/:id/terms`
 
@@ -1088,9 +1156,9 @@ Asocia/retira (soft) un `BorrowerProfile` — validado contra `LenderBorrower AC
 
 **¿Para qué sirve?** `schedule` es la tabla de amortización completa (todas las cuotas, pasadas y futuras) de un contrato activo. `balance` es la foto rápida de "cuánto se debe hoy" — pensados para la pantalla de detalle del préstamo, tanto para el Lender como para el Borrower.
 
-`schedule`: `ScheduledPayment[]` completo (incluye filas `VOIDED` de versiones superadas). `balance`: `{ principalBalance, accruedInterestNotYetBilled, nextPaymentDueDate, asOf }` — el interés devengado se calcula desde `activatedAt` con `calculateAccruedInterest`; sin un `Transaction` real todavía (Fase 7), es el mejor ancla disponible.
+`schedule`: `ScheduledPayment[]` completo (incluye filas `VOIDED` de versiones superadas), cada fila con `dueSoon: boolean` agregado (Fase 7, pedido explícito) — `true` cuando `status` es `PENDING`/`PARTIALLY_PAID` y `dueDate` cae dentro de los próximos 7 días; **calculado al vuelo, nunca persistido** (no es un valor de `ScheduledPaymentStatus`). `balance`: `{ principalBalance, accruedInterestNotYetBilled, nextPaymentDueDate, asOf }` — el interés devengado se calcula desde `activatedAt` con `calculateAccruedInterest`; `principalBalance` refleja los pagos ya aplicados (Fase 7, `Contract.currentPrincipalBalance` baja con cada `Transaction` `SUCCEEDED`, ver [Pagos](#pagos-srcappapicontractsidpayments-srcappapitransactions)).
 
-- **Auth**: Autenticado, rol `LENDER`/`BORROWER` asociado (lectura).
+- **Auth**: Autenticado, rol `LENDER`/`BORROWER` asociado, o `ADMIN` (Fase 7) — lectura.
 - **Errores**: `401`/`403` · `404 NOT_FOUND`.
 
 ### `GET`/`POST /api/contracts/:id/terms/:termsId/fees` · `DELETE .../fees/:feeId`
@@ -1099,7 +1167,7 @@ Asocia/retira (soft) un `BorrowerProfile` — validado contra `LenderBorrower AC
 
 `PB-020` — Closing Fee Summary Table. Solo editable (`POST`/`DELETE`) mientras `ContractTerms.status=DRAFT`. `computedAmount` se resuelve al crear la fila (`amountValue` si `FLAT`, o `amountValue`% × `principalAmount` de esa versión si `PERCENTAGE`) y nunca se recalcula. `code=MARKETPLACE_CONNECTION` está reservado — lo inserta automáticamente el propio servicio desde Fase 13 (`D-S2-5`), nunca este endpoint.
 
-- **Auth**: `GET` — `LENDER`/`BORROWER` asociado. `POST`/`DELETE` — `LENDER` + 2FA.
+- **Auth**: `GET` — `LENDER`/`BORROWER` asociado, o `ADMIN` (Fase 7). `POST`/`DELETE` — `LENDER` + 2FA.
 - **Request body (`POST`)**: `{ "category": "LENDER"|"PLATFORM", "code": "ORIGINATION_POINTS"|"PROCESSING"|"UNDERWRITING"|"DOC_PREP"|"CUSTOM"|"MARKETPLACE_CONNECTION", "label"?: string (obligatorio si code=CUSTOM), "amountType": "FLAT"|"PERCENTAGE", "amountValue": number }`.
 
   ```json
@@ -1131,6 +1199,69 @@ Asocia/retira (soft) un `BorrowerProfile` — validado contra `LenderBorrower AC
 ```
 
 Los montos (`Decimal` de Prisma) serializan como string en el JSON de respuesta.
+
+---
+
+## Pagos (`src/app/api/contracts/[id]/payments`, `src/app/api/transactions`)
+
+Fase 7 (`BE-067`/`068`/`069`/`071`). `BE-065`/`066`/`070` (SetupIntent, ACH del deudor, webhook de Stripe) siguen **bloqueados** por la decisión de negocio pendiente (Connect vs cuenta única — ver [15. Riesgos y decisiones pendientes](plan/15-riesgos-y-decisiones-pendientes.md)); todo lo de acá abajo funciona sin Stripe, para reconciliación manual desde el día uno.
+
+**Cómo funciona**: el Lender registra un pago que ya se cobró fuera de la plataforma (wire, cheque). La `Transaction` nace directamente `SUCCEEDED` (no hay webhook async que esperar) y se aplica en el acto con el waterfall de `calculatePaymentAllocation`: sobre las filas `PENDING`/`PARTIALLY_PAID` del calendario, de la más antigua a la más nueva, cada peso se reparte primero a **mora**, después a **interés**, y por último a **capital**, hasta agotar el monto pagado o las filas pendientes. Un pago que supera el saldo total pendiente del contrato se rechaza entero (`400 AMOUNT_EXCEEDS_BALANCE`) — no queda ninguna `Transaction` a medio aplicar. `Contract.currentPrincipalBalance`/`nextPaymentDueDate` se actualizan como parte de la misma operación.
+
+### `POST /api/contracts/:id/payments/manual`
+
+**¿Para qué sirve?** El Lender concilia a mano un pago que le llegó por wire/cheque — no depende de Stripe.
+
+- **Auth**: Autenticado, rol `LENDER` (dueño del contrato) + 2FA activo.
+- **Request body**: `{ "amount": number (> 0), "method"?: "WIRE"|"CHECK"|"MANUAL" (default "MANUAL"), "occurredAt"?: string (fecha, default ahora), "notes"?: string }`.
+
+  ```json
+  { "amount": 1850.42, "method": "WIRE", "notes": "Wire ref #48213" }
+  ```
+
+- **Response `201`**: `Transaction` con `status: "SUCCEEDED"` y `allocations` (`TransactionAllocation[]`, una fila por `(scheduledPaymentId, allocationType)`).
+- **Errores**: `400 VALIDATION_ERROR` · `400 AMOUNT_EXCEEDS_BALANCE` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` · `409 CONTRACT_NOT_ACTIVE` (el contrato no está `ACTIVE`/`DELINQUENT`, no tiene calendario para aplicar el pago).
+
+### `GET /api/contracts/:id/transactions` / `GET /api/transactions/:id`
+
+**¿Para qué sirve?** El historial de pagos de un contrato (lista) o el detalle de uno puntual — para el Lender, el Borrower asociado, o el Admin.
+
+Lista paginada (`GET .../transactions`) u obtención puntual (`GET /api/transactions/:id`), ambos con `allocations` incluidas. Mismo criterio de acceso que el resto del módulo (`requireContractAccess`) — un tercero recibe `404`, nunca `403`.
+
+- **Auth**: Autenticado, rol `LENDER`/`BORROWER` asociado, o `ADMIN` (lectura, exenta de 2FA).
+- **Response `200`**: `GET .../transactions` → [resultado paginado](#convenciones) de `Transaction`; `GET /api/transactions/:id` → `Transaction` puntual.
+- **Errores**: `401`/`403` · `404 NOT_FOUND`.
+
+### `POST /api/transactions/:id/reverse`
+
+**¿Para qué sirve?** Deshacer un pago que se acreditó por error o que terminó rebotando (ACH return, wire mal aplicado) — exclusivo del Admin, nunca del Lender que lo registró (09-pagos.md §9.5).
+
+Revierte `ScheduledPayment.amountPaid`/`status` de las filas que ese pago había afectado y devuelve el capital reversado a `Contract.currentPrincipalBalance`. Nunca borra ni edita `TransactionAllocation` (registro append-only, igual que `AuditLog`) — deja la `Transaction` en `status: "RETURNED"`; el próximo cálculo de waterfall ya la ignora sola (solo cuenta lo asignado por transacciones `SUCCEEDED`), así que ese mismo monto se puede volver a aplicar con un pago nuevo si corresponde. Solo reversible una vez.
+
+- **Auth**: Autenticado, rol `ADMIN` + 2FA activo.
+- **Request body**: `{ "reason": string }` (obligatorio, auditado).
+
+  ```json
+  { "reason": "Wire bounced — insufficient funds." }
+  ```
+
+- **Response `200`**: `Transaction` con `status: "RETURNED"`.
+- **Errores**: `400 VALIDATION_ERROR` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` · `409 TRANSACTION_NOT_REVERSIBLE` (no está `SUCCEEDED`).
+
+---
+
+## Auditoría (`src/app/api/audit-logs`)
+
+### `GET /api/audit-logs`
+
+**¿Para qué sirve?** Ver el rastro de auditoría (`AuditLog`, de solo inserción) — quién hizo qué, cuándo, sobre qué contrato/entidad.
+
+`ADMIN` ve todo; `LENDER` solo `lenderCompanyId IN (mis empresas)` (mismo criterio tenant-scoped que el resto de los listados — `withTenantScope` sigue descartado, `D-P6-1`); `BORROWER` no tiene acceso.
+
+- **Auth**: Autenticado, rol `ADMIN` o `LENDER` (lectura, exenta de 2FA).
+- **Query params**: `page`, `pageSize`, y opcionales `contractId`, `action`, `entityType`.
+- **Response `200`**: `data` = [resultado paginado](#convenciones) de `AuditLog`.
+- **Errores**: `401`/`403`.
 
 ---
 
@@ -1251,7 +1382,7 @@ Propios. `PATCH` (incluye `property`) solo mientras `status=DRAFT`.
   { "lenderCompanyId": "01a0c1e2-3b4d-7e5f-8a9b-0c1d2e3f4a5b" }
   ```
 
-- **Errores**: `400 VALIDATION_ERROR` · `401`/`403` · `404 NOT_FOUND` (loan request ajeno, o `lenderCompanyId` inexistente) · `409 LOAN_REQUEST_NOT_TARGETABLE` · `409 ALREADY_TARGETED`.
+- **Errores**: `400 VALIDATION_ERROR` · `401`/`403` · `404 NOT_FOUND` (loan request ajeno, o `lenderCompanyId` inexistente) · `409 LOAN_REQUEST_NOT_TARGETABLE` · `409 ALREADY_TARGETED` · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`).
 
 ### `GET /api/marketplace/loan-requests` / `GET /api/marketplace/loan-requests/:id`
 
@@ -1285,7 +1416,7 @@ Para `LENDER`: `PUBLIC` visibles a todos + `PRIVATE` donde su `LenderCompany` es
   ```
 
 - **Response `201`**: `LoanQuote`.
-- **Errores**: `400 VALIDATION_ERROR` · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (loan request no visible para este Lender) · `409 LOAN_REQUEST_ALREADY_MATCHED`.
+- **Errores**: `400 VALIDATION_ERROR` · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (loan request no visible para este Lender) · `409 LOAN_REQUEST_ALREADY_MATCHED` · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`, rechazo temprano — la comprobación que cuenta es en `.../select`).
 
 ### `GET /api/borrowers/me/loan-requests/:id/quotes`
 
@@ -1306,7 +1437,7 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 
 - **Auth**: Autenticado, rol `BORROWER`.
 - **Response `201`**: `{ "success": true, "data": { "contractId": "..." } }`.
-- **Errores**: `401`/`403` · `404 NOT_FOUND` · `409 LOAN_REQUEST_NOT_PUBLISHED` · `409 QUOTE_NOT_SUBMITTED` (ya `SELECTED`/`DECLINED`/`WITHDRAWN`/`EXPIRED`, o perdió la carrera contra otra selección).
+- **Errores**: `401`/`403` · `404 NOT_FOUND` · `409 LOAN_REQUEST_NOT_PUBLISHED` · `409 QUOTE_NOT_SUBMITTED` (ya `SELECTED`/`DECLINED`/`WITHDRAWN`/`EXPIRED`, o perdió la carrera contra otra selección) · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`).
 
 ---
 
@@ -1324,16 +1455,20 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 | `INVALID_CREDENTIALS` | 401 | Login: correo inexistente o contraseña incorrecta (mismo código para ambos). También: 2FA con sesión de verificación inválida, o `disable`/`recovery-codes` con password/código incorrectos |
 | `INVALID_2FA_CODE` | 401 | Código TOTP y recovery code, ambos inválidos, en `/login/2fa` o `/2fa/verify` |
 | `ACCOUNT_INACTIVE` | 403 | Login con contraseña correcta pero `User.isActive=false`. También: un ADMIN/LENDER con `isActive=false` intenta una escritura de negocio con un access token todavía vigente (`withRole` lo revisa en vivo, `BE-036`) |
-| `FORBIDDEN` | 403 | Sesión válida pero el rol no tiene permiso para el endpoint (p.ej. un BORROWER llamando a `/2fa/setup`, o un LENDER llamando a `/admin/users/:id/activate`); también el caso de `requireContractAccess` para un rol sin modelo de acceso a contratos definido todavía |
-| `TWO_FACTOR_REQUIRED` | 403 | ADMIN/LENDER sin 2FA activo intenta una escritura de negocio (`D-P3-1`) — hoy: `POST`/`PATCH`/`DELETE /api/users`, `POST /api/admin/users/:id/activate\|deactivate`, `POST /api/admin/lenders/:id/companies`, `PATCH`/`DELETE /api/admin/lenders/:id/companies/:companyId`, `DELETE /api/admin/lenders/:id`, `POST /api/lenders/me/companies`, `PATCH`/`DELETE /api/lenders/me/companies/:companyId` (`D-P4-9`), `DELETE /api/lenders/me/borrowers/:id` (`POST`/`PATCH` de ese mismo módulo deshabilitados, `D-P5-1`), todo endpoint de escritura de `LENDER` bajo `/api/contracts/**` (crear/editar/borrar/cancelar contrato, borrowers, terms, fees — nunca `accept`/`reject`, esos son `BORROWER`), y `POST`/`DELETE /api/marketplace/loan-requests/:id/quotes` (Fase 13). No aplica a lecturas, autoservicio sin rol específico, ni a `/api/auth/2fa/*`. Puede desactivarse temporalmente con `REQUIRE_TWO_FACTOR=false` (`D-P4-4`, ver [Variables de entorno](#variables-de-entorno)) |
+| `FORBIDDEN` | 403 | Sesión válida pero el rol no tiene permiso para el endpoint (p.ej. un BORROWER llamando a `/2fa/setup`, un LENDER llamando a `/admin/users/:id/activate`, o un LENDER llamando a `POST /api/transactions/:id/reverse`, ADMIN-only); también `requireContractAccess` para un rol sin modelo de acceso a contratos (ni LENDER/BORROWER/ADMIN — p.ej. BOOKKEEPER) |
+| `TWO_FACTOR_REQUIRED` | 403 | ADMIN/LENDER sin 2FA activo intenta una escritura de negocio (`D-P3-1`) — hoy: `POST`/`PATCH`/`DELETE /api/users`, `POST /api/admin/users/:id/activate\|deactivate`, `POST /api/admin/lenders/:id/companies`, `PATCH`/`DELETE /api/admin/lenders/:id/companies/:companyId`, `DELETE /api/admin/lenders/:id`, `POST /api/lenders/me/companies`, `PATCH`/`DELETE /api/lenders/me/companies/:companyId` (`D-P4-9`), `DELETE /api/lenders/me/borrowers/:id` (`POST`/`PATCH` de ese mismo módulo deshabilitados, `D-P5-1`), todo endpoint de escritura de `LENDER` bajo `/api/contracts/**` (crear/editar/borrar/cancelar contrato, borrowers, terms, fees — nunca `accept`/`reject`, esos son `BORROWER`), `PATCH /api/contracts/:id` también para `ADMIN` (Fase 7), `POST /api/contracts/:id/payments/manual`, `POST /api/transactions/:id/reverse`, y `POST`/`DELETE /api/marketplace/loan-requests/:id/quotes` (Fase 13). No aplica a lecturas, autoservicio sin rol específico, ni a `/api/auth/2fa/*`. Puede desactivarse temporalmente con `REQUIRE_TWO_FACTOR=false` (`D-P4-4`, ver [Variables de entorno](#variables-de-entorno)) |
 | `PASSWORD_CHANGE_REQUIRED` | 403 | `PATCH /api/borrowers/me` con `mustChangePassword=true` (`D-P4-2`) — el Deudor todavía no cambió la contraseña temporal que se le generó al crearlo |
 | `USER_NOT_FOUND` | 404 | `:id` no corresponde a ningún usuario (o está borrado lógicamente) |
-| `NOT_FOUND` | 404 | `requireContractAccess` (`BE-038`, usado por todo el módulo de Contratos): el contrato no existe, o existe pero no pertenece a la sesión. También (mientras estuvo activo) `POST /api/lenders/me/borrowers` con un `lenderCompanyId` que no es del Lender (`D-P5-1`, deshabilitado), `POST /api/contracts` con un `insuranceCompanyId`/`borrowerProfileId` ajeno, `POST /api/contracts/:id/borrowers` con un deudor no vinculado, `.../terms/:termsId*` con un `termsId` que no es de ese contrato, `.../fees/:feeId` con un fee que no es de esa versión. También en el módulo de marketplace (Fase 13): un `LoanRequest` ajeno o inexistente, un `lenderCompanyId` inexistente en `.../targets`, un `LoanRequest` `PRIVATE` que el Lender no puede ver (sin `target`/no `PUBLISHED`), una `LoanQuote` que no es de ese `LoanRequest`. Mismo código para "no existe" y "existe pero no es tuyo" a propósito (anti-enumeración, §7.5); los casos de tenant mismatch además quedan auditados (`AuditLog.action=ACCESS_DENIED`, `BE-039`) |
+| `NOT_FOUND` | 404 | `requireContractAccess` (`BE-038`, usado por todo el módulo de Contratos y Pagos): el contrato no existe, o existe pero no pertenece a la sesión (`ADMIN` nunca cae acá, Fase 7). También (mientras estuvo activo) `POST /api/lenders/me/borrowers` con un `lenderCompanyId` que no es del Lender (`D-P5-1`, deshabilitado), `POST /api/contracts` con un `insuranceCompanyId`/`borrowerProfileId` ajeno, `POST /api/contracts/:id/borrowers` con un deudor no vinculado, `.../terms/:termsId*` con un `termsId` que no es de ese contrato, `.../fees/:feeId` con un fee que no es de esa versión, `GET /api/transactions/:id` o `POST .../reverse` con un `:id` que no corresponde a ninguna `Transaction`. También en el módulo de marketplace (Fase 13): un `LoanRequest` ajeno o inexistente, un `lenderCompanyId` inexistente en `.../targets`, un `LoanRequest` `PRIVATE` que el Lender no puede ver (sin `target`/no `PUBLISHED`), una `LoanQuote` que no es de ese `LoanRequest`. Mismo código para "no existe" y "existe pero no es tuyo" a propósito (anti-enumeración, §7.5); los casos de tenant mismatch además quedan auditados (`AuditLog.action=ACCESS_DENIED`, `BE-039`) |
 | `LENDER_NOT_FOUND` | 404 | `:id` de `/api/admin/lenders*` no corresponde a ningún `LenderProfile` ni `User.id` de un Lender (o está borrado lógicamente, `D-P4-7`); o el `User` autenticado en `/api/lenders/me*` no tiene `LenderProfile` |
 | `LENDER_COMPANY_NOT_FOUND` | 404 | `:companyId` de `PATCH`/`DELETE /api/admin/lenders/:id/companies/:companyId` no es una `LenderCompany` de ese `:id` (o está borrada lógicamente); mismo código en `PATCH`/`DELETE /api/lenders/me/companies/:companyId` (`D-P4-9`) si `:companyId` no es del Lender de la sesión |
 | `BORROWER_NOT_FOUND` | 404 | El `User` autenticado en `/api/borrowers/me*` no tiene `BorrowerProfile` |
 | `EMAIL_TAKEN` | 409 | `POST`/`PATCH /api/users`, y (mientras estuvo activo) `POST /api/lenders/me/borrowers` (`D-P5-1`, deshabilitado) con un correo que ya existe |
-| `EIN_TAKEN` | 409 | `POST /api/admin/lenders/:id/companies`, `POST /api/lenders/me/companies`, o `PATCH /api/admin\|lenders/.../companies/:companyId` (incluido `D-P4-9`) con un `ein` que ya usa otra `LenderCompany` |
+| `EIN_TAKEN` | 409 | `POST /api/admin/lenders/:id/companies`, `POST /api/lenders/me/companies`, `POST /api/borrowers/me/become-lender` (`D-P7-1`), o `PATCH /api/admin\|lenders/.../companies/:companyId` (incluido `D-P4-9`) con un `ein` que ya usa otra `LenderCompany` |
+| `LENDER_PROFILE_ALREADY_EXISTS` | 409 | `POST /api/borrowers/me/become-lender` (`D-P7-1`) — el usuario ya tiene un `LenderProfile` |
+| `BORROWER_PROFILE_ALREADY_EXISTS` | 409 | `POST /api/lenders/me/become-borrower` (`D-P7-1`) — el usuario ya tiene un `BorrowerProfile` |
+| `SELF_LENDING_NOT_ALLOWED` | 409 | `POST /api/contracts`, `POST /api/contracts/:id/borrowers`, `POST /api/marketplace/loan-requests/:id/quotes`, `.../quotes/:quoteId/select`, o `POST /api/borrowers/me/loan-requests/:id/targets` (`D-P7-2`) — el dueño de la `LenderCompany` y el del `BorrowerProfile` son el mismo usuario |
+| `PROPERTY_SELF_ENCUMBERED` | 409 | `POST /api/contracts` (`D-P7-3`) — la propiedad ya está financiada por ese mismo usuario actuando como Deudor (mismo `Contract` no `PAID_OFF`/`CANCELLED`, misma dirección normalizada) |
 | `LENDER_HAS_ACTIVE_CONTRACTS` | 409 | `DELETE /api/admin/lenders/:id` (alguna de sus `LenderCompany` tiene un `Contract` `ACTIVE`/`DELINQUENT`) o `DELETE .../companies/:companyId` (esa empresa puntual lo tiene) — Admin o autoservicio (`D-P4-9`) |
 | `NO_LENDER_COMPANY` | 409 | `POST /api/marketplace/loan-requests/:id/quotes`, y (mientras estuvo activo) `POST /api/lenders/me/borrowers` (`D-P5-1`, deshabilitado) — el Lender todavía no tiene ninguna `LenderCompany` |
 | `BORROWER_HAS_ACTIVE_CONTRACTS` | 409 | `DELETE /api/lenders/me/borrowers/:id` — el deudor tiene un `Contract` `ACTIVE`/`DELINQUENT` con alguna de las empresas de las que se lo está desvinculando |
@@ -1353,6 +1488,9 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 | `NO_BORROWERS` | 409 | `POST .../terms/:termsId/submit` — el contrato no tiene ningún `ContractBorrower` activo a quién notificar |
 | `SCHEDULE_ALREADY_GENERATED` | 409 | Intento de generar el calendario (`generateAmortizationSchedule`) dos veces para la misma `ContractTerms` |
 | `RESERVED_FEE_CODE` | 400 | `POST .../fees` con `code=MARKETPLACE_CONNECTION` — reservada para inserción automática (Fase 13) |
+| `CONTRACT_NOT_ACTIVE` | 409 | `POST /api/contracts/:id/payments/manual` — el contrato no está `ACTIVE`/`DELINQUENT` (no tiene calendario sobre el cual aplicar un pago) |
+| `AMOUNT_EXCEEDS_BALANCE` | 400 | `POST /api/contracts/:id/payments/manual` — el monto pagado supera el saldo total pendiente del contrato; no se crea ninguna `Transaction` |
+| `TRANSACTION_NOT_REVERSIBLE` | 409 | `POST /api/transactions/:id/reverse` sobre una `Transaction` que no está `SUCCEEDED` (ya `RETURNED`, o nunca llegó a serlo) |
 | `LOAN_REQUEST_NOT_EDITABLE` | 409 | `PATCH /api/borrowers/me/loan-requests/:id` con `status` distinto de `DRAFT` |
 | `LOAN_REQUEST_NOT_DRAFT` | 409 | `POST .../publish` con `status` distinto de `DRAFT` |
 | `LOAN_REQUEST_NOT_PUBLISHED` | 409 | `POST .../withdraw` o `.../quotes/:quoteId/select` con `status` distinto de `PUBLISHED` |
