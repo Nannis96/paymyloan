@@ -45,7 +45,12 @@ function MarketplaceContent() {
         });
 
         if (!response.ok) {
-          if (response.status === 401) throw new Error(m.errorAuth);
+          if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/login";
+            return;
+          }
           throw new Error(`HTTP ${response.status}: ${m.errorFetch}`);
         }
 

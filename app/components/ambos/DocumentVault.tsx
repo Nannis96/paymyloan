@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { UploadCloud, FileText, Download, PenTool, CheckCircle2 } from "lucide-react";
-import { useSite } from "./layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 
 interface DocumentItem {
   id: string;

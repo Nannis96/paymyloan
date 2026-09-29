@@ -71,7 +71,10 @@ function ContractDetailContent() {
         
         if (!contractRes.ok) {
           if (contractRes.status === 401 || contractRes.status === 403) {
-            throw new Error(cd.errorAuth);
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/login";
+            return;
           }
           throw new Error(`HTTP ${contractRes.status}: ${cd.errorFetch}`);
         }

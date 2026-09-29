@@ -58,10 +58,10 @@ function VerifyEmailContent() {
               ))}
             </div>
             
-            <Link href="/borrower" className="mb-3 block w-full rounded-lg bg-accent p-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
+            <Link href="/borrowerDashboard" className="mb-3 block w-full rounded-lg bg-accent p-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               {v.borrower.btnPrimary}
             </Link>
-            <Link href="/borrower" className="block w-full rounded-lg border-[1.5px] border-rule bg-surface p-3.5 text-[14px] font-semibold text-ink-2 transition-colors hover:border-accent hover:text-accent">
+            <Link href="/borrowerDashboard" className="block w-full rounded-lg border-[1.5px] border-rule bg-surface p-3.5 text-[14px] font-semibold text-ink-2 transition-colors hover:border-accent hover:text-accent">
               {v.borrower.btnSecondary}
             </Link>
           </div>
@@ -99,7 +99,7 @@ function VerifyEmailContent() {
             <Link href="/marketplace" className="mb-3 block w-full rounded-lg bg-accent p-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               {v.lender.btnPrimary}
             </Link>
-            <Link href="/lender/verify" className="block w-full rounded-lg border-[1.5px] border-rule bg-surface p-3.5 text-[14px] font-semibold text-ink-2 transition-colors hover:border-accent hover:text-accent">
+            <Link href="/lenderDashboard/verify" className="block w-full rounded-lg border-[1.5px] border-rule bg-surface p-3.5 text-[14px] font-semibold text-ink-2 transition-colors hover:border-accent hover:text-accent">
               {v.lender.btnSecondary}
             </Link>
           </div>

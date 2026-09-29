@@ -24,7 +24,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-ink font-black text-lg">
             P
           </div>
-          <Link href="/borrower" className="text-[18px] font-black tracking-tight text-ink no-underline">
+          <Link href="/borrowerDashboard" className="text-[18px] font-black tracking-tight text-ink no-underline">
             PayMyLoan<span className="text-accent">.ai</span>
           </Link>
         </div>
@@ -48,13 +48,13 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </div>
           
           {/* LENDER MENU */}
-          {pathname.startsWith("/lender") && (
+          {pathname.startsWith("/lenderDashboard") && (
             <>
-              <Link href="/lender" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/lender")}`}>
-                <LayoutDashboard size={16} className={iconClass("/lender")} /> {l.nav.home}
+              <Link href="/lenderDashboard" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/lenderDashboard")}`}>
+                <LayoutDashboard size={16} className={iconClass("/lenderDashboard")} /> {l.nav.home}
               </Link>
-              <Link href="/lender/deals" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/lender/deals")}`}>
-                <Wallet size={16} className={iconClass("/lender/deals")} /> {l.nav.myDeals}
+              <Link href="/lenderDashboard/deals" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/lenderDashboard/deals")}`}>
+                <Wallet size={16} className={iconClass("/lenderDashboard/deals")} /> {l.nav.myDeals}
               </Link>
               <Link href="/marketplace" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/marketplace")}`}>
                 <Building size={16} className={iconClass("/marketplace")} /> Marketplace
@@ -63,19 +63,19 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           )}
 
           {/* BORROWER MENU */}
-          {pathname.startsWith("/borrower") && (
+          {pathname.startsWith("/borrowerDashboard") && (
             <>
-              <Link href="/borrower" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrower")}`}>
-                <LayoutDashboard size={16} className={iconClass("/borrower")} /> {l.nav.home}
+              <Link href="/borrowerDashboard" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrowerDashboard")}`}>
+                <LayoutDashboard size={16} className={iconClass("/borrowerDashboard")} /> {l.nav.home}
               </Link>
-              <Link href="/borrower/balances" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrower/balances")}`}>
-                <Wallet size={16} className={iconClass("/borrower/balances")} /> {l.nav.balances}
+              <Link href="/borrowerDashboard/balances" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrowerDashboard/balances")}`}>
+                <Wallet size={16} className={iconClass("/borrowerDashboard/balances")} /> {l.nav.balances}
               </Link>
-              <Link href="/borrower/payments" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrower/payments")}`}>
-                <CreditCard size={16} className={iconClass("/borrower/payments")} /> {l.nav.payments}
+              <Link href="/borrowerDashboard/payments" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrowerDashboard/payments")}`}>
+                <CreditCard size={16} className={iconClass("/borrowerDashboard/payments")} /> {l.nav.payments}
               </Link>
-              <Link href="/borrower/lenders" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrower/lenders")}`}>
-                <Users size={16} className={iconClass("/borrower/lenders")} /> {l.nav.lenders}
+              <Link href="/borrowerDashboard/lenders" className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors ${isActive("/borrowerDashboard/lenders")}`}>
+                <Users size={16} className={iconClass("/borrowerDashboard/lenders")} /> {l.nav.lenders}
               </Link>
 
               <div className="mt-4 mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-3">

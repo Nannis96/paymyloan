@@ -14,10 +14,10 @@ export default function BackToDashboard() {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.role === "ADMIN") setDashboardUrl("/admin");
-        else if (payload.role === "LENDER") setDashboardUrl("/lender");
-        else if (payload.role === "BORROWER") setDashboardUrl("/borrower");
-        else if (payload.role === "BOOKKEEPER") setDashboardUrl("/bookkeeper");
+        if (payload.role === "ADMIN") setDashboardUrl("/adminDashboard");
+        else if (payload.role === "LENDER") setDashboardUrl("/lenderDashboard");
+        else if (payload.role === "BORROWER") setDashboardUrl("/borrowerDashboard");
+        else if (payload.role === "BOOKKEEPER") setDashboardUrl("/bookkeeperDashboard");
       } catch (e) {
         console.error("Error al decodificar token", e);
       }

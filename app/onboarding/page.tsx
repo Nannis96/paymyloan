@@ -23,7 +23,7 @@ function OnboardingContent() {
   };
 
   const handleComplete = () => {
-    router.push(appMode === "lender" ? "/lender" : "/borrower");
+    router.push(appMode === "lender" ? "/lenderDashboard" : "/borrowerDashboard");
   };
 
   return (

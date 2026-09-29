@@ -23,16 +23,16 @@ export default function WelcomeModal() {
 
   const handleChoice = (choice: "lender" | "borrower" | "signin") => {
     localStorage.setItem("pml-welcome-seen", "true");
-
     if (choice !== "signin") {
       localStorage.setItem("pml-intent", choice);
     }
     setIsOpen(false);
     if (choice === "signin") {
       router.push("/login");
-    } else {
-      setAppMode(choice);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (choice === "lender") {
+      router.push("/lender");
+    } else if (choice === "borrower") {
+      router.push("/borrower");
     }
   };
 

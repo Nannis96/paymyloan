@@ -139,7 +139,7 @@ export default function WhyPml() {
           </div>
           <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:ml-10">
             <Link
-              href={role === "lender" ? "/marketplace" : "/borrower/lenders"}
+              href={role === "lender" ? "/marketplace" : "/borrowerDashboard/lenders"}
               className="whitespace-nowrap rounded-[7px] border border-white/20 bg-transparent px-6 py-[13px] text-center text-[14px] font-semibold text-white transition-colors hover:border-white/50"
             >
               {data.cta.btnGhost}

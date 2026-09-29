@@ -12,46 +12,47 @@ export default function LandingHeader() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleModeChange = (mode: "general" | "lender" | "borrower" | "why-pml") => {
-    setAppMode(mode);
-    setActiveTab(0);
-    
-    // Si el usuario no esta en el inicio, lo redirigimos
-    if (pathname !== "/") {
-      router.push("/");
-    } else {
-      // Si ya esta en el inicio, solo subimos el scroll suavemente
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
   return (
     <nav className="sticky top-0 z-[100] flex h-[52px] items-center justify-between border-b border-rule bg-surface px-6 md:px-10">
       <div className="flex items-center">
-        <button 
-          onClick={() => handleModeChange("general")} 
+        <Link 
+          href="/" 
           className="mr-10 text-[17px] font-extrabold text-ink no-underline"
         >
           PayMy<span className="text-accent">Loan</span>.ai
-        </button>
+        </Link>
         
-        <div className="hidden flex-1 items-center gap-7 text-[13px] font-medium text-ink-2 lg:flex">
-          <button 
-            onClick={() => handleModeChange("lender")} 
-            className="transition-colors hover:text-ink font-medium"
+        <div className="hidden flex-1 items-center gap-7 text-[13px] lg:flex">
+          <Link 
+            href="/lender" 
+            className={`transition-colors ${pathname === '/lender' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
           >
             {ln.lenders}
-          </button>
-          <button
-              onClick={() => handleModeChange("borrower")}
-              className="transition-colors hover:text-ink font-medium"
-            >
-              {ln.borrowers}
-            </button>
-
-            <button onClick={() => handleModeChange("why-pml")} className="transition-colors hover:text-ink font-medium">{ln.why}</button>
-            <Link href="/founder-story" className="transition-colors hover:text-ink">{ln.demo}</Link>
-          <Link href="/affiliates" className="transition-colors hover:text-ink">{ln.affiliates}</Link>
+          </Link>
+          <Link
+            href="/borrower"
+            className={`transition-colors ${pathname === '/borrower' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.borrowers}
+          </Link>
+          <Link 
+            href="/why-pml" 
+            className={`transition-colors ${pathname === '/why-pml' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.why}
+          </Link>
+          <Link 
+            href="/founder-story" 
+            className={`transition-colors ${pathname === '/founder-story' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.demo}
+          </Link>
+          <Link 
+            href="/affiliates" 
+            className={`transition-colors ${pathname === '/affiliates' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.affiliates}
+          </Link>
         </div>
       </div>
       

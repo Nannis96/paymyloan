@@ -5,8 +5,11 @@ import {
   useContext,
   useEffect,
   useSyncExternalStore,
+  useState,
   type ReactNode,
 } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { API_ROUTES } from "@/app/lib/endpoints";
 import { copy, type Lang } from "@/content/copy";
 import {
   escribir,
@@ -19,9 +22,7 @@ import {
 import SiteFooter from "./SiteFooter";
 import DashboardHeader from "./DashboardHeader";
 import PmlFooter from "./PmlFooter";
-import LandingHeader from "../landing/LandingHeader"; // <-- Importación actualizada
-
-// Componentes de landing
+import LandingHeader from "../landing/LandingHeader";
 import WelcomeModal from "../landing/WelcomeModal";
 import LenderLandingView from "../landing/LenderLandingView";
 import BorrowerLandingView from "../landing/BorrowerLandingView";
@@ -35,11 +36,11 @@ import LiveActivity from "../landing/LiveActivity";
 import ProfilesDirectory from "../landing/ProfilesDirectory";
 import Marketplace from "../landing/Marketplace";
 import PmlCta from "../landing/PmlCta";
-import WhyPml from "../landing/WhyPml"; 
-import { useState } from "react";
+import WhyPml from "../landing/WhyPml";
 
 type Theme = "light" | "dark";
 type AppMode = "general" | "lender" | "borrower" | "why-pml";
+
 const CLAVE_TEMA = "pml-theme";
 const CLAVE_IDIOMA = "pml-lang";
 
@@ -78,24 +79,23 @@ export default function SiteShell({
   isDashboard?: boolean;
   isMinimal?: boolean;
 }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const temaGuardado = useSyncExternalStore(suscribir, leerTema, sinValor);
   const idiomaGuardado = useSyncExternalStore(suscribir, leerIdioma, sinValor);
 
-  // El idioma empezará en inglés por defecto si no hay nada guardado
   const lang: Lang = idiomaGuardado === "es" ? "es" : "en";
   const temaElegido: Theme | null =
     temaGuardado === "dark" || temaGuardado === "light" ? temaGuardado : null;
 
-  // Forzamos modo claro por defecto la primera vez, ignorando el sistema
   const resolvedTheme: Theme = temaElegido ?? "light";
 
   const [appMode, setAppMode] = useState<AppMode>("general");
-  const [lastAppMode, setLastAppMode] = useState<"lender" | "borrower" |"why-pml"| null>(
-    null
-  );
+  const [lastAppMode, setLastAppMode] = useState<"lender" | "borrower" |"why-pml"| null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
+  const [isVerifying, setIsVerifying] = useState<boolean>(true);
 
-  // Interceptamos el setAppMode para guardar el historial
   const handleSetAppMode = (mode: AppMode) => {
     if (appMode !== "general" && mode === "general") {
       setLastAppMode(appMode);
@@ -112,9 +112,68 @@ export default function SiteShell({
   }, [lang]);
 
   useEffect(() => {
-    // Forzamos que siempre se inyecte el tema resuelto
     document.documentElement.setAttribute("data-theme", resolvedTheme);
   }, [resolvedTheme]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Rutas que requieren que el usuario este autenticado
+      const protectedRoutes = [
+        "/lenderDashboard",
+        "/borrowerDashboard",
+        "/adminDashboard",
+        "/bookkeeperDashboard",
+        "/marketplace",
+        "/contracts",
+        "/settings",
+        "/profile",
+        "/apply",
+        "/term-sheets"
+      ];
+
+      const isProtected = protectedRoutes.some(route => pathname?.startsWith(route));
+
+      if (isProtected) {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          router.push("/login");
+          return;
+        }
+
+        try {
+          const res = await fetch(API_ROUTES.auth.me, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          if (!res.ok) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            router.push("/login");
+            return;
+          }
+          setIsVerifying(false);
+        } catch (err) {
+          console.error("Auth check error:", err);
+          router.push("/login");
+        }
+      } else {
+        setIsVerifying(false);
+      }
+    };
+
+    checkAuth();
+  }, [pathname, router]);
+
+  // Pantalla de carga para evitar destellos de informacion protegida
+  if (isVerifying) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="text-sm font-semibold text-ink-3">
+          {copy[lang].loginPage.processing || "Procesando..."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <SiteContext.Provider
@@ -131,34 +190,24 @@ export default function SiteShell({
         setActiveTab,
       }}
     >
-      {/* Se utiliza LandingHeader en lugar del PmlHeader eliminado */}
       {!isMinimal && (isDashboard ? <DashboardHeader /> : <LandingHeader />)}
-
       <main id="contenido" className={isDashboard ? "dashboard-wrapper" : ""}>
         {!isMinimal && !isDashboard && <WelcomeModal />}
-
         {children ?? (
           <>
-            {appMode === "general" && (
-              <>
-                <PmlHero />
-                <WhoItHelps />
-                <BeforeAfter />
-                <SoundFamiliar />
-                <FeaturesGrid />
-                <DashboardSplit />
-                <LiveActivity />
-                <ProfilesDirectory />
-                <Marketplace />
-                <PmlCta />
-              </>
-            )}
-            {appMode === "lender" && <LenderLandingView />}
-              {appMode === "borrower" && <BorrowerLandingView />}
-              {appMode === "why-pml" && <WhyPml />}
-            </>
-          )}
-        </main>
+            <PmlHero />
+            <WhoItHelps />
+            <BeforeAfter />
+            <SoundFamiliar />
+            <FeaturesGrid />
+            <DashboardSplit />
+            <LiveActivity />
+            <ProfilesDirectory />
+            <Marketplace />
+            <PmlCta />
+          </>
+        )}
+      </main>
       {!isMinimal && (children ? <SiteFooter /> : <PmlFooter />)}
     </SiteContext.Provider>
   );

@@ -37,7 +37,7 @@ function LenderVerifyContent() {
       setStep(step + 1);
     } else {
       // POST al backend (ej. /api/lenders/me/criteria)
-      router.push("/lender");
+      router.push("/lenderDashboard");
     }
   };
 

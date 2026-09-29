@@ -60,7 +60,12 @@ function CommitmentLetterContent() {
         });
 
         if (!response.ok) {
-          if (response.status === 401 || response.status === 403) throw new Error(cl.errorAuth);
+          if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/login";
+            return;
+          }
           throw new Error(`HTTP ${response.status}: ${cl.errorFetch}`);
         }
 
@@ -99,8 +104,7 @@ function CommitmentLetterContent() {
 
       const json = await response.json();
       if (!response.ok) throw new Error(json.error?.message || cl.errorAccept);
-
-      router.push(`/borrower`);
+      router.push(`/borrowerDashboard`);
     } catch (err) {
       setError(err instanceof Error ? err.message : cl.errorNetwork);
       setIsSubmitting(false);
@@ -131,8 +135,7 @@ function CommitmentLetterContent() {
 
       const json = await response.json();
       if (!response.ok) throw new Error(json.error?.message || cl.errorReject);
-
-      router.push(`/borrower`);
+      router.push(`/borrowerDashboard`);
     } catch (err) {
       setError(err instanceof Error ? err.message : cl.errorNetwork);
       setIsRejecting(false);

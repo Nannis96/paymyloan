@@ -37,13 +37,13 @@ function LoginContent() {
     
     const role = data.user.role;
     if (role === "ADMIN") {
-      router.push("/admin");
+      router.push("/adminDashboard");
     } else if (role === "LENDER") {
-      router.push("/lender");
+      router.push("/lenderDashboard");
     } else if (role === "BORROWER") {
-      router.push("/borrower");
+      router.push("/borrowerDashboard");
     } else if (role === "BOOKKEEPER") {
-      router.push("/bookkeeper");
+      router.push("/bookkeeperDashboard");
     } else {
       router.push("/");
     }

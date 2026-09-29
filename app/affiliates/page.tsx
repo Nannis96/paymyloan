@@ -3,10 +3,11 @@
 import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { MetricCard } from "@/app/components/ui";
+import LandingHeader from "@/app/components/landing/LandingHeader";
 
 export default function AffiliatesPage() {
   return (
-    <SiteShell isDashboard={true}>
+    <SiteShell isMinimal={true}>
       <AffiliatesContent />
     </SiteShell>
   );
@@ -29,10 +30,12 @@ function AffiliatesContent() {
   };
 
   return (
-    <div className="mx-auto max-w-[860px] pb-24 pt-6">
-      
-      {/* Header */}
-      <div className="mb-8">
+    <div className="flex min-h-screen flex-col bg-bg">
+      <LandingHeader />
+      <div className="mx-auto w-full max-w-[860px] px-6 pb-24 pt-10">
+        
+        {/* Header */}
+        <div className="mb-8">
         <h1 className="mb-1.5 text-[22px] font-bold tracking-tight text-ink">{a.title}</h1>
         <p className="text-[14px] text-ink-3">{a.subtitle}</p>
       </div>
@@ -146,6 +149,7 @@ function AffiliatesContent() {
         </div>
       </div>
 
+      </div>
     </div>
   );
 }

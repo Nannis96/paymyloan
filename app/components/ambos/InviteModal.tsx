@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, Copy, CheckCircle2, Mail } from "lucide-react";
-import { useSite } from "./layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 
 interface InviteModalProps {
   onClose: () => void;

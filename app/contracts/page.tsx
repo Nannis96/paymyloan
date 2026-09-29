@@ -63,7 +63,10 @@ function ContractsContent() {
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
-            throw new Error(c.errorAuth);
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/login";
+            return;
           }
           throw new Error(`HTTP ${response.status}: ${c.errorFetch}`);
         }
