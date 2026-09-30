@@ -8,8 +8,10 @@ import { FilterChip, DealCard } from "@/app/components/ui";
 import { API_ROUTES } from "@/app/lib/endpoints";
 
 interface PropertyData {
+  addressLine1?: string;
   city: string;
   state: string;
+  afterRepairValue?: number | string;
 }
 
 interface LoanRequestItem {
@@ -17,7 +19,12 @@ interface LoanRequestItem {
   property: PropertyData;
   projectType: string;
   totalLoanAmountRequested: number | string;
+  rehabAmount?: number | string;
   requestedClosingDate: string;
+  _count?: {
+    quotes?: number;
+  };
+  quotes?: any[];
 }
 
 function MarketplaceContent() {
@@ -57,7 +64,26 @@ function MarketplaceContent() {
         const json = await response.json();
         
         if (json.success) {
-          setDeals(json.data.items || []);
+          const items = json.data.items || [];
+          if (items.length === 0) {
+            // Mock de respaldo mientras el backend no tenga seed para LoanRequests
+            setDeals([{
+              id: "2847-lamar-ave",
+              property: {
+                addressLine1: "2847 Lamar Ave",
+                city: "Memphis",
+                state: "TN",
+                afterRepairValue: 210000
+              },
+              projectType: "BRIDGE_FLIP",
+              totalLoanAmountRequested: 145000,
+              rehabAmount: 38000,
+              requestedClosingDate: new Date().toISOString(),
+              _count: { quotes: 2 }
+            }]);
+          } else {
+            setDeals(items);
+          }
         } else {
           throw new Error(json.error?.message || m.errorFetch);
         }
@@ -180,20 +206,26 @@ function MarketplaceContent() {
               if (activeFilter === "bridge" && type !== "Bridge") return null;
               if (activeFilter === "slowFlip" && type !== "Slow flip") return null;
 
+              const arvNum = Number(deal.property?.afterRepairValue || 0);
+              const requestedNum = Number(deal.totalLoanAmountRequested || 0);
+              const rehabNum = Number(deal.rehabAmount || 0);
+              const ltvCalc = arvNum > 0 ? Math.round((requestedNum / arvNum) * 100) : 0;
+              const offersCount = deal._count?.quotes || deal.quotes?.length || 0;
+
               return (
                 <Link href={`/marketplace/${deal.id}`} key={deal.id} className="block no-underline">
                   <DealCard 
                     type={type as "Bridge" | "Slow flip"}
-                    isNew={index === 0} // Mocking the first one as new
-                    address={`${deal.property.city}, ${deal.property.state}`}
-                    cityState={`Proyecto: ${deal.projectType.replace(/_/g, " ")}`}
+                    isNew={index === 0}
+                    address={deal.property?.addressLine1 || "Direccion no disponible"}
+                    cityState={`${deal.property?.city || "Ciudad oculta"}, ${deal.property?.state || ""}`}
                     loanAmount={formatCurrency(deal.totalLoanAmountRequested)}
-                    arv="N/D" 
+                    arv={arvNum > 0 ? formatCurrency(arvNum) : "N/D"} 
                     maxRate="12%" 
                     maxRateSub="Estimado"
-                    rehab="N/D"
-                    ltv={65} 
-                    offersCount={index % 3} // Mocking offers count
+                    rehab={rehabNum > 0 ? formatCurrency(rehabNum) : "N/D"}
+                    ltv={ltvCalc} 
+                    offersCount={offersCount} 
                     lenderAvatar="VB"
                     lenderName="Inversor Verificado"
                     timeAgo="Reciente"

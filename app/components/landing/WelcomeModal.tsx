@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
-import { Landmark } from "lucide-react";
+import { Landmark, X } from "lucide-react";
 
 export default function WelcomeModal() {
   const { t, setAppMode, lang, setLang } = useSite();
@@ -36,12 +36,26 @@ export default function WelcomeModal() {
     }
   };
 
+  const handleClose = () => {
+    localStorage.setItem("pml-welcome-seen", "true");
+    setIsOpen(false);
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0a2540]/60 p-4 backdrop-blur-md">
       <div className="relative w-full max-w-[480px] animate-in fade-in zoom-in-95 duration-300 rounded-2xl bg-surface px-6 py-10 text-center shadow-[0_20px_60px_rgba(10,37,64,0.18)] sm:px-12">
         
+        {/* Boton de Cerrar */}
+        <button
+          onClick={handleClose}
+          className="absolute left-5 top-5 flex h-8 min-w-8 items-center justify-center rounded-md text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink"
+          aria-label="Cerrar"
+        >
+          <X size={18} />
+        </button>
+
         {/* Toggle de Idioma */}
         <button
           type="button"

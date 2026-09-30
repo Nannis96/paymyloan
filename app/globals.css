@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #ffffff;
+  --bg: #f6f9fc;
   --surface: #ffffff;
-  --surface-2: #f6f9fc;
+  --surface-2: #f0f4f8;
   --ink: #0a2540;
   --ink-2: #425466;
   --ink-3: #8898aa;
-  --rule: #f0f4f8;
-  --rule-strong: #e6ebf1;
+  --rule: #e6ebf1;
+  --rule-strong: #d3dce6;
   --accent: #635bff;
   --accent-soft: #f0efff;
   --amber: #e65100;
   --amber-soft: #fff8e1;
   --crit: #c62626;
   --crit-soft: #fff0f0;
-  --success: #2e7d32;
-  --success-soft: #e8f5e9;
+  --success: #16a34a;
+  --success-soft: #dcfce7;
   --accent-ink: #ffffff;
   --brand-dark: #0a2540;
   --brand-purple: #a78bfa;
@@ -148,32 +148,3 @@ body {
   }
 }
 
-/* =========================================================================
-   DASHBOARD LIGHT MODE OVERRIDES
-   "White background with black boxes" solicitado para ser más amigable a la vista
-   ========================================================================= */
-:root:not([data-theme="dark"]) .dashboard-wrapper {
-  --bg: #ffffff;
-}
-
-/* Invierte los colores dentro de las cajas (bg-surface) en el modo claro */
-:root:not([data-theme="dark"]) .dashboard-wrapper .bg-surface,
-:root:not([data-theme="dark"]) .dashboard-wrapper .bg-surface-2 {
-  background-color: #0a0a0a;
-  border-color: #2a2a2a;
-  color: #ffffff;
-  
-  /* Redefine las variables de texto y lineas para que todos los hijos hereden el contraste correcto */
-  --surface: #0a0a0a;
-  --surface-2: #141414;
-  --ink: #ffffff;
-  --ink-2: #aaaaaa;
-  --ink-3: #666666;
-  --rule: #2a2a2a;
-  --rule-strong: #333333;
-}
-
-:root:not([data-theme="dark"]) .dashboard-wrapper .bg-surface-2 {
-  background-color: #141414;
-  border-color: #333333;
-}

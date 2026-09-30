@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 
 export default function BrowseDealsView() {
@@ -285,13 +286,14 @@ export default function BrowseDealsView() {
                   <div className="text-right text-[11px] text-[#8898aa]">
                     <strong className="block text-[13px] text-[#0a2540]">{deal.offers}</strong> {deal.offers === 1 ? (isEs ? "oferta" : "offer") : (isEs ? "ofertas" : "offers")}
                   </div>
-                  <button 
-                    onClick={() => setIsModalOpen(true)}
-                    className="cursor-pointer whitespace-nowrap rounded-[6px] border-none px-[14px] py-[7px] font-sans text-[12px] font-[600] text-white transition-opacity hover:opacity-90"
-                    style={{ backgroundColor: colorMain }}
-                  >
-                    {isEs ? "Hacer oferta" : "Make offer"}
-                  </button>
+                  <Link href="/marketplace" className="no-underline">
+                    <button 
+                      className="cursor-pointer whitespace-nowrap rounded-[6px] border-none px-[14px] py-[7px] font-sans text-[12px] font-[600] text-white transition-opacity hover:opacity-90 w-full"
+                      style={{ backgroundColor: colorMain }}
+                    >
+                      {isEs ? "Hacer una oferta" : "make an offer"}
+                    </button>
+                  </Link>
                 </div>
               </div>
 
@@ -302,12 +304,9 @@ export default function BrowseDealsView() {
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
                   </div>
                   <span className="text-[11px] italic text-[#aab7c4]">{isEs ? "Identidad oculta" : "Borrower identity hidden"}</span>
-                  <span 
-                    onClick={() => setIsModalOpen(true)}
-                    className="ml-[6px] cursor-pointer whitespace-nowrap text-[10px] font-[700] text-[#635bff] underline"
-                  >
-                    {isEs ? "Ofertar para ver" : "Make offer to unlock"}
-                  </span>
+                  <Link href="/marketplace" className="ml-[6px] cursor-pointer whitespace-nowrap text-[10px] font-[700] text-[#635bff] underline">
+                    {isEs ? "Hacer una oferta" : "make an offer"}
+                  </Link>
                 </div>
                 <span className="text-[11px] text-[#aab7c4]">{deal.timeAgo}</span>
               </div>

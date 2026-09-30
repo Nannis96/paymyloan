@@ -651,7 +651,8 @@ const es = {
     }
   },
   dashboardLender: { title: "Panel de Prestamista", subtitle: "Control total sobre tu capital y rendimientos.", metrics: { availableCapital: "Capital (Disponible / Desplegado)", capitalDeployed: "Capital Desplegado", nextPayments: "Próximos Pagos (30 días)", avgInterest: "Tasa Promedio", activeBorrowers: "Prestatarios Activos" }, sections: { commitmentLetters: "Cartas de Compromiso Enviadas", upcomingClosings: "Próximos Cierres / Payoffs", activeLoans: "Préstamos Activos (Retorno)", }, tableHeaders: { borrower: "Prestatario", amount: "Monto", status: "Estado", type: "Tipo", date: "Fecha", action: "Acción", loan: "Préstamo", rateBalance: "Tasa / Saldo" }, labels: { cap: "Cap:", int: "Int:" }, recentPayments: "Últimos Pagos Recibidos", actions: { marketplace: "Explorar Mercado", viewContracts: "Ver mis contratos" }, toggle: { open: "Abierto a negocios", closed: "No aceptando préstamos" }, table: { date: "Fecha", borrower: "Prestatario", property: "Propiedad", total: "Pago Total", principal: "Capital", interest: "Interés" }, emptyHistory: "El resto del historial se renderizará aquí.", loading: "Cargando dashboard...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar la información del dashboard", errorNetwork: "Error de red desconocido", unassigned: "Sin asignar", borrowerFallback: "Deudor", emptyCommitments: "No hay compromisos pendientes", emptyClosings: "No hay cierres próximos en el sistema.", emptyLoans: "Sin préstamos activos", emptyPayments: "No hay pagos procesados recientemente.", mimic: { greeting: "Buenos dias, {name}.", portfolioSub: "{company} — resumen de portafolio.", stats: { capitalDeployed: "Capital desplegado", acrossActive: "En {n} prestamos activos", monthlyIncome: "Ingreso mensual", interestPayments: "Pagos de interes", newDeals: "Nuevos tratos hoy", matchCriteria: "Coinciden con tus criterios", maturingSoon: "Proximos a vencer", within60: "En menos de 60 dias" }, alerts: { maturityTitle: "Alerta de vencimiento", maturityMsg: "{address} vence en {days} dias — {date}", maturitySub: "{amount} al {rate}% · Contacta al prestatario para liquidacion o extension." }, cards: { activeLoans: "Prestamos activos", viewAll: "Ver todos", upcomingPayments: "Proximos pagos", allPayments: "Todos los pagos" }, browseCta: { title: "{n} nuevos tratos coinciden con tus criterios", sub: "Memphis · TN · MS · Hasta 75% LTV · 12%+", btn: "Explorar tratos" }, badges: { active: "Activo", closing: "Cerrando", maturity: "{n}d para vencer", pending: "Pendiente", received: "Recibido" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Fondeado 22 Sept · 12 meses", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mes", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Fondeado 3 Ago · 12 meses", loan2Amt: "$95,000", loan2Rate: "12% · $950/mes", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Cierre en progreso", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mes", pay1Date: "Vence 1 Oct", pay2Date: "Vence 1 Oct", pay3Date: "Pagado 1 Sept", pay4Date: "Pagado 1 Sept" },
-      settings: {
+    sidebar: { menu: "Menú", dashboard: "Tablero", browse: "Explorar tratos", active: "Préstamos activos", payments: "Pagos", offers: "Ofertas enviadas", settings: "Configuración", preferences: "Preferencias", entities: "Entidades", verifyMsg: "Completar verificación" },  
+    settings: {
         title: "Configuracion",
         sub: "Administra tu cuenta, notificaciones y facturacion.",
         verifyBanner: { text1: "Tu perfil no esta verificado.", text2: "Completa la verificacion para desbloquear ofertas.", btn: "Verificar ahora — $99" },
@@ -684,7 +685,7 @@ const es = {
     errorAuth: "Sesion no valida o no iniciada.", 
     errorFetch: "Error al obtener tratos", 
     errorNetwork: "Error de red desconocido", 
-    dealDetails: { title: "Detalle del Trato", back: "Volver al mercado", overview: "Resumen del Trato", propertyDetails: "Detalles de la Propiedad", borrowerProfile: "Perfil del Prestatario", fundDeal: "Contactar / Enviar Oferta", arv: "Valor Estimado (ARV)", rehab: "Presupuesto de Remodelacion", aiComps: "Comparables (RentCast API)", verifiedInvestor: "Inversor Verificado", identityConfirmed: "Identidad confirmada", pmlRating: "Calificacion PML", history: "Historial", fundingVerification: "Verificacion de Fondeo", completed: "Completada", dealsCompleted: "tratos completados", months: "meses" } 
+    dealDetails: { title: "Detalle del Trato", back: "Volver a explorar", overview: "Resumen del Trato", propertyDetails: "Detalles de la Propiedad", borrowerProfile: "Perfil del Prestatario", fundDeal: "Contactar / Enviar Oferta", arv: "Valor Estimado (ARV)", rehab: "Presupuesto de Remodelacion", aiComps: "Comparables (RentCast API)", verifiedInvestor: "Inversor Verificado", identityConfirmed: "Identidad confirmada", pmlRating: "Calificacion PML", history: "Historial", fundingVerification: "Verificacion de Fondeo", completed: "Completada", dealsCompleted: "tratos completados", months: "meses", postedAgo: "Publicado hace {days} dias", loanTypeStr: "Prestamo puente", identityShielded: "Identidad oculta", shieldNote: "Rostro, nombre y entidad estan ocultos hasta que envies una oferta y el prestatario acepte.", score: "Puntaje", goodStanding: "Al Corriente", memberSince: "Miembro desde", identityVerified: "Identidad verificada", stats: { propsOwned: "Propiedades", activePurchases: "Compras/Ano", currentLoans: "Prestamos PML", totalBorrowed: "Total Pedido PML", onTime: "Pagos a Tiempo", dealsClosed: "Tratos Cerrados PML" }, dealDocs: "Documentos del trato:", docPurchase: "Contrato de compra", docTitleMiss: "Falta info de titulo", docInsMiss: "Falta seguro", unlockBar: "Envia una oferta para desbloquear la identidad completa.", unlockSub: "Nombre, rostro, entidad y contacto visibles despues de que el prestatario acepte.", requestDocs: "Solicitar docs", dealNumbers: "Numeros del Trato", loanRequested: "Monto Solicitado", rateTerm: "Tasa / Plazo", ltvLabel: "Loan-to-Value", ltvCap: "dentro del limite de 75%", purchasePrice: "Precio de Compra", rehabBudget: "Ppto. Remodelacion", allInCost: "Costo Total", profitArv: "Ganancia al ARV", titleCompany: "Compania de Titulos", insuranceCo: "Aseguradora", mapTitle: "Ubicacion + Comparables", mapSubj: "Propiedad", mapSales: "Comps Venta", mapRental: "Comps Renta", salesComps: "Comps Venta", rentalComps: "Comps Renta", sold: "Vendido", activeListing: "Listado activo", leased: "Rentado", submitOffer: "Enviar una Oferta", formLoanAmount: "Monto del Prestamo", formRate: "Tasa de Interes (%)", formTerm: "Plazo", formPoints: "Puntos", formDraw: "Estructura de Retiros", formDrawFull: "Todo al cierre", formDraws: "En partes", formMsg: "Mensaje al prestatario (opcional)", formMsgPh: "Presentate o anota alguna condicion...", calcMoInt: "Interes mensual (IO)", calcTotalInt: "Interes total ganado", btnSubmit: "Enviar oferta", btnDraft: "Guardar borrador", offerNote: "Enviar una oferta desbloquea la identidad completa del prestatario y abre el canal de mensajes para este trato. El prestatario no vera tu informacion de contacto hasta que acepte." } 
   },
   managePayments: { title: "Gestión de Pagos", subtitle: "Administra tus cuentas bancarias por entidad y revisa tus próximos cobros automáticos (ACH).", autopay: "Autopay (ACH)", autopayDesc: "Los pagos se deducirán automáticamente de la cuenta asociada a la entidad prestataria en su fecha de vencimiento.", addAccount: "Vincular Cuenta a Entidad", entityLabel: "Entidad:", addAccountModal: { title: "Vincular Cuenta Bancaria", subtitle: "Selecciona la entidad prestataria y vincula su cuenta bancaria de forma segura.", selectEntity: "Selecciona la entidad (LLC/Corp)", routingLabel: "Número de Ruta (Routing)", accountLabel: "Número de Cuenta (Account)", submit: "Vincular con Stripe", cancel: "Cancelar" }, upcomingTitle: "Próximos Cargos Programados", historyTitle: "Historial de Transacciones", back: "Volver al panel" },
   
@@ -1109,12 +1110,27 @@ const es = {
           { day: "4", subject: "Tienes capital. Hay tratos publicados esta semana.", desc: "Explora tratos en vivo — no requiere cuenta", tag: "Prueba social", tagColor: "purple" },
           { day: "7", subject: "¿Cuánto estás ganando por cada dólar desplegado?", desc: "Las matemáticas detrás de $100K, $250K, $500K desplegados al 12%", tag: "ROI / Mates", tagColor: "purple" },
           { day: "10", subject: "Una pregunta antes de dejar de escribirte", desc: "Vía rápida o envío lento — tú eliges", tag: "Bifurcación", tagColor: "green" }
-        ]
-      }
-    }
-};
+                ]
+              }
+            },
+            messaging: {
+              title: "Mensajes",
+              dealThreads: "Conversaciones",
+              activeThread: "Conversacion activa",
+              status: "Estado: Pre-cierre",
+              inputPlaceholder: "Mensaje...",
+              send: "Enviar",
+              warningNote: "Los numeros de telefono y correos estan bloqueados. Todo contacto se mantiene en la plataforma. | Archivos soportados: imagenes, PDFs, documentos.",
+              blockedMsg: "Mensaje bloqueado — contiene informacion de contacto. Toda comunicacion debe mantenerse en la plataforma.",
+              justNow: "Justo ahora",
+              view: "Ver",
+              offerAccepted: "Oferta aceptada",
+              achAuth: "Autorizacion ACH completada",
+              readyToClose: "El prestatario notifico al prestamista — listo para cerrar"
+            }
+        };
 
-type Copy = typeof es;
+        type Copy = typeof es;
 
 const en: Copy = {
   meta: {
@@ -1762,6 +1778,7 @@ const en: Copy = {
     }
   },
   dashboardLender: { title: "Lender Dashboard", subtitle: "Total control over your capital and yields.", metrics: { availableCapital: "Capital (Available / Deployed)", capitalDeployed: "Capital Deployed", nextPayments: "Next Payments (30 days)", avgInterest: "Avg. Interest Rate", activeBorrowers: "Active Borrowers" }, sections: { commitmentLetters: "Sent Commitment Letters", upcomingClosings: "Upcoming Closings / Payoffs", activeLoans: "Active Loans (Return)", }, tableHeaders: { borrower: "Borrower", amount: "Amount", status: "Status", type: "Type", date: "Date", action: "Action", loan: "Loan", rateBalance: "Rate / Balance" }, labels: { cap: "Prin:", int: "Int:" }, recentPayments: "Latest Received Payments", actions: { marketplace: "Browse Marketplace", viewContracts: "View my contracts" }, toggle: { open: "Open to deals", closed: "Not taking loans" }, table: { date: "Date", borrower: "Borrower", property: "Property", total: "Total Payment", principal: "Principal", interest: "Interest" }, emptyHistory: "The rest of the history will be rendered here.", loading: "Loading dashboard...", errorAuth: "Invalid or expired session.", errorFetch: "Error loading dashboard information", errorNetwork: "Unknown network error", unassigned: "Unassigned", borrowerFallback: "Borrower", emptyCommitments: "No pending commitments", emptyClosings: "No upcoming closings in the system.", emptyLoans: "No active loans", emptyPayments: "No recently processed payments.", mimic: { greeting: "Good morning, {name}.", portfolioSub: "{company} — lender portfolio overview.", stats: { capitalDeployed: "Capital deployed", acrossActive: "Across {n} active loans", monthlyIncome: "Monthly income", interestPayments: "Interest payments", newDeals: "New deals today", matchCriteria: "Match your criteria", maturingSoon: "Maturing soon", within60: "Within 60 days" }, alerts: { maturityTitle: "Maturity alert", maturityMsg: "{address} matures in {days} days — {date}", maturitySub: "{amount} @ {rate}% · Contact borrower to discuss payoff or extension." }, cards: { activeLoans: "Active loans", viewAll: "View all", upcomingPayments: "Upcoming payments", allPayments: "All payments" }, browseCta: { title: "{n} new deals match your criteria", sub: "Memphis · TN · MS · Up to 75% LTV · 12%+", btn: "Browse deals" }, badges: { active: "Active", closing: "Closing", maturity: "{n}d to maturity", pending: "Pending", received: "Received" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Funded Sept 22 · 12 months", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mo", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Funded Aug 3 · 12 months", loan2Amt: "$95,000", loan2Rate: "12% · $950/mo", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Closing in progress", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mo", pay1Date: "Due Oct 1", pay2Date: "Due Oct 1", pay3Date: "Paid Sept 1", pay4Date: "Paid Sept 1" },
+    sidebar: { menu: "Menu", dashboard: "Dashboard", browse: "Browse deals", active: "Active loans", payments: "Payments", offers: "Offers sent", settings: "Settings", preferences: "Preferences", entities: "Entities", verifyMsg: "Complete verification" },  
       settings: {
         title: "Settings",
         sub: "Manage your account, notifications, and billing.",
@@ -1795,7 +1812,7 @@ const en: Copy = {
     errorAuth: "Invalid or expired session.", 
     errorFetch: "Error fetching deals", 
     errorNetwork: "Unknown network error", 
-    dealDetails: { title: "Deal Details", back: "Back to marketplace", overview: "Deal Overview", propertyDetails: "Property Details", borrowerProfile: "Borrower Profile", fundDeal: "Contact / Send Offer", arv: "Estimated Value (ARV)", rehab: "Rehab Budget", aiComps: "Comparables (RentCast API)", verifiedInvestor: "Verified Investor", identityConfirmed: "Identity confirmed", pmlRating: "PML Rating", history: "Track Record", fundingVerification: "Funding Verification", completed: "Completed", dealsCompleted: "deals completed", months: "months" } 
+    dealDetails: { title: "Deal Details", back: "Back to browse", overview: "Deal Overview", propertyDetails: "Property Details", borrowerProfile: "Borrower Profile", fundDeal: "Contact / Send Offer", arv: "Estimated Value (ARV)", rehab: "Rehab Budget", aiComps: "Comparables (RentCast API)", verifiedInvestor: "Verified Investor", identityConfirmed: "Identity confirmed", pmlRating: "PML Rating", history: "Track Record", fundingVerification: "Funding Verification", completed: "Completed", dealsCompleted: "deals completed", months: "months", postedAgo: "Posted {days} days ago", loanTypeStr: "Bridge loan", identityShielded: "Identity shielded", shieldNote: "Face, name, and entity are hidden until you submit an offer and the borrower accepts.", score: "Score", goodStanding: "Good Standing", memberSince: "Member since", identityVerified: "Identity verified", stats: { propsOwned: "Properties Owned", activePurchases: "Active Purchases/Yr", currentLoans: "Current Loans on PML", totalBorrowed: "Total Borrowed on PML", onTime: "On-Time Payments", dealsClosed: "Deals Closed on PML" }, dealDocs: "Deal docs:", docPurchase: "Purchase contract", docTitleMiss: "Title info missing", docInsMiss: "Insurance missing", unlockBar: "Submit an offer to unlock full identity.", unlockSub: "Name, face, entity, and contact visible after borrower accepts.", requestDocs: "Request docs", dealNumbers: "Deal Numbers", loanRequested: "Loan Requested", rateTerm: "Rate / Term", ltvLabel: "Loan-to-Value", ltvCap: "within 75% cap", purchasePrice: "Purchase Price", rehabBudget: "Rehab Budget", allInCost: "All-In Cost", profitArv: "Profit at ARV", titleCompany: "Title Company", insuranceCo: "Insurance Co.", mapTitle: "Property Location + Comps", mapSubj: "Subject Property", mapSales: "Sales Comps", mapRental: "Rental Comps", salesComps: "Sales Comps", rentalComps: "Rental Comps", sold: "Sold", activeListing: "Active listing", leased: "Leased", submitOffer: "Submit an Offer", formLoanAmount: "Loan Amount", formRate: "Interest Rate (%)", formTerm: "Term", formPoints: "Points", formDraw: "Draw Structure", formDrawFull: "Full at close", formDraws: "Draws", formMsg: "Message to borrower (optional)", formMsgPh: "Introduce yourself or note any conditions...", calcMoInt: "Monthly interest (IO)", calcTotalInt: "Total interest earned", btnSubmit: "Submit offer", btnDraft: "Save as draft", offerNote: "Submitting an offer unlocks the borrower's full identity and opens the messaging channel for this deal. The borrower will not see your contact info until they accept." } 
   },
   managePayments: { title: "Payment Management", subtitle: "Manage your bank accounts by entity and review your upcoming automatic (ACH) charges.", autopay: "Autopay (ACH)", autopayDesc: "Payments will be automatically deducted from the account associated with the borrowing entity on its due date.", addAccount: "Link Account to Entity", entityLabel: "Entity:", addAccountModal: { title: "Link Bank Account", subtitle: "Select the borrowing entity and securely link its bank account.", selectEntity: "Select Entity (LLC/Corp)", routingLabel: "Routing Number", accountLabel: "Account Number", submit: "Link via Stripe", cancel: "Cancel" }, upcomingTitle: "Upcoming Scheduled Charges", historyTitle: "Transaction History", back: "Back to dashboard" },
   
@@ -2220,9 +2237,24 @@ const en: Copy = {
           { day: "4", subject: "You have capital. There are deals posted this week.", desc: "Browse live deals — no account required", tag: "Social proof", tagColor: "purple" },
           { day: "7", subject: "How much are you earning per dollar deployed?", desc: "The math behind $100K, $250K, $500K deployed at 12%", tag: "ROI / Math", tagColor: "purple" },
           { day: "10", subject: "One question before I stop emailing you", desc: "Fast track or slow drip — you choose", tag: "Branch point", tagColor: "green" }
-        ]
-      }
-    }
-};
+                ]
+              }
+            },
+            messaging: {
+              title: "Messages",
+              dealThreads: "Deal threads",
+              activeThread: "Active thread",
+              status: "Status: Pre-closing",
+              inputPlaceholder: "Message...",
+              send: "Send",
+              warningNote: "Phone numbers and email addresses typed in this chat are blocked. All contact stays inside the platform. | Supported attachments: images, PDFs, documents.",
+              blockedMsg: "Message blocked — contains contact information. All communication must stay within the platform.",
+              justNow: "Just now",
+              view: "View",
+              offerAccepted: "Offer accepted",
+              achAuth: "ACH authorization completed",
+              readyToClose: "Borrower notified lender — ready to close"
+            }
+        };
 
-export const copy: Record<Lang, Copy> = { es, en };
+        export const copy: Record<Lang, Copy> = { es, en };
