@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import AccountSecurityModal from "./AccountSecurityModal";
+
+
 
 export default function SettingsView() {
   const { t } = useSite();
@@ -164,6 +167,9 @@ export default function SettingsView() {
           <div className="text-[13px] text-[#8898aa]">{s.billing.none}</div>
         </div>
       </div>
+
+      {/* Security Actions (Boton Modal) */}
+      <AccountSecurityModal />
 
       {/* Danger zone */}
       <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
