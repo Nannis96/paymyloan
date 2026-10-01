@@ -49,6 +49,11 @@ const es = {
       allStar: { name: "Estrella", desc: "10+ tratos · holográfico" },
       limited: { name: "Limitada", desc: "10+ tratos · 0 atrasos" },
       fields: { loan: "Monto", rate: "Tasa", term: "Plazo", arv: "ARV", type: "Tipo", market: "Mercado" }
+    },
+    map: {
+      loading: "Cargando mapa...",
+      errorTitle: "No se pudo cargar el mapa.",
+      reload: "Recargar pagina"
     }
   },
 
@@ -687,7 +692,125 @@ const es = {
     errorNetwork: "Error de red desconocido", 
     dealDetails: { title: "Detalle del Trato", back: "Volver a explorar", overview: "Resumen del Trato", propertyDetails: "Detalles de la Propiedad", borrowerProfile: "Perfil del Prestatario", fundDeal: "Contactar / Enviar Oferta", arv: "Valor Estimado (ARV)", rehab: "Presupuesto de Remodelacion", aiComps: "Comparables (RentCast API)", verifiedInvestor: "Inversor Verificado", identityConfirmed: "Identidad confirmada", pmlRating: "Calificacion PML", history: "Historial", fundingVerification: "Verificacion de Fondeo", completed: "Completada", dealsCompleted: "tratos completados", months: "meses", postedAgo: "Publicado hace {days} dias", loanTypeStr: "Prestamo puente", identityShielded: "Identidad oculta", shieldNote: "Rostro, nombre y entidad estan ocultos hasta que envies una oferta y el prestatario acepte.", score: "Puntaje", goodStanding: "Al Corriente", memberSince: "Miembro desde", identityVerified: "Identidad verificada", stats: { propsOwned: "Propiedades", activePurchases: "Compras/Ano", currentLoans: "Prestamos PML", totalBorrowed: "Total Pedido PML", onTime: "Pagos a Tiempo", dealsClosed: "Tratos Cerrados PML" }, dealDocs: "Documentos del trato:", docPurchase: "Contrato de compra", docTitleMiss: "Falta info de titulo", docInsMiss: "Falta seguro", unlockBar: "Envia una oferta para desbloquear la identidad completa.", unlockSub: "Nombre, rostro, entidad y contacto visibles despues de que el prestatario acepte.", requestDocs: "Solicitar docs", dealNumbers: "Numeros del Trato", loanRequested: "Monto Solicitado", rateTerm: "Tasa / Plazo", ltvLabel: "Loan-to-Value", ltvCap: "dentro del limite de 75%", purchasePrice: "Precio de Compra", rehabBudget: "Ppto. Remodelacion", allInCost: "Costo Total", profitArv: "Ganancia al ARV", titleCompany: "Compania de Titulos", insuranceCo: "Aseguradora", mapTitle: "Ubicacion + Comparables", mapSubj: "Propiedad", mapSales: "Comps Venta", mapRental: "Comps Renta", salesComps: "Comps Venta", rentalComps: "Comps Renta", sold: "Vendido", activeListing: "Listado activo", leased: "Rentado", submitOffer: "Enviar una Oferta", formLoanAmount: "Monto del Prestamo", formRate: "Tasa de Interes (%)", formTerm: "Plazo", formPoints: "Puntos", formDraw: "Estructura de Retiros", formDrawFull: "Todo al cierre", formDraws: "En partes", formMsg: "Mensaje al prestatario (opcional)", formMsgPh: "Presentate o anota alguna condicion...", calcMoInt: "Interes mensual (IO)", calcTotalInt: "Interes total ganado", btnSubmit: "Enviar oferta", btnDraft: "Guardar borrador", offerNote: "Enviar una oferta desbloquea la identidad completa del prestatario y abre el canal de mensajes para este trato. El prestatario no vera tu informacion de contacto hasta que acepte." } 
   },
+  counterOffer: {
+    title: "Contraoferta",
+    subtitle: "3802 University Cove — revisa los terminos y responde",
+    deal: {
+      requested: "solicitado",
+      months: "meses",
+      arv: "ARV",
+      ltv: "LTV",
+      rehab: "Rehab"
+    },
+    thread: {
+      original: "Solicitud original",
+      yourOffer: "Tu oferta",
+      borrowerCounter: "Contraoferta del prestatario",
+      awaiting: "Esperando tu respuesta",
+      noChange: "Sin cambios",
+      reqLower: "Solicito menor",
+      reqHigher: "Solicito mayor",
+      metHalfway: "Punto medio"
+    },
+    terms: {
+      amount: "Monto",
+      rate: "Tasa",
+      term: "Plazo",
+      points: "Puntos"
+    },
+    actions: {
+      title: "Responder a la contraoferta de",
+      sub: "acepta, rechaza o envia otra contraoferta.",
+      accept: "Aceptar estos terminos",
+      decline: "Rechazar",
+      counter: "Enviar contraoferta",
+      formTitle: "Enviar una contraoferta",
+      noteLabel: "Nota al prestatario",
+      notePh: "Explica tu contraoferta...",
+      sendBtn: "Enviar contraoferta"
+    }
+  },
   managePayments: { title: "Gestión de Pagos", subtitle: "Administra tus cuentas bancarias por entidad y revisa tus próximos cobros automáticos (ACH).", autopay: "Autopay (ACH)", autopayDesc: "Los pagos se deducirán automáticamente de la cuenta asociada a la entidad prestataria en su fecha de vencimiento.", addAccount: "Vincular Cuenta a Entidad", entityLabel: "Entidad:", addAccountModal: { title: "Vincular Cuenta Bancaria", subtitle: "Selecciona la entidad prestataria y vincula su cuenta bancaria de forma segura.", selectEntity: "Selecciona la entidad (LLC/Corp)", routingLabel: "Número de Ruta (Routing)", accountLabel: "Número de Cuenta (Account)", submit: "Vincular con Stripe", cancel: "Cancelar" }, upcomingTitle: "Próximos Cargos Programados", historyTitle: "Historial de Transacciones", back: "Volver al panel" },
+  commitmentLetterDoc: {
+    label: "Carta de Compromiso — Generada automáticamente por PayMyLoan.ai",
+    print: "Imprimir",
+    download: "Descargar PDF",
+    docType: "Carta de Compromiso de Préstamo Privado",
+    title: "Carta de Compromiso de Préstamo",
+    subtitle: "Este compromiso está sujeto a las condiciones enumeradas a continuación y expira 24 horas después de su emisión.",
+    sections: {
+      parties: "Partes",
+      property: "Propiedad",
+      terms: "Términos del préstamo",
+      fees: "Tarifas pagaderas al cierre",
+      conditions: "Condiciones del compromiso",
+      agreement: "Acuerdo"
+    },
+    labels: {
+      lender: "Prestamista",
+      lenderSig: "Firmante del prestamista",
+      borrower: "Prestatario",
+      borrowerSig: "Firmante del prestatario",
+      address: "Dirección de la propiedad",
+      propType: "Tipo de propiedad",
+      exit: "Estrategia de salida",
+      loanAmount: "Monto del préstamo",
+      purchaseFunded: "Precio de compra fondeado",
+      rehabFunded: "Remodelación fondeada",
+      interestRate: "Tasa de interés",
+      monthlyPayment: "Pago mensual de intereses",
+      perDiem: "Per diem",
+      term: "Plazo del préstamo",
+      maturity: "Fecha de vencimiento",
+      ltv: "Loan-to-value (LTV)",
+      disbursement: "Desembolso de remodelación",
+      origination: "Originación (1 punto)",
+      appraisal: "Tarifa de avalúo",
+      admin: "Tarifa de administración",
+      wire: "Tarifa de transferencia",
+      pmlFee: "Tarifa de plataforma PML (facilitación)",
+      totalFees: "Total de tarifas al cierre",
+      lenderSigRole: "Firma del prestamista",
+      borrowerSigRole: "Firma del prestatario",
+      signed: "Firmado:"
+    },
+    values: {
+      heldBack: "retenido en retiros",
+      perAnnum: "anual (año de 360 días)",
+      io: "(solo interés)",
+      drawBased: "Basado en retiros — el prestamista libera tras inspección",
+      esignedBy: "Firma electrónica de",
+      footerGen: "Generado por PayMyLoan.ai",
+      footerId: "ID del Documento:",
+      footerLegal: "Este documento es legalmente vinculante tras la ejecución electrónica de ambas partes.",
+      footerTag: "Construido para Main Street, No Wall Street"
+    },
+    pmlFeeNote: "La tarifa de plataforma PML ($1,150) se paga a PayMyLoan LLC al cierre. Las instrucciones de transferencia se han proporcionado directamente a la compañía de títulos. Esta tarifa aplica porque PayMyLoan.ai facilitó la conexión entre prestatario y prestamista.",
+    conditionsList: [
+      "Avalúo satisfactorio confirmando ARV de no menos de $165,000",
+      "Evidencia de seguro de propiedad con el prestamista nombrado como asegurado adicional",
+      "Título limpio y póliza de seguro de título al cierre",
+      "Documentos de la entidad prestataria (operating agreement, carta EIN)",
+      "Acuerdo de compraventa ejecutado",
+      "Alcance de trabajo y cotizaciones de contratistas para presupuesto de remodelación",
+      "Todas las tarifas enumeradas arriba pagadas al cierre vía el estado de liquidación (settlement statement)",
+      "Este compromiso expira 24 horas después de su emisión a menos que sea aceptado por el prestatario"
+    ],
+    agreementTexts: [
+      "Al firmar a continuación, ambas partes aceptan los términos y condiciones establecidos en esta Carta de Compromiso. Este documento se ejecuta de acuerdo con la Ley de Firmas Electrónicas en el Comercio Global y Nacional (E-SIGN Act) y la Ley Uniforme de Transacciones Electrónicas (UETA). Las firmas electrónicas tienen el mismo peso legal que las firmas manuscritas.",
+      "Este compromiso no constituye una garantía de fondeo. El fondeo está sujeto a la satisfacción de todas las condiciones enumeradas anteriormente y a la finalización de una revisión final al cierre."
+    ],
+    errorState: {
+      title: "Documento no disponible",
+      desc: "No pudimos generar la Carta de Compromiso para este contrato. Esto suele ocurrir por dos razones:",
+      reason1Title: "1. Faltan los términos financieros",
+      reason1Desc: "Debes ir a la opción de 'Emitir Carta de Compromiso' primero para definir montos, tasas y tarifas de cierre.",
+      reason2Title: "2. Permisos o enlace incorrecto",
+      reason2Desc: "El contrato pertenece a otra cuenta, no tienes acceso a él, o el enlace no existe.",
+      btnContract: "Volver al contrato",
+      btnAll: "Ir a mis contratos"
+    }
+  },
   
   onboarding: {
     topSkip: "Omitir por ahora",
@@ -1176,6 +1299,11 @@ const en: Copy = {
       allStar: { name: "All-Star", desc: "10+ deals · black holographic" },
       limited: { name: "Limited", desc: "10+ deals · 0 late" },
       fields: { loan: "Loan", rate: "Rate", term: "Term", arv: "ARV", type: "Type", market: "Market" }
+    },
+    map: {
+      loading: "Loading map...",
+      errorTitle: "Could not load the map.",
+      reload: "Reload page"
     }
   },
 
@@ -1814,7 +1942,125 @@ const en: Copy = {
     errorNetwork: "Unknown network error", 
     dealDetails: { title: "Deal Details", back: "Back to browse", overview: "Deal Overview", propertyDetails: "Property Details", borrowerProfile: "Borrower Profile", fundDeal: "Contact / Send Offer", arv: "Estimated Value (ARV)", rehab: "Rehab Budget", aiComps: "Comparables (RentCast API)", verifiedInvestor: "Verified Investor", identityConfirmed: "Identity confirmed", pmlRating: "PML Rating", history: "Track Record", fundingVerification: "Funding Verification", completed: "Completed", dealsCompleted: "deals completed", months: "months", postedAgo: "Posted {days} days ago", loanTypeStr: "Bridge loan", identityShielded: "Identity shielded", shieldNote: "Face, name, and entity are hidden until you submit an offer and the borrower accepts.", score: "Score", goodStanding: "Good Standing", memberSince: "Member since", identityVerified: "Identity verified", stats: { propsOwned: "Properties Owned", activePurchases: "Active Purchases/Yr", currentLoans: "Current Loans on PML", totalBorrowed: "Total Borrowed on PML", onTime: "On-Time Payments", dealsClosed: "Deals Closed on PML" }, dealDocs: "Deal docs:", docPurchase: "Purchase contract", docTitleMiss: "Title info missing", docInsMiss: "Insurance missing", unlockBar: "Submit an offer to unlock full identity.", unlockSub: "Name, face, entity, and contact visible after borrower accepts.", requestDocs: "Request docs", dealNumbers: "Deal Numbers", loanRequested: "Loan Requested", rateTerm: "Rate / Term", ltvLabel: "Loan-to-Value", ltvCap: "within 75% cap", purchasePrice: "Purchase Price", rehabBudget: "Rehab Budget", allInCost: "All-In Cost", profitArv: "Profit at ARV", titleCompany: "Title Company", insuranceCo: "Insurance Co.", mapTitle: "Property Location + Comps", mapSubj: "Subject Property", mapSales: "Sales Comps", mapRental: "Rental Comps", salesComps: "Sales Comps", rentalComps: "Rental Comps", sold: "Sold", activeListing: "Active listing", leased: "Leased", submitOffer: "Submit an Offer", formLoanAmount: "Loan Amount", formRate: "Interest Rate (%)", formTerm: "Term", formPoints: "Points", formDraw: "Draw Structure", formDrawFull: "Full at close", formDraws: "Draws", formMsg: "Message to borrower (optional)", formMsgPh: "Introduce yourself or note any conditions...", calcMoInt: "Monthly interest (IO)", calcTotalInt: "Total interest earned", btnSubmit: "Submit offer", btnDraft: "Save as draft", offerNote: "Submitting an offer unlocks the borrower's full identity and opens the messaging channel for this deal. The borrower will not see your contact info until they accept." } 
   },
+  counterOffer: {
+    title: "Counter-Offer",
+    subtitle: "3802 University Cove — review terms and respond",
+    deal: {
+      requested: "requested",
+      months: "months",
+      arv: "ARV",
+      ltv: "LTV",
+      rehab: "Rehab"
+    },
+    thread: {
+      original: "Original request",
+      yourOffer: "Your offer",
+      borrowerCounter: "Borrower counter",
+      awaiting: "Awaiting your response",
+      noChange: "No change",
+      reqLower: "Requested lower",
+      reqHigher: "Requested higher",
+      metHalfway: "Met halfway"
+    },
+    terms: {
+      amount: "Loan amount",
+      rate: "Rate",
+      term: "Term",
+      points: "Points"
+    },
+    actions: {
+      title: "Respond to",
+      sub: "accept, decline, or send another counter.",
+      accept: "Accept these terms",
+      decline: "Decline",
+      counter: "Send a counter",
+      formTitle: "Send a counter-offer",
+      noteLabel: "Note to borrower",
+      notePh: "Explain your counter-offer...",
+      sendBtn: "Send counter-offer"
+    }
+  },
   managePayments: { title: "Payment Management", subtitle: "Manage your bank accounts by entity and review your upcoming automatic (ACH) charges.", autopay: "Autopay (ACH)", autopayDesc: "Payments will be automatically deducted from the account associated with the borrowing entity on its due date.", addAccount: "Link Account to Entity", entityLabel: "Entity:", addAccountModal: { title: "Link Bank Account", subtitle: "Select the borrowing entity and securely link its bank account.", selectEntity: "Select Entity (LLC/Corp)", routingLabel: "Routing Number", accountLabel: "Account Number", submit: "Link via Stripe", cancel: "Cancel" }, upcomingTitle: "Upcoming Scheduled Charges", historyTitle: "Transaction History", back: "Back to dashboard" },
+  commitmentLetterDoc: {
+    label: "Commitment Letter — Auto-generated by PayMyLoan.ai",
+    print: "Print",
+    download: "Download PDF",
+    docType: "Private Lending Commitment Letter",
+    title: "Loan Commitment Letter",
+    subtitle: "This commitment is subject to the conditions listed below and expires 24 hours from issuance.",
+    sections: {
+      parties: "Parties",
+      property: "Property",
+      terms: "Loan terms",
+      fees: "Fees payable at closing",
+      conditions: "Conditions of commitment",
+      agreement: "Agreement"
+    },
+    labels: {
+      lender: "Lender",
+      lenderSig: "Lender signatory",
+      borrower: "Borrower",
+      borrowerSig: "Borrower signatory",
+      address: "Property address",
+      propType: "Property type",
+      exit: "Exit strategy",
+      loanAmount: "Loan amount",
+      purchaseFunded: "Purchase price funded",
+      rehabFunded: "Rehab funded",
+      interestRate: "Interest rate",
+      monthlyPayment: "Monthly interest payment",
+      perDiem: "Per diem",
+      term: "Loan term",
+      maturity: "Maturity date",
+      ltv: "Loan-to-value (LTV)",
+      disbursement: "Rehab disbursement",
+      origination: "Origination (1 point)",
+      appraisal: "Appraisal fee",
+      admin: "Admin fee",
+      wire: "Wire fee",
+      pmlFee: "PML platform fee (facilitation)",
+      totalFees: "Total fees at closing",
+      lenderSigRole: "Lender signature",
+      borrowerSigRole: "Borrower signature",
+      signed: "Signed:"
+    },
+    values: {
+      heldBack: "held back in draws",
+      perAnnum: "per annum (360-day year)",
+      io: "(interest only)",
+      drawBased: "Draw-based — lender releases upon inspection",
+      esignedBy: "e-Signed by",
+      footerGen: "Generated by PayMyLoan.ai",
+      footerId: "Document ID:",
+      footerLegal: "This document is legally binding upon electronic execution by both parties.",
+      footerTag: "Built for Main Street, Not Wall Street"
+    },
+    pmlFeeNote: "The PML platform fee ($1,150) is payable to PayMyLoan LLC at closing. Wire instructions have been provided directly to the title company. This fee applies because PayMyLoan.ai facilitated the connection between borrower and lender.",
+    conditionsList: [
+      "Satisfactory appraisal confirming ARV of no less than $165,000",
+      "Evidence of property insurance with lender named as additional insured",
+      "Clear title and title insurance policy at closing",
+      "Borrower entity documents (operating agreement, EIN letter)",
+      "Executed purchase and sale agreement",
+      "Scope of work and contractor bids for rehab budget",
+      "All fees listed above paid at closing via the settlement statement",
+      "This commitment expires 24 hours from issuance unless accepted by borrower"
+    ],
+    agreementTexts: [
+      "By signing below, both parties agree to the terms and conditions set forth in this Commitment Letter. This document is executed in accordance with the Electronic Signatures in Global and National Commerce Act (E-SIGN Act) and the Uniform Electronic Transactions Act (UETA). Electronic signatures carry the same legal weight as handwritten signatures.",
+      "This commitment does not constitute a guarantee of funding. Funding is contingent on satisfaction of all conditions listed above and completion of a final review at closing."
+    ],
+    errorState: {
+      title: "Document unavailable",
+      desc: "We couldn't generate the Commitment Letter for this contract. This usually happens for two reasons:",
+      reason1Title: "1. Missing financial terms",
+      reason1Desc: "You must go to 'Issue Commitment Letter' first to set the loan amounts, rates, and closing fees.",
+      reason2Title: "2. Incorrect link or permissions",
+      reason2Desc: "The contract belongs to another account, you don't have access to it, or the link is broken.",
+      btnContract: "Back to contract",
+      btnAll: "Go to my contracts"
+    }
+  },
   
   onboarding: {
     topSkip: "Skip for now",

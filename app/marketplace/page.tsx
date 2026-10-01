@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MapPin, List as ListIcon, Map as MapIcon } from "lucide-react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import MapLoader from "@/app/components/map/MapLoader";
 import { FilterChip, DealCard } from "@/app/components/ui";
 import { API_ROUTES } from "@/app/lib/endpoints";
-
 interface PropertyData {
   addressLine1?: string;
   city: string;
@@ -152,40 +152,27 @@ function MarketplaceContent() {
       {/* Main Content Area (Split Screen) */}
       <div className="mx-auto flex w-full max-w-[1400px] flex-1 overflow-hidden p-6 lg:px-10">
         
-        {/* Left Side: Map (Hidden on mobile if list view is active) */}
-        <div className={`relative flex-1 overflow-hidden rounded-xl border border-rule bg-blue-50 dark:border-blue-900/30 dark:bg-[#0c1222] ${isMapView ? "block" : "hidden"} lg:block`}>
-          {/* Map Grid Background Pattern */}
-          <div 
-            className="absolute inset-0 opacity-20" 
-            style={{ 
-              backgroundImage: "repeating-linear-gradient(0deg, #3b82f6 0, #3b82f6 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #3b82f6 0, #3b82f6 1px, transparent 1px, transparent 40px)" 
-            }}
-          />
-          
-          {/* Mock Map Pins representing deals */}
-          <div className="absolute left-[35%] top-[40%] flex items-center justify-center">
-            <div className="absolute h-8 w-8 animate-ping rounded-full bg-accent/40" />
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-accent text-white shadow-[0_0_0_3px_white] dark:shadow-[0_0_0_3px_#111]">
-              <MapPin size={16} />
-            </div>
-          </div>
-          
-          <div className="absolute left-[65%] top-[25%] flex h-6 w-6 items-center justify-center rounded-full bg-accent text-white shadow-[0_0_0_3px_white] dark:shadow-[0_0_0_3px_#111]">
-            <span className="text-[10px] font-bold">2</span>
-          </div>
+        <div className={`relative flex-1 overflow-hidden rounded-xl border border-rule bg-surface-2 ${isMapView ? "block" : "hidden"} lg:block`}>
+  <MapLoader 
+    deals={deals.filter(d => {
+      // Aplicar misma lógica de filtrado que en la lista
+      const type = d.projectType?.includes("FLIP") ? "Bridge" : "Slow flip";
+      if (activeFilter === "bridge" && type !== "Bridge") return false;
+      if (activeFilter === "slowFlip" && type !== "Slow flip") return false;
+      return true;
+    })} 
+    t={t} 
+    center={[35.127, -89.977]} // Memphis (Default)
+  />
 
-          <div className="absolute left-[45%] top-[70%] flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-[0_0_0_3px_white] dark:shadow-[0_0_0_3px_#111]">
-             <MapPin size={12} />
-          </div>
-
-          {/* Map Legend */}
-          <div className="absolute bottom-4 left-4 rounded-lg border border-rule/50 bg-surface/90 p-3 shadow-md backdrop-blur-sm">
-            <div className="flex flex-col gap-2 text-[11px] font-medium text-ink-2">
-              <div className="flex items-center gap-2"><div className="h-2.5 w-2.5 rounded-full bg-accent" /> {m.filters.bridge}</div>
-              <div className="flex items-center gap-2"><div className="h-2.5 w-2.5 rounded-full bg-green-500" /> {m.filters.slowFlip}</div>
-            </div>
-          </div>
-        </div>
+  {/* Map Legend (Flotante) */}
+  <div className="absolute bottom-4 left-4 z-[400] rounded-lg border border-rule/50 bg-surface/90 p-3 shadow-md backdrop-blur-sm">
+    <div className="flex flex-col gap-2 text-[11px] font-medium text-ink-2">
+      <div className="flex items-center gap-2"><div className="h-2.5 w-2.5 rounded-full bg-accent" /> {m.filters.bridge}</div>
+      <div className="flex items-center gap-2"><div className="h-2.5 w-2.5 rounded-full bg-green-500" /> {m.filters.slowFlip}</div>
+    </div>
+  </div>
+</div>
 
         {/* Right Side: Scrollable Deal List */}
         <div className={`flex w-full flex-col gap-4 overflow-y-auto lg:ml-6 lg:w-[420px] xl:w-[480px] ${!isMapView ? "block" : "hidden lg:flex"}`}>

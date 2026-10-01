@@ -3,19 +3,9 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { ShieldCheck, Lock, CheckCircle2, AlertCircle, ChevronLeft, Image as ImageIcon } from "lucide-react";
-
-// Importamos el mapa dinámicamente para evitar errores de SSR en Next.js
-const MapClient = dynamic(() => import("@/app/components/ui/MapClient"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-full w-full items-center justify-center bg-surface-2 text-xs font-semibold text-ink-3">
-      Cargando mapa...
-    </div>
-  ),
-});
+import MapLoader from "@/app/components/map/MapLoader";
 
 function MarketplaceDetailContent() {
   const params = useParams();
@@ -283,11 +273,12 @@ function MarketplaceDetailContent() {
                 {m.mapTitle}
               </div>
               <div className="relative h-[260px] w-full overflow-hidden rounded-lg border border-rule bg-surface-2 z-0">
-                <MapClient 
+                <MapLoader 
                   center={mapCenter}
                   subject={subjectMarker}
                   sales={salesMarkers}
                   rentals={rentalMarkers}
+                  zoom={14}
                 />
               </div>
               <div className="mt-2.5 flex flex-wrap gap-4">

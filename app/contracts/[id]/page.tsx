@@ -180,8 +180,13 @@ function ContractDetailContent() {
             <Link href={`/contracts/${contract.id}/issue-commitment`} className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-4 py-2 text-sm font-bold text-accent transition-colors hover:opacity-80">
               {t.issueCommitment.title}
             </Link>
-            <Link href={`/contracts/${contract.id}/commitment`} className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-4 py-2 text-sm font-bold text-accent transition-colors hover:opacity-80">
+            {/* Este boton lleva a la vista del PDF */}
+            <Link href={`/contracts/${contract.id}/commitment-doc`} className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-4 py-2 text-sm font-bold text-accent transition-colors hover:opacity-80">
               {t.commitmentLetter.title}
+            </Link>
+            {/* Este boton lleva a la firma para el prestatario */}
+            <Link href={`/contracts/${contract.id}/commitment`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
+              {t.dashboardBorrower.reviewCommitment}
             </Link>
             <Link href={`/contracts/${contract.id}/payoff`} className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
               {t.dashboardBorrower.actions.payoff}
