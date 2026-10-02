@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import LandingHeader from "@/app/components/landing/LandingHeader";
 
-export default function PrivacyNotice() {
+export default function TermsOfService() {
   const { t } = useSite();
-  const pr = t.privacy;
+  const terms = t.terms;
 
   return (
     <div className="flex min-h-screen flex-col bg-surface">
@@ -20,23 +20,23 @@ export default function PrivacyNotice() {
             href="/" 
             className="mb-4 inline-block text-[13px] font-semibold text-ink-3 transition-colors hover:text-accent"
           >
-            &larr; {pr.back}
+            &larr; {terms.back}
           </Link>
           <div className="mb-1.5 text-[28px] font-extrabold tracking-[-0.5px] text-ink">
-            {pr.title}
+            {terms.title}
           </div>
           <div className="text-[13px] text-ink-3">
-            {pr.meta}
+            {terms.meta}
           </div>
         </div>
 
         {/* Tabla de Contenidos (TOC) */}
         <div className="mb-9 rounded-[10px] border border-rule bg-surface-2 p-5 md:p-6 shadow-sm">
           <div className="mb-3 text-[12px] font-bold uppercase tracking-[0.5px] text-ink-3">
-            {pr.tocTitle}
+            {terms.tocTitle}
           </div>
           <ul className="grid grid-cols-1 gap-1 list-none md:grid-cols-2">
-            {pr.sections.map((sec) => (
+            {terms.sections.map((sec) => (
               <li key={sec.id}>
                 <a 
                   href={`#${sec.id}`} 
@@ -51,7 +51,7 @@ export default function PrivacyNotice() {
 
         {/* Secciones */}
         <div>
-          {pr.sections.map((sec) => (
+          {terms.sections.map((sec) => (
             <div key={sec.id} id={sec.id} className="mb-9 scroll-mt-24">
               <h2 className="mb-3 border-t border-rule pt-2 text-[16px] font-extrabold text-ink">
                 {sec.heading}
@@ -64,39 +64,10 @@ export default function PrivacyNotice() {
                 </p>
               ))}
 
-              {/* Tabla (si existe) */}
-              {sec.table && (
-                <div className="my-3 overflow-x-auto rounded-lg border border-rule">
-                  <table className="w-full border-collapse">
-                    <thead className="bg-surface-2 border-b border-rule">
-                      <tr>
-                        {sec.table.headers.map((th, i) => (
-                          <th key={`th-${i}`} className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-[0.4px] text-ink-3">
-                            {th}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-surface-2 text-[13px] text-ink-2">
-                      {sec.table.rows.map((row, rIdx) => (
-                        <tr key={`tr-${rIdx}`}>
-                          {row.map((cell, cIdx) => (
-                            <td key={`td-${cIdx}`} className={`px-3 py-2.5 ${cIdx === 0 ? "font-semibold text-ink" : ""}`}>
-                              {cell}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Lista con vinetas (si existe) */}
+              {/* Lista con viñetas (si existe) */}
               {sec.list && (
                 <ul className="mb-2.5 list-outside list-disc pl-5 space-y-1">
                   {sec.list.map((item, i) => {
-                    /* Soporte para texto en negrita al inicio */
                     const parts = item.split(": ");
                     if (parts.length > 1) {
                       return (
@@ -114,17 +85,24 @@ export default function PrivacyNotice() {
                 </ul>
               )}
 
-              {/* Parrafos posteriores (si existen) */}
+              {/* Párrafos posteriores (si existen) */}
               {sec.paragraphsAfter?.map((p, i) => (
                 <p key={`pa-${i}`} className="mb-2.5 text-[13px] leading-[1.9] text-ink-2">
                   {p}
                 </p>
               ))}
 
-              {/* Highlight / Alerta (si existe) */}
+              {/* Highlight (si existe) */}
               {sec.highlight && (
                 <div className="my-3 rounded-r-md border-l-[3px] border-accent bg-accent-soft px-4 py-3 text-[13px] leading-[1.8] text-ink">
                   {sec.highlight}
+                </div>
+              )}
+
+              {/* Warning (si existe) */}
+              {sec.warning && (
+                <div className="my-3 rounded-r-md border-l-[3px] border-crit bg-red-50 px-4 py-3 text-[13px] leading-[1.8] text-red-900 dark:bg-red-900/10 dark:text-red-300">
+                  {sec.warning}
                 </div>
               )}
 

@@ -1,372 +1,316 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import MapLoader from "@/app/components/map/MapLoader";
+
+// Interfaces para mapear los datos del backend a la vista
+interface PropertyData {
+  addressLine1?: string;
+  city: string;
+  state: string;
+  afterRepairValue?: number | string;
+}
+
+interface LoanRequestItem {
+  id: string;
+  property: PropertyData;
+  projectType: string;
+  totalLoanAmountRequested: number | string;
+  rehabAmount?: number | string;
+  requestedClosingDate: string;
+  status: string;
+  _count?: {
+    quotes?: number;
+  };
+  quotes?: any[];
+  lat?: number;
+  lng?: number;
+}
 
 export default function BrowseDealsView() {
   const { t, lang } = useSite();
+  const m = t.marketplace;
   const isEs = lang === "es";
-  
-  // Usamos el diccionario de marketplace para los filtros base
-  const m = t.marketplace; 
 
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [activeView, setActiveView] = useState("grid");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Estados de datos
+  const [deals, setDeals] = useState<LoanRequestItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filters = [
-    { id: "all", label: m.filters.all || (isEs ? "Todos" : "All") },
-    { id: "bridge", label: m.filters.bridge || "Bridge" },
-    { id: "slowflip", label: m.filters.slowFlip || "Slow flip" },
-    { id: "new", label: m.filters.new || (isEs ? "Nuevos" : "New this week") }
-  ];
+  // Estados de filtros
+  const [activeFilter, setActiveFilter] = useState<string>("ALL");
+  const [filterState, setFilterState] = useState("");
+  const [filterLtv, setFilterLtv] = useState("");
+  const [filterRate, setFilterRate] = useState("");
+  const [viewMode, setViewMode] = useState<"map" | "grid">("map");
+  const [mapCenter, setMapCenter] = useState<[number, number]>([35.13, -89.99]);
+  const [mapZoom, setMapZoom] = useState<number>(11);
+  const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
 
-  const mockDeals = [
-    {
-      id: 1,
-      type: "bridge",
-      isNew: true,
-      address: "3802 University Cove",
-      city: "Memphis, TN 38127 · Single family",
-      loanLabel: isEs ? "Monto solicitado" : "Loan request",
-      loanAmount: "$95,000",
-      arvLabel: "ARV",
-      arvAmount: "$155,000",
-      rateLabel: isEs ? "Tasa max" : "Max rate",
-      rateVal: "12%",
-      rateSub: isEs ? "IO · 12 meses" : "IO · 12 months",
-      rehabLabel: isEs ? "Remodelacion" : "Rehab",
-      rehabVal: "$22,000",
-      ltv: 61,
-      offers: 2,
-      timeAgo: isEs ? "Hace 2h" : "2h ago"
-    },
-    {
-      id: 2,
-      type: "bridge",
-      isNew: false,
-      address: "5331 Scrivener Dr",
-      city: "Memphis, TN 38134 · Single family",
-      loanLabel: isEs ? "Monto solicitado" : "Loan request",
-      loanAmount: "$78,000",
-      arvLabel: "ARV",
-      arvAmount: "$125,000",
-      rateLabel: isEs ? "Tasa max" : "Max rate",
-      rateVal: "12%",
-      rateSub: isEs ? "IO · 9 meses" : "IO · 9 months",
-      rehabLabel: isEs ? "Remodelacion" : "Rehab",
-      rehabVal: "$18,500",
-      ltv: 62,
-      offers: 0,
-      timeAgo: isEs ? "Hace 5h" : "5h ago"
-    },
-    {
-      id: 3,
-      type: "slowflip",
-      isNew: true,
-      address: "2175 Burlingate Dr",
-      city: "Memphis, TN 38016 · Single family",
-      loanLabel: isEs ? "Monto del prestamo" : "Loan amount",
-      loanAmount: "$182,000",
-      arvLabel: isEs ? "Precio de compra" : "Purchase price",
-      arvAmount: "$182,000",
-      rateLabel: isEs ? "Tasa" : "Rate",
-      rateVal: "10%",
-      rateSub: isEs ? "Amort. 30 años" : "30yr amortized",
-      rehabLabel: "P&I Mensual",
-      rehabVal: "$1,596",
-      ltv: 70,
-      offers: 1,
-      timeAgo: isEs ? "Hace 1d" : "1d ago"
-    },
-    {
-      id: 4,
-      type: "bridge",
-      isNew: false,
-      address: "4015 Charles Dr",
-      city: "Memphis, TN 38128 · Single family",
-      loanLabel: isEs ? "Monto solicitado" : "Loan request",
-      loanAmount: "$110,000",
-      arvLabel: "ARV",
-      arvAmount: "$172,000",
-      rateLabel: isEs ? "Tasa max" : "Max rate",
-      rateVal: "12%",
-      rateSub: isEs ? "IO · 12 meses" : "IO · 12 months",
-      rehabLabel: isEs ? "Remodelacion" : "Rehab",
-      rehabVal: "$31,000",
-      ltv: 64,
-      offers: 3,
-      timeAgo: isEs ? "Hace 2d" : "2d ago"
-    },
-    {
-      id: 5,
-      type: "slowflip",
-      isNew: false,
-      address: "3554 Venable Rd",
-      city: "Memphis, TN 38122 · Single family",
-      loanLabel: isEs ? "Monto del prestamo" : "Loan amount",
-      loanAmount: "$98,000",
-      arvLabel: isEs ? "Precio de compra" : "Purchase price",
-      arvAmount: "$98,000",
-      rateLabel: isEs ? "Tasa" : "Rate",
-      rateVal: "10%",
-      rateSub: isEs ? "Amort. 20 años" : "20yr amortized",
-      rehabLabel: "P&I Mensual",
-      rehabVal: "$946",
-      ltv: 75,
-      offers: 0,
-      timeAgo: isEs ? "Hace 3d" : "3d ago"
+  // Configuracion visual de estados
+  const statusConfig: Record<string, { color: string; label: string; pillClass: string }> = {
+    PUBLISHED: { color: "#16a34a", label: isEs ? "Necesita Fondeo" : "Needs Funding", pillClass: "bg-[#f0fdf4] text-[#16a34a]" },
+    MATCHED: { color: "#2563eb", label: isEs ? "Fondeo Activo" : "Active Funding", pillClass: "bg-[#eff6ff] text-[#2563eb]" },
+    CLOSED: { color: "#6b7280", label: isEs ? "Cerrado" : "Closed", pillClass: "bg-[#f3f4f6] text-[#6b7280]" },
+    DRAFT: { color: "#8898aa", label: "Borrador", pillClass: "bg-surface-2 text-ink-3" }
+  };
+
+  // Fetch de tratos
+  useEffect(() => {
+    async function fetchDeals() {
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        const response = await fetch(API_ROUTES.marketplace.loanRequests, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error(m.errorFetch);
+        const json = await response.json();
+
+        if (json.success) {
+          let items = json.data.items || [];
+          
+          // Fallback a mocks si la base de datos esta vacia agregando lat y lng reales
+          if (items.length === 0) {
+            items = [
+              { id: "1", property: { addressLine1: "2847 Lamar Ave", city: "Memphis", state: "TN", afterRepairValue: 210000 }, projectType: "BRIDGE", totalLoanAmountRequested: 145000, status: "PUBLISHED", lat: 35.092226, lng: -89.967683 },
+              { id: "2", property: { addressLine1: "1032 S Wellington St", city: "Memphis", state: "TN", afterRepairValue: 148000 }, projectType: "FIX_AND_FLIP", totalLoanAmountRequested: 92000, status: "PUBLISHED", lat: 35.119001, lng: -90.047118 },
+              { id: "3", property: { addressLine1: "4412 Raleigh Lagrange Rd", city: "Memphis", state: "TN", afterRepairValue: 255000 }, projectType: "BRIDGE", totalLoanAmountRequested: 168000, status: "MATCHED", lat: 35.200777, lng: -89.916074 },
+              { id: "4", property: { addressLine1: "5541 Getwell Rd", city: "Southaven", state: "MS", afterRepairValue: 195000 }, projectType: "BRIDGE", totalLoanAmountRequested: 130000, status: "PUBLISHED", lat: 34.938882, lng: -89.936791 },
+            ];
+          }
+          setDeals(items);
+        } else {
+          throw new Error(json.error?.message || m.errorFetch);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : m.errorNetwork);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  ];
+    fetchDeals();
+  }, [m.errorFetch, m.errorNetwork]);
 
-  const filteredDeals = mockDeals.filter(deal => {
-    if (activeFilter === "all") return true;
-    if (activeFilter === "new") return deal.isNew;
-    return deal.type === activeFilter;
-  });
-
-  return (
-    <div className="animate-in fade-in duration-300">
+  // Filtrado de tratos
+  const filteredDeals = useMemo(() => {
+    return deals.filter(deal => {
+      // Filtro de boton principal
+      if (activeFilter !== "ALL" && deal.status !== activeFilter) return false;
       
-      {/* Encabezado de Pagina */}
-      <div className="mb-[20px] flex items-center justify-between">
-        <div className="text-[22px] font-[700] tracking-[-0.3px] text-[#0a2540]">
-          {m.title || (isEs ? "Explorar tratos" : "Browse deals")}
-        </div>
-        <div className="flex gap-[8px]">
-          <button className="flex items-center gap-[6px] rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[8px] font-sans text-[13px] font-[500] text-[#425466] cursor-pointer hover:border-[#aab7c4] hover:text-[#0a2540] transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            {m.mapView || (isEs ? "Vista de mapa" : "Map view")}
-          </button>
-        </div>
-      </div>
+      // Filtros desplegables
+      if (filterState && deal.property?.state !== filterState) return false;
+      
+      const arv = Number(deal.property?.afterRepairValue || 0);
+      const loan = Number(deal.totalLoanAmountRequested || 0);
+      const ltv = arv > 0 ? (loan / arv) * 100 : 0;
+      
+      if (filterLtv && ltv >= parseInt(filterLtv)) return false;
+      // Simulamos filtrado de tasa
+      if (filterRate) return false;
+      
+      return true;
+    });
+  }, [deals, activeFilter, filterState, filterLtv, filterRate]);
 
-      {/* Tira de Estadisticas */}
-      <div className="mb-[24px] grid grid-cols-2 md:grid-cols-4 gap-[1px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-[#e6ebf1]">
-        <div className="bg-white p-[16px_20px]">
-          <div className="mb-[6px] text-[11px] font-[600] uppercase tracking-[0.5px] text-[#8898aa]">
-            {isEs ? "Tratos activos" : "Active deals"}
-          </div>
-          <div className="text-[22px] font-[700] tracking-[-0.5px] text-[#0a2540]">24</div>
-          <div className="mt-[3px] text-[11px] text-[#8898aa]">
-            <span className="font-[600] text-[#2e7d32]">+3</span> {isEs ? "esta semana" : "this week"}
-          </div>
-        </div>
-        <div className="bg-white p-[16px_20px]">
-          <div className="mb-[6px] text-[11px] font-[600] uppercase tracking-[0.5px] text-[#8898aa]">
-            {isEs ? "Monto prom." : "Avg loan amount"}
-          </div>
-          <div className="text-[22px] font-[700] tracking-[-0.5px] text-[#0a2540]">$118K</div>
-          <div className="mt-[3px] text-[11px] text-[#8898aa]">
-            {isEs ? "Mediana" : "Median"} $105K
-          </div>
-        </div>
-        <div className="bg-white p-[16px_20px]">
-          <div className="mb-[6px] text-[11px] font-[600] uppercase tracking-[0.5px] text-[#8898aa]">
-            {isEs ? "LTV prom." : "Avg LTV"}
-          </div>
-          <div className="text-[22px] font-[700] tracking-[-0.5px] text-[#0a2540]">67%</div>
-          <div className="mt-[3px] text-[11px] text-[#8898aa]">
-            {isEs ? "Rango" : "Range"} 52–80%
-          </div>
-        </div>
-        <div className="bg-white p-[16px_20px]">
-          <div className="mb-[6px] text-[11px] font-[600] uppercase tracking-[0.5px] text-[#8898aa]">
-            {isEs ? "Tasa prom." : "Avg interest rate"}
-          </div>
-          <div className="text-[22px] font-[700] tracking-[-0.5px] text-[#0a2540]">11.4%</div>
-          <div className="mt-[3px] text-[11px] text-[#8898aa]">
-            12% {isEs ? "mas comun" : "most common"}
-          </div>
-        </div>
-      </div>
+  // Funciones de utilidad
+  const formatCurrency = (val: number | string) => {
+    const n = Number(val);
+    if (n >= 1000000) return '$' + (n/1000000).toFixed(2).replace(/\.?0+$/,'') + 'M';
+    if (n >= 1000) return '$' + (n/1000).toFixed(0) + 'K';
+    return '$' + n;
+  };
 
-      {/* Filtros */}
-      <div className="mb-[20px] flex flex-wrap items-center gap-[8px]">
-        {filters.map((f) => (
-          <button
-            key={f.id}
-            onClick={() => setActiveFilter(f.id)}
-            className={`cursor-pointer rounded-[20px] border px-[12px] py-[6px] font-sans text-[12px] font-[500] transition-colors ${
-              activeFilter === f.id
-                ? "border-[#635bff] bg-[#f0efff] text-[#635bff]"
-                : "border-[#e6ebf1] bg-white text-[#425466] hover:border-[#aab7c4] hover:text-[#0a2540]"
-            }`}
+  const getCalculatedLtv = (deal: LoanRequestItem) => {
+    const arv = Number(deal.property?.afterRepairValue || 0);
+    const loan = Number(deal.totalLoanAmountRequested || 0);
+    return arv > 0 ? Math.round((loan / arv) * 100) : 0;
+  };
+
+  const handleDealClick = (deal: LoanRequestItem) => {
+    setSelectedDealId(deal.id);
+    if (deal.lat && deal.lng) {
+      setMapCenter([deal.lat, deal.lng]);
+      setMapZoom(14); // Hacemos zoom in a nivel de vecindario
+    }
+  };
+
+  // Evitamos el padding global del dashboard aplicando margenes negativos
+  return (
+    <div className="-mx-[32px] -my-[28px] flex h-[calc(100vh-52px)] flex-col bg-white overflow-hidden font-sans text-ink">
+
+      {/* FILTER BAR */}
+      <div className="flex h-[52px] shrink-0 items-center gap-[12px] border-b border-rule bg-white px-[16px] z-[800]">
+        
+        {/* Toggle principal */}
+        <div className="flex overflow-hidden rounded-[8px] border border-rule">
+          <button 
+            onClick={() => setActiveFilter("ALL")} 
+            className={`cursor-pointer whitespace-nowrap border-r border-rule px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "ALL" ? "bg-[#f6f9fc] text-[#0a2540]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
           >
-            {f.label}
+            {isEs ? "Todos" : "All"}
           </button>
-        ))}
-        
-        <div className="mx-[4px] h-[20px] w-[1px] bg-[#e6ebf1]"></div>
-        
-        <select className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[10px] py-[6px] font-sans text-[12px] text-[#425466] outline-none focus:border-[#635bff]">
-          <option>{isEs ? "Cualquier estado" : "Any state"}</option><option>TN</option><option>MS</option><option>AR</option>
-        </select>
-        <select className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[10px] py-[6px] font-sans text-[12px] text-[#425466] outline-none focus:border-[#635bff]">
-          <option>{isEs ? "Cualquier ZIP" : "Any ZIP"}</option><option>38127</option><option>38128</option><option>38016</option>
-        </select>
-        <select className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[10px] py-[6px] font-sans text-[12px] text-[#425466] outline-none focus:border-[#635bff]">
-          <option>{isEs ? "Cualquier tasa" : "Any rate"}</option><option>≤10%</option><option>≤12%</option><option>≤14%</option>
-        </select>
-        <select className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[10px] py-[6px] font-sans text-[12px] text-[#425466] outline-none focus:border-[#635bff]">
-          <option>{isEs ? "Cualquier LTV" : "Any LTV"}</option><option>≤60%</option><option>≤70%</option><option>≤80%</option>
+          <button 
+            onClick={() => setActiveFilter("PUBLISHED")} 
+            className={`cursor-pointer whitespace-nowrap border-r border-rule px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "PUBLISHED" ? "bg-[#f0fdf4] text-[#16a34a]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
+          >
+            {isEs ? "Necesita Fondeo" : "Needs Funding"}
+          </button>
+          <button 
+            onClick={() => setActiveFilter("MATCHED")} 
+            className={`cursor-pointer whitespace-nowrap border-r border-rule px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "MATCHED" ? "bg-[#eff6ff] text-[#2563eb]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
+          >
+            {isEs ? "Fondeo Activo" : "Active Funding"}
+          </button>
+          <button 
+            onClick={() => setActiveFilter("CLOSED")} 
+            className={`cursor-pointer whitespace-nowrap px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "CLOSED" ? "bg-[#f3f4f6] text-[#6b7280]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
+          >
+            {isEs ? "Cerrado" : "Closed"}
+          </button>
+        </div>
+
+        <div className="h-[24px] w-[1px] shrink-0 bg-rule"></div>
+
+        <select 
+          value={filterState} 
+          onChange={(e) => setFilterState(e.target.value)} 
+          className="min-w-[100px] cursor-pointer appearance-none rounded-[6px] border border-rule bg-white px-[10px] py-[6px] pr-[26px] text-[12px] text-[#425466] outline-none"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238898aa' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+        >
+          <option value="">{isEs ? "Todos los Estados" : "All States"}</option>
+          <option value="TN">Tennessee</option>
+          <option value="MS">Mississippi</option>
         </select>
 
-        <div className="ml-auto flex gap-[6px]">
-          <div className="flex overflow-hidden rounded-[6px] border border-[#e6ebf1]">
-            <div 
-              onClick={() => setActiveView("grid")}
-              className={`flex h-[30px] w-[30px] cursor-pointer items-center justify-center text-[13px] ${activeView === "grid" ? "bg-[#f6f9fc] text-[#0a2540]" : "text-[#8898aa]"}`}
-            >⊞</div>
-            <div 
-              onClick={() => setActiveView("list")}
-              className={`flex h-[30px] w-[30px] cursor-pointer items-center justify-center text-[13px] ${activeView === "list" ? "bg-[#f6f9fc] text-[#0a2540]" : "text-[#8898aa]"}`}
-            >☰</div>
-          </div>
+        <select 
+          value={filterLtv} 
+          onChange={(e) => setFilterLtv(e.target.value)} 
+          className="min-w-[100px] cursor-pointer appearance-none rounded-[6px] border border-rule bg-white px-[10px] py-[6px] pr-[26px] text-[12px] text-[#425466] outline-none"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238898aa' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+        >
+          <option value="">LTV: {isEs ? "Cualquiera" : "Any"}</option>
+          <option value="65">Under 65%</option>
+          <option value="70">Under 70%</option>
+          <option value="75">Under 75%</option>
+        </select>
+
+        <span className="ml-[4px] whitespace-nowrap text-[12px] text-[#8898aa]">
+          {isEs ? "Mostrando" : "Showing"} <strong className="font-[600] text-[#0a2540]">{filteredDeals.length}</strong> {isEs ? "tratos" : "deals"}
+        </span>
+
+        {/* View Toggle */}
+        <div className="ml-auto flex overflow-hidden rounded-[6px] border border-rule bg-white">
+          <button 
+            onClick={() => setViewMode("grid")}
+            className={`cursor-pointer border-r border-rule px-[10px] py-[6px] transition-colors ${viewMode === "grid" ? "bg-[#f0efff] text-[#635bff]" : "text-[#8898aa]"}`}
+            title="Grid view"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button 
+            onClick={() => setViewMode("map")}
+            className={`cursor-pointer px-[10px] py-[6px] transition-colors ${viewMode === "map" ? "bg-[#f0efff] text-[#635bff]" : "text-[#8898aa]"}`}
+            title="Map view"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          </button>
         </div>
       </div>
 
-      {/* Grid de Tratos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px]">
-        {filteredDeals.map((deal) => {
-          const isSlowFlip = deal.type === "slowflip";
-          const colorMain = isSlowFlip ? "#2e7d32" : "#635bff";
-          const bgMain = isSlowFlip ? "#e8f5e9" : "#f0efff";
+      {/* CONTENT AREA */}
+      <div className="flex flex-1 overflow-hidden">
+        
+        {/* MAP CONTAINER - Usa el componente MapLoader para evitar errores de SSR */}
+        <div id="map-container" className={`relative flex-1 ${viewMode === "grid" ? "hidden md:block" : "block"}`}>
+          <MapLoader 
+            deals={filteredDeals} 
+            t={t} 
+            center={mapCenter} 
+            zoom={mapZoom} 
+            onMarkerClick={handleDealClick}
+          />
+        </div>
 
-          return (
-            <div key={deal.id} className="overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white transition-all hover:border-[#aab7c4] hover:shadow-[0_4px_12px_rgba(10,37,64,0.06)]">
-              
-              {/* Tarjeta Arriba */}
-              <div className="border-b border-[#e6ebf1] p-[18px_18px_14px]">
-                <div className="mb-[8px] flex items-center gap-[8px]">
-                  <span className={`inline-flex items-center rounded-[10px] px-[10px] py-[3px] text-[11px] font-[600]`} style={{ color: colorMain, backgroundColor: bgMain }}>
-                    {isSlowFlip ? "Slow flip" : "⚡ Bridge"}
-                  </span>
-                  {deal.isNew && (
-                    <span className="inline-flex items-center rounded-[10px] bg-[#fff8e1] px-[10px] py-[3px] text-[11px] font-[600] text-[#b45309]">
-                      {isEs ? "Nuevo" : "New"}
-                    </span>
-                  )}
-                </div>
-                <div className="mb-[2px] text-[14px] font-[700] text-[#0a2540]">{deal.address}</div>
-                <div className="text-[12px] text-[#8898aa]">{deal.city}</div>
-              </div>
-
-              {/* Tarjeta Medio */}
-              <div className="grid grid-cols-2 gap-[10px] p-[14px_18px]">
-                <div className="flex flex-col gap-[2px]">
-                  <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{deal.loanLabel}</div>
-                  <div className="text-[14px] font-[700] text-[#0a2540]">{deal.loanAmount}</div>
-                </div>
-                <div className="flex flex-col gap-[2px]">
-                  <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{deal.arvLabel}</div>
-                  <div className="text-[14px] font-[700] text-[#0a2540]">{deal.arvAmount}</div>
-                </div>
-                <div className="flex flex-col gap-[2px]">
-                  <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{deal.rateLabel}</div>
-                  <div className="text-[14px] font-[700] text-[#0a2540]">{deal.rateVal}</div>
-                  <div className="text-[11px] text-[#8898aa]">{deal.rateSub}</div>
-                </div>
-                <div className="flex flex-col gap-[2px]">
-                  <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{deal.rehabLabel}</div>
-                  <div className="text-[14px] font-[700] text-[#0a2540]">{deal.rehabVal}</div>
-                </div>
-              </div>
-
-              {/* Barra LTV & Ofertas */}
-              <div className="flex items-center justify-between bg-[#f6f9fc] p-[12px_18px]">
-                <div className="mr-[16px] flex flex-1 flex-col gap-[4px]">
-                  <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">LTV</div>
-                  <div className="h-[4px] overflow-hidden rounded-[2px] bg-[#e6ebf1]">
-                    <div className="h-full rounded-[2px]" style={{ width: `${deal.ltv}%`, backgroundColor: colorMain }}></div>
-                  </div>
-                  <div className="mt-[2px] text-[11px] font-[700]" style={{ color: colorMain }}>{deal.ltv}%</div>
-                </div>
-                <div className="flex flex-col items-end gap-[6px]">
-                  <div className="text-right text-[11px] text-[#8898aa]">
-                    <strong className="block text-[13px] text-[#0a2540]">{deal.offers}</strong> {deal.offers === 1 ? (isEs ? "oferta" : "offer") : (isEs ? "ofertas" : "offers")}
-                  </div>
-                  <Link href="/marketplace" className="no-underline">
-                    <button 
-                      className="cursor-pointer whitespace-nowrap rounded-[6px] border-none px-[14px] py-[7px] font-sans text-[12px] font-[600] text-white transition-opacity hover:opacity-90 w-full"
-                      style={{ backgroundColor: colorMain }}
-                    >
-                      {isEs ? "Hacer una oferta" : "make an offer"}
-                    </button>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Pie de Tarjeta */}
-              <div className="flex items-center justify-between border-t border-[#e6ebf1] p-[10px_18px]">
-                <div className="flex items-center gap-[7px]">
-                  <div className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border border-[#e6ebf1] bg-[#f6f9fc] text-[10px] text-[#aab7c4]">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
-                  </div>
-                  <span className="text-[11px] italic text-[#aab7c4]">{isEs ? "Identidad oculta" : "Borrower identity hidden"}</span>
-                  <Link href="/marketplace" className="ml-[6px] cursor-pointer whitespace-nowrap text-[10px] font-[700] text-[#635bff] underline">
-                    {isEs ? "Hacer una oferta" : "make an offer"}
-                  </Link>
-                </div>
-                <span className="text-[11px] text-[#aab7c4]">{deal.timeAgo}</span>
-              </div>
+        {/* DEAL LIST PANEL */}
+        <div id="deal-list-panel" className={`flex w-full md:w-[380px] shrink-0 flex-col border-l border-rule bg-white ${viewMode === "map" ? "hidden md:flex" : "flex"}`}>
+          <div className="shrink-0 border-b border-rule p-[16px]">
+            <div className="text-[15px] font-[600] text-[#0a2540]">{isEs ? "Tratos a la vista" : "Deals in view"}</div>
+            <div className="mt-[2px] text-[12px] text-[#8898aa]">
+              {filteredDeals.length} {isEs ? "tratos visibles" : "deals visible"}
             </div>
-          );
-        })}
-
-        {/* Placeholder de "Publica tu trato" */}
-        <div className="flex flex-col items-center justify-center rounded-[10px] border-2 border-dashed border-[#e6ebf1] p-[40px] text-center text-[#aab7c4]">
-          <div className="mb-[6px] text-[14px] font-[600] text-[#425466]">
-            {isEs ? "Publica tu proximo trato" : "Post your next deal"}
           </div>
-          <div className="text-[12px]">
-            {isEs ? "Los prestamistas en PML fondean tratos en 24-72 hrs." : "Lenders on PML fund deals in 24–72 hours."}
+          
+          <div className="flex flex-1 flex-col gap-[8px] overflow-y-auto p-[12px] scrollbar-thin scrollbar-thumb-rule hover:scrollbar-thumb-rule-strong">
+            {isLoading ? (
+              <div className="text-center text-[13px] text-[#8898aa] py-10">{m.loading}</div>
+            ) : filteredDeals.length === 0 ? (
+              <div className="text-center text-[13px] text-[#8898aa] py-10">{m.empty}</div>
+            ) : (
+              filteredDeals.map(deal => {
+                const cfg = statusConfig[deal.status] || statusConfig["DRAFT"];
+                const ltv = getCalculatedLtv(deal);
+
+                return (
+                  <div 
+                    key={deal.id}
+                    onClick={() => handleDealClick(deal)}
+                    className={`relative cursor-pointer rounded-[10px] border bg-white p-[12px_12px_12px_16px] transition-all hover:-translate-y-[1px] hover:shadow-[0_2px_12px_rgba(10,37,64,0.08)] ${selectedDealId === deal.id ? "border-[#635bff] shadow-[0_0_0_2px_#635bff33]" : "border-rule"}`}
+                    style={{ borderLeftWidth: '4px', borderLeftColor: cfg.color }}
+                  >
+                    <div className="mb-[8px] flex items-start justify-between">
+                      <div>
+                        <div className="line-clamp-1 text-[13px] font-[600] leading-[1.3] text-[#0a2540]">
+                          {deal.property?.addressLine1 || "Direccion Pendiente"}
+                        </div>
+                        <div className="mt-[1px] text-[11px] text-[#8898aa]">{deal.property?.city}, {deal.property?.state}</div>
+                      </div>
+                      <span className={`ml-[8px] shrink-0 whitespace-nowrap rounded-[20px] px-[8px] py-[3px] text-[10px] font-[600] ${cfg.pillClass}`}>
+                        {cfg.label}
+                      </span>
+                    </div>
+                    
+                    <div className="mb-[8px] flex gap-[16px]">
+                      <div className="flex-1">
+                        <div className="text-[10px] font-[500] uppercase tracking-[0.4px] text-[#8898aa]">{isEs ? "Monto" : "Loan"}</div>
+                        <div className="mt-[1px] text-[12px] font-[600] text-[#0a2540]">{formatCurrency(deal.totalLoanAmountRequested)}</div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-[10px] font-[500] uppercase tracking-[0.4px] text-[#8898aa]">ARV</div>
+                        <div className="mt-[1px] text-[12px] font-[600] text-[#0a2540]">{formatCurrency(deal.property?.afterRepairValue || 0)}</div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-[10px] font-[500] uppercase tracking-[0.4px] text-[#8898aa]">{isEs ? "Tasa/Plazo" : "Rate/Term"}</div>
+                        <div className="mt-[1px] text-[12px] font-[600] text-[#0a2540]">12% / 12mo</div>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-[8px]">
+                      <div className="h-[3px] rounded-[2px] bg-rule">
+                        <div className="h-[3px] rounded-[2px] bg-[#635bff] transition-all duration-300" style={{ width: `${ltv}%` }}></div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <Link 
+                        href={`/marketplace/${deal.id}`}
+                        onClick={(e) => e.stopPropagation()} 
+                        className="cursor-pointer rounded-[6px] border-none bg-[#635bff] px-[12px] py-[5px] font-sans text-[11px] font-[600] text-white transition-colors hover:bg-[#524ddb]"
+                      >
+                        {isEs ? "Enviar oferta" : "Submit offer"}
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
+
       </div>
-
-      {/* Modal de Oferta */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0a2540]/50 p-4">
-          <div className="relative w-full max-w-[440px] rounded-[12px] bg-white p-[32px] shadow-[0_20px_60px_rgba(10,37,64,0.15)] animate-in zoom-in-95 duration-200">
-            <div className="mb-[8px] text-[18px] font-[800] text-[#0a2540]">
-              {isEs ? "Haz una oferta para conectar" : "Make an offer to connect"}
-            </div>
-            <div className="mb-[20px] text-[13px] leading-[1.6] text-[#8898aa]">
-              {isEs 
-                ? "Enviar una oferta desbloquea la identidad del prestatario, su historial, y abre un canal de mensajes para este trato." 
-                : "Submitting an offer unlocks the borrower's identity, track record, and opens the messaging channel for this deal."}
-              <br /><br />
-              {isEs 
-                ? "El prestatario no vera tu identidad ni contacto hasta que acepte tu oferta." 
-                : "The borrower will not see your identity or contact info until they accept your offer."}
-            </div>
-            <div className="mb-[20px] rounded-[8px] border border-[#c7c4ff] bg-[#f0efff] p-[12px_16px] text-[12px] font-[600] text-[#635bff]">
-              {isEs 
-                ? "Ambas partes se mantienen anonimas hasta que el trato es aceptado — no hay contacto fuera de la plataforma." 
-                : "Both sides stay anonymous until a deal is accepted — no off-platform contact possible."}
-            </div>
-            <div className="flex gap-[10px]">
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="flex-1 cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white p-[11px] font-sans text-[13px] font-[600] text-[#425466] hover:bg-[#f6f9fc] transition-colors"
-              >
-                {isEs ? "Cancelar" : "Cancel"}
-              </button>
-              <button 
-                onClick={() => {
-                  alert(isEs ? "Abriendo formulario de oferta..." : "Offer form opening...");
-                  setIsModalOpen(false);
-                }}
-                className="flex-[2] cursor-pointer rounded-[6px] border-none bg-[#635bff] p-[11px] font-sans text-[13px] font-[700] text-white hover:bg-[#524ddb] transition-colors"
-              >
-                {isEs ? "Continuar al formulario" : "Continue to offer form"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

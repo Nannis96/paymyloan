@@ -1,9 +1,21 @@
 "use client";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 // @ts-ignore
 import "leaflet/dist/leaflet.css";
 import DealPopup from "./ui/DealPopup";
+
+// Componente interno para actualizar el centro y zoom del mapa reactivamente
+function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center && center[0] !== 0) {
+      map.flyTo(center, zoom, { duration: 0.8 });
+    }
+  }, [center, zoom, map]);
+  return null;
+}
 
 // Generador de pines SVG para no depender de imagenes externas
 const createPin = (color: string, label: string) => {
@@ -19,8 +31,7 @@ const createPin = (color: string, label: string) => {
     popupAnchor: [0, -36],
   });
 };
-
-export default function MapClient({ deals, subject, sales, rentals, t, center = [35.127, -89.977], zoom = 11 }: any) {
+export default function MapClient({ deals, subject, sales, rentals, t, center = [35.127, -89.977], zoom = 11, onMarkerClick }: any) {
   // Configura iconos por tipo de trato y comparables
   const bridgeIcon = createPin("#635bff", "B"); 
   const slowFlipIcon = createPin("#16a34a", "S");
@@ -35,22 +46,31 @@ export default function MapClient({ deals, subject, sales, rentals, t, center = 
       scrollWheelZoom={false} 
       className="h-full w-full z-0"
     >
+      <MapUpdater center={center} zoom={zoom} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
       {/* Modo 1: Marketplace (Muestra lista de deals) */}
       {deals && deals.map((deal: any, index: number) => {
-        // En prod usar property.lat y lng. Mockeamos coords esparcidas:
-        const mockLat = center[0] + (Math.random() * 0.1 - 0.05);
-        const mockLng = center[1] + (Math.random() * 0.1 - 0.05);
+        // Usar coordenadas del trato si existen, si no, usar el mock
+        const lat = deal.lat || deal.property?.lat || (center[0] + (Math.random() * 0.1 - 0.05));
+        const lng = deal.lng || deal.property?.lng || (center[1] + (Math.random() * 0.1 - 0.05));
         
         const isSlowFlip = deal.projectType?.includes("SLOW");
         const icon = isSlowFlip ? slowFlipIcon : bridgeIcon;
 
         return (
-          <Marker key={deal.id || index} position={[mockLat, mockLng]} icon={icon}>
+          <Marker 
+            key={deal.id || index} 
+            position={[lat, lng]} 
+            icon={icon}
+            eventHandlers={{
+              click: () => {
+                if (onMarkerClick) onMarkerClick(deal);
+              }
+            }}
+          >
             <Popup className="custom-popup">
               <DealPopup deal={deal} t={t} />
             </Popup>

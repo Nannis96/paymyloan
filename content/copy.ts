@@ -426,7 +426,236 @@ const es = {
   security: { eyebrow: "Seguridad", title: "Aquí se mueve dinero de terceros. El acceso se trata así.", items: [ { title: "Verificación en dos pasos obligatoria", body: "Para prestamistas no es opcional: son quienes controlan a dónde va el dinero.", }, { title: "Permisos por préstamo, no por rol global", body: "Cada consulta se filtra por tu participación en ese préstamo. No hay rol que abra todo.", }, { title: "Nunca guardamos números de cuenta", body: "Stripe guarda el método de pago. Nosotros guardamos su identificador y los últimos cuatro dígitos.", }, { title: "Bitácora de los eventos que importan", body: "Cambios de términos, aceptaciones, aprobación de payoff, cambio de cuenta bancaria y descarga de documentos quedan registrados.", }, { title: "Aviso ante cualquier cambio bancario", body: "Se notifica a las dos partes. Es el vector de fraude clásico en servicing y se trata como tal.", }, { title: "Documentos privados por préstamo", body: "Pagaré, deed of trust y settlement statement se sirven con enlace de vigencia corta, nunca con URL pública.", }, ], },
   finalCta: { eyebrow: "Empieza", title: "Da de alta tu primer préstamo.", body: "Crea la cuenta, captura los términos e invita a la otra parte. El calendario se genera cuando ambos aceptan.", cta: "Crear cuenta", },
   footer: { tagline: "Servicing de préstamos privados con garantía inmobiliaria.", entity: "Subsidiaria de Dueño a Dueño LLC", links: [ { href: "#", label: "Términos de servicio" }, { href: "/aviso-de-privacidad", label: "Aviso de privacidad" }, ], linksNote: "Términos de servicio: [PENDIENTE DE REDACCIÓN]", rights: "Todos los derechos reservados.", },
-  privacy: { eyebrow: "Legal", title: "Aviso de privacidad", updated: "Última actualización: 28 de agosto de 2026", back: "Volver al inicio", intro: [ "Este aviso explica qué datos personales recaba PayMyLoan.ai, para qué los usamos, con quién los compartimos y cómo puedes ejercer tus derechos sobre ellos.", "PayMyLoan.ai está en fase de acceso anticipado: hoy solo recabamos los datos del formulario de lista de espera. Antes de activar el servicing completo de préstamos, actualizaremos este aviso para cubrir los datos del préstamo —propiedad en garantía, términos, pagos y documentos— que se sumarán entonces.", ], sections: [ { heading: "1. Quién es responsable de tus datos", paragraphs: [ "PayMyLoan.ai es la marca bajo la que Dueño a Dueño LLC opera este sitio y, más adelante, la plataforma de servicing de préstamos privados.", "Domicilio para efectos de este aviso: [PENDIENTE DE DEFINIR].", "Ley aplicable y autoridad ante la que puedes acudir si no resolvemos tu solicitud: [PENDIENTE DE DEFINIR].", ], }, { heading: "2. Qué datos recabamos hoy", paragraphs: [ "Mientras estamos en acceso anticipado, el único dato que recabamos es el que dejas en el formulario de lista de espera:", ], list: [ "Nombre completo", "Correo electrónico", "Teléfono", "Contraseña, que se guarda cifrada; nadie en PayMyLoan.ai puede leerla en texto plano", "Si buscas dar un préstamo o recibir uno (solo define qué ves al entrar; no crea ninguna obligación)", "Que aceptaste los términos de servicio y este aviso, con fecha y hora", "Idioma en el que llenaste el formulario", ], }, { heading: "3. Qué datos vamos a recabar cuando actives un préstamo", paragraphs: [ "En cuanto dar de alta o aceptar un préstamo esté disponible, se sumarán los datos propios del servicing:", ], list: [ "Dirección, tipo y, si aplica, número de parcela de la propiedad en garantía", "Monto, tasa, estructura y vencimiento del préstamo, y cada versión de esos términos que aceptaste", "Historial de pagos: fecha, monto y cómo se aplicó a mora, interés y capital", "El identificador de tu método de pago y sus últimos cuatro dígitos; el número de cuenta completo lo guarda Stripe, no nosotros", "Los documentos del préstamo que aceptaste: pagaré, deed of trust y settlement statement", "Fecha, hora e IP de cada aceptación de términos, cambio de cuenta bancaria y descarga de documento", ], }, { heading: "4. Para qué usamos tus datos", paragraphs: [], list: [ "Avisarte cuando tu acceso a la plataforma esté listo", "Crear tu cuenta y, más adelante, administrar el préstamo que diste o que estás pagando", "Calcular el saldo, aplicar pagos y generar el calendario de pagos", "Verificar tu identidad y activar la verificación en dos pasos, obligatoria para prestamistas", "Detectar y avisar de cambios sospechosos, como un cambio de cuenta bancaria", "Cumplir obligaciones legales y fiscales relacionadas con el servicing de préstamos", ], note: "No usamos tus datos para publicidad ni los vendemos a terceros.", }, { heading: "5. Con quién compartimos tus datos", paragraphs: [], list: [ "Con la otra parte del mismo préstamo, pero solo lo necesario para administrarlo: no ve tu contraseña ni el número completo de tu cuenta bancaria", "Con Stripe, que procesa los pagos por ACH y guarda el método de pago; nosotros solo guardamos su identificador y los últimos cuatro dígitos", "Con autoridades, si una ley o una orden judicial nos obliga", ], note: "No compartimos ni vendemos tus datos con fines de mercadotecnia.", }, { heading: "6. Cómo protegemos tus datos", paragraphs: [], list: [ "Verificación en dos pasos obligatoria para prestamistas, porque son quienes controlan a dónde va el dinero", "Permisos por préstamo: cada consulta se filtra por tu participación en ese préstamo específico, no por un rol que abre todo", "Nunca guardamos números de cuenta completos; eso vive en Stripe", "Bitácora de los eventos que importan: cambios de términos, aceptaciones, aprobación de payoff, cambio de cuenta bancaria y descarga de documentos", "Aviso a ambas partes ante cualquier cambio de cuenta bancaria, el vector de fraude más común en servicing", "Documentos privados por préstamo, servidos con enlaces de vigencia corta, nunca con URL pública", ], }, { heading: "7. Cuánto tiempo conservamos tus datos", paragraphs: [ "Si estás en la lista de espera, conservamos tus datos hasta que abras una cuenta o hasta que nos pidas eliminarlos.", "Si tienes un préstamo activo, conservamos los datos del préstamo mientras dure la relación y el tiempo adicional que exija la ley aplicable a documentos financieros. Plazo exacto: [PENDIENTE DE DEFINIR].", ], }, { heading: "8. Tus derechos y cómo ejercerlos", paragraphs: [ "Puedes pedirnos acceder a tus datos, corregirlos, cancelarlos u oponerte a un uso específico. También puedes retirar tu consentimiento en cualquier momento; para la lista de espera basta con que nos lo pidas. Retirar tu consentimiento no afecta el tratamiento que ya hicimos antes de la solicitud.", "Canal para ejercer estos derechos: [PENDIENTE DE DEFINIR — hoy no existe todavía un correo de contacto para PayMyLoan.ai].", ], }, { heading: "9. Cookies y almacenamiento local", paragraphs: [ "El sitio no usa cookies de rastreo ni de publicidad. Guarda dos preferencias en el almacenamiento local de tu navegador —tema claro u oscuro e idioma— que nunca salen de tu dispositivo. Puedes borrarlas desde la configuración de tu navegador.", ], }, { heading: "10. Menores de edad", paragraphs: [ "PayMyLoan.ai no está dirigido a menores de edad y no recaba a sabiendas datos de menores de 18 años.", ], }, { heading: "11. Cambios a este aviso", paragraphs: [ "Si cambiamos este aviso de forma importante —por ejemplo, al activar el servicing completo del préstamo— lo publicaremos aquí con una nueva fecha de actualización antes de tratar los datos nuevos.", ], }, { heading: "12. Contacto", paragraphs: [ "Correo de contacto para privacidad: [PENDIENTE DE DEFINIR].", "Mientras ese canal no exista, puedes usar el mismo correo con el que te registraste en la lista de espera; te responderemos desde ahí en cuanto esté disponible.", ], }, ], },
+  privacy: {
+    eyebrow: "Legal",
+    title: "Aviso de Privacidad",
+    meta: "PayMyLoan.ai · PayMyLoan, LLC · Última actualización: 21 de septiembre de 2026 · Vigencia inmediata",
+    back: "Volver al inicio",
+    tocTitle: "Contenido",
+    sections: [
+      {
+        id: "collect",
+        heading: "1. Qué recopilamos",
+        paragraphs: ["Recopilamos información que proporcionas directamente cuando creas una cuenta, publicas un trato o usas la plataforma:"],
+        table: {
+          headers: ["Tipo de dato", "Cuándo se recopila", "¿Requerido?"],
+          rows: [
+            ["Nombre, correo, teléfono", "Creación de cuenta", "Sí"],
+            ["Nombre de entidad, EIN, estado", "Verificación de negocio", "Al publicar"],
+            ["Dirección personal, fecha de nac.", "Verificación de identidad", "Cuando el prestamista lo solicita"],
+            ["SSN / RFC (Tax ID)", "Verificación de identidad", "Cuando el prestamista lo solicita"],
+            ["Identificación oficial", "Verificación de identidad", "Cuando el prestamista lo solicita"],
+            ["Datos financieros del trato", "Publicación del trato", "Sí"],
+            ["Info. de cuenta bancaria", "Configuración de pagos (afiliados)", "Para pagos"],
+            ["Dispositivo, IP, navegador", "Automáticamente, al usar", "Automático"]
+          ]
+        }
+      },
+      {
+        id: "use",
+        heading: "2. Cómo lo usamos",
+        paragraphs: ["Usamos la información que recopilamos para:"],
+        list: [
+          "Operar y mejorar la plataforma PayMyLoan.ai",
+          "Verificar la identidad y entidad de prestamistas y prestatarios",
+          "Facilitar conexiones entre prestamistas y prestatarios",
+          "Procesar pagos de suscripciones y pagos a afiliados",
+          "Enviar correos transaccionales (alertas de tratos, notificaciones de cierre, recordatorios de pago)",
+          "Detectar fraudes y mantener la seguridad de la plataforma",
+          "Cumplir con obligaciones legales"
+        ],
+        highlight: "No vendemos tu información personal a terceros. Nunca."
+      },
+      {
+        id: "share",
+        heading: "3. Qué compartimos",
+        paragraphs: ["Compartimos información limitada en las siguientes circunstancias:"],
+        list: [
+          "Entre prestamistas y prestatarios: Cuando un trato avanza a la etapa de oferta, los detalles relevantes del trato se comparten entre las partes. Direcciones personales, SSNs e identificaciones oficiales nunca se comparten entre usuarios.",
+          "Compañías de títulos: Cuando se cierra un trato, compartimos el Acuerdo de Tarifa del Prestatario y la Carta de Compromiso con la compañía de títulos para facilitar el cierre.",
+          "Proveedores de servicios: Usamos servicios de terceros para pagos, envío de correos y verificación de identidad. Estos proveedores están obligados por contrato a usar tus datos solo para proporcionarnos servicios.",
+          "Requisitos legales: Podemos divulgar información cuando sea requerido por ley, orden judicial, o para proteger los derechos y la seguridad de nuestros usuarios."
+        ]
+      },
+      {
+        id: "sensitive",
+        heading: "4. Datos sensibles",
+        paragraphs: ["Los Números de Seguro Social (SSNs), identificaciones oficiales y EINs son sensibles y se manejan con el más alto nivel de cuidado:"],
+        list: [
+          "Los SSNs se encriptan en reposo usando encriptación AES-256",
+          "El acceso a los SSNs está restringido solo al personal de verificación autorizado",
+          "Los SSNs nunca se muestran completos en ninguna pantalla o documento",
+          "Los SSNs nunca se comparten con prestamistas, prestatarios o afiliados",
+          "Puedes solicitar la eliminación de tu SSN en cualquier momento contactando a privacy@paymyloan.ai"
+        ]
+      },
+      {
+        id: "security",
+        heading: "5. Seguridad de datos",
+        paragraphs: [
+          "Implementamos medidas de seguridad estándar de la industria, incluyendo encriptación en tránsito (TLS), encriptación en reposo para campos sensibles, controles de acceso y revisiones de seguridad periódicas. Sin embargo, ningún sistema es completamente seguro. No podemos garantizar una seguridad absoluta.",
+          "Si sospechas que tu cuenta ha sido comprometida, contacta a security@paymyloan.ai de inmediato."
+        ]
+      },
+      {
+        id: "cookies",
+        heading: "6. Cookies",
+        paragraphs: ["Usamos cookies y tecnologías de rastreo similares para mantener tu sesión, recordar tus preferencias y analizar el uso de la plataforma. Puedes deshabilitar las cookies en la configuración de tu navegador, pero algunas funciones podrían no operar correctamente."]
+      },
+      {
+        id: "rights",
+        heading: "7. Tus derechos",
+        paragraphs: ["Dependiendo de tu ubicación, podrías tener los siguientes derechos sobre tus datos personales:"],
+        list: [
+          "Acceso: Solicitar una copia de los datos que tenemos sobre ti",
+          "Corrección: Solicitar la corrección de datos inexactos",
+          "Eliminación: Solicitar la eliminación de tu cuenta y datos asociados",
+          "Portabilidad: Solicitar tus datos en un formato portátil",
+          "Exclusión: Darte de baja de los correos de marketing no transaccionales en cualquier momento"
+        ],
+        paragraphsAfter: ["Para ejercer cualquiera de estos derechos, contacta a privacy@paymyloan.ai."]
+      },
+      {
+        id: "retention",
+        heading: "8. Retención de datos",
+        paragraphs: ["Retenemos los datos de tu cuenta mientras esté activa. Después de la eliminación de la cuenta, retenemos ciertos registros según lo requiera la ley (típicamente 7 años para registros financieros). Los documentos de verificación pueden retenerse con fines de cumplimiento."]
+      },
+      {
+        id: "children",
+        heading: "9. Menores de edad",
+        paragraphs: ["PayMyLoan.ai no está dirigido a menores de 18 años. No recopilamos conscientemente información personal de menores. Si crees que un menor nos ha proporcionado información personal, contacta a privacy@paymyloan.ai."]
+      },
+      {
+        id: "contact",
+        heading: "10. Contacto",
+        paragraphs: [
+          "PayMyLoan, LLC",
+          "Memphis, Tennessee",
+          "privacy@paymyloan.ai"
+        ],
+        disclaimer: "Esta política de privacidad se preparó como punto de partida y debe ser revisada por un abogado con licencia antes de su lanzamiento."
+      }
+    ]
+  },
+
+  terms: {
+    eyebrow: "Legal",
+    title: "Términos de Servicio",
+    meta: "PayMyLoan.ai · PayMyLoan, LLC · Última actualización: 21 de septiembre de 2026 · Vigencia inmediata",
+    back: "Volver al inicio",
+    tocTitle: "Contenido",
+    sections: [
+      {
+        id: "platform",
+        heading: "1. Descripción de la plataforma",
+        paragraphs: ["PayMyLoan.ai es una plataforma tecnológica operada por PayMyLoan, LLC que facilita las conexiones entre prestamistas de dinero privado y prestatarios inmobiliarios. PayMyLoan, LLC no es un prestamista, bróker, compañía hipotecaria ni institución financiera. No originamos, suscribimos, fondeamos, administramos ni garantizamos ningún préstamo."],
+        highlight: "PayMyLoan.ai conecta a las personas. Todos los acuerdos de préstamo se realizan directamente entre prestamistas y prestatarios. PayMyLoan, LLC no es parte de ninguna transacción de préstamo.",
+        paragraphsAfter: ["Al usar esta plataforma, aceptas que PayMyLoan, LLC no tiene responsabilidad alguna por el resultado de un préstamo, rendimiento de pagos, incumplimiento, ejecución hipotecaria o pérdida de fondos."]
+      },
+      {
+        id: "eligibility",
+        heading: "2. Elegibilidad",
+        paragraphs: [
+          "Debes tener al menos 18 años de edad y ser residente legal de los Estados Unidos para usar PayMyLoan.ai. Al crear una cuenta, declaras y garantizas que cumples con estos requisitos.",
+          "Los prestamistas deben ser inversores acreditados o entidades institucionales según se define en las leyes de valores aplicables. Al registrarte como prestamista, declaras que cumples con los estándares de acreditación aplicables en tu jurisdicción."
+        ]
+      },
+      {
+        id: "account",
+        heading: "3. Registro de cuenta",
+        paragraphs: [
+          "Aceptas proporcionar información precisa, actual y completa durante el registro. Eres responsable de mantener la confidencialidad de las credenciales de tu cuenta y de toda la actividad bajo tu cuenta.",
+          "PayMyLoan, LLC se reserva el derecho de suspender o terminar cuentas por cualquier violación de estos términos, actividad fraudulenta o conducta que perjudique a la plataforma o a sus usuarios."
+        ]
+      },
+      {
+        id: "lender-terms",
+        heading: "4. Términos para prestamistas",
+        paragraphs: ["Los prestamistas usan PayMyLoan.ai para descubrir y conectar con prestatarios que buscan financiamiento privado. Al hacer una oferta a través de la plataforma, aceptas lo siguiente:"],
+        list: [
+          "Todas las decisiones de préstamo son tomadas de forma independiente por ti. PayMyLoan, LLC no hace recomendaciones, no garantiza la calidad del trato ni investiga la solvencia del prestatario más allá de lo que se muestra en la plataforma.",
+          "Eres el único responsable de llevar a cabo tu propia debida diligencia antes de comprometer fondos.",
+          "Aceptas no responsabilizar a PayMyLoan, LLC por el incumplimiento del prestatario, falta de pago, tergiversación o cualquier otra falla del prestatario en cumplir con sus obligaciones.",
+          "Aceptas no responsabilizar a PayMyLoan, LLC por errores o mala conducta de cualquier compañía de títulos, abogado de cierre o tercero involucrado en una transacción.",
+          "Los prestamistas son responsables de verificar las instrucciones de transferencia bancaria directamente con la compañía de títulos antes de enviar fondos. PayMyLoan, LLC no es responsable por fondos enviados a cuentas incorrectas."
+        ],
+        warning: "Advertencia de fraude electrónico: Nunca transfieras fondos basándote únicamente en un correo electrónico. Llama siempre a la compañía de títulos directamente a un número verificado para confirmar las instrucciones de transferencia antes de enviar cualquier dinero."
+      },
+      {
+        id: "borrower-terms",
+        heading: "5. Términos para prestatarios",
+        paragraphs: ["Los prestatarios usan PayMyLoan.ai para publicar tratos y conectar con prestamistas privados. Al publicar un trato, aceptas lo siguiente:"],
+        list: [
+          "Toda la información enviada sobre tu trato, propiedad, finanzas e identidad debe ser precisa y completa a tu leal saber y entender.",
+          "Aceptas no responsabilizar a PayMyLoan, LLC por la falla de cualquier prestamista en fondear, actuar o cumplir con sus obligaciones.",
+          "Aceptas no responsabilizar a PayMyLoan, LLC por errores de cualquier compañía de títulos, abogado de cierre o tercero.",
+          "Entiendes que PayMyLoan, LLC es una plataforma, no un prestamista, y no tiene autoridad para indicarle a ningún prestamista que fondee tu trato.",
+          "Aceptas los términos de tarifas descritos en el Acuerdo de Tarifas del Prestatario firmado al publicar el trato."
+        ]
+      },
+      {
+        id: "fees",
+        heading: "6. Tarifas y pagos",
+        paragraphs: ["PayMyLoan, LLC cobra las siguientes tarifas a los prestatarios. Los prestamistas siempre usan la plataforma gratis."],
+        list: [
+          "Suscripción mensual: $99/mes, que comienza cuando se publica tu trato. Exenta con un código promocional válido o enlace de referido de afiliado.",
+          "Tarifa de verificación de identidad: $99 por única vez, cobrada solo cuando un prestamista solicita la verificación de identidad de tu cuenta.",
+          "Tarifa de conexión del prestamista: 1% del monto del préstamo, cobrada al cierre en la hoja de liquidación — solo en tratos donde PayMyLoan, LLC conectó al prestatario y al prestamista.",
+          "Tarifa de plataforma mensual (solo tratos conectados por PML): 10% del pago de interés mensual realizado al prestamista, cobrada cada mes durante la vida del préstamo — solo en tratos donde PayMyLoan, LLC hizo la introducción. Ejemplo: si tu pago de interés al prestamista es de $1,150, PayMyLoan, LLC cobra $115 de ese monto cada mes. Esta tarifa se divulga en el Acuerdo de Tarifas al publicar el trato.",
+          "Tarifa de procesamiento de retiros (Draws): $175 por solicitud, deducidos de los fondos antes de desembolsarlos al prestatario.",
+          "Tarifa de extensión: 1% del saldo pendiente del préstamo, cobrada en la hoja de liquidación al cierre de la extensión."
+        ],
+        paragraphsAfter: ["Todas las tarifas se divulgan en el Acuerdo de Tarifas del Prestatario antes de publicar el trato. No se deben tarifas al momento de firmar el acuerdo. Las tarifas aplicables únicamente a los tratos conectados por PML están claramente marcadas arriba."]
+      },
+      {
+        id: "liability",
+        heading: "7. Limitación de responsabilidad",
+        paragraphs: ["En la máxima medida permitida por la ley aplicable, PayMyLoan, LLC, sus oficiales, directores, empleados y afiliados no serán responsables por daños directos, indirectos, incidentales, consecuentes o punitivos que surjan de:"],
+        list: [
+          "Cualquier transacción de préstamo facilitada a través de la plataforma",
+          "Incumplimiento del prestatario, falta de pago o violación de cualquier acuerdo de préstamo",
+          "Falta de fondeo o cumplimiento por parte del prestamista",
+          "Errores, retrasos o mala conducta de compañías de títulos o abogados de cierre",
+          "Fraude electrónico, desvío de fondos o interferencia de terceros",
+          "Cualquier resultado fuera del control directo de PayMyLoan, LLC"
+        ],
+        paragraphsAfter: ["Tu uso de la plataforma constituye tu aceptación de estas limitaciones."]
+      },
+      {
+        id: "advice",
+        heading: "8. Sin asesoramiento de inversión",
+        paragraphs: ["Nada en PayMyLoan.ai constituye asesoramiento financiero, legal o de inversión. Toda la información se proporciona solo con fines informativos. Debes consultar con profesionales calificados antes de tomar cualquier decisión de préstamo o endeudamiento."]
+      },
+      {
+        id: "wire-fraud",
+        heading: "9. Fraude electrónico y seguridad",
+        paragraphs: [
+          "El fraude electrónico es un riesgo grave en transacciones inmobiliarias. PayMyLoan, LLC nunca enviará cambios de último minuto en las instrucciones de transferencia por correo electrónico. Si recibes cualquier comunicación de este tipo, trátala como fraudulenta y contáctanos inmediatamente a security@paymyloan.ai.",
+          "Siempre verifica las instrucciones de transferencia llamando a la compañía de títulos directamente a un número que hayas verificado independientemente antes de enviar cualquier fondo."
+        ]
+      },
+      {
+        id: "termination",
+        heading: "10. Terminación",
+        paragraphs: ["Nos reservamos el derecho de suspender o terminar tu cuenta en cualquier momento por violación de estos términos, actividad fraudulenta o cualquier conducta que determinemos perjudicial para la plataforma o sus usuarios. Las tarifas de suscripción no son reembolsables tras la terminación."]
+      },
+      {
+        id: "law",
+        heading: "11. Ley aplicable",
+        paragraphs: ["Estos términos se rigen por las leyes del Estado de Tennessee, sin tener en cuenta los principios de conflicto de leyes. Cualquier disputa se resolverá en los tribunales del Condado de Shelby, Tennessee."]
+      },
+      {
+        id: "contact",
+        heading: "12. Contacto",
+        paragraphs: [
+          "PayMyLoan, LLC",
+          "Memphis, Tennessee",
+          "legal@paymyloan.ai"
+        ],
+        disclaimer: "Estos términos se prepararon como punto de partida y deben ser revisados por un abogado con licencia antes de su lanzamiento."
+      }
+    ]
+  },
   dashboardAdmin: {
     title: "Resumen de Administrador",
     subtitle: "PayMyLoan.ai · {date}",
@@ -965,6 +1194,68 @@ const es = {
       totalRow: "Total residual mensual",
       totalYear: "Total estimado 12 meses por $100K"
     }
+  },
+
+  affiliateDashboard: {
+    title: "Panel de Afiliado",
+    subtitle: "Rastrea tus referidos, comisiones y pagos",
+    refBadge: {
+      label: "Tu código de referido",
+      linkFormat: "paymyloan.ai/?ref="
+    },
+    stats: {
+      earned: { label: "Total ganado", trend: "+{amount} este mes" },
+      pending: { label: "Pago pendiente", sub: "Se paga el {date}" },
+      active: { label: "Referidos activos", sub: "Ganando mensual" },
+      closed: { label: "Tratos cerrados", sub: "Historico" }
+    },
+    chart: {
+      title: "Ganancias mensuales",
+      sub: "Comisiones de suscripciones + interes compartido + tarifas de cierre",
+      periods: ["3M", "6M", "1A"]
+    },
+    table: {
+      title: "Mis referidos",
+      filters: ["Todos", "Activos", "Cerrados", "Pendientes"],
+      cols: ["Prestatario", "Propiedad", "Préstamo", "Estado", "Tarifa cierre", "Mensual"],
+      status: { active: "Activo", closed: "Liquidado", pending: "Cierre pendiente" },
+      ended: "Finalizado"
+    },
+    payouts: {
+      nextTitle: "Próximo pago — {date}",
+      monthly: "Comisiones mensuales",
+      closing: "Tarifa de cierre ({name})",
+      bonus: "Bono (5+ referidos activos)",
+      total: "Pago total",
+      accountTitle: "Cuenta de pago",
+      scheduleLabel: "Calendario de pagos",
+      scheduleValue: "Día 1 de cada mes",
+      minLabel: "Pago mínimo",
+      allTimeLabel: "Pagado históricamente",
+      edit: "Editar"
+    },
+    shareTools: {
+      title: "Herramientas para compartir",
+      sub: "Usa estos enlaces para referir prestatarios a PayMyLoan.ai",
+      items: [
+        { label: "Enlace de referido", val: "paymyloan.ai/?ref={code}" },
+        { label: "Página para prestatarios", val: "paymyloan.ai/borrowers?ref={code}" },
+        { label: "Publicar trato directo", val: "paymyloan.ai/post?ref={code}" },
+        { label: "Código de referido", val: "{code}" }
+      ],
+      copyBtn: "Copiar enlace",
+      copyCodeBtn: "Copiar código"
+    },
+    sidebar: {
+      portalName: "Portal de Afiliados",
+      dashboard: "Tablero",
+      earnings: "Historial de Ganancias",
+      referrals: "Mis Referidos",
+      shareTools: "Compartir",
+      account: "Cuenta",
+      payouts: "Pagos"
+    },
+    comingSoon: "Esta sección estará disponible próximamente."
   },
 
   catalog: {
@@ -1676,7 +1967,236 @@ const en: Copy = {
   security: { eyebrow: "Security", title: "Third-party money moves here. Access is treated accordingly.", items: [ { title: "Two-factor authentication required", body: "For lenders it is not optional: they control where the money goes.", }, { title: "Permissions per loan, not per global role", body: "Every query is filtered by your participation in that loan. No role opens everything.", }, { title: "We never store bank account numbers", body: "Stripe holds the payment method. We hold its identifier and the last four digits.", }, { title: "An audit log of the events that matter", body: "Term changes, acceptances, payoff approvals, bank account changes and document downloads are all recorded.", }, { title: "Alerts on any banking change", body: "Both parties are notified. It is the classic fraud vector in servicing and it is treated as one.", }, { title: "Documents private per loan", body: "Promissory note, deed of trust and settlement statement are served with short-lived links, never a public URL.", }, ], },
   finalCta: { eyebrow: "Get started", title: "Set up your first loan.", body: "Create the account, capture the terms and invite the other party. The schedule is generated once both accept.", cta: "Create account", },
   footer: { tagline: "Servicing for private real-estate-secured loans.", entity: "A subsidiary of Dueño a Dueño LLC", links: [ { href: "#", label: "Terms of service" }, { href: "/aviso-de-privacidad", label: "Privacy notice" }, ], linksNote: "Terms of service: [COPY PENDING]", rights: "All rights reserved.", },
-  privacy: { eyebrow: "Legal", title: "Privacy notice", updated: "Last updated: August 28, 2026", back: "Back to home", intro: [ "This notice explains what personal data PayMyLoan.ai collects, what we use it for, who we share it with, and how you can exercise your rights over it.", "PayMyLoan.ai is in early access: today we only collect the data from the wait-list sign-up form. Before we turn on full loan servicing, we will update this notice to cover loan data —collateral property, terms, payments and documents— that will be added at that point.", ], sections: [ { heading: "1. Who is responsible for your data", paragraphs: [ "PayMyLoan.ai is the brand under which Dueño a Dueño LLC operates this site and, later, the private loan servicing platform.", "Address for the purposes of this notice: [TO BE DEFINED].", "Applicable law and the authority you can turn to if we do not resolve your request: [TO BE DEFINED].", ], }, { heading: "2. What data we collect today", paragraphs: [ "While we are in early access, the only data we collect is what you leave on the wait-list sign-up form:", ], list: [ "Full name", "Email address", "Phone number", "Password, stored encrypted; no one at PayMyLoan.ai can read it in plain text", "Whether you are looking to lend or to borrow (this only sets what you see when you log in; it creates no obligation)", "That you accepted the terms of service and this notice, with date and time", "The language you used to fill out the form", ], }, { heading: "3. What data we will collect once you open a loan", paragraphs: [ "As soon as setting up or accepting a loan is available, servicing-specific data will be added:", ], list: [ "Address, type and, if applicable, parcel number of the collateral property", "Amount, rate, structure and maturity of the loan, and every version of those terms you accepted", "Payment history: date, amount, and how it was applied to late fees, interest and principal", "Your payment method's identifier and its last four digits; the full account number is held by Stripe, not by us", "The loan documents you accepted: promissory note, deed of trust and settlement statement", "Date, time and IP address of every term acceptance, bank account change and document download", ], }, { heading: "4. What we use your data for", paragraphs: [], list: [ "Letting you know when your access to the platform is ready", "Creating your account and, later, administering the loan you gave or are paying", "Computing the balance, applying payments and generating the payment schedule", "Verifying your identity and enabling two-factor authentication, required for lenders", "Detecting and flagging suspicious changes, such as a bank account change", "Meeting legal and tax obligations related to loan servicing", ], note: "We do not use your data for advertising and we do not sell it to third parties.", }, { heading: "5. Who we share your data with", paragraphs: [], list: [ "The other party on the same loan, but only what is needed to administer it: they never see your password or your full bank account number", "Stripe, which processes ACH payments and holds the payment method; we only store its identifier and the last four digits", "Authorities, if required by law or a court order", ], note: "We do not share or sell your data for marketing purposes.", }, { heading: "6. How we protect your data", paragraphs: [], list: [ "Two-factor authentication required for lenders, since they control where the money goes", "Permissions per loan: every query is filtered by your participation in that specific loan, never by a role that opens everything", "We never store full account numbers; that lives with Stripe", "An audit log of the events that matter: term changes, acceptances, payoff approvals, bank account changes and document downloads", "Both parties are notified of any bank account change, the most common fraud vector in servicing", "Documents are private per loan, served with short-lived links, never a public URL", ], }, { heading: "7. How long we keep your data", paragraphs: [ "If you are on the wait list, we keep your data until you open an account or until you ask us to delete it.", "If you have an active loan, we keep the loan data for as long as the relationship lasts, plus any additional time required by law for financial records. Exact period: [TO BE DEFINED].", ], }, { heading: "8. Your rights and how to exercise them", paragraphs: [ "You can ask us to access your data, correct it, delete it, or object to a specific use. You can also withdraw your consent at any time; for the wait list, simply asking us is enough. Withdrawing consent does not affect processing we already carried out before the request.", "Channel to exercise these rights: [TO BE DEFINED — there is no contact email for PayMyLoan.ai yet].", ], }, { heading: "9. Cookies and local storage", paragraphs: [ "The site does not use tracking or advertising cookies. It stores two preferences in your browser's local storage —light or dark theme and language— that never leave your device. You can clear them from your browser settings.", ], }, { heading: "10. Minors", paragraphs: [ "PayMyLoan.ai is not directed at minors and does not knowingly collect data from anyone under 18.", ], }, { heading: "11. Changes to this notice", paragraphs: [ "If we change this notice in a material way —for example, when we turn on full loan servicing— we will publish it here with a new update date before we process the new data.", ], }, { heading: "12. Contact", paragraphs: [ "Contact email for privacy: [TO BE DEFINED].", "Until that channel exists, you can use the same email you signed up with on the wait list; we will reply from there as soon as it is available.", ], }, ], },
+  privacy: {
+    eyebrow: "Legal",
+    title: "Privacy Policy",
+    meta: "PayMyLoan.ai · PayMyLoan, LLC · Last updated: September 21, 2026 · Effective immediately",
+    back: "Back to home",
+    tocTitle: "Contents",
+    sections: [
+      {
+        id: "collect",
+        heading: "1. What we collect",
+        paragraphs: ["We collect information you provide directly when you create an account, post a deal, or use the platform:"],
+        table: {
+          headers: ["Data type", "When collected", "Required?"],
+          rows: [
+            ["Name, email, phone", "Account creation", "Yes"],
+            ["Entity name, EIN, state", "Business verification", "At publish"],
+            ["Personal address, DOB", "Identity verification", "When lender requests"],
+            ["SSN / Tax ID", "Identity verification", "When lender requests"],
+            ["Government-issued ID", "Identity verification", "When lender requests"],
+            ["Deal financials", "Deal posting", "Yes"],
+            ["Bank account info", "Payout setup (affiliates)", "For payouts"],
+            ["Device, IP, browser", "Automatically, on use", "Automatic"]
+          ]
+        }
+      },
+      {
+        id: "use",
+        heading: "2. How we use it",
+        paragraphs: ["We use the information we collect to:"],
+        list: [
+          "Operate and improve the PayMyLoan.ai platform",
+          "Verify the identity and entity of lenders and borrowers",
+          "Facilitate introductions between lenders and borrowers",
+          "Process subscription payments and affiliate payouts",
+          "Send transactional emails (deal alerts, closing notifications, payment reminders)",
+          "Detect fraud and maintain platform security",
+          "Comply with legal obligations"
+        ],
+        highlight: "We do not sell your personal information to third parties. Ever."
+      },
+      {
+        id: "share",
+        heading: "3. What we share",
+        paragraphs: ["We share limited information in the following circumstances:"],
+        list: [
+          "Between lenders and borrowers: When a deal progresses to the offer stage, relevant deal details are shared between the parties. Personal addresses, SSNs, and government IDs are never shared between users.",
+          "Title companies: When a deal closes, we share the Borrower Fee Agreement and Commitment Letter with the title company to facilitate closing.",
+          "Service providers: We use third-party services for payments, email delivery, and identity verification. These providers are contractually bound to use your data only to provide services to us.",
+          "Legal requirements: We may disclose information when required by law, court order, or to protect the rights and safety of our users."
+        ]
+      },
+      {
+        id: "sensitive",
+        heading: "4. Sensitive data",
+        paragraphs: ["Social Security Numbers (SSNs), government-issued IDs, and EINs are sensitive and handled with the highest level of care:"],
+        list: [
+          "SSNs are encrypted at rest using AES-256 encryption",
+          "Access to SSNs is restricted to authorized verification personnel only",
+          "SSNs are never displayed in full on any screen or document",
+          "SSNs are never shared with lenders, borrowers, or affiliates",
+          "You may request deletion of your SSN at any time by contacting privacy@paymyloan.ai"
+        ]
+      },
+      {
+        id: "security",
+        heading: "5. Data security",
+        paragraphs: [
+          "We implement industry-standard security measures including encryption in transit (TLS), encryption at rest for sensitive fields, access controls, and regular security reviews. However, no system is completely secure. We cannot guarantee absolute security.",
+          "If you suspect your account has been compromised, contact security@paymyloan.ai immediately."
+        ]
+      },
+      {
+        id: "cookies",
+        heading: "6. Cookies",
+        paragraphs: ["We use cookies and similar tracking technologies to maintain your session, remember your preferences, and analyze platform usage. You may disable cookies in your browser settings, but some features may not function properly."]
+      },
+      {
+        id: "rights",
+        heading: "7. Your rights",
+        paragraphs: ["Depending on your location, you may have the following rights regarding your personal data:"],
+        list: [
+          "Access: Request a copy of the data we hold about you",
+          "Correction: Request correction of inaccurate data",
+          "Deletion: Request deletion of your account and associated data",
+          "Portability: Request your data in a portable format",
+          "Opt-out: Opt out of non-transactional marketing emails at any time"
+        ],
+        paragraphsAfter: ["To exercise any of these rights, contact privacy@paymyloan.ai."]
+      },
+      {
+        id: "retention",
+        heading: "8. Data retention",
+        paragraphs: ["We retain your account data for as long as your account is active. After account deletion, we retain certain records as required by law (typically 7 years for financial records). Verification documents may be retained for compliance purposes."]
+      },
+      {
+        id: "children",
+        heading: "9. Children",
+        paragraphs: ["PayMyLoan.ai is not directed at children under the age of 18. We do not knowingly collect personal information from minors. If you believe a minor has provided us with personal information, contact privacy@paymyloan.ai."]
+      },
+      {
+        id: "contact",
+        heading: "10. Contact",
+        paragraphs: [
+          "PayMyLoan, LLC",
+          "Memphis, Tennessee",
+          "privacy@paymyloan.ai"
+        ],
+        disclaimer: "This privacy policy was prepared as a starting point and should be reviewed by a licensed attorney before going live."
+      }
+    ]
+  },
+
+  terms: {
+    eyebrow: "Legal",
+    title: "Terms of Service",
+    meta: "PayMyLoan.ai · PayMyLoan, LLC · Last updated: September 21, 2026 · Effective immediately",
+    back: "Back to home",
+    tocTitle: "Contents",
+    sections: [
+      {
+        id: "platform",
+        heading: "1. Platform description",
+        paragraphs: ["PayMyLoan.ai is a technology platform operated by PayMyLoan, LLC that facilitates introductions between private money lenders and real estate borrowers. PayMyLoan, LLC is not a lender, broker, mortgage company, or financial institution. We do not originate, underwrite, fund, service, or guarantee any loans."],
+        highlight: "PayMyLoan.ai connects people. All loan agreements are made directly between lenders and borrowers. PayMyLoan, LLC is not a party to any loan transaction.",
+        paragraphsAfter: ["By using this platform, you agree that PayMyLoan, LLC bears no responsibility for any loan outcome, payment performance, default, foreclosure, or loss of funds."]
+      },
+      {
+        id: "eligibility",
+        heading: "2. Eligibility",
+        paragraphs: [
+          "You must be at least 18 years of age and a legal resident of the United States to use PayMyLoan.ai. By creating an account, you represent and warrant that you meet these requirements.",
+          "Lenders must be accredited investors or institutional entities as defined under applicable securities laws. By listing yourself as a lender, you represent that you meet the applicable accreditation standards in your jurisdiction."
+        ]
+      },
+      {
+        id: "account",
+        heading: "3. Account registration",
+        paragraphs: [
+          "You agree to provide accurate, current, and complete information during registration. You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.",
+          "PayMyLoan, LLC reserves the right to suspend or terminate accounts for any violation of these terms, fraudulent activity, or conduct that harms the platform or its users."
+        ]
+      },
+      {
+        id: "lender-terms",
+        heading: "4. Lender terms",
+        paragraphs: ["Lenders use PayMyLoan.ai to discover and connect with borrowers seeking private financing. By making an offer through the platform, you agree to the following:"],
+        list: [
+          "All lending decisions are made independently by you. PayMyLoan, LLC does not make recommendations, guarantee deal quality, or vet borrower creditworthiness beyond what is displayed on the platform.",
+          "You are solely responsible for conducting your own due diligence before committing funds.",
+          "You agree not to hold PayMyLoan, LLC liable for borrower default, non-payment, misrepresentation, or any other failure by a borrower to fulfill their obligations.",
+          "You agree not to hold PayMyLoan, LLC liable for errors or misconduct by any title company, closing attorney, or third party involved in a transaction.",
+          "Lenders are responsible for verifying wire instructions directly with the title company before wiring any funds. PayMyLoan, LLC is not responsible for funds sent to incorrect accounts."
+        ],
+        warning: "Wire fraud warning: Never wire funds based solely on an email. Always call the title company directly at a verified number to confirm wire instructions before sending any money."
+      },
+      {
+        id: "borrower-terms",
+        heading: "5. Borrower terms",
+        paragraphs: ["Borrowers use PayMyLoan.ai to post deals and connect with private lenders. By posting a deal, you agree to the following:"],
+        list: [
+          "All information submitted about your deal, property, financials, and identity must be accurate and complete to the best of your knowledge.",
+          "You agree not to hold PayMyLoan, LLC liable for any lender's failure to fund, perform, or fulfill their obligations.",
+          "You agree not to hold PayMyLoan, LLC liable for errors by any title company, closing attorney, or third party.",
+          "You understand that PayMyLoan, LLC is a platform, not a lender, and has no authority to direct any lender to fund your deal.",
+          "You agree to the fee terms outlined in the Borrower Fee Agreement signed at deal posting."
+        ]
+      },
+      {
+        id: "fees",
+        heading: "6. Fees and payments",
+        paragraphs: ["PayMyLoan, LLC charges the following fees to borrowers. Lenders are always free."],
+        list: [
+          "Monthly subscription: $99/month, beginning when your deal is posted. Waived with a valid promo code or affiliate referral link.",
+          "Identity verification fee: $99 one-time, charged only when a lender requests identity verification of your account.",
+          "Lender connection fee: 1% of the loan amount, collected at closing via the settlement statement — only on deals where PayMyLoan, LLC connected the borrower and lender.",
+          "Monthly platform fee (PML-connected deals only): 10% of the monthly interest payment made to the lender, collected each month for the life of the loan — only on deals where PayMyLoan, LLC introduced the borrower and lender. Example: if your monthly interest payment to the lender is $1,150, PayMyLoan, LLC collects $115 of that amount each month. This fee is disclosed in the Borrower Fee Agreement at deal posting.",
+          "Draw processing fee: $175 per draw request, deducted from draw proceeds before disbursement to the borrower.",
+          "Extension fee: 1% of the outstanding loan balance, collected via settlement statement at extension closing."
+        ],
+        paragraphsAfter: ["All fees are disclosed in the Borrower Fee Agreement prior to deal posting. No fees are due at the time of signing the fee agreement. Fees applicable only to PML-connected deals are clearly marked above."]
+      },
+      {
+        id: "liability",
+        heading: "7. Limitation of liability",
+        paragraphs: ["To the fullest extent permitted by applicable law, PayMyLoan, LLC, its officers, directors, employees, and affiliates shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from:"],
+        list: [
+          "Any loan transaction facilitated through the platform",
+          "Borrower default, non-payment, or breach of any loan agreement",
+          "Lender failure to fund or perform",
+          "Errors, delays, or misconduct by title companies or closing attorneys",
+          "Wire fraud, misdirected funds, or third-party interference",
+          "Any outcome outside of PayMyLoan, LLC's direct control"
+        ],
+        paragraphsAfter: ["Your use of the platform constitutes your acceptance of these limitations."]
+      },
+      {
+        id: "advice",
+        heading: "8. No investment advice",
+        paragraphs: ["Nothing on PayMyLoan.ai constitutes financial, legal, or investment advice. All information is provided for informational purposes only. You should consult with qualified professionals before making any lending or borrowing decision."]
+      },
+      {
+        id: "wire-fraud",
+        heading: "9. Wire fraud and security",
+        paragraphs: [
+          "Wire fraud is a serious risk in real estate transactions. PayMyLoan, LLC will never send last-minute changes to wire instructions via email. If you receive any such communication, treat it as fraudulent and contact us immediately at security@paymyloan.ai.",
+          "Always verify wire instructions by calling the title company directly at a number you have independently verified before wiring any funds."
+        ]
+      },
+      {
+        id: "termination",
+        heading: "10. Termination",
+        paragraphs: ["We reserve the right to suspend or terminate your account at any time for violation of these terms, fraudulent activity, or any conduct we determine to be harmful to the platform or its users. Subscription fees are non-refundable upon termination."]
+      },
+      {
+        id: "law",
+        heading: "11. Governing law",
+        paragraphs: ["These terms are governed by the laws of the State of Tennessee, without regard to conflict of law principles. Any disputes shall be resolved in the courts of Shelby County, Tennessee."]
+      },
+      {
+        id: "contact",
+        heading: "12. Contact",
+        paragraphs: [
+          "PayMyLoan, LLC",
+          "Memphis, Tennessee",
+          "legal@paymyloan.ai"
+        ],
+        disclaimer: "These terms were prepared as a starting point and should be reviewed by a licensed attorney before going live."
+      }
+    ]
+  },
   dashboardAdmin: {
     title: "Admin Overview",
     subtitle: "PayMyLoan.ai · {date}",
@@ -2215,6 +2735,68 @@ const en: Copy = {
       totalRow: "Total monthly residual",
       totalYear: "12-month total per $100K"
     }
+  },
+
+  affiliateDashboard: {
+    title: "Affiliate Dashboard",
+    subtitle: "Track your referrals, commissions, and payouts",
+    refBadge: {
+      label: "Your referral code",
+      linkFormat: "paymyloan.ai/?ref="
+    },
+    stats: {
+      earned: { label: "Total earned", trend: "+{amount} this month" },
+      pending: { label: "Pending payout", sub: "Pays out {date}" },
+      active: { label: "Active referrals", sub: "Earning monthly" },
+      closed: { label: "Deals closed", sub: "All time" }
+    },
+    chart: {
+      title: "Monthly earnings",
+      sub: "Commissions from subscriptions + interest share + closing fees",
+      periods: ["3M", "6M", "1Y"]
+    },
+    table: {
+      title: "My referrals",
+      filters: ["All", "Active", "Closed", "Pending"],
+      cols: ["Borrower", "Property", "Loan", "Status", "Closing fee", "Monthly"],
+      status: { active: "Active", closed: "Paid off", pending: "Pending close" },
+      ended: "Ended"
+    },
+    payouts: {
+      nextTitle: "Next payout — {date}",
+      monthly: "Monthly commissions",
+      closing: "Closing fee ({name})",
+      bonus: "Bonus (5+ active referrals)",
+      total: "Total payout",
+      accountTitle: "Payout account",
+      scheduleLabel: "Payout schedule",
+      scheduleValue: "1st of each month",
+      minLabel: "Minimum payout",
+      allTimeLabel: "All-time paid out",
+      edit: "Edit"
+    },
+    shareTools: {
+      title: "Share tools",
+      sub: "Use these links to refer borrowers to PayMyLoan.ai",
+      items: [
+        { label: "Referral link", val: "paymyloan.ai/?ref={code}" },
+        { label: "For borrowers page", val: "paymyloan.ai/borrowers?ref={code}" },
+        { label: "Post a deal direct", val: "paymyloan.ai/post?ref={code}" },
+        { label: "Referral code", val: "{code}" }
+      ],
+      copyBtn: "Copy link",
+      copyCodeBtn: "Copy code"
+    },
+    sidebar: {
+      portalName: "Affiliate Portal",
+      dashboard: "Dashboard",
+      earnings: "Earnings History",
+      referrals: "My Referrals",
+      shareTools: "Share Tools",
+      account: "Account",
+      payouts: "Payouts"
+    },
+    comingSoon: "This section will be available soon."
   },
 
   catalog: {
