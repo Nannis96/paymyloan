@@ -2,7 +2,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useSite } from "./layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 
 interface AddAccountModalProps {
   onClose: () => void;

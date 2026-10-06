@@ -1109,20 +1109,34 @@ const es = {
   submitDeal: {
     title: "Publicar un trato",
     subtitle: "Publica tu solicitud de préstamo y deja que los prestamistas compitan por tu trato.",
-    steps: ["Tipo de préstamo", "Propiedad", "Finanzas", "Documentos", "Revisión"],
+    steps: ["Tipo de préstamo", "Propiedad", "Finanzas", "Revisión"],
     stepHint: "Paso {current} de {total} — {stepName}",
-    loanTypeBadge: "Préstamo Puente seleccionado • 6 a 18 meses, solo interés",
+    loanType: {
+      title: "Selecciona el tipo de préstamo",
+      sub: "¿Qué tipo de financiamiento estás buscando?",
+      bridge: "Préstamo Puente (Bridge)",
+      bridgeSub: "Corto plazo, solo interés. Ideal para fix & flip.",
+      slowFlip: "Slow Flip / Financiamiento",
+      slowFlipSub: "Largo plazo, amortizado.",
+      rental: "Renta a Largo Plazo",
+      rentalSub: "Para propiedades estabilizadas."
+    },
     property: {
       title: "Detalles de la propiedad",
       sub: "Cuéntanos sobre la propiedad que estás financiando.",
       address: "Dirección de la propiedad",
       addressPh: "Ej. 123 Main St, Memphis, TN",
-      addressHint: "Empieza a escribir — autocompletaremos los detalles desde registros públicos.",
+      addressHint: "Empieza a escribir — autocompletaremos detalles y el ARV desde registros públicos.",
+      addressLookup: "Buscando...",
+      addressSuccess: "Autocompletado desde registros públicos",
+      addressFail: "No se pudo autocompletar — ingresa los detalles manualmente.",
       city: "Ciudad",
       state: "Estado",
       zip: "Código postal",
       propType: "Tipo de propiedad",
+      propTypes: ["Residencial unifamiliar", "Multifamiliar (2-4 unidades)", "Multifamiliar (5+ unidades)", "Comercial", "Terreno"],
       occupancy: "Ocupación",
+      occupancies: ["Vacante", "Ocupada por el dueño", "Ocupada por inquilino"],
       beds: "Recámaras",
       baths: "Baños",
       sqft: "Pies cuadrados",
@@ -1133,24 +1147,48 @@ const es = {
     },
     financials: {
       title: "Finanzas del préstamo",
-      sub: "Ingresa tus números. Estimaremos tu costo mensual.",
+      sub: "Tus números ayudan a los prestamistas a evaluar el trato rápidamente.",
       purchasePrice: "Precio de compra",
       loanAmount: "Monto solicitado",
+      loanHint: "Monto que necesitas del prestamista.",
       arv: "Valor estimado (ARV)",
-      rehab: "Presupuesto de rehab",
+      arvHint: "Valor estimado después de todas las reparaciones.",
+      rehab: "Costo estimado de remodelación",
       desiredTerm: "Plazo deseado",
-      maxRate: "Tasa de interés máxima",
-      maxRateOptions: ["10%", "12%", "14%", "Cualquiera — mostrar todas"],
-      calcTitle: "Costo mensual estimado",
-      calcInterest: "Pago de solo interés",
-      calcMembership: "Membresía PML",
-      calcServicing: "Tarifa de servicing PML",
-      calcOrigination: "Punto de originación (1%)",
-      calcTotal: "Total mensual (est.)",
-      mo: "/ mes",
-      oneTime: "pago único"
+      terms: ["6 meses", "9 meses", "12 meses", "18 meses"],
+      maxRate: "Tasa de interés máxima aceptada",
+      maxRates: ["10%", "12%", "14%", "Cualquiera — mostrar todas"],
+      ltvLabel: "Loan-to-value (LTV)",
+      ltvHigh: "LTV Alto — algunos prestamistas podrían declinar. Considera aumentar el enganche.",
+      ltvMod: "LTV Moderado. La mayoría considerarán esto.",
+      ltvGood: "La mayoría prefiere un LTV menor a 70%. Estás en buena posición.",
+      exitLabel: "Estrategia de salida",
+      exits: ["Vender después de rehab", "Refinanciar (BRRRR)", "Rentar y mantener", "Financiamiento de dueño"]
     },
-    actions: { back: "Atrás", continue: "Continuar", submit: "Publicar trato", change: "Cambiar" }
+    liveCalc: {
+      title: "Cálculo en vivo",
+      purchase: "Precio de compra",
+      loan: "Monto solicitado",
+      rehab: "Ppto. Remodelación",
+      arv: "Estimación ARV",
+      ltv: "LTV (Préstamo ÷ ARV)",
+      monthly: "Pago mensual est. @ {rate}",
+      warning: "LTV superior al 75% — la mayoría de los prestamistas requieren reducir el préstamo o aumentar el capital aportado."
+    },
+    review: {
+      visTitle: "Tu trato será visible para todos los prestamistas en la plataforma.",
+      visSub: "Los prestamistas verán los detalles de tu trato, dirección y finanzas. Tu identidad personal nunca se muestra sin tu aprobación.",
+      title: "Revisa tu trato",
+      sub: "Confirma que todo se ve bien antes de publicar.",
+      secType: "Tipo de préstamo",
+      secProp: "Propiedad",
+      secFin: "Finanzas",
+      secBiz: "Tu negocio",
+      edit: "Editar",
+      btnPost: "Publicar mi trato",
+      postNote: "Tu trato se publicará de inmediato. Los prestamistas serán notificados.\nPuedes editarlo o eliminarlo en cualquier momento desde tu panel."
+    },
+    actions: { back: "← Atrás", continue: "Continuar →", review: "Revisar y publicar" }
   },
 
   affiliates: {
@@ -1276,6 +1314,53 @@ const es = {
   vetting: { title: "Aplicación y Verificación", subtitle: "Completa este proceso una sola vez para acceder a capital privado.", feeNotice: "Tarifa de aplicación (no reembolsable)", form: { bankStatements: "Estados de Cuenta (Últimos 3 meses)", idUpload: "Identificación Oficial", submitAndPay: "Pagar $99 y Enviar", selectFile: "Seleccionar archivo", dealHistory: "Historial de Proyectos", dealHistoryDesc: "Ingresa hasta 5 direcciones de proyectos recientes.", addressLabel: "Dirección", addressPh: "Ej. 123 Main St, Austin, TX", addAddress: "+ Agregar otra dirección", consentCredit: "Autorizo a Dueño a Dueño LLC y sus prestamistas asociados a realizar una verificación de crédito (Credit Pull).", consentBackground: "Autorizo a Dueño a Dueño LLC a realizar una verificación de antecedentes (Background Check).", consentAlert: "Debes aceptar las verificaciones de crédito y antecedentes para continuar.", step: "Paso", of: "de", next: "Siguiente", back: "Atrás", saveAndContinueLater: "Guardar y continuar después", savedAlert: "Tu progreso ha sido guardado. Puedes regresar en cualquier momento." } },
   issueCommitment: { title: "Emitir Carta de Compromiso", subtitle: "Configura las tarifas para el trato REF:", closingFeesTitle: "Tarifas al Cierre (Closing Fees)", originationPoints: "Puntos de Originación (%)", processingFee: "Tarifa de Procesamiento ($)", underwritingFee: "Tarifa de Underwriting ($)", docPrepFee: "Doc Prep Fee ($)", customFeeName: "Nombre Tarifa Custom", customFeeNamePh: "Ej. Appraisal Fee", customFeeAmount: "Monto Custom ($)", penaltiesTitle: "Penalizaciones (Post-Cierre)", latePenalty: "Late Payment Penalty", latePenaltyPh: "Ej. 5% o $50", prePayPenalty: "Pre-Pay Penalty", prePayPenaltyPh: "Ej. 1% del saldo", phPoints: "Ej. 2", phFee: "Ej. 500", systemNoteTitle: "Nota del Sistema:", systemNote: "La Tarifa de Conexión del Marketplace (1 punto, mín $999) será agregada automáticamente al resumen final por la plataforma si aplica para este trato.", submit: "Generar y Emitir Carta", submitting: "Emitiendo...", errorFetch: "Error al emitir la carta de compromiso", errorNetwork: "Error de red desconocido" },
   inviteModal: { title: "Invitar al Portal", subtitle: "Comparte este enlace para un trato directo. Los tratos privados (sin marketplace) tienen $0 de tarifa de conexión.", copyLink: "Copiar enlace", linkCopied: "¡Copiado!", emailLabel: "O envía una invitación por correo:", emailPh: "correo@ejemplo.com", sendBtn: "Enviar Invitación", sending: "Enviando...", successMsg: "Invitación enviada exitosamente.", close: "Cerrar" },
+  borrowerOnboarding: {
+    title: "Un paso antes de publicar",
+    subtitle: "Cuentanos sobre tu negocio para que los prestamistas sepan con quien trabajan.\nToma unos 60 segundos.",
+    steps: ["Cuenta", "Negocio", "Publicar trato"],
+    step1: {
+      tag: "Perfil del negocio",
+      title: "Sobre tu entidad",
+      sub: "Se usa para mostrar a los prestamistas quien esta detras del trato. No se requiere informacion personal en esta etapa.",
+      entityName: "Nombre de la entidad",
+      entityNamePh: "Ej. Memphis Realty LLC",
+      entityType: "Tipo de entidad",
+      entityTypeSelect: "Seleccionar",
+      entityTypes: ["LLC", "Corporacion", "Land trust", "Nombre personal", "Otro"],
+      ein: "RFC / EIN",
+      einPh: "XX-XXXXXXX",
+      states: "Estados en los que operas",
+      statesPh: "Ej. TN, MS, AR",
+      statesHint: "Ayuda a los prestamistas a encontrar tratos en su area.",
+      experience: "Anos de experiencia en bienes raices",
+      expSelect: "Seleccionar",
+      exps: ["Menos de 1 ano", "1 - 3 anos", "3 - 5 anos", "5 - 10 anos", "10+ anos"],
+      lockedNotice: {
+        bold: "La verificacion de identidad es opcional por ahora.",
+        text: " La direccion personal, fecha de nacimiento, RFC/SSN y una identificacion oficial solo son requeridos cuando un prestamista decida fondear tu trato."
+      }
+    },
+    step2: {
+      tag: "Listo para publicar",
+      title: "Tu perfil esta listo",
+      sub: "Esto es lo que veran los prestamistas. Ya puedes publicar tu primer trato.",
+      reviewTitle: "Negocio",
+      unlockedLater: "Se desbloquea cuando un prestamista quiere fondear",
+      locked1: "Direccion personal y fecha de nacimiento",
+      locked2: "RFC / Numero de Seguro Social",
+      locked3: "Identificacion oficial",
+      lockedBadge: "Bloqueado"
+    },
+    footer: {
+      step: "Paso",
+      of: "de",
+      back: "Atras",
+      continue: "Continuar",
+      post: "Publicar mi primer trato",
+      skip: "Omitir por ahora — completare esto despues",
+      submitting: "Procesando..."
+    }
+  },
   documentVault: { title: "Bóveda de Documentos", subtitle: "Sube, revisa o descarga documentos legales asociados a este trato.", uploadBtn: "Subir Documento", uploading: "Subiendo...", empty: "No hay documentos en esta bóveda.", table: { name: "Nombre del Documento", date: "Fecha de Subida", status: "Estado", action: "Acción" }, actions: { download: "Descargar", sign: "Firmar" }, status: { signed: "Firmado", pending: "Firma Pendiente", file: "Archivo" } },
   settings: {
     title: "Configuración",
@@ -1541,6 +1626,410 @@ const es = {
               offerAccepted: "Oferta aceptada",
               achAuth: "Autorizacion ACH completada",
               readyToClose: "El prestatario notifico al prestamista — listo para cerrar"
+            },
+            missedPayment: {
+              title: "Pago Atrasado",
+              subtitle: "3802 University Cove · Préstamo #PML-2026-09-22-3802UCOVE",
+              scoreBanner: {
+                title: "Este pago atrasado se está registrando en tu score de prestatario PML",
+                desc: "Cada pago atrasado o no realizado se registra permanentemente y afecta tu score general de prestatario PML. Los prestamistas pueden ver tu historial de pagos antes de decidir fondear tus tratos. Pagar de inmediato minimiza el impacto — entre más tiempo pase sin pagarse, mayor será la reducción del score.",
+                currentScore: "Score actual",
+                projectedDrop: "-18 pts proyectados si no se paga"
+              },
+              viewToggle: {
+                borrower: "Vista de prestatario",
+                lender: "Vista de prestamista"
+              },
+              alert: {
+                title: "Pago vencido — 15 días de atraso",
+                sub: "No se recibió tu pago del 1 de Noviembre. Se ha agregado un cargo por mora. Por favor paga de inmediato para evitar que se envíe un aviso de incumplimiento a tu prestamista."
+              },
+              paymentCard: {
+                title: "Monto a pagar ahora",
+                monthly: "Pago mensual (1 de Noviembre)",
+                lateFee: "Cargo por mora (15 días @ 5% del pago)",
+                perDiem: "Per diem acumulado",
+                total: "Total a pagar hoy"
+              },
+              actionCard: {
+                title: "Paga ahora para detener el reloj",
+                sub: "Los cargos por mora dejan de acumularse el día que se recibe el pago. Tu prestamista aún no ha sido notificado del incumplimiento.",
+                payBtn: "Pagar $1,207.50 ahora",
+                contactBtn: "Contactar al prestamista para discutir"
+              },
+              timeline: {
+                title: "Línea de tiempo del pago",
+                events: [
+                  { title: "Vencimiento del pago", date: "1 de Noviembre, 2026", desc: "Se debían $1,150. No se recibió pago." },
+                  { title: "Fin del período de gracia — cargo por mora aplicado", date: "6 de Noviembre, 2026 (5 días)", desc: "El período de gracia de 5 días expiró. Se agregaron $57.50 de cargo por mora al saldo." },
+                  { title: "Actualmente 15 días de atraso", date: "16 de Noviembre, 2026", desc: "El prestamista ha sido notificado. Paga de inmediato para prevenir el aviso de incumplimiento." },
+                  { title: "Día 30 — aviso formal de incumplimiento", date: "1 de Diciembre, 2026 (si no se paga)", desc: "PML envía un aviso formal de incumplimiento. El prestamista puede iniciar procedimientos de cobro o ejecución hipotecaria." }
+                ]
+              },
+              lenderAction: {
+                title: "Opciones del prestamista — el prestatario tiene 15 días de atraso",
+                options: [
+                  { title: "Enviar recordatorio de pago", desc: "Notificar al prestatario a través de los mensajes de PML — recordatorio amigable antes de escalar." },
+                  { title: "Ofrecer una extensión de pago", desc: "Acordar condonar el cargo por mora y extender la fecha de vencimiento — el prestatario debe aceptar en la plataforma." },
+                  { title: "Emitir aviso formal de incumplimiento", desc: "Activar el reloj de 30 días para incumplimiento. PML genera y envía el aviso." }
+                ]
+              }
+            },
+            inviteFlow: {
+              header: {
+                label: "Función Versión 1.0",
+                title: "Sistema de Invitación Directa",
+                sub: "Trae a tu propio prestamista o prestatario — salta el mercado, conserva la infraestructura. Tres vistas: Widget de invitación del prestamista, campo de invitación al publicar un trato por el prestatario, y la landing page de marca compartida."
+              },
+              view1: {
+                label: "Vista 1",
+                title: "Panel de Prestamista — Invitar a un Prestatario",
+                widgetTitle: "Invitar a un prestatario",
+                widgetSub: "¿Tienes a un prestatario listo para ser fondeado? Envíale tu enlace de invitación personal. Su trato irá directo a ti — sin buscar, sin competencia.",
+                linkTitle: "Tu enlace de invitación",
+                copyBtn: "Copiar enlace",
+                orDivider: "o enviar por correo",
+                sendBtn: "Enviar invitación",
+                inputHint: "Recibirán un correo de PML con tu nombre y un enlace directo para publicar su primer trato.",
+                stats: { sent: "Invitaciones", signedUp: "Registrados", posted: "Tratos publ.", funded: "Fondeado" },
+                feeTitle: "Cómo funcionan las tarifas para tratos invitados",
+                feeBody1: "Cuando traes a tu propio prestatario, ",
+                feeBody1Highlight: "PML no hizo la conexión",
+                feeBody1Cont: " — por lo que la tarifa de conexión no aplica.",
+                feeBody2Highlight: "Qué sigue aplicando:",
+                feeBody2Cont: " El prestatario paga su suscripción de $99/mes. Eso es todo. Sin tarifa de conexión del 1%. Sin el 10% del interés mensual.",
+                feeBody3Highlight: "El trato se etiqueta",
+                borrowerReceivesTitle: "Lo que recibe tu prestatario",
+                borrowerReceivesBody: "Un correo de PayMyLoan.ai:\n\nAsunto: John Smith está esperando para fondear tu siguiente trato\n\n\"Hola — John Smith, un prestamista privado en PayMyLoan, tiene un trato reservado para ti. Publica tu propiedad en menos de 10 minutos y John podrá fondearla sin competir con nadie más.\"\n\nCTA: Publicar mi trato → dirige a una página de registro compartida etiquetada previamente a la cuenta de John."
+              },
+              view2: {
+                label: "Vista 2",
+                title: "Publicar Trato — Prestatario Invita a un Prestamista",
+                stepTitle: "Paso 4 de 5 — Fondeo",
+                stepSub: "Dinos cómo deseas encontrar a tu prestamista.",
+                amountLabel: "Monto del préstamo solicitado",
+                termLabel: "Plazo preferido",
+                haveLenderLabel: "¿Ya tienes un prestamista?",
+                optionalTag: "Opcional",
+                haveLenderHint: "Ingresa su correo y le enviaremos una invitación directa para fondear este trato — sin el mercado público, sin competencia.",
+                inviteBtn: "Invitar prestamista",
+                lenderFoundName: "James Rivera — Rivera Capital",
+                lenderFoundSub: "Invitación enviada · Se le notificará al publicar",
+                removeBtn: "Eliminar",
+                feeTitle: "Traer a tu prestamista ahorra dinero",
+                feeBody1: "Dado que PML no hace la presentación, ",
+                feeBody1Highlight: "no se aplica la tarifa de conexión",
+                feeBody1Cont: ". Pagas solamente la suscripción de $99/mes. El 10% del interés mensual y la tarifa de conexión al prestamista del 1% son condonados para tratos invitados.",
+                lenderReceivesTitle: "Lo que recibe tu prestamista",
+                lenderReceivesBody: "Un correo de PayMyLoan.ai:\n\nAsunto: Marcus Johnson tiene un trato listo para ti\n\n\"Hola — Marcus Johnson, un prestatario que conoces, ha publicado un trato en PayMyLoan y quiere que lo fondees. Puedes revisar todo el trato, hacer una oferta y cerrar — todo en un solo lugar.\"\n\nCTA: Ver el trato de Marcus → el prestamista aterriza directo en la tarjeta del trato, etiquetado a la cuenta de Marcus.",
+                noFundTitle: "¿Qué pasa si el prestamista no fondea?",
+                noFundBody: "Si tu prestamista invitado no hace una oferta dentro de 7 días, puedes elegir:\n\nOpción A: Abrir el trato al mercado público (aplica estructura estándar de tarifas)\n\nOpción B: Enviar otra invitación a un prestamista distinto\n\nOpción C: Mantener el trato privado y darle seguimiento por tu cuenta"
+              },
+              view3: {
+                label: "Vista 3",
+                title: "Landing Page de Marca Compartida — Destino del enlace",
+                heroInviter: "está esperando para fondear tu siguiente trato",
+                heroEyebrow: "PayMyLoan.ai — Infraestructura para Préstamos Privados",
+                heroTitle1: "Publica tu trato.",
+                heroTitle2: "John lo fondea.",
+                heroTitle3: " Rápido.",
+                heroSub: "John Smith tiene un trato reservado para ti en PayMyLoan. Publica tu propiedad en menos de 10 minutos — sin ofertas de la competencia, sin esperas.",
+                heroBtn: "Publicar mi trato — es gratis",
+                heroFine: "Sin tarjeta de crédito. La suscripción de prestatario comienza al publicar.",
+                signupTag: "Invitado por John Smith · Rivera Capital",
+                signupTitle: "Crea tu cuenta",
+                signupSub: "60 segundos. Sin tarjeta de crédito. Empieza a publicar tu trato.",
+                firstName: "Nombre",
+                lastName: "Apellido",
+                email: "Correo electrónico",
+                phone: "Teléfono",
+                password: "Contraseña",
+                signupBtn: "Crear cuenta y publicar",
+                signupFine: "Al crear una cuenta aceptas nuestros Términos de Servicio y Aviso de Privacidad. John Smith será notificado cuando tu trato esté publicado."
+              },
+              feeTable: {
+                title: "Lógica de Tarifas — Invitación Directa vs Coincidencia en el Mercado",
+                sub: "El trato se etiqueta al crearse. El motor de tarifas lee la etiqueta automáticamente — sin intervenciones manuales.",
+                headers: ["Tarifa", "Mercado PML", "PML los conectó", "Invitación Directa", "Ya se conocían", "Notas"],
+                rows: [
+                  { fee: "Suscripción de $99/mes", match: "Sí", invite: "Sí", notes: "Siempre — el prestatario paga la infraestructura de cualquier modo" },
+                  { fee: "Verificación de identidad $99", match: "Si el prestamista la requiere", invite: "Si el prestamista la requiere", notes: "El prestamista decide requerirla — es su elección en ambos flujos" },
+                  { fee: "Tarifa de conexión al prestamista (1%)", match: "Sí — al cierre", invite: "Condonada", notes: "PML sólo gana esto cuando nosotros hacemos la introducción" },
+                  { fee: "10% del interés mensual", match: "Sí — mensual", invite: "Condonada", notes: "Misma lógica — sin matchmaking, no hay tarifa de matchmaking" }
+                ],
+                specTitle: "Especificación para Desarrolladores — Etiqueta de Origen del Trato",
+                specs: [
+                  { key: "Campo", val: "deal.source" },
+                  { key: "Valores", val: "platform_match · lender_invite · borrower_invite" },
+                  { key: "Fijado en", val: "Creación del trato — autoetiquetado vía enlace de invitación o campo de correo del prestatario. Por defecto = platform_match" },
+                  { key: "Leído desde", val: "El motor de tarifas lee deal.source antes de calcular conexiones o interés" },
+                  { key: "Formato del enlace", val: "paymyloan.ai/invite/[usuario]-[token] — pasa inviter_id como parámetro de la URL" },
+                  { key: "Campo de correo", val: "El prestatario ingresa correo en el paso de publicar → PML envía correo → si el prestamista se registra y fondea = etiqueta borrower_invite" },
+                  { key: "Regla de respaldo", val: "Si el prestamista invitado no fondea en 7 días y el prestatario abre al mercado → se re-etiqueta como platform_match y aplica la estructura estándar de tarifas" }
+                ]
+              }
+            },
+            extensionRequest: {
+              title: "Solicitar Extensión de Préstamo",
+              subtitle: "{address} · El préstamo vence el {date}",
+              maturityBanner: {
+                title: "Vencimiento en 60 días — {date}",
+                sub: "Si necesitas más tiempo para vender o refinanciar, solicita una extensión ahora. Tu prestamista debe aprobarla. Ambas partes firman una fecha de vencimiento modificada."
+              },
+              loanCard: {
+                title: "Resumen del préstamo actual",
+                property: "Propiedad",
+                lender: "Prestamista",
+                balance: "Saldo",
+                rate: "Tasa",
+                currentMaturity: "Vencimiento actual",
+                monthlyPayment: "Pago mensual"
+              },
+              requestCard: {
+                title: "¿Cuánto tiempo necesitas?",
+                sub: "Selecciona un período de extensión. El prestamista puede aprobar, contraofertar o rechazar. Las tarifas de extensión se negocian directamente con tu prestamista — PML facilita el acuerdo.",
+                termDisplay: {
+                  termLabel: "Plazo de extensión",
+                  termNote: "Igual al plazo original del préstamo",
+                  rate: "Tasa",
+                  monthly: "Pago mensual",
+                  newMaturity: "Nuevo vencimiento"
+                },
+                reasonLabel: "Motivo de la solicitud de extensión",
+                reasonPh: "Explica tu situación — ej. el refinanciamiento está en progreso, el comprador está bajo contrato pero el cierre se retrasó...",
+                noteBox: "Una vez que envíes, tu prestamista recibirá una notificación y podrá aprobar, contraofertar o rechazar dentro de la plataforma. Si se aprueba, ambas partes firman electrónicamente un acuerdo de vencimiento modificado y las tarifas se cobran al cierre de la extensión.",
+                feeSummary: {
+                  newMaturity: "Nueva fecha de vencimiento",
+                  addMonths: "Meses adicionales",
+                  monthlyContinues: "Pago mensual (continúa)"
+                },
+                extFeeBox: {
+                  sectionTitle: "Tarifas de extensión — pagaderas al cierre de la extensión",
+                  title: "Desglose de tarifas",
+                  pmlFee: "Tarifa de plataforma PML (1% del saldo del préstamo)",
+                  pmlFeeNote: "Cobrada vía estado de liquidación al cierre de la extensión",
+                  lenderFee: "Tarifa de extensión del prestamista (fijada por él)",
+                  lenderFeeNote: "1 pt sugerido · negociado con prestamista · pagado al cierre de la ext.",
+                  achFee: "Tarifa de procesamiento ACH / transferencia",
+                  achFeeNote: "Pagada por el prestatario",
+                  totalLabel: "Total estimado de tarifas al cierre de extensión"
+                },
+                feeNoteBox: "Todas las tarifas de extensión son pagadas por el prestatario. La tarifa del 1% de PML se cobra a través del estado de liquidación al cierre de la extensión — mismo proceso que el préstamo original. Las tarifas de extensión del prestamista son fijadas por el prestamista y pueden variar. Los montos finales se confirman cuando el prestamista aprueba la extensión.",
+                esign: {
+                  title: "Autorización + firma electrónica requerida",
+                  checks: [
+                    "Solicito una extensión de 12 meses de mi préstamo a la misma tasa (11.5%), mismo pago mensual ($1,104.17), y mismos términos que el acuerdo original.",
+                    "Autorizo a PayMyLoan, LLC a cobrar la tarifa de plataforma PML de $1,150.00 vía ACH automáticamente tras la aprobación del prestamista — no se requiere ninguna acción adicional de mi parte.",
+                    "Entiendo que la tarifa de extensión del prestamista de $1,150.00 (1 pt) y la tarifa ACH de $25.00 también se cobrarán al cierre de la extensión vía estado de liquidación o ACH según aplique.",
+                    "Entiendo que una vez que el prestamista apruebe esta solicitud, se generará automáticamente un nuevo calendario de pagos de 12 meses a partir de la nueva fecha de vencimiento del 22 de Septiembre de 2028.",
+                    "Acepto que la falta de pago bajo el plazo extendido será registrada en mi score de prestatario de PML."
+                  ],
+                  sigLabel: "Escribe tu nombre legal completo para firmar",
+                  sigPh: "Ej. Marcus Johnson",
+                  dateLabel: "Fecha",
+                  note: "Al escribir tu nombre arriba y hacer clic en Enviar, estás firmando electrónicamente esta solicitud de extensión y autorización de tarifas de acuerdo con la Ley E-SIGN y UETA. Esta es una autorización legalmente vinculante."
+                },
+                submitBtn: "Firmar y enviar solicitud de extensión al prestamista",
+                submitting: "Enviando..."
+              }
+            },
+            drawRequest: {
+              title: "Solicitud de Retiro (Draw)",
+              subtitle: "Solicita un retiro para remodelación a tu prestamista",
+              versionBadge: "Versión 1.0 — Proceso Manual de Retiros",
+              notice: {
+                title: "Cómo funcionan los retiros en la Versión 1.0",
+                body: "Contacta a tu prestamista directamente para solicitar un retiro — por teléfono, texto o correo electrónico. Una vez que tu prestamista apruebe y transfiera los fondos, registra el retiro aquí para que el saldo de tu préstamo se mantenga exacto.<br><br>La gestión automatizada completa de retiros (subida de fotos, listas de verificación por etapa, aprobación con un clic, desembolso ACH) llegará en una futura versión."
+              },
+              summary: {
+                subtitle: "Préstamo puente activo — rastreo de retiros",
+                drawsUsed: "Retiros usados",
+                drawsRemaining: "Retiros restantes",
+                holdbackReleased: "Fondo liberado",
+                holdbackRemaining: "Fondo restante",
+                lender: "Prestamista",
+                lenderContact: "Contacto del prestamista",
+                loanBalance: "Saldo del préstamo",
+                totalHoldback: "Total retenido (rehab)",
+                maxDraws: "Máx retiros permitidos"
+              },
+              form: {
+                title: "Registrar un retiro completado",
+                sub: "¿Ya hablaste con tu prestamista y recibiste los fondos? Regístralo aquí para mantener tu saldo al día.",
+                drawNum: "Número de retiro",
+                amount: "Monto recibido ($)",
+                date: "Fecha de recepción",
+                approvedVia: "Aprobado por el prestamista vía",
+                workCompleted: "Trabajo completado (descripción breve)",
+                cancel: "Cancelar",
+                submit: "Registrar retiro",
+                submitting: "Registrando...",
+                optionsApproved: ["Llamada telefónica", "Mensaje de texto", "Correo electrónico", "En persona"],
+                phAmount: "ej. 5000",
+                phWork: "ej. Estructura completada, plomería básica e instalación eléctrica en la planta principal."
+              },
+              history: {
+                title: "Historial de retiros",
+                logged: "Registrado",
+                pending: "Pendiente",
+                notRequested: "Aún no solicitado"
+              },
+              contactCard: {
+                title: "¿Necesitas solicitar un retiro?",
+                sub: "Contacta a tu prestamista directamente. PML le notificará que viene una solicitud en camino.",
+                lender: "Prestamista",
+                email: "Correo",
+                phone: "Teléfono",
+                notifyBtn: "Notificar al prestamista que necesito un retiro",
+                successAlert: "¡El prestamista ha sido notificado!"
+              }
+            },
+            closingPrep: {
+              banner: {
+                title: "Oferta aceptada — carta de compromiso firmada",
+                sub: "{lender} se ha comprometido a fondear tu trato en {address}. Completa los pasos a continuación para que podamos llegar al cierre."
+              },
+              steps: ["Oferta aceptada", "Título y seguro", "Revisar y confirmar", "Cierre"],
+              titleCard: {
+                title: "Compañía de títulos (Title company)",
+                sub: "¿Quién está manejando el cierre? Las instrucciones de transferencia de PML se enviarán aquí.",
+                savedLabel: "Compañías guardadas",
+                useDiff: "+ Usar una compañía diferente",
+                prefilled: "Llenado con tu información guardada. Actualiza si algo cambió.",
+                fields: {
+                  name: "Nombre de la compañía",
+                  agent: "Abogado de cierre / agente",
+                  phone: "Teléfono",
+                  email: "Correo electrónico",
+                  emailHint: "Las instrucciones de transferencia de PML se enviarán aquí automáticamente.",
+                  fileNum: "Número de archivo",
+                  fileHint: "Asignado por la compañía"
+                },
+                wireNote: "Las instrucciones para el pago de la tarifa de la plataforma PML se enviarán automáticamente al correo indicado arriba. La compañía de títulos incluirá nuestra tarifa en el estado de liquidación."
+              },
+              insCard: {
+                title: "Seguro",
+                sub: "El seguro de la propiedad debe estar vigente antes del cierre.",
+                savedLabel: "Aseguradoras guardadas",
+                useDiff: "+ Usar una compañía diferente",
+                fields: {
+                  company: "Compañía de seguros",
+                  agent: "Nombre del agente",
+                  phone: "Teléfono del agente",
+                  email: "Correo del agente",
+                  policy: "Número de póliza",
+                  policyHint: "si está emitida",
+                  coverage: "Monto de cobertura",
+                  status: "Estado de la póliza",
+                  statusOpts: ["Emitida — póliza activa", "Cotización obtenida — aún no emitida", "En progreso — trabajando en ello"]
+                },
+                rentCover: {
+                  label: "¿Esta propiedad necesita cobertura de pérdida de renta?",
+                  sub: "Requerida si la propiedad está rentada o estará ocupada por inquilinos al cierre.",
+                  no: "No",
+                  yes: "Sí",
+                  note: "Hazle saber a tu agente que se requiere cobertura de pérdida de renta. El prestamista puede solicitar prueba de esto antes del cierre."
+                }
+              },
+              reviewCard: {
+                title: "Confirma los detalles de cierre",
+                sub: "Revisa todo antes de notificar a tu prestamista.",
+                blocks: {
+                  deal: "Trato",
+                  dealFields: { prop: "Propiedad", lender: "Prestamista", amount: "Monto", rate: "Tasa / Plazo" },
+                  title: "Compañía de títulos",
+                  titleFields: { comp: "Compañía", agent: "Agente", phone: "Teléfono", email: "Correo", wire: "Instrucciones de PML", wireVal: "Se enviarán automáticamente" },
+                  ins: "Seguro"
+                },
+                statuses: {
+                  letter: "Carta de compromiso", letterVal: "✓ Firmada",
+                  title: "Compañía confirmada", titleVal: "✓ En archivo",
+                  ins: "Seguro confirmado",
+                  wire: "Instrucciones PML", wireVal: "Enviando",
+                  closing: "Fecha de cierre", closingVal: "TBD — fijada por la notaría"
+                },
+                btn: "Notificar al prestamista — listo para cerrar",
+                btnNote: "Tu prestamista será notificado de inmediato. La compañía de títulos recibirá las instrucciones de transferencia de PML en minutos. La fecha de cierre se coordinará entre tú, el prestamista y la notaría.",
+                alert: "Prestamista notificado. La compañía de títulos recibirá las instrucciones de transferencia de PML en breve."
+              },
+              bottomBar: {
+                back: "← Atrás",
+                step1: "Paso 1 de 2 — Título y seguro",
+                step2: "Paso 2 de 2 — Revisión",
+                next: "Continuar →",
+                review: "Revisar"
+              }
+            },
+            preQualification: {
+              badge: "Pre-Calificación de Prestatario",
+              steps: ["Info del Trato", "Finanzas", "Antecedentes", "Revisión"],
+              titles: [
+                "Cuéntanos sobre tu trato",
+                "Finanzas del trato",
+                "Tus antecedentes",
+                "Revisar y enviar"
+              ],
+              subs: [
+                "Esto ayuda a los prestamistas a evaluar tu solicitud. Toma unos 2 minutos.",
+                "Los prestamistas usan estos números para calcular el LTV y evaluar el trato.",
+                "Unas breves preguntas sobre tu experiencia y situación financiera.",
+                "¿Todo se ve bien? Envía para obtener tu insignia de pre-calificación."
+              ],
+              step1: {
+                address: "Dirección de la propiedad",
+                addressPh: "123 Main St, Memphis, TN 38111",
+                amount: "Monto del préstamo solicitado",
+                term: "Plazo del préstamo necesario",
+                termSelect: "Selecciona el plazo",
+                exit: "Estrategia de salida",
+                exits: [
+                  { title: "Vender la propiedad", sub: "Fix and flip — vender después de remodelar" },
+                  { title: "Refinanciar", sub: "Refinanciar a largo plazo tras estabilización" },
+                  { title: "Financiamiento de dueño", sub: "Vender a un comprador final usando seller financing" }
+                ]
+              },
+              step2: {
+                purchasePrice: "Precio de compra",
+                arv: "Valor estimado (ARV)",
+                arvHint: "Tu valor estimado después de la remodelación.",
+                rehab: "Presupuesto de remodelación",
+                downPayment: "Enganche disponible",
+                condition: "Condición actual de la propiedad",
+                conditionSelect: "Selecciona la condición",
+                conditions: [
+                  "Lista para mudarse — solo actualizaciones cosméticas",
+                  "Remodelación ligera — pintura, pisos, accesorios",
+                  "Remodelación media — cocina, baños, sistemas",
+                  "Remodelación profunda — estructural, demolición total"
+                ]
+              },
+              step3: {
+                experience: "¿Cuántos tratos has cerrado?",
+                expSelect: "Selecciona tu experiencia",
+                exps: ["Este es mi primer trato", "1 - 3 tratos", "4 - 10 tratos", "11 - 25 tratos", "25+ tratos"],
+                credit: "Rango de score de crédito estimado",
+                creditSelect: "Selecciona rango",
+                creditHint: "Auto-reportado. Sin revisión (hard pull). No afecta tu score.",
+                credits: ["Menos de 580", "580 - 619", "620 - 659", "660 - 699", "700 - 739", "740+"],
+                entity: "¿Tienes una entidad activa para este trato?",
+                entitySelect: "Seleccionar",
+                entities: ["Sí — LLC", "Sí — Corporación", "Sí — Fideicomiso (Land trust)", "No — compra a título personal"],
+                bankruptcy: "¿Alguna bancarrota o ejecución hipotecaria activa?",
+                bankSelect: "Seleccionar",
+                bankruptcies: ["No", "Sí — bancarrota (activa)", "Sí — ejecución hipotecaria (activa)"]
+              },
+              step4: {
+                desc: "Revisa tu información de pre-calificación. Una vez enviada, tu trato será visible para los prestamistas con una insignia de verificado.",
+                blocks: ["Trato", "Finanzas", "Antecedentes"],
+                badgeTitle: "Prestatario Pre-Calificado",
+                badgeSub: "Esta insignia aparecerá en el listado de tu trato para que los prestamistas vean que has sido verificado."
+              },
+              buttons: {
+                back: "Atrás",
+                next: "Continuar",
+                submit: "Enviar pre-calificación",
+                submitting: "Enviando..."
+              }
             }
         };
 
@@ -2648,22 +3137,36 @@ const en: Copy = {
   },
 
   submitDeal: {
-    title: "Submit a deal",
+    title: "Post a Deal",
     subtitle: "Post your loan request and let lenders compete for your deal.",
-    steps: ["Loan type", "Property details", "Financials", "Documents", "Review & post"],
+    steps: ["Loan type", "Property", "Financials", "Review & post"],
     stepHint: "Step {current} of {total} — {stepName}",
-    loanTypeBadge: "Bridge loan selected • 6 to 18 months, interest only",
+    loanType: {
+      title: "Select loan type",
+      sub: "What kind of financing are you looking for?",
+      bridge: "Bridge Loan",
+      bridgeSub: "Short term, interest only. Ideal for fix & flip.",
+      slowFlip: "Slow Flip / Owner Finance",
+      slowFlipSub: "Long term, fully amortized.",
+      rental: "Long-term Rental",
+      rentalSub: "For stabilized properties."
+    },
     property: {
       title: "Property details",
       sub: "Tell us about the property you're financing.",
       address: "Property address",
       addressPh: "E.g. 123 Main St, Memphis, TN",
-      addressHint: "Start typing — we'll auto-fill details from public records.",
+      addressHint: "Start typing — we'll auto-fill details and estimate your ARV from public records.",
+      addressLookup: "Looking up...",
+      addressSuccess: "Auto-filled from public records",
+      addressFail: "Could not auto-fill — please enter details manually.",
       city: "City",
       state: "State",
       zip: "ZIP code",
       propType: "Property type",
+      propTypes: ["Single family", "Multi-family (2-4 units)", "Multi-family (5+ units)", "Commercial", "Land"],
       occupancy: "Occupancy",
+      occupancies: ["Vacant", "Owner occupied", "Tenant occupied"],
       beds: "Bedrooms",
       baths: "Bathrooms",
       sqft: "Sq ft",
@@ -2677,21 +3180,45 @@ const en: Copy = {
       sub: "Enter your numbers. We'll estimate your monthly cost.",
       purchasePrice: "Purchase price",
       loanAmount: "Loan amount requested",
+      loanHint: "Amount you need from the lender.",
       arv: "After repair value (ARV)",
+      arvHint: "Estimated value after all work is done.",
       rehab: "Estimated rehab cost",
       desiredTerm: "Desired loan term",
+      terms: ["6 months", "9 months", "12 months", "18 months"],
       maxRate: "Max interest rate you'll accept",
-      maxRateOptions: ["10%", "12%", "14%", "Any — show me all offers"],
-      calcTitle: "Estimated monthly cost",
-      calcInterest: "Interest only payment",
-      calcMembership: "PML membership",
-      calcServicing: "PML servicing fee",
-      calcOrigination: "Origination point (1% at closing)",
-      calcTotal: "Total monthly (est.)",
-      mo: "/ mo",
-      oneTime: "one-time"
+      maxRates: ["10%", "12%", "14%", "Any — show me all offers"],
+      ltvLabel: "Loan-to-value (LTV)",
+      ltvHigh: "High LTV — some lenders may pass. Consider increasing down payment.",
+      ltvMod: "Moderate LTV. Most lenders will consider this.",
+      ltvGood: "Most private lenders prefer LTV under 70%. You're in good shape.",
+      exitLabel: "Exit strategy",
+      exits: ["Sell after rehab", "Refinance (BRRRR)", "Rent & hold", "Owner finance"]
     },
-    actions: { back: "Back", continue: "Continue", submit: "Submit deal", change: "Change" }
+    liveCalc: {
+      title: "Live deal snapshot",
+      purchase: "Purchase price",
+      loan: "Loan requested",
+      rehab: "Rehab budget",
+      arv: "ARV estimate",
+      ltv: "LTV (loan ÷ ARV)",
+      monthly: "Est. monthly payment @ {rate}",
+      warning: "LTV above 75% — most lenders require borrower to reduce loan amount or increase equity."
+    },
+    review: {
+      visTitle: "Your deal will be visible to all lenders on the platform.",
+      visSub: "Lenders see your deal details, property address, and financials. Personal identity information is never shown without your approval.",
+      title: "Review your deal",
+      sub: "Confirm everything looks right before posting.",
+      secType: "Loan type",
+      secProp: "Property",
+      secFin: "Financials",
+      secBiz: "Your business",
+      edit: "Edit",
+      btnPost: "Post my deal",
+      postNote: "Your deal goes live immediately. Lenders will be notified.\nYou can edit or remove it at any time from your dashboard."
+    },
+    actions: { back: "← Back", continue: "Continue →", review: "Review & post" }
   },
 
   affiliates: {
@@ -2817,6 +3344,53 @@ const en: Copy = {
   vetting: { title: "Vetting Application", subtitle: "Complete this process once to access private capital.", feeNotice: "Application fee (non-refundable)", form: { bankStatements: "Bank Statements (Last 3 months)", idUpload: "Official ID", submitAndPay: "Pay $99 & Submit", selectFile: "Select file", dealHistory: "Past Deal History", dealHistoryDesc: "Enter up to 5 recent project addresses.", addressLabel: "Address", addressPh: "E.g. 123 Main St, Austin, TX", addAddress: "+ Add another address", consentCredit: "I authorize Dueño a Dueño LLC and its partnered lenders to run a Credit Pull.", consentBackground: "I authorize Dueño a Dueño LLC to run a Background Check.", consentAlert: "You must accept the credit and background checks to continue.", step: "Step", of: "of", next: "Next", back: "Back", saveAndContinueLater: "Save & continue later", savedAlert: "Your progress has been saved. You can come back anytime." } },
   issueCommitment: { title: "Issue Commitment Letter", subtitle: "Configure fees for deal REF:", closingFeesTitle: "Closing Fees", originationPoints: "Origination Points (%)", processingFee: "Processing Fee ($)", underwritingFee: "Underwriting Fee ($)", docPrepFee: "Doc Prep Fee ($)", customFeeName: "Custom Fee Name", customFeeNamePh: "E.g. Appraisal Fee", customFeeAmount: "Custom Fee Amount ($)", penaltiesTitle: "Post-Closing Penalties", latePenalty: "Late Payment Penalty", latePenaltyPh: "E.g. 5% or $50", prePayPenalty: "Pre-Pay Penalty", prePayPenaltyPh: "E.g. 1% of balance", phPoints: "E.g. 2", phFee: "E.g. 500", systemNoteTitle: "System Note:", systemNote: "The Marketplace Connection Fee (1 point, min $999) will be automatically added to the final summary by the platform if applicable to this deal.", submit: "Generate and Issue Letter", submitting: "Issuing...", errorFetch: "Failed to issue commitment letter", errorNetwork: "Unknown network error" },
   inviteModal: { title: "Invite to Portal", subtitle: "Share this link for a direct deal. Private/invited deals have a $0 marketplace connection fee.", copyLink: "Copy link", linkCopied: "Copied!", emailLabel: "Or send an email invitation:", emailPh: "email@example.com", sendBtn: "Send Invitation", sending: "Sending...", successMsg: "Invitation sent successfully.", close: "Close" },
+  borrowerOnboarding: {
+    title: "One step before you post",
+    subtitle: "Tell us about your business so lenders know who they're working with.\nTakes about 60 seconds.",
+    steps: ["Account", "Business", "Post deal"],
+    step1: {
+      tag: "Business profile",
+      title: "About your entity",
+      sub: "Used to show lenders who is behind the deal. No personal info required at this stage.",
+      entityName: "Entity name",
+      entityNamePh: "Memphis Realty LLC",
+      entityType: "Entity type",
+      entityTypeSelect: "Select",
+      entityTypes: ["LLC", "Corporation", "Land trust", "Personal name", "Other"],
+      ein: "EIN",
+      einPh: "XX-XXXXXXX",
+      states: "States you operate in",
+      statesPh: "e.g. TN, MS, AR",
+      statesHint: "Helps lenders find deals in their area.",
+      experience: "Years in real estate investing",
+      expSelect: "Select",
+      exps: ["Less than 1 year", "1 - 3 years", "3 - 5 years", "5 - 10 years", "10+ years"],
+      lockedNotice: {
+        bold: "Identity verification is optional for now.",
+        text: " Personal address, date of birth, SSN, and government ID are only required when a lender decides to fund your deal."
+      }
+    },
+    step2: {
+      tag: "Ready to post",
+      title: "Your profile is set",
+      sub: "Here's what lenders will see. You can post your first deal now.",
+      reviewTitle: "Business",
+      unlockedLater: "Unlocked when a lender wants to fund",
+      locked1: "Personal address & date of birth",
+      locked2: "Social Security Number",
+      locked3: "Government-issued ID",
+      lockedBadge: "Locked"
+    },
+    footer: {
+      step: "Step",
+      of: "of",
+      back: "Back",
+      continue: "Continue",
+      post: "Post my first deal",
+      skip: "Skip for now — I'll complete this later",
+      submitting: "Processing..."
+    }
+  },
   documentVault: { title: "Document Vault", subtitle: "Upload, review, or download legal documents associated with this deal.", uploadBtn: "Upload Document", uploading: "Uploading...", empty: "No documents in this vault.", table: { name: "Document Name", date: "Upload Date", status: "Status", action: "Action" }, actions: { download: "Download", sign: "Sign" }, status: { signed: "Signed", pending: "Pending Signature", file: "File" } },
   settings: {
     title: "Settings",
@@ -3082,6 +3656,410 @@ const en: Copy = {
               offerAccepted: "Offer accepted",
               achAuth: "ACH authorization completed",
               readyToClose: "Borrower notified lender — ready to close"
+            },
+            missedPayment: {
+              title: "Missed Payment",
+              subtitle: "3802 University Cove · Loan #PML-2026-09-22-3802UCOVE",
+              scoreBanner: {
+                title: "This missed payment is being recorded on your PML borrower score",
+                desc: "Every missed or late payment is permanently logged and factored into your overall PML borrower score. Lenders can see your payment history before deciding to fund your deals. Paying immediately minimizes the impact — the longer it goes unpaid, the greater the score reduction.",
+                currentScore: "Current score",
+                projectedDrop: "-18 pts projected if unpaid"
+              },
+              viewToggle: {
+                borrower: "Borrower view",
+                lender: "Lender view"
+              },
+              alert: {
+                title: "Payment overdue — 15 days past due",
+                sub: "Your November 1 payment was not received. A late fee has been added. Please pay immediately to avoid default notice being sent to your lender."
+              },
+              paymentCard: {
+                title: "Amount due now",
+                monthly: "Monthly payment (November 1)",
+                lateFee: "Late fee (15 days @ 5% of payment)",
+                perDiem: "Per diem accruing",
+                total: "Total due today"
+              },
+              actionCard: {
+                title: "Pay now to stop the clock",
+                sub: "Late fees stop accruing the day payment is received. Your lender has not yet been notified of default.",
+                payBtn: "Pay $1,207.50 now",
+                contactBtn: "Contact lender to discuss"
+              },
+              timeline: {
+                title: "Payment timeline",
+                events: [
+                  { title: "Payment due", date: "November 1, 2026", desc: "$1,150 was due. No payment received." },
+                  { title: "Grace period ended — late fee applied", date: "November 6, 2026 (5 days)", desc: "5-day grace period expired. $57.50 late fee added to balance." },
+                  { title: "Currently 15 days past due", date: "November 16, 2026", desc: "Lender has been notified. Pay immediately to prevent default notice." },
+                  { title: "Day 30 — formal default notice", date: "December 1, 2026 (if unpaid)", desc: "PML sends formal default notice. Lender may begin collection or foreclosure proceedings." }
+                ]
+              },
+              lenderAction: {
+                title: "Lender options — borrower is 15 days past due",
+                options: [
+                  { title: "Send a payment reminder", desc: "Notify borrower via PML messaging — friendly reminder before escalating." },
+                  { title: "Offer a payment extension", desc: "Agree to waive the late fee and extend due date — borrower must accept in platform." },
+                  { title: "Issue formal default notice", desc: "Trigger the 30-day default clock. PML generates and sends the notice." }
+                ]
+              }
+            },
+            inviteFlow: {
+              header: {
+                label: "Version 1.0 Feature",
+                title: "Direct Invite System",
+                sub: "Bring your own lender or borrower — skip the marketplace, keep the infrastructure. Three views: Lender invite widget, borrower deal-posting invite field, and the co-branded landing page invite links resolve to."
+              },
+              view1: {
+                label: "View 1",
+                title: "Lender Dashboard — Invite a Borrower",
+                widgetTitle: "Invite a borrower",
+                widgetSub: "Have a borrower ready to fund? Send them your personal invite link. Their deal goes straight to you — no browsing, no competition.",
+                linkTitle: "Your invite link",
+                copyBtn: "Copy link",
+                orDivider: "or send by email",
+                sendBtn: "Send invite",
+                inputHint: "They'll get an email from PML with your name and a direct link to post their first deal.",
+                stats: { sent: "Invites sent", signedUp: "Signed up", posted: "Deal posted", funded: "Funded" },
+                feeTitle: "How fees work for invited deals",
+                feeBody1: "When you bring your own borrower, ",
+                feeBody1Highlight: "PML didn't make the introduction",
+                feeBody1Cont: " — so the connection fee doesn't apply.",
+                feeBody2Highlight: "What still applies:",
+                feeBody2Cont: " Borrower pays the $99/month subscription. That's it. No 1% lender connection fee. No 10% of monthly interest.",
+                feeBody3Highlight: "The deal is tagged",
+                borrowerReceivesTitle: "What your borrower receives",
+                borrowerReceivesBody: "An email from PayMyLoan.ai:\n\nSubject: John Smith is waiting to fund your next deal\n\n\"Hi — John Smith, a private lender on PayMyLoan, has a deal reserved for you. Post your property in under 10 minutes and John can fund it without competing with anyone else.\"\n\nCTA: Post my deal → lands on co-branded signup page pre-tagged to John's account"
+              },
+              view2: {
+                label: "View 2",
+                title: "Deal Posting — Borrower Invites a Lender",
+                stepTitle: "Step 4 of 5 — Funding",
+                stepSub: "Tell us how you want to find your lender.",
+                amountLabel: "Loan amount requested",
+                termLabel: "Preferred term",
+                haveLenderLabel: "Already have a lender?",
+                optionalTag: "Optional",
+                haveLenderHint: "Enter their email and we'll send them a direct invite to fund this deal — no marketplace browsing, no competition.",
+                inviteBtn: "Invite lender",
+                lenderFoundName: "James Rivera — Rivera Capital",
+                lenderFoundSub: "Invite sent · Will be notified when you publish",
+                removeBtn: "Remove",
+                feeTitle: "Bringing your own lender saves money",
+                feeBody1: "Since PML isn't making the introduction, ",
+                feeBody1Highlight: "no connection fee applies",
+                feeBody1Cont: ". You pay the $99/month subscription only. The 10% of monthly interest and 1% lender fee are waived for invited deals.",
+                lenderReceivesTitle: "What your lender receives",
+                lenderReceivesBody: "An email from PayMyLoan.ai:\n\nSubject: Marcus Johnson has a deal ready for you\n\n\"Hi — Marcus Johnson, a borrower you know, has posted a deal on PayMyLoan and wants you to fund it. You can review the full deal, make an offer, and close — all in one place.\"\n\nCTA: View Marcus's deal → lender lands directly on the deal card, pre-tagged to Marcus's account",
+                noFundTitle: "What happens if the lender doesn't fund?",
+                noFundBody: "If your invited lender doesn't make an offer within 7 days, you can choose to:\n\nOption A: Open the deal to the marketplace (standard fee structure applies)\n\nOption B: Send another invite to a different lender\n\nOption C: Keep the deal private and follow up yourself"
+              },
+              view3: {
+                label: "View 3",
+                title: "Co-Branded Landing Page — What invite links resolve to",
+                heroInviter: "is waiting to fund your next deal",
+                heroEyebrow: "PayMyLoan.ai — Private Lending Infrastructure",
+                heroTitle1: "Post your deal.",
+                heroTitle2: "John funds it.",
+                heroTitle3: " Fast.",
+                heroSub: "John Smith has a deal reserved for you on PayMyLoan. Post your property in under 10 minutes — no competing offers, no waiting.",
+                heroBtn: "Post my deal — it's free",
+                heroFine: "No credit card. Borrower subscription starts when you publish.",
+                signupTag: "Invited by John Smith · Rivera Capital",
+                signupTitle: "Create your account",
+                signupSub: "60 seconds. No credit card. Start posting your deal.",
+                firstName: "First name",
+                lastName: "Last name",
+                email: "Email address",
+                phone: "Cell phone",
+                password: "Password",
+                signupBtn: "Create account and post my deal",
+                signupFine: "By creating an account you agree to our Terms of Service and Privacy Policy. John Smith will be notified when your deal is live."
+              },
+              feeTable: {
+                title: "Fee Logic — Direct Invite vs Platform Match",
+                sub: "The deal is tagged at creation. The fee engine reads the tag automatically — no manual override needed.",
+                headers: ["Fee", "Platform Match", "PML introduced them", "Direct Invite", "They knew each other", "Notes"],
+                rows: [
+                  { fee: "$99/month subscription", match: "Yes", invite: "Yes", notes: "Always — borrower pays for infrastructure regardless" },
+                  { fee: "$99 identity verification", match: "If lender requires", invite: "If lender requires", notes: "Lender decides whether to require it — their choice on both flows" },
+                  { fee: "1% lender connection fee", match: "Yes — at closing", invite: "Waived", notes: "PML only earns this when PML made the introduction" },
+                  { fee: "10% of monthly interest", match: "Yes — ongoing", invite: "Waived", notes: "Same logic — no matchmaking, no matchmaking fee" }
+                ],
+                specTitle: "Developer Spec — Deal Source Tag",
+                specs: [
+                  { key: "Field", val: "deal.source" },
+                  { key: "Values", val: "platform_match · lender_invite · borrower_invite" },
+                  { key: "Set at", val: "Deal creation — auto-tagged from invite link or borrower email field. Default = platform_match" },
+                  { key: "Reads from", val: "Fee engine reads deal.source before calculating any connection or interest fees" },
+                  { key: "Invite link format", val: "paymyloan.ai/invite/[username]-[token] — passes inviter_id as URL param" },
+                  { key: "Invite email field", val: "Borrower enters lender email at deal-posting step → PML sends invite email → if lender signs up and funds = tagged borrower_invite" },
+                  { key: "Fallback rule", val: "If invited lender doesn't fund within 7 days and borrower opens to marketplace → source re-tags to platform_match and standard fee structure applies" }
+                ]
+              }
+            },
+            extensionRequest: {
+              title: "Request Loan Extension",
+              subtitle: "{address} · Loan matures {date}",
+              maturityBanner: {
+                title: "Maturity in 60 days — {date}",
+                sub: "If you need more time to sell or refinance, request an extension now. Your lender must approve it. Both parties sign an amended maturity date."
+              },
+              loanCard: {
+                title: "Current loan summary",
+                property: "Property",
+                lender: "Lender",
+                balance: "Balance",
+                rate: "Rate",
+                currentMaturity: "Current maturity",
+                monthlyPayment: "Monthly payment"
+              },
+              requestCard: {
+                title: "How long do you need?",
+                sub: "Select an extension period. The lender may approve, counter, or decline. Extension fees are negotiated directly with your lender — PML facilitates the agreement.",
+                termDisplay: {
+                  termLabel: "Extension term",
+                  termNote: "Same as original loan term",
+                  rate: "Rate",
+                  monthly: "Monthly payment",
+                  newMaturity: "New maturity"
+                },
+                reasonLabel: "Reason for extension request",
+                reasonPh: "Explain your situation — e.g. refinance is in progress, buyer is under contract but closing delayed, still rehabbing...",
+                noteBox: "Once you submit, your lender will receive a notification and can approve, counter, or decline within the platform. If approved, both parties e-sign an amended maturity agreement and fees are collected at extension closing.",
+                feeSummary: {
+                  newMaturity: "New maturity date",
+                  addMonths: "Additional months",
+                  monthlyContinues: "Monthly payment (continues)"
+                },
+                extFeeBox: {
+                  sectionTitle: "Extension fees — due at extension closing",
+                  title: "Fee breakdown",
+                  pmlFee: "PML platform fee (1% of loan balance)",
+                  pmlFeeNote: "Collected via settlement statement at extension closing",
+                  lenderFee: "Lender extension fee (set by lender)",
+                  lenderFeeNote: "1 pt suggested · negotiated with lender · paid at extension closing",
+                  achFee: "ACH / wire processing fee",
+                  achFeeNote: "Paid by borrower",
+                  totalLabel: "Total estimated fees at extension closing"
+                },
+                feeNoteBox: "All extension fees are paid by the borrower. PML's 1% fee is collected via the settlement statement at extension closing — same process as the original loan. Lender extension fees are set by the lender and may vary. Final amounts confirmed when lender approves the extension.",
+                esign: {
+                  title: "Authorization + e-signature required",
+                  checks: [
+                    "I request a 12-month extension of my loan at the same rate (11.5%), same monthly payment ($1,104.17), and same terms as the original agreement.",
+                    "I authorize PayMyLoan, LLC to collect the PML platform fee of $1,150.00 via ACH automatically upon lender approval — no further action required from me.",
+                    "I understand the lender extension fee of $1,150.00 (1 pt) and ACH fee of $25.00 will also be collected at extension closing via settlement statement or ACH as applicable.",
+                    "I understand that once the lender approves this request, a new 12-month payment schedule will be automatically generated starting from the new maturity date of September 22, 2028.",
+                    "I agree that failure to pay under the extended term will be recorded on my PML borrower score."
+                  ],
+                  sigLabel: "Type your full legal name to sign",
+                  sigPh: "E.g. Marcus Johnson",
+                  dateLabel: "Date",
+                  note: "By typing your name above and clicking Submit, you are electronically signing this extension request and fee authorization in accordance with the E-SIGN Act and UETA. This is a legally binding authorization."
+                },
+                submitBtn: "Sign and send extension request to lender",
+                submitting: "Submitting..."
+              }
+            },
+            drawRequest: {
+              title: "Draw Request",
+              subtitle: "Request a rehab draw from your lender",
+              versionBadge: "Version 1.0 — Manual Draw Process",
+              notice: {
+                title: "How draws work in Version 1.0",
+                body: "Contact your lender directly to request a draw — by phone, text, or email. Once your lender approves and wires the funds, log the draw here so your loan balance stays accurate.<br><br>Full automated draw management (photo uploads, stage checklists, one-click approval, ACH disbursement) is coming in a future version."
+              },
+              summary: {
+                subtitle: "Active bridge loan — draw tracking",
+                drawsUsed: "Draws used",
+                drawsRemaining: "Draws remaining",
+                holdbackReleased: "Holdback released",
+                holdbackRemaining: "Holdback remaining",
+                lender: "Lender",
+                lenderContact: "Lender contact",
+                loanBalance: "Loan balance",
+                totalHoldback: "Total rehab holdback",
+                maxDraws: "Max draws allowed"
+              },
+              form: {
+                title: "Log a completed draw",
+                sub: "Already spoke with your lender and received funds? Log it here to keep your balance current.",
+                drawNum: "Draw number",
+                amount: "Amount received ($)",
+                date: "Date received",
+                approvedVia: "Lender approved via",
+                workCompleted: "Work completed (brief description)",
+                cancel: "Cancel",
+                submit: "Log draw",
+                submitting: "Logging...",
+                optionsApproved: ["Phone call", "Text message", "Email", "In person"],
+                phAmount: "e.g. 5000",
+                phWork: "e.g. Completed framing, rough plumbing, and electrical rough-in throughout main floor."
+              },
+              history: {
+                title: "Draw history",
+                logged: "Logged",
+                pending: "Pending",
+                notRequested: "Not yet requested"
+              },
+              contactCard: {
+                title: "Need to request a draw?",
+                sub: "Contact your lender directly. PML will notify them that a draw request is incoming.",
+                lender: "Lender",
+                email: "Email",
+                phone: "Phone",
+                notifyBtn: "Notify lender I need a draw",
+                successAlert: "Lender notified!"
+              }
+            },
+            closingPrep: {
+              banner: {
+                title: "Offer accepted — commitment letter signed",
+                sub: "{lender} has committed to fund your deal at {address}. Complete the steps below so we can get to closing."
+              },
+              steps: ["Offer accepted", "Title & insurance", "Review & confirm", "Closing"],
+              titleCard: {
+                title: "Title company",
+                sub: "Who is handling the closing? PML wire instructions will be sent here.",
+                savedLabel: "Saved title companies",
+                useDiff: "+ Use a different company",
+                prefilled: "Pre-filled from your saved info. Update if anything has changed.",
+                fields: {
+                  name: "Title company name",
+                  agent: "Closing attorney / agent",
+                  phone: "Phone",
+                  email: "Email",
+                  emailHint: "PML wire instructions will be sent here automatically.",
+                  fileNum: "File number",
+                  fileHint: "Assigned by title company"
+                },
+                wireNote: "PML platform fee wire instructions will be sent automatically to the title company email above. The title company will include our fee on the settlement statement."
+              },
+              insCard: {
+                title: "Insurance",
+                sub: "Property insurance must be in place before closing.",
+                savedLabel: "Saved insurance companies",
+                useDiff: "+ Use a different company",
+                fields: {
+                  company: "Insurance company",
+                  agent: "Agent name",
+                  phone: "Agent phone",
+                  email: "Agent email",
+                  policy: "Policy number",
+                  policyHint: "if bound",
+                  coverage: "Coverage amount",
+                  status: "Policy status",
+                  statusOpts: ["Bound — policy is active", "Quote obtained — not yet bound", "In progress — working on it"]
+                },
+                rentCover: {
+                  label: "Does this property need rent loss coverage?",
+                  sub: "Required if the property is currently rented or will be tenant-occupied at closing.",
+                  no: "No",
+                  yes: "Yes",
+                  note: "Let your insurance agent know rent loss coverage is required. The lender may request proof of this before closing."
+                }
+              },
+              reviewCard: {
+                title: "Confirm closing details",
+                sub: "Review everything before notifying your lender.",
+                blocks: {
+                  deal: "Deal",
+                  dealFields: { prop: "Property", lender: "Lender", amount: "Loan amount", rate: "Rate / Term" },
+                  title: "Title company",
+                  titleFields: { comp: "Company", agent: "Agent", phone: "Phone", email: "Email", wire: "PML wire instructions", wireVal: "Will be sent automatically" },
+                  ins: "Insurance"
+                },
+                statuses: {
+                  letter: "Commitment letter", letterVal: "✓ Signed",
+                  title: "Title company confirmed", titleVal: "✓ On file",
+                  ins: "Insurance confirmed",
+                  wire: "PML wire instructions", wireVal: "Sending to title",
+                  closing: "Closing date", closingVal: "TBD — set by title"
+                },
+                btn: "Notify lender — ready to close",
+                btnNote: "Your lender will be notified immediately. The title company will receive PML wire instructions within minutes. Closing date will be coordinated between you, your lender, and the title company.",
+                alert: "Lender notified. Title company will receive PML wire instructions shortly."
+              },
+              bottomBar: {
+                back: "← Back",
+                step1: "Step 1 of 2 — Title & insurance",
+                step2: "Step 2 of 2 — Review & confirm",
+                next: "Continue →",
+                review: "Review"
+              }
+            },
+            preQualification: {
+              badge: "Borrower Pre-Qualification",
+              steps: ["Deal Info", "Financials", "Background", "Review"],
+              titles: [
+                "Tell us about your deal",
+                "Deal financials",
+                "Your background",
+                "Review and submit"
+              ],
+              subs: [
+                "This helps lenders evaluate your request. Takes about 2 minutes.",
+                "Lenders use these numbers to calculate LTV and assess the deal.",
+                "A few questions about your experience and financial standing.",
+                "Everything look right? Submit to get your pre-qualified badge."
+              ],
+              step1: {
+                address: "Property address",
+                addressPh: "123 Main St, Memphis, TN 38111",
+                amount: "Loan amount requested",
+                term: "Loan term needed",
+                termSelect: "Select term",
+                exit: "Exit strategy",
+                exits: [
+                  { title: "Sell the property", sub: "Fix and flip — sell after renovation" },
+                  { title: "Refinance", sub: "Refi into long-term financing after stabilization" },
+                  { title: "Owner finance / sell on terms", sub: "Sell to an end buyer using seller financing" }
+                ]
+              },
+              step2: {
+                purchasePrice: "Purchase price",
+                arv: "After repair value (ARV)",
+                arvHint: "Your estimated value after renovation.",
+                rehab: "Rehab budget",
+                downPayment: "Down payment available",
+                condition: "Current property condition",
+                conditionSelect: "Select condition",
+                conditions: [
+                  "Move-in ready — cosmetic updates only",
+                  "Light rehab — paint, flooring, fixtures",
+                  "Medium rehab — kitchen, baths, systems",
+                  "Heavy rehab — structural, full gut"
+                ]
+              },
+              step3: {
+                experience: "How many deals have you closed?",
+                expSelect: "Select experience",
+                exps: ["This is my first deal", "1 - 3 deals", "4 - 10 deals", "11 - 25 deals", "25+ deals"],
+                credit: "Estimated credit score range",
+                creditSelect: "Select range",
+                creditHint: "Self-reported. No hard pull. Does not affect your score.",
+                credits: ["Below 580", "580 - 619", "620 - 659", "660 - 699", "700 - 739", "740+"],
+                entity: "Do you have an active entity for this deal?",
+                entitySelect: "Select",
+                entities: ["Yes — LLC", "Yes — Corporation", "Yes — Land trust", "No — purchasing in personal name"],
+                bankruptcy: "Any active bankruptcies or foreclosures?",
+                bankSelect: "Select",
+                bankruptcies: ["No", "Yes — bankruptcy (active)", "Yes — foreclosure (active)"]
+              },
+              step4: {
+                desc: "Review your pre-qualification information. Once submitted your deal will be visible to lenders with a verified badge.",
+                blocks: ["Deal", "Financials", "Background"],
+                badgeTitle: "Pre-Qualified Borrower",
+                badgeSub: "This badge will appear on your deal listing so lenders can see you've been verified."
+              },
+              buttons: {
+                back: "Back",
+                next: "Continue",
+                submit: "Submit pre-qualification",
+                submitting: "Submitting..."
+              }
             }
         };
 
