@@ -95,13 +95,13 @@ function InviteFlowContent() {
           </div>
 
           <div className="flex flex-col gap-[8px]">
-            <div className="flex gap-[8px]">
+            <div className="flex flex-col sm:flex-row gap-[8px]">
               <input 
                 type="email" 
                 placeholder="borrower@email.com" 
-                className="flex-1 p-[9px_14px] border border-[#e6ebf1] rounded-[6px] text-[13px] outline-none text-[#0a2540] focus:border-[#635bff]" 
+                className="flex-1 w-full p-[9px_14px] border border-[#e6ebf1] rounded-[6px] text-[13px] outline-none text-[#0a2540] focus:border-[#635bff]" 
               />
-              <button className="bg-[#635bff] text-white p-[9px_18px] rounded-[6px] text-[13px] font-[700] cursor-pointer whitespace-nowrap transition-opacity hover:opacity-90">
+              <button className="w-full sm:w-auto shrink-0 bg-[#635bff] text-white p-[9px_18px] rounded-[6px] text-[13px] font-[700] cursor-pointer whitespace-nowrap transition-opacity hover:opacity-90">
                 {inv.view1.sendBtn}
               </button>
             </div>
@@ -177,18 +177,18 @@ function InviteFlowContent() {
             </div>
             <div className="text-[12px] text-[#8898aa] mb-[10px]">{inv.view2.haveLenderHint}</div>
             
-            <form onSubmit={handleInviteLender} className="flex gap-[8px]">
+            <form onSubmit={handleInviteLender} className="flex flex-col sm:flex-row gap-[8px]">
               <input 
                 type="email" 
                 placeholder="lender@email.com" 
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 disabled={lenderFound || isInviting}
-                className="flex-1 p-[10px_14px] border border-[#e6ebf1] rounded-[6px] text-[13px] outline-none text-[#0a2540] focus:border-[#635bff] disabled:bg-[#f6f9fc]" 
+                className="flex-1 w-full p-[10px_14px] border border-[#e6ebf1] rounded-[6px] text-[13px] outline-none text-[#0a2540] focus:border-[#635bff] disabled:bg-[#f6f9fc]" 
               />
               <button 
                 disabled={lenderFound || isInviting}
-                className="bg-[#635bff] text-white p-[10px_18px] rounded-[6px] text-[13px] font-[700] cursor-pointer whitespace-nowrap transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="w-full sm:w-auto shrink-0 bg-[#635bff] text-white p-[10px_18px] rounded-[6px] text-[13px] font-[700] cursor-pointer whitespace-nowrap transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {isInviting ? t.inviteModal.sending : inv.view2.inviteBtn}
               </button>

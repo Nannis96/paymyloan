@@ -905,7 +905,60 @@ const es = {
   dashboardBorrower: { title: "Panel de Prestatario", subtitle: "Tus préstamos, propiedades y saldos en un solo lugar.", metrics: { totalOwed: "Saldo Total Pendiente", nextDue: "Próximo Vencimiento", properties: "Propiedades en Garantía", pmlRating: "Calificación PML" }, tabs: { needsFunding: "Necesitan Fondeo", approved: "Aprobados", funded: "Fondeados / Cerrados", completed: "Completados" }, trackerTitle: "Próximos Cierres", trackerEmpty: "No hay cierres próximos rastreados.", needFunding: "Necesitan Fondeo (Need Funding)", loanApproved: "Aprobados por Prestamista", currentLoans: "Préstamos Actuales (Current Loans)", completedLoans: "Completados", emptyTable: "La tabla de préstamos en vivo se renderizará aquí.", emptyDocs: "Las cartas de compromiso y estados de liquidación generados aparecerán aquí.", tableHeaders: { property: "Propiedad", amount: "Monto / Saldo", rehabDrawn: "Rehab Retirado", lender: "Prestamista", rate: "Tasa", status: "Estado", date: "Fecha / Próx Pago", action: "Acción", history: "Historial" }, actions: { pitchDeck: "Generar Pitch Deck", payoff: "Solicitar Liquidación", payments: "Gestionar Pagos", viewContracts: "Contratos" }, loading: "Cargando dashboard...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar la información del dashboard", errorNetwork: "Error de red desconocido", lenderFallback: "Empresa Prestamista", emptyNeedFunding: "Sin solicitudes pendientes", emptyApproved: "Sin préstamos por aceptar", emptyActive: "Sin préstamos activos", emptyCompleted: "Sin préstamos completados", reviewCommitment: "REVISAR COMPROMISO", paidOff: "Liquidado:" },
   contractsList: { title: "Contratos y Préstamos", subtitle: "Listado de acuerdos. Lo que ves aquí depende de tu rol en la plataforma.", table: { id: "ID", concept: "Concepto", property: "Propiedad", client: "Cliente", financials: "Términos Financieros", status: "Estado", actions: "Acciones" }, status: { active: "Activo", inactive: "Inactivo" }, viewDetails: "Detalles", back: "Volver al panel", loading: "Cargando contratos...", empty: "No se encontraron contratos.", errorAuth: "No tienes permisos para ver estos contratos o tu sesión expiró.", errorFetch: "Error al obtener contratos", errorNetwork: "Error de red desconocido", unassigned: "Sin asignar", borrowerFallback: "Deudor", noTerms: "Sin términos", total: "Total:", perMonth: "/mes", interest: "% Int.", },
   contractDetail: { title: "Detalle del Contrato", subtitle: "Información completa, partes involucradas y tabla de amortización.", parties: "Partes Involucradas", financials: "Términos Financieros", breakdownTitle: "Historial de Pagos", exportReport: "Exportar Reporte (CPA Ready)", labels: { lender: "Prestamista", borrower: "Prestatario", amount: "Monto Total", term: "Plazo", interest: "Interés", loanType: "Tipo de Préstamo", downPayment: "Enganche / Depósito", rent: "Pago Mensual" }, table: { date: "Fecha", status: "Estado", totalOwed: "Total", principal: "Capital", interest: "Interés", escrow: "Escrow", balance: "Saldo Restante" }, paymentStatus: { paid: "Pagado", pending: "Pendiente", late: "Atrasado", partial: "Parcial" }, pagination: { prev: "Anterior", next: "Siguiente", page: "Página", of: "de" }, back: "Volver a contratos", loading: "Cargando detalles del contrato...", errorNotFound: "No se encontró el contrato.", errorAuth: "No tienes permisos para ver este contrato.", errorFetch: "Error al cargar el contrato", errorNetwork: "Error de red desconocido", months: "meses", noTerms: "Sin términos", emptyPayments: "No hay pagos registrados para este contrato.", generateReportAlert: "Generando reporte CSV/PDF para el CPA...", lenderFallback: "Empresa Prestamista", borrowerFallback: "Prestatario (Deudor)", },
-  errors: { code500: "Error Interno", title500: "¡Ups! Algo salió mal", message500: "Parece que algo salió mal de nuestro lado. Estamos trabajando en mejorar la experiencia de nuestros usuarios. Por favor, intenta de nuevo.", tryAgain: "Intentar de nuevo", code404: "Error 404", title404: "Página no encontrada", message404: "No pudimos encontrar la página que buscas. Es posible que el enlace sea incorrecto o la página ya no exista.", goHome: "Volver al inicio", },
+  feeAgreement: {
+    docType: "Acuerdo de Tarifas del Prestatario",
+    title: "Acuerdo de Tarifas del Prestatario",
+    subtitle: "Este acuerdo se celebra al momento de publicar el trato en PayMyLoan.ai. No se deben tarifas al firmar. Todas las tarifas listadas se deben unicamente bajo los eventos descritos a continuacion. Este documento autoriza a PayMyLoan.ai a cobrar las tarifas aplicables al cierre mediante el estado de liquidacion.",
+    sections: { borrower: "Prestatario", platformFees: "Tarifas de la plataforma", auth: "Autorizacion", ack: "Reconocimientos del prestatario" },
+    borrower: { entity: "Nombre de la entidad", sig: "Firmante", address: "Direccion de la propiedad", date: "Fecha del acuerdo", dealId: "ID del trato" },
+    platformFees: {
+      desc1: "Las siguientes tarifas aplican a los prestatarios que usan PayMyLoan.ai. Todas las tarifas se deben al ocurrir el evento descrito — no al momento de firmar este acuerdo.",
+      desc2Pre: "Estas tarifas son cobradas por PayMyLoan.ai y son ",
+      desc2Bold: "independientes de cualquier tarifa que cobre el prestamista.",
+      desc2Post: " Los prestamistas en PML conocen nuestra tarifa de plataforma y la consideran en los terminos de su oferta.",
+      table: { fee: "Tarifa", amount: "Monto", when: "Cuando se debe" },
+      items: [
+        { name: "Suscripcion mensual", amt: "$99/mes", when: "Mensual, iniciando al publicar el trato. Exenta si el prestatario tiene un codigo promocional valido o enlace de referido." },
+        { name: "Tarifa de verificacion", amt: "$99 (unica vez)", when: "Cuando un prestamista solicita verificacion de identidad completa." },
+        { name: "Tarifa de conexion al prestamista", amt: "1% del prestamo", when: "Al cierre — solo si PML conecto al prestatario con el prestamista. Pagada en el estado de liquidacion." }
+      ],
+      totalDue: "Total a pagar hoy",
+      totalAmt: "$0",
+      note: "La tarifa de conexion del 1% aplica solo si PayMyLoan.ai facilito la presentacion entre prestatario y prestamista. Si traes a tu propio prestamista, esta tarifa no aplica. El monto exacto se basa en el monto final fondeado."
+    },
+    auth: {
+      desc1: "Al firmar este acuerdo, el prestatario autoriza a PayMyLoan.ai a:",
+      items: [
+        "1. Incluir la tarifa de conexion (1% del monto fondeado) como una linea en el estado de liquidacion al cierre, a ser pagada por el prestatario a PayMyLoan LLC.",
+        "2. Enviar este acuerdo firmado a la compania de titulos o abogado de cierre que maneje la transaccion como autorizacion para cobrar la tarifa de la plataforma al cierre.",
+        "3. Cobrar la suscripcion mensual aplicable comenzando cuando se publique el trato (exenta con un codigo promocional valido o enlace de referido)."
+      ],
+      desc2: "El prestatario reconoce que estas tarifas se divulgan en su totalidad, que no se debe ninguna tarifa al momento de esta firma, y que la tarifa de conexion del 1% esta condicionada a que PayMyLoan.ai lo conecte exitosamente con un prestamista que fondee el trato."
+    },
+    ack: {
+      items: [
+        "Entiendo que una <strong>tarifa de conexion del 1%</strong> ($1,150 estimado) se cobrara al cierre via el estado de liquidacion si PayMyLoan.ai me conecto con mi prestamista.",
+        "Entiendo que una <strong>suscripcion de $99/mes</strong> comienza cuando publico mi trato. Esta tarifa es exenta si tengo un codigo promocional o enlace de referido.",
+        "Autorizo a PayMyLoan.ai a enviar este acuerdo firmado a mi compania de titulos como autorizacion para incluir la tarifa de plataforma en el estado de liquidacion.",
+        "He leido y acepto los <strong>Terminos de Servicio</strong> y el <strong>Aviso de Privacidad</strong> de PayMyLoan.ai."
+      ]
+    },
+    sig: {
+      label: "Firma electronica del prestatario",
+      esignedBy: "Firma electronica de",
+      signedAt: "Firmado:",
+      ipAndDoc: "IP: 68.105.xxx.xxx · ID del Documento:"
+    },
+    action: {
+      note: "Este es un acuerdo legalmente vinculante bajo la Ley E-SIGN y UETA. Tu firma electronica tiene el mismo peso legal que una firma manuscrita. No se requiere pago ahora.",
+      btn: "Firmar y publicar mi trato"
+    },
+    footer: {
+      gen: "Generado por PayMyLoan.ai · ID del Documento:",
+      legal: "PayMyLoan LLC · Construido para Main Street, No Wall Street · paymyloan.ai"
+    }
+  },
+  errors: { code500: "Error Interno", title500: "¡Ups! Algo salió mal", message500: "Parece que algo salió mal de nuestro lado. Estamos trabajando en mejorar la experiencia de nuestros usuarios. Por favor, intenta de nuevo.", tryAgain: "Intentar de nuevo", code404: "Error 404", title404: "Página no encontrada", message404: "No pudimos encontrar la página que buscas. Es posible que el enlace sea incorrecto o la página ya no exista.", goHome: "Volver al inicio", goBack: "Retroceder" },
   marketplace: { 
     back: "Volver al panel", 
     title: "Explorar Tratos", 
@@ -2019,21 +2072,31 @@ const es = {
                 bankruptcies: ["No", "Sí — bancarrota (activa)", "Sí — ejecución hipotecaria (activa)"]
               },
               step4: {
-                desc: "Revisa tu información de pre-calificación. Una vez enviada, tu trato será visible para los prestamistas con una insignia de verificado.",
-                blocks: ["Trato", "Finanzas", "Antecedentes"],
-                badgeTitle: "Prestatario Pre-Calificado",
-                badgeSub: "Esta insignia aparecerá en el listado de tu trato para que los prestamistas vean que has sido verificado."
-              },
-              buttons: {
-                back: "Atrás",
-                next: "Continuar",
-                submit: "Enviar pre-calificación",
-                submitting: "Enviando..."
-              }
-            }
-        };
+            desc: "Revisa tu información de pre-calificación. Una vez enviada, tu trato será visible para los prestamistas con una insignia de verificado.",
+            blocks: ["Trato", "Finanzas", "Antecedentes"],
+            badgeTitle: "Prestatario Pre-Calificado",
+            badgeSub: "Esta insignia aparecerá en el listado de tu trato para que los prestamistas vean que has sido verificado."
+          },
+          buttons: {
+            back: "Atrás",
+            next: "Continuar",
+            submit: "Enviar pre-calificación",
+            submitting: "Enviando..."
+          }
+        },
+        dealPage: {
+          back: "← Volver a explorar",
+          badges: { bridge: "Préstamo puente", verified: "Prestatario verificado" },
+          posted: "Publicado Sept 18, 2026 · hace 3 días",
+          cards: { numbers: "Números del trato", details: "Detalles del trato", borrower: "Prestatario" },
+          metrics: { requested: "Monto solicitado", price: "Precio de compra", rehab: "Ppto. Remodelación", arv: "ARV", profit: "Ganancia (est)", ltv: "LTV" },
+          details: { typeLabel: "Tipo de préstamo", typeVal: "Puente — fix & flip", termLabel: "Plazo solicitado", termVal: "12 meses", rateLabel: "Tasa máxima aceptada", rateVal: "14%", propTypeLabel: "Tipo de propiedad", propTypeVal: "Residencial unifamiliar", bedsLabel: "Habitaciones / Baños", bedsVal: "3 hab / 2 baños", sqftLabel: "Pies cuadrados", sqftVal: "1,450 sq ft", exitLabel: "Estrategia de salida", exitVal: "Vender tras remodelar", holdbackLabel: "Retención de rehab", holdbackVal: "A discreción del prestamista", closeLabel: "Tiempo de cierre", closeVal: "30 días" },
+          borrower: { memberSince: "Memphis, TN · Miembro desde 2024", closed: "7 tratos cerrados", bizVerified: "Negocio verificado", idVerified: "Identidad verificada" },
+          offer: { title: "Enviar una oferta", sub: "Define tus términos y envía directo al prestatario.", maxRateLabel: "Tasa máx (prestatario)", termLabel: "Plazo", makeOffer: "Hacer una oferta", saveDeal: "Guardar trato", count: "1 oferta ya enviada en este trato" }
+        }
+};
 
-        type Copy = typeof es;
+type Copy = typeof es;
 
 const en: Copy = {
   meta: {
@@ -2935,7 +2998,60 @@ const en: Copy = {
   dashboardBorrower: { title: "Borrower Dashboard", subtitle: "Your loans, properties, and balances in one place.", metrics: { totalOwed: "Total Outstanding Balance", nextDue: "Next Payment Due", properties: "Collateral Properties", pmlRating: "PML Rating" }, tabs: { needsFunding: "Needs Funding", approved: "Loans Approved", funded: "Funded / Closed", completed: "Completed" }, trackerTitle: "Upcoming Closings", trackerEmpty: "No upcoming closings tracked.", needFunding: "Need Funding", loanApproved: "Loan Approved by Lender", currentLoans: "Current Loans", completedLoans: "Completed Loans", emptyTable: "Live loan table will be rendered here.", emptyDocs: "Generated commitment letters and payoff statements will appear here.", tableHeaders: { property: "Property", amount: "Amount / Balance", rehabDrawn: "Rehab Drawn", lender: "Lender", rate: "Rate", status: "Status", date: "Date / Next Pmt", action: "Action", history: "History" }, actions: { pitchDeck: "Generate Pitch Deck", payoff: "Request Payoff", payments: "Manage Payments", viewContracts: "Contracts" }, loading: "Loading dashboard...", errorAuth: "Invalid or expired session.", errorFetch: "Error loading dashboard information", errorNetwork: "Unknown network error", lenderFallback: "Lending Company", emptyNeedFunding: "No pending requests", emptyApproved: "No loans pending acceptance", emptyActive: "No active loans", emptyCompleted: "No completed loans", reviewCommitment: "REVIEW COMMITMENT", paidOff: "Paid off:" },
   contractsList: { title: "Contracts & Loans", subtitle: "List of agreements. What you see depends on your role.", table: { id: "ID", concept: "Concept", property: "Property", client: "Client", financials: "Financial Terms", status: "Status", actions: "Actions" }, status: { active: "Active", inactive: "Inactive" }, viewDetails: "Details", back: "Back to dashboard", loading: "Loading contracts...", empty: "No contracts found.", errorAuth: "You don't have permission to view these contracts or your session expired.", errorFetch: "Failed to fetch contracts", errorNetwork: "Unknown network error", unassigned: "Unassigned", borrowerFallback: "Borrower", noTerms: "No terms", total: "Total:", perMonth: "/mo", interest: "% Int.", },
   contractDetail: { title: "Contract Detail", subtitle: "Full info, parties involved, and payment breakdown.", parties: "Parties Involved", financials: "Financial Terms", breakdownTitle: "Payment History", exportReport: "Export Report (CPA Ready)", labels: { lender: "Lender", borrower: "Borrower", amount: "Total Amount", term: "Term", interest: "Interest", loanType: "Loan Type", downPayment: "Down Payment / Deposit", rent: "Monthly Payment" }, table: { date: "Date", status: "Status", totalOwed: "Total", principal: "Principal", interest: "Interest", escrow: "Escrow", balance: "Remaining Balance" }, paymentStatus: { paid: "Paid", pending: "Pending", late: "Late", partial: "Partial" }, pagination: { prev: "Previous", next: "Next", page: "Page", of: "of" }, back: "Back to contracts", loading: "Loading contract details...", errorNotFound: "Contract not found.", errorAuth: "You don't have permission to view this contract.", errorFetch: "Failed to load contract", errorNetwork: "Unknown network error", months: "months", noTerms: "No terms", emptyPayments: "No payments recorded for this contract.", generateReportAlert: "Generating CSV/PDF report for CPA...", lenderFallback: "Lending Company", borrowerFallback: "Borrower", },
-  errors: { code500: "Internal Error", title500: "Oops! Something went wrong", message500: "It looks like something went wrong on our end. We are working on improving our users' experience. Please try again.", tryAgain: "Try again", code404: "Error 404", title404: "Page not found", message404: "We couldn't find the page you are looking for. The link might be incorrect, or the page may no longer exist.", goHome: "Go to homepage", },
+  feeAgreement: {
+    docType: "Borrower Fee Agreement",
+    title: "Borrower Fee Agreement",
+    subtitle: "This agreement is entered into at the time of deal posting on PayMyLoan.ai. No fees are due at signing. All fees listed are due only upon the events described below. This document authorizes PayMyLoan.ai to collect applicable fees at closing via the settlement statement.",
+    sections: { borrower: "Borrower", platformFees: "Platform fees", auth: "Authorization", ack: "Borrower acknowledgments" },
+    borrower: { entity: "Entity name", sig: "Signatory", address: "Property address", date: "Agreement date", dealId: "Deal ID" },
+    platformFees: {
+      desc1: "The following fees apply to borrowers using PayMyLoan.ai. All fees are due upon the triggering event described — not at the time of signing this agreement.",
+      desc2Pre: "These fees are charged by PayMyLoan.ai and are ",
+      desc2Bold: "separate from any fees the lender charges.",
+      desc2Post: " Lenders on PML are aware of our platform fee and factor it into their offer terms.",
+      table: { fee: "Fee", amount: "Amount", when: "When due" },
+      items: [
+        { name: "Monthly subscription", amt: "$99/mo", when: "Monthly, beginning when deal is posted. Waived if borrower has a valid promo code or affiliate referral link." },
+        { name: "Borrower underwriting fee", amt: "$99 (one-time)", when: "When a lender requests full identity verification" },
+        { name: "Lender connection fee", amt: "1% of loan amount", when: "At closing — only if PML connected borrower to lender. Paid via settlement statement." }
+      ],
+      totalDue: "Total due today",
+      totalAmt: "$0",
+      note: "The 1% lender connection fee applies only if PayMyLoan.ai facilitated the introduction between borrower and lender. If you bring your own lender, this fee does not apply. Exact amount is based on the final funded loan amount."
+    },
+    auth: {
+      desc1: "By signing this agreement, the borrower authorizes PayMyLoan.ai to:",
+      items: [
+        "1. Include the lender connection fee (1% of funded loan amount) as a line item on the settlement statement at closing, to be paid by the borrower to PayMyLoan LLC.",
+        "2. Send this signed agreement to the title company or closing attorney handling the transaction as authorization to collect the platform fee at closing.",
+        "3. Charge the applicable monthly subscription fee beginning when the deal is posted (waived with a valid promo code or affiliate referral link)."
+      ],
+      desc2: "The borrower acknowledges that these fees are disclosed in full, that no fees are due at the time of this signing, and that the 1% connection fee is contingent on PayMyLoan.ai successfully connecting the borrower with a lender who funds the deal."
+    },
+    ack: {
+      items: [
+        "I understand that a <strong>1% lender connection fee</strong> ($1,150 estimated) will be collected at closing via the settlement statement if PayMyLoan.ai connected me with my lender.",
+        "I understand that a <strong>$99/month subscription fee</strong> begins when I post my deal. This fee is waived if I have a valid promo code or affiliate referral link.",
+        "I authorize PayMyLoan.ai to send this signed agreement to my title company as authorization to include the platform fee on the settlement statement.",
+        "I have read and agree to the PayMyLoan.ai <strong>Terms of Service</strong> and <strong>Privacy Policy</strong>."
+      ]
+    },
+    sig: {
+      label: "Borrower e-signature",
+      esignedBy: "e-Signed by",
+      signedAt: "Signed:",
+      ipAndDoc: "IP: 68.105.xxx.xxx · Document ID:"
+    },
+    action: {
+      note: "This is a legally binding agreement under the E-SIGN Act and UETA. Your electronic signature carries the same legal weight as a handwritten signature. No payment is due now.",
+      btn: "Sign & post my deal"
+    },
+    footer: {
+      gen: "Generated by PayMyLoan.ai · Document ID:",
+      legal: "PayMyLoan LLC · Built for Main Street, Not Wall Street · paymyloan.ai"
+    }
+  },
+  errors: { code500: "Internal Error", title500: "Oops! Something went wrong", message500: "It looks like something went wrong on our end. We are working on improving our users' experience. Please try again.", tryAgain: "Try again", code404: "Error 404", title404: "Page not found", message404: "We couldn't find the page you are looking for. The link might be incorrect, or the page may no longer exist.", goHome: "Go to homepage", goBack: "Go back" },
   marketplace: { 
     back: "Back to dashboard", 
     title: "Browse Deals", 
@@ -4049,18 +4165,28 @@ const en: Copy = {
                 bankruptcies: ["No", "Yes — bankruptcy (active)", "Yes — foreclosure (active)"]
               },
               step4: {
-                desc: "Review your pre-qualification information. Once submitted your deal will be visible to lenders with a verified badge.",
-                blocks: ["Deal", "Financials", "Background"],
-                badgeTitle: "Pre-Qualified Borrower",
-                badgeSub: "This badge will appear on your deal listing so lenders can see you've been verified."
-              },
-              buttons: {
-                back: "Back",
-                next: "Continue",
-                submit: "Submit pre-qualification",
-                submitting: "Submitting..."
-              }
-            }
-        };
+            desc: "Review your pre-qualification information. Once submitted your deal will be visible to lenders with a verified badge.",
+            blocks: ["Deal", "Financials", "Background"],
+            badgeTitle: "Pre-Qualified Borrower",
+            badgeSub: "This badge will appear on your deal listing so lenders can see you've been verified."
+          },
+          buttons: {
+            back: "Back",
+            next: "Continue",
+            submit: "Submit pre-qualification",
+            submitting: "Submitting..."
+          }
+        },
+        dealPage: {
+          back: "← Back to browse",
+          badges: { bridge: "Bridge loan", verified: "Verified borrower" },
+          posted: "Posted Sept 18, 2026 · 3 days ago",
+          cards: { numbers: "Deal numbers", details: "Deal details", borrower: "Borrower" },
+          metrics: { requested: "Loan requested", price: "Purchase price", rehab: "Rehab budget", arv: "ARV", profit: "Profit (est)", ltv: "LTV" },
+          details: { typeLabel: "Loan type", typeVal: "Bridge — fix & flip", termLabel: "Requested term", termVal: "12 months", rateLabel: "Max rate accepted", rateVal: "14%", propTypeLabel: "Property type", propTypeVal: "Single family residential", bedsLabel: "Beds / Baths", bedsVal: "3 bed / 2 bath", sqftLabel: "Sq ft", sqftVal: "1,450 sq ft", exitLabel: "Exit strategy", exitVal: "Sell after rehab", holdbackLabel: "Rehab holdback", holdbackVal: "Lender's discretion", closeLabel: "Closing timeline", closeVal: "30 days" },
+          borrower: { memberSince: "Memphis, TN · Member since 2024", closed: "7 deals closed", bizVerified: "Business verified", idVerified: "Identity verified" },
+          offer: { title: "Send an offer", sub: "Set your terms and send directly to the borrower.", maxRateLabel: "Max rate (borrower)", termLabel: "Term", makeOffer: "Make an offer", saveDeal: "Save deal", count: "1 offer already sent on this deal" }
+        }
+};
 
-        export const copy: Record<Lang, Copy> = { es, en };
+export const copy: Record<Lang, Copy> = { es, en };

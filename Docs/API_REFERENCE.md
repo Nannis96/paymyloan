@@ -26,7 +26,10 @@ Decisiones de diseño detrás de cada endpoint de auth: [plan/07](plan/07-autent
 - [Contratos](#contratos-srcappapicontracts)
 - [Pagos](#pagos-srcappapicontractsidpayments-srcappapitransactions)
 - [Auditoría](#auditoría-srcappapiaudit-logs)
+- [Admin — Overview](#admin--overview-srcappapiadminoverview)
+- [Verificación de entidad](#verificación-de-entidad-srcappapiadminverificationsborrowersmeverificationlendersmecompaniescompanyidverification)
 - [Marketplace / Loan Requests](#marketplace--loan-requests-srcappapiborrowersmeloan-requests-srcappapimarketplaceloan-requests)
+- [Mensajería](#mensajería-srcappapilendersmemessages-srcappapiborrowersmemessages)
 - [Catálogo de códigos de error](#catálogo-de-códigos-de-error)
 
 ---
@@ -136,7 +139,7 @@ Alta de usuario por un Admin (identidad + rol, opcionalmente teléfono e `isActi
   | `name` | string | 1–120 caracteres, se recorta (`trim`) |
   | `email` | string | formato email, se normaliza a minúsculas |
   | `phone` | string | opcional — **exactamente 10 dígitos** (`^\d{10}$`), sin espacios/guiones/`+` |
-  | `role` | string | uno de `ADMIN`, `LENDER`, `BORROWER`, `BOOKKEEPER`, `INSURANCE_COMPANY` — obligatorio, sin default |
+  | `role` | string | uno de `ADMIN`, `BOOKKEEPER`, `INSURANCE_COMPANY` — obligatorio, sin default. `LENDER`/`BORROWER` responden `400 VALIDATION_ERROR`: solo nacen por auto-registro (`D-P4-5`) |
   | `isActive` | boolean | opcional — sin este campo, nace **activo** (mismo default que la tabla) |
 
   ```json
@@ -251,9 +254,9 @@ JWT propio (access + refresh), sin NextAuth ni cookies — ver [plan/07 §7.1](p
 
 ### `POST /api/auth/register`
 
-**¿Para qué sirve?** Para que una persona (futuro Lender o Borrower) cree su propia cuenta sin que nadie la haya dado de alta antes. Queda inactiva hasta que un Admin la active.
+**¿Para qué sirve?** Para que una persona (futuro Lender o Borrower) cree su propia cuenta sin que nadie la haya dado de alta antes, definiendo ella misma su contraseña. Queda inactiva hasta que un Admin la active.
 
-Auto-registro de `LENDER` o `BORROWER` — el usuario crea su propia cuenta, sin que un Admin/Lender lo haya dado de alta antes (`D-P1-10`). **No pide contraseña.** La cuenta nace `isActive=false`; solo un Admin puede activarla (`POST /api/admin/users/:id/activate`, más abajo), momento en el que recién se genera una contraseña y se envía por correo.
+Auto-registro de `LENDER` o `BORROWER` — el usuario crea su propia cuenta, sin que un Admin/Lender lo haya dado de alta antes (`D-P1-10`). **Pide contraseña propia** (`D-P2-6` — ya no se genera una provisional para este camino). La cuenta nace `isActive=false`; solo un Admin puede activarla (`POST /api/admin/users/:id/activate`, más abajo), pero esa activación ya no genera ni envía ninguna contraseña — el usuario entra con la que eligió en el registro.
 
 - **Auth**: Público.
 - **Request body**:
@@ -263,6 +266,7 @@ Auto-registro de `LENDER` o `BORROWER` — el usuario crea su propia cuenta, sin
   | `name` | string | 1–120 caracteres |
   | `email` | string | formato email, se normaliza a minúsculas |
   | `phone` | string | opcional — exactamente 10 dígitos (`^\d{10}$`) |
+  | `password` | string | 8–72 caracteres, al menos 1 mayúscula y 1 número (`D-P2-6`) |
   | `role` | string | **solo** `LENDER` o `BORROWER` — `ADMIN`/`BOOKKEEPER`/`INSURANCE_COMPANY` no pueden auto-registrarse |
 
   ```json
@@ -270,16 +274,17 @@ Auto-registro de `LENDER` o `BORROWER` — el usuario crea su propia cuenta, sin
     "name": "Jane Cooper",
     "email": "jane.cooper@example.com",
     "phone": "5125550100",
+    "password": "ClaveSegura123",
     "role": "BORROWER"
   }
   ```
 
 - **Response `202`** (siempre, exista o no ya el correo — anti-enumeración, misma postura que `password/forgot`):
   ```json
-  { "success": true, "data": { "message": "Si los datos son válidos, tu cuenta quedará pendiente de activación. Una vez que un administrador la active, recibirás un correo con tu contraseña temporal." } }
+  { "success": true, "data": { "message": "Si los datos son válidos, tu cuenta quedará pendiente de activación hasta que un administrador la apruebe." } }
   ```
-- **Errores**: `400 VALIDATION_ERROR` (rol inválido, campos faltantes).
-- **Qué pasa por dentro**: crea `User(isActive=false, password=hash de un valor aleatorio que nadie conoce)` + `LenderProfile(createdByAdminId=null)` o `BorrowerProfile(createdByUserId=null)`, en una transacción. Si el correo ya existe, no hace nada — responde igual.
+- **Errores**: `400 VALIDATION_ERROR` (rol inválido, contraseña que no cumple las reglas, campos faltantes).
+- **Qué pasa por dentro**: crea `User(isActive=false, password=hash de la contraseña recibida)` + `LenderProfile(createdByAdminId=null)` o `BorrowerProfile(createdByUserId=null)`, en una transacción. Si el correo ya existe, no hace nada — responde igual.
 
 ### `POST /api/auth/login`
 
@@ -400,22 +405,27 @@ Perfil propio + el detalle de rol correspondiente. Como el JWT no lleva `lenderI
 
 ### `PATCH /api/auth/me`
 
-**¿Para qué sirve?** Para que cualquier usuario logueado (de cualquier rol) edite su propio nombre o teléfono, sin depender de un Admin.
+**¿Para qué sirve?** Para que cualquier usuario logueado (de cualquier rol) edite su propio nombre, teléfono o correo, sin depender de un Admin.
 
-Autoservicio (`BE-099`, nuevo `D-P2-4`): el usuario edita su propia información de contacto. Deliberadamente **no** acepta `email`/`password`/`role`/`isActive` — un campo fuera de este schema se descarta en vez de aplicarse, así que no hay forma de colarlos en el mismo body.
+Autoservicio (`BE-099`, nuevo `D-P2-4`): el usuario edita su propia información de contacto (`name`/`phone`/`email`). Deliberadamente **no** acepta `password`/`role`/`isActive` — un campo fuera de este schema se descarta en vez de aplicarse, así que no hay forma de colarlos en el mismo body.
+
+Cambiar `email` es distinto de `name`/`phone`: es también la credencial de login y el canal de recuperación de cuenta, así que exige `currentPassword` en el mismo body (`D-P2-7`, 2026-09-24) — mismo criterio de step-up que `changePasswordSchema`/`twoFactorStepUpSchema`, evita que una sesión robada por sí sola secuestre la cuenta cambiándole el correo. Al cambiar `email`: valida `currentPassword` contra el hash actual (`401 INVALID_CREDENTIALS` si no coincide), verifica que el nuevo correo no esté tomado (`409 EMAIL_TAKEN`), revoca todos los refresh tokens vigentes del usuario (fuerza re-login en todos los dispositivos, igual que un reset de contraseña) y audita el cambio (`USER_EMAIL_CHANGED`, con el correo viejo y el nuevo en `metadata`). Si `email` no viene en el body, `currentPassword` tampoco hace falta.
 
 - **Auth**: Autenticado. Sin restricción de rol — cualquiera edita lo suyo.
-- **Request body**: `{ "name"?: string, "phone"?: string }` — al menos uno de los dos, `phone` con el mismo formato de 10 dígitos que el resto de la API.
+- **Request body**: `{ "name"?: string, "phone"?: string, "email"?: string, "currentPassword"?: string }` — al menos uno de `name`/`phone`/`email`. `currentPassword` es **obligatorio si y solo si** viene `email`.
 
   ```json
   { "name": "Jane Cooper", "phone": "5125550100" }
+  ```
+  ```json
+  { "email": "jane.new@example.com", "currentPassword": "SuperSecreta123!" }
   ```
 
 - **Response `200`**:
   ```json
   { "success": true, "data": { "user": /* SafeUser actualizado */ {} } }
   ```
-- **Errores**: `401 UNAUTHENTICATED`/`INVALID_TOKEN` · `400 VALIDATION_ERROR` (body vacío o `phone` inválido).
+- **Errores**: `401 UNAUTHENTICATED`/`INVALID_TOKEN` · `401 INVALID_CREDENTIALS` (`currentPassword` incorrecta al cambiar `email`) · `409 EMAIL_TAKEN` · `400 VALIDATION_ERROR` (body vacío, `phone`/`email` inválido, o `email` sin `currentPassword`).
 
 ### `POST /api/auth/password/forgot`
 
@@ -524,7 +534,7 @@ Adelantados desde Fase 4 (`BE-097`, ver [D-P2-1](plan/00-contradicciones-y-decis
 
 ### `POST /api/admin/users/:id/activate`
 
-**¿Para qué sirve?** Habilitar el acceso de una cuenta que nació inactiva (auto-registro, o creada con `isActive:false`). Si el usuario nunca inició sesión, además le genera y envía una contraseña temporal — es el paso que "destraba" a alguien recién auto-registrado.
+**¿Para qué sirve?** Habilitar el acceso de una cuenta que nació inactiva (auto-registro, o creada con `isActive:false`). Si la cuenta fue creada por un Admin sin contraseña propia y nunca inició sesión, además le genera y envía una contraseña temporal — es el paso que "destraba" a alguien dado de alta así. Un auto-registrado (`D-P2-6`) ya trae su propia contraseña desde el registro, así que activar su cuenta **no** genera ni envía ninguna.
 
 - **Auth**: Autenticado, rol `ADMIN` + 2FA activo (`D-P3-1`, es una escritura de negocio).
 - **Response `200`**:
@@ -540,10 +550,10 @@ Adelantados desde Fase 4 (`BE-097`, ver [D-P2-1](plan/00-contradicciones-y-decis
   }
   ```
 - **Errores**: `401 UNAUTHENTICATED`/`INVALID_TOKEN` · `403 FORBIDDEN` (no es ADMIN) · `403 TWO_FACTOR_REQUIRED` (es ADMIN, pero sin 2FA activo) · `404 USER_NOT_FOUND`.
-- **Comportamiento según el historial del usuario**:
-  - **Primera activación** (`lastLoginAt` nulo — nunca inició sesión, típicamente recién auto-registrado): genera una contraseña temporal, la guarda hasheada (bcrypt), intenta enviarla por correo (plantilla `account-activated`, ver [variables de entorno](#variables-de-entorno) — sin `EMAIL_API_KEY`, el correo se loguea en vez de enviarse de verdad) **y la devuelve también en `temporaryPassword`** (`D-P2-4` — mientras no haya un proveedor de correo real conectado, es la forma confiable de que el Admin la tenga a mano). `emailSent` indica si el envío tuvo éxito, independientemente de que `temporaryPassword` siempre esté presente en este caso.
-  - **Reactivación** (el usuario ya había iniciado sesión alguna vez): solo pone `isActive=true`, **no** toca la contraseña ni reenvía correo — `emailSent` viene `false` y `temporaryPassword` no viene en la respuesta.
-  - Si el correo de la primera activación falla, el reintento es: `deactivate` → `activate` de nuevo (vuelve a contar como "primera activación" porque `lastLoginAt` sigue nulo, así que regenera y reenvía).
+- **Comportamiento según si la contraseña en disco sigue siendo un placeholder** (`mustChangePassword && lastLoginAt` nulo — nunca inició sesión con una contraseña real; `D-P2-6` corrigió esto para que ya no dependa solo de `lastLoginAt`, porque un auto-registrado también lo tiene nulo antes de su primer login pero **sí** tiene contraseña propia):
+  - **Necesita contraseña temporal** (típicamente un usuario creado por un Admin sin contraseña propia, `D-P2-5`, o un Borrower creado directo por un Lender, `BE-045` — nunca un auto-registrado): genera una contraseña temporal, la guarda hasheada (bcrypt), intenta enviarla por correo (plantilla `account-activated`, ver [variables de entorno](#variables-de-entorno) — sin `EMAIL_API_KEY`, el correo se loguea en vez de enviarse de verdad) **y la devuelve también en `temporaryPassword`** (`D-P2-4` — mientras no haya un proveedor de correo real conectado, es la forma confiable de que el Admin la tenga a mano). `emailSent` indica si el envío tuvo éxito, independientemente de que `temporaryPassword` siempre esté presente en este caso.
+  - **No la necesita** (auto-registrado con su propia contraseña, o reactivación de alguien que ya inició sesión antes): solo pone `isActive=true`, **no** toca la contraseña ni envía correo — `emailSent` viene `false` y `temporaryPassword` no viene en la respuesta.
+  - Si el correo de la primera activación falla, el reintento es: `deactivate` → `activate` de nuevo (sigue sin haber logueado, así que regenera y reenvía).
   - El mismo comportamiento (con la misma forma de respuesta) se dispara también desde `PATCH /api/users/:id` con `{ "isActive": true }` — ver [esa sección](#patch-apiusersid).
 
 ### `POST /api/admin/users/:id/deactivate`
@@ -1265,6 +1275,98 @@ Revierte `ScheduledPayment.amountPaid`/`status` de las filas que ese pago había
 
 ---
 
+## Admin — Overview (`src/app/api/admin/overview/`)
+
+`AD-001` ([Fase 16](plan/fases/fase-16-admin-overview.md), 2026-09-25). Agregación pura para la vista `pml_v4/admin/admin-panel.html` — sin tablas propias, todo se deriva en el momento de la consulta.
+
+### `GET /api/admin/overview`
+
+**¿Para qué sirve?** Para que el Admin vea de un vistazo el estado de la plataforma: cuántos deals hay activos, cuánto se fondeó, cuánto ingresó por closing fees, qué contratos están en mora y quién se registró recién — todo en una sola llamada, sin armar las métricas en el cliente.
+
+- **Auth**: Autenticado, rol `ADMIN` (lectura, exenta de 2FA).
+- **Query params**: ninguno.
+- **Response `200`**: `data` =
+
+```jsonc
+{
+  "kpis": {
+    "activeDeals": { "count": 34, "addedLast7d": 3 },  // Contract ACTIVE + DELINQUENT; addedLast7d = activados en los últimos 7 días
+    "totalFunded": "3800000",                          // suma de principalAmount de los términos vigentes de contratos ACTIVE/DELINQUENT/PAID_OFF
+    "lateContracts": 3,                                // Contract DELINQUENT
+    "pendingVerifications": 2                          // VerificationRequest PENDING, lender + borrower (AD-003)
+  },
+  "revenue": {
+    "month": "2026-09",                                // mes en curso, UTC
+    "closingFees": "1725",                             // MARKETPLACE_CONNECTION (D-S2-5) de contratos activados en el mes
+    "subscriptions": null, "interestShare": null, "affiliatePayouts": null, "net": null,   // sin fuente todavía (AD-006/AD-007)
+    "last6Months": [ { "month": "2026-04", "total": "0" } /* ...6 meses, el último es el actual; hoy total = solo closing fees */ ]
+  },
+  "activeDeals": [                                     // los 5 contratos PENDING_ACCEPTANCE/ACTIVE/DELINQUENT más recientes
+    {
+      "contractId": "...", "contractNumber": "PML-2026-000002",
+      "property": { "addressLine1": "1600 Riverside Dr", "city": "Austin", "state": "TX" },
+      "principalAmount": "180000",                     // términos vigentes; null si el contrato aún no tiene
+      "status": "ACTIVE",                              // PENDING_ACCEPTANCE ≈ "Pending close" de la vista (D-A2)
+      "daysPastDue": null,                             // días desde el vencimiento impago más antiguo, null si no hay
+      "nextPaymentDueDate": "2026-10-01T00:00:00.000Z"
+    }
+  ],
+  "needsAttention": [                                  // verificaciones (1 alerta agregada) + mora (máx. 10); más tipos cuando existan sus módulos
+    { "type": "VERIFICATIONS_PENDING", "severity": "red", "title": "2 verifications pending",
+      "detail": "1 lender entity, 1 borrower entity awaiting review", "entityType": "VerificationRequest", "entityId": null, "occurredAt": "2026-09-20T00:00:00.000Z" },
+    { "type": "LATE_PAYMENT", "severity": "red", "title": "5521 Germantown Rd", "detail": "15 days past due",
+      "entityType": "Contract", "entityId": "...", "occurredAt": "2026-09-06T00:00:00.000Z" }
+  ],
+  "recentSignups": [                                   // los 5 LENDER/BORROWER más recientes (los roles de staff no se auto-registran)
+    { "userId": "...", "name": "Marcus Johnson", "role": "BORROWER", "isActive": true, "createdAt": "...", "verification": "PENDING", "dealsCount": 1 }
+  ]
+}
+```
+
+- **Notas**: los montos (`Decimal`) serializan como string. `lateContracts`/`needsAttention` dependen de `Contract.status = DELINQUENT`, que mantiene al día `recomputeContractDelinquencyStatus`, programado con `node-cron` (diario 02:00 UTC + una corrida al arrancar el servidor, `AD-002`), así que puede tener hasta un día de desfase respecto del vencimiento real. `recentSignups[].role` es el rol de registro (no los roles activos de un usuario dual) y `name` es `User.name` (persona). `recentSignups[].verification` es `"APPROVED"`/`"PENDING"`/`"REJECTED"`/`null` (nunca envió una solicitud) — la más reciente de todas las suyas por precedencia `APPROVED > PENDING > REJECTED` (`AD-003`, ver [Admin — Verifications](#admin--verifications-srcappapiadminverifications) abajo). Las decisiones detrás de cada número están en [00 §D-A1..D-A12](plan/00-contradicciones-y-decisiones.md#decisiones-2026-09-25-ronda-admin-overview); lo que falta, en [Fase 16](plan/fases/fase-16-admin-overview.md).
+- **Errores**: `401 UNAUTHENTICATED`/`INVALID_TOKEN` · `403 FORBIDDEN` (sesión válida pero no es ADMIN).
+
+---
+
+## Verificación de entidad (`src/app/api/{admin/verifications,borrowers/me/verification,lenders/me/companies/:companyId/verification}`)
+
+`AD-003` ([Fase 16](plan/fases/fase-16-admin-overview.md), 2026-09-27). Tier **Business Verified** (`D-A9`): un Lender o un Deudor envía los datos de su entidad (nombre, tipo, EIN, estado de formación) para que un Admin los revise. Sin archivos ni SSN — eso es identidad (`BorrowerApplication`/`PB-018`, no implementado). Es puramente informativo: no bloquea recibir deudores, publicar un `LoanRequest` ni cotizar (`D-A10`).
+
+### `POST`/`GET /api/lenders/me/companies/:companyId/verification`
+
+**¿Para qué sirve?** Para que el propio Lender envíe (o consulte el estado de) la verificación de una empresa suya.
+
+- **Auth**: Autenticado, rol `LENDER`, dueño de `:companyId`. `POST` es escritura de negocio (2FA, `D-P3-1`); `GET` no.
+- **Request body (`POST`)**: `entityName` (string), `entityType` (`LLC`/`CORPORATION`/`LP`/`TRUST`/`INDIVIDUAL`/`OTHER`), `ein` (formato `XX-XXXXXXX`), `stateOfFormation` (2 letras), `signatoryName?`, `signatoryTitle?`.
+- **Response `201`/`200`**: `data` = la `VerificationRequest` (o `null` en el `GET` si nunca se envió una).
+- **Errores**: `400 VALIDATION_ERROR` · `404 LENDER_COMPANY_NOT_FOUND` (`:companyId` no es del Lender) · `409 VERIFICATION_PENDING`/`VERIFICATION_ALREADY_APPROVED` (ya hay una en curso o aprobada).
+
+### `POST`/`GET /api/borrowers/me/verification`
+
+**¿Para qué sirve?** Lo mismo que arriba, para el propio Deudor. Ninguna de las dos rutas exige 2FA — `D-P3-1` no alcanza a `BORROWER`.
+
+- **Auth**: Autenticado, rol `BORROWER`.
+- **Request body / Response / Errores**: igual que arriba, sin `LENDER_COMPANY_NOT_FOUND` (no hay `:companyId`).
+
+### `GET /api/admin/verifications`
+
+**¿Para qué sirve?** La cola de revisión del Admin — todas las solicitudes, de cualquier Lender o Deudor.
+
+- **Auth**: Autenticado, rol `ADMIN` (lectura, exenta de 2FA).
+- **Query params**: `page`, `pageSize`, `search` (por `entityName`), y opcionales `status` (`PENDING`/`APPROVED`/`REJECTED`) y `subject` (`LENDER`/`BORROWER`). Con `status=PENDING`, ordena la más vieja primero (es una cola); el resto, la más reciente primero.
+- **Response `200`**: `data` = [resultado paginado](#convenciones) de `VerificationRequest`, cada uno con `lenderCompany`/`borrowerProfile` y `submittedByUser` resumidos.
+
+### `POST /api/admin/verifications/:id/approve` / `.../reject`
+
+**¿Para qué sirve?** Aprobar o rechazar una solicitud `PENDING`.
+
+- **Auth**: Autenticado, rol `ADMIN` (escritura, 2FA).
+- **Request body (`reject`)**: `{ "reason": "..." }`, obligatorio.
+- **Response `200`**: `data` = la `VerificationRequest` actualizada.
+- **Errores**: `404 VERIFICATION_NOT_FOUND` · `409 VERIFICATION_NOT_PENDING` (ya se revisó — incluida la carrera de dos Admins aprobando/rechazando a la vez, gana el primer `UPDATE`).
+
+---
+
 ## Marketplace / Loan Requests (`src/app/api/borrowers/me/loan-requests`, `src/app/api/marketplace/loan-requests`)
 
 Fase 13 parcial (`PB-011`/`PB-026`/`PB-017`, reescrito 2026-09-11 — `D-S2-21`/`D-S2-22`, ver [00](plan/00-contradicciones-y-decisiones.md#decisiones-2026-09-11-ronda-fase-13--cotizaciones-de-marketplace-antes-de-implementar)). El Deudor publica un `LoanRequest` (con su `Property` embebida, sin endpoint propio — mismo criterio que `POST /api/contracts`, `D-P6-2`/`D-S2-25`), elige a qué Prestamistas pedirles cotización (o lo publica abierto), cada Prestamista interesado responde con su propia `LoanQuote`, y el Deudor selecciona una — esa selección es la que crea el `Contract`. **No implementado en esta ronda**: `LoanRequestInvite` (invitar por correo a alguien sin cuenta todavía), fotos, RentCast, `BorrowerApplication`, `BorrowerSubscription`, pitch deck PDF.
@@ -1441,6 +1543,126 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 
 ---
 
+## Mensajería (`src/app/api/lenders/me/messages`, `src/app/api/borrowers/me/messages`)
+
+`PB-027`..`PB-030` ([Fase 17](plan/fases/fase-17-messaging.md), 2026-09-28). Chat directo Lender ↔ Borrower, habilitado solo si hay una `LoanQuote` `SUBMITTED` en negociación o un `Contract` fuera de `DRAFT` entre ambos (`messaging.service.ts#canMessage` — único lugar que decide la regla; puede cambiar sin tocar los endpoints). Una vez habilitado, no se vuelve a apagar por cambio de estado del contrato — leer el historial nunca depende de esta regla, solo mandar mensajes nuevos. Sin `Conversation` propia: el "hilo" es todo `Message` de un mismo `(lenderCompanyId, borrowerProfileId)`. Ningún endpoint exige 2FA (no es una escritura de negocio en el sentido de `D-P3-1`).
+
+### `POST /api/lenders/me/messages` / `POST /api/borrowers/me/messages`
+
+**¿Para qué sirve?** Mandar un mensaje a la contraparte de una negociación u préstamo activo.
+
+- **Auth**: Autenticado, rol `LENDER` o `BORROWER` según la ruta.
+- **Request body (Lender)**: `{ "borrowerProfileId": "...", "lenderCompanyId": "...", "body": "..." }` — `lenderCompanyId` opcional (auto-resuelve si tiene una sola empresa, obligatorio si tiene más de una).
+- **Request body (Borrower)**: `{ "lenderCompanyId": "...", "body": "..." }`.
+- **Response `201`**: `data` = el `Message` creado.
+- **Errores**: `400 VALIDATION_ERROR` (body vacío o >4000 caracteres) · `400 LENDER_COMPANY_REQUIRED` · `403 MESSAGING_NOT_ALLOWED` (no hay oferta en negociación ni préstamo) · `404 NOT_FOUND`/`LENDER_NOT_FOUND`/`BORROWER_NOT_FOUND`.
+
+### `GET /api/lenders/me/messages/threads` / `GET /api/borrowers/me/messages/threads`
+
+**¿Para qué sirve?** La bandeja de entrada: con quién hay al menos un mensaje, para armar la lista de conversaciones.
+
+- **Auth**: Autenticado, rol `LENDER` o `BORROWER` según la ruta.
+- **Response `200`**: `data` = array de `{ borrowerProfile | lenderCompany, lastMessage, unreadCount }`, ordenado por el mensaje más reciente primero. Solo contrapartes con al menos un mensaje enviado o recibido (no lista relaciones elegibles todavía sin mensajes).
+
+### `GET /api/lenders/me/messages/threads/:borrowerProfileId` / `GET /api/borrowers/me/messages/threads/:lenderCompanyId`
+
+**¿Para qué sirve?** El historial completo con una contraparte puntual.
+
+- **Auth**: Autenticado, rol correspondiente.
+- **Query params**: `page`, `pageSize`; el lado Lender además acepta `lenderCompanyId` (obligatorio si tiene más de una empresa).
+- **Response `200`**: `data` = [resultado paginado](#convenciones) de `Message`, orden cronológico ascendente.
+- **Errores**: `400 LENDER_COMPANY_REQUIRED` · `404 THREAD_NOT_FOUND` (nunca hubo mensajes con esa contraparte — se puede leer el historial aunque la elegibilidad para escribir ya no se cumpla, D4).
+
+### `POST /api/lenders/me/messages/threads/:borrowerProfileId/read` / `POST /api/borrowers/me/messages/threads/:lenderCompanyId/read`
+
+**¿Para qué sirve?** Marcar como leídos los mensajes recibidos de esa contraparte (baja el `unreadCount` de `GET .../threads`).
+
+- **Auth**: Autenticado, rol correspondiente.
+- **Response `200`**: `{ "success": true, "data": { "success": true } }`.
+
+---
+
+## Ratings Lender ↔ Borrower (`src/app/api/contracts/[id]/reviews`, `src/app/api/{lenders,borrowers}/:id/rating`, `src/app/api/me/reviews/pending`)
+
+`PB-031`..`PB-034` ([Fase 18](plan/fases/fase-18-ratings-lender-borrower.md), 2026-09-29). Cada parte de un `Contract` en `ACTIVE`/`DELINQUENT`/`PAID_OFF` califica a la contraparte con 1–5 estrellas y un comentario opcional (máx. 1000). Una reseña por contrato + deudor + sentido; no se edita ni se borra. Promedios siempre derivados (`AVG`), nunca guardados. Ningún endpoint exige 2FA.
+
+### `POST /api/contracts/:id/reviews`
+
+**¿Para qué sirve?** Que el Lender (dueño de la `LenderCompany` del contrato) o un Borrower activo del contrato califique a la contraparte. El sentido (`LENDER_TO_BORROWER` / `BORROWER_TO_LENDER`) se infiere del lado del usuario **en ese contrato**, no de `User.role`.
+
+- **Auth**: Autenticado, rol `LENDER` o `BORROWER`.
+- **Body**: `{ "rating": 1-5 (entero), "comment"?: string (≤1000, se recorta; vacío → null), "borrowerProfileId"?: uuid }` — `borrowerProfileId` es **obligatorio solo si califica el Lender** (a qué co-deudor); el Borrower no lo manda, el calificado es la `LenderCompany` del contrato.
+- **Response `201`**: la `Review` creada (`id`, `contractId`, `lenderCompanyId`, `borrowerProfileId`, `direction`, `reviewerUserId`, `rating`, `comment`, `createdAt`).
+- **Errores**: `400 VALIDATION_ERROR` · `400 BORROWER_PROFILE_REQUIRED` · `401` · `403 REVIEW_NOT_ALLOWED` (contrato en `DRAFT`/`PENDING_ACCEPTANCE`/`CANCELLED`) · `404 NOT_FOUND` (no es parte del contrato, co-deudor removido o `borrowerProfileId` ajeno) · `409 REVIEW_ALREADY_EXISTS` · `409 SELF_REVIEW_NOT_ALLOWED`.
+
+### `GET /api/contracts/:id/reviews`
+
+**¿Para qué sirve?** Ver las reseñas del contrato (las dos direcciones) y si el usuario actual todavía puede calificar.
+
+- **Auth**: Autenticado, `LENDER`/`BORROWER` del contrato o `ADMIN`.
+- **Response `200`**: `{ "reviews": [{ id, rating, comment, createdAt, direction, borrowerProfileId }], "canReview": boolean, "pendingBorrowerProfileIds": [uuid] }` — `pendingBorrowerProfileIds` lista a quién le falta calificar (varios si el Lender tiene co-deudores). Admin: siempre `canReview=false`.
+- **Errores**: `401` · `404 NOT_FOUND`.
+
+### `GET /api/lenders/:lenderCompanyId/rating` / `GET /api/borrowers/:borrowerProfileId/rating`
+
+**¿Para qué sirve?** Promedio, conteo, distribución 1–5 y reseñas paginadas (`?page`, `?pageSize`) de una `LenderCompany` o un Borrower.
+- **Auth**: Autenticado, `LENDER`/`BORROWER`/`ADMIN`.
+- **Response `200`**: `{ "average": number|null, "count": n, "distribution": {"1":n,…,"5":n}, "reviews": { items: [{ id, rating, comment, createdAt }], page, pageSize, total, totalPages } | null }`. No se expone quién reseñó.
+- **Visibilidad (`R5`)**: los comentarios de una `LenderCompany` son visibles para cualquier autenticado. Del Borrower: promedio y conteo los ve cualquier Lender, Admin y él mismo; **`reviews` solo** el propio Borrower, Admin y un Lender con contrato con él (para el resto viaja `null`). Otro Borrower recibe `404`.
+- **Errores**: `401` · `404 NOT_FOUND`.
+
+### `GET /api/me/reviews/pending`
+
+**¿Para qué sirve?** Contratos elegibles donde el usuario todavía no calificó a la contraparte (ambos lados en una lista; tope 100 por lado).
+
+- **Auth**: Autenticado, `LENDER` o `BORROWER`.
+- **Response `200`**: `[{ contractId, contractNumber, direction, lenderCompanyId, borrowerProfileId, counterpartName }]`.
+
+---
+
+## Notificaciones (`src/app/api/notifications`)
+
+`PB-035`..`PB-039` ([Fase 19](plan/fases/fase-19-notificaciones.md), 2026-09-29). Notificaciones in-app del usuario autenticado. Se crean solas desde los servicios (`src/lib/notify.ts`, nunca falla la operación de negocio) — no hay endpoint para crearlas. Un usuario con rol dual recibe las de ambos lados en una sola lista. Ningún endpoint exige rol ni 2FA; todos filtran por el usuario de la sesión.
+
+| `type` | Para | Cuándo | `relatedEntityType` / `relatedEntityId` |
+|---|---|---|---|
+| `LOAN_QUOTE_REQUESTED` | Lender (dueño de la empresa) | El Borrower publica la solicitud (o agrega al lender como target ya publicada) — solo los targets, no todo el marketplace | `LoanRequest` |
+| `LOAN_QUOTE_RECEIVED` | Borrower | Un Lender envía/actualiza su oferta | `LoanQuote` |
+| `LOAN_QUOTE_SELECTED` | Lender | El Borrower selecciona su oferta (contrato en `DRAFT`) | `Contract` |
+| `CONTRACT_TERMS_SUBMITTED` | Borrower (cada co-deudor activo) | El Lender envía los términos | `Contract` |
+| `CONTRACT_TERMS_ACCEPTED` | Lender | Un Borrower acepta y el contrato **aún no se activa** (el body indica cuántos faltan). Si esa aceptación completa el quórum, el Lender recibe solo `CONTRACT_ACTIVATED` | `Contract` |
+| `CONTRACT_TERMS_REJECTED` | Lender | Un Borrower rechaza (body incluye su comentario) | `Contract` |
+| `CONTRACT_ACTIVATED` | Lender y Borrower(es) | Se completa el quórum en la primera activación | `Contract` |
+| `MESSAGE_RECEIVED` | La contraparte | Mensaje nuevo. **Coalescida por hilo**: mientras haya una sin leer del mismo hilo se actualiza (`body` = último mensaje) en vez de crear otra; `POST .../messages/threads/:id/read` la marca leída | `MessageThread` (id = `LenderCompany` si la recibe el Borrower, `BorrowerProfile` si la recibe el Lender) |
+
+### `GET /api/notifications`
+
+**¿Para qué sirve?** Lista de notificaciones propias, más nuevas primero.
+
+- **Query**: `page`, `pageSize` (máx. 100), `isRead=true|false`, `type=<tipo>`.
+- **Response `200`**: `data` = `{ items: Notification[], page, pageSize, total, totalPages }`; cada item: `id`, `type`, `title`, `body`, `relatedEntityType`, `relatedEntityId`, `isRead`, `readAt`, `createdAt`.
+- **Errores**: `400 VALIDATION_ERROR` · `401`.
+
+### `GET /api/notifications/unread-count`
+
+**¿Para qué sirve?** Badge de la campana (el front hace polling sobre este endpoint).
+
+- **Response `200`**: `data` = `{ "unread": number }`. **Errores**: `401`.
+
+### `POST /api/notifications/:id/read`
+
+**¿Para qué sirve?** Marcar una notificación propia como leída. Idempotente.
+
+- **Response `200`**: `data` = la `Notification`. **Errores**: `400 VALIDATION_ERROR` (id no-uuid) · `401` · `404 NOT_FOUND` (no existe o es de otro usuario).
+
+### `POST /api/notifications/read-all`
+
+**¿Para qué sirve?** Marcar todas las propias sin leer.
+
+- **Response `200`**: `data` = `{ "updated": number }`. **Errores**: `401`.
+
+---
+
 ## Catálogo de códigos de error
 
 `code` es estable entre versiones; `message` es texto en **inglés** (convención fijada 2026-09-08 — toda respuesta de la API, éxito o error, va en inglés; el resto del código/documentación sigue en español) pensado para mostrarse tal cual, no para parsearse.
@@ -1449,7 +1671,7 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 |---|---|---|
 | `INVALID_JSON` | 400 | El body no es JSON válido |
 | `VALIDATION_ERROR` | 400 | El body no cumple el schema Zod del endpoint (primer error de validación) |
-| `LENDER_COMPANY_REQUIRED` | 400 | `POST /api/marketplace/loan-requests/:id/quotes`, y (mientras estuvo activo) `POST /api/lenders/me/borrowers` (`D-P5-1`, deshabilitado) — el Lender tiene más de una `LenderCompany` y no mandó `lenderCompanyId` |
+| `LENDER_COMPANY_REQUIRED` | 400 | `POST /api/marketplace/loan-requests/:id/quotes`, `POST /api/lenders/me/messages` y `GET /api/lenders/me/messages/threads/:borrowerProfileId` (Fase 17), y (mientras estuvo activo) `POST /api/lenders/me/borrowers` (`D-P5-1`, deshabilitado) — el Lender tiene más de una `LenderCompany` y no mandó `lenderCompanyId` |
 | `INVALID_TOKEN` | 400 o 401 | Refresh token / pending token / access token / token de reset: inválido, manipulado o expirado. `password/reset` usa 400 (es un dato del body); el resto usa 401 |
 | `UNAUTHENTICATED` | 401 | Falta el header `Authorization: Bearer` en un endpoint que lo exige |
 | `INVALID_CREDENTIALS` | 401 | Login: correo inexistente o contraseña incorrecta (mismo código para ambos). También: 2FA con sesión de verificación inválida, o `disable`/`recovery-codes` con password/código incorrectos |
@@ -1458,11 +1680,18 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 | `FORBIDDEN` | 403 | Sesión válida pero el rol no tiene permiso para el endpoint (p.ej. un BORROWER llamando a `/2fa/setup`, un LENDER llamando a `/admin/users/:id/activate`, o un LENDER llamando a `POST /api/transactions/:id/reverse`, ADMIN-only); también `requireContractAccess` para un rol sin modelo de acceso a contratos (ni LENDER/BORROWER/ADMIN — p.ej. BOOKKEEPER) |
 | `TWO_FACTOR_REQUIRED` | 403 | ADMIN/LENDER sin 2FA activo intenta una escritura de negocio (`D-P3-1`) — hoy: `POST`/`PATCH`/`DELETE /api/users`, `POST /api/admin/users/:id/activate\|deactivate`, `POST /api/admin/lenders/:id/companies`, `PATCH`/`DELETE /api/admin/lenders/:id/companies/:companyId`, `DELETE /api/admin/lenders/:id`, `POST /api/lenders/me/companies`, `PATCH`/`DELETE /api/lenders/me/companies/:companyId` (`D-P4-9`), `DELETE /api/lenders/me/borrowers/:id` (`POST`/`PATCH` de ese mismo módulo deshabilitados, `D-P5-1`), todo endpoint de escritura de `LENDER` bajo `/api/contracts/**` (crear/editar/borrar/cancelar contrato, borrowers, terms, fees — nunca `accept`/`reject`, esos son `BORROWER`), `PATCH /api/contracts/:id` también para `ADMIN` (Fase 7), `POST /api/contracts/:id/payments/manual`, `POST /api/transactions/:id/reverse`, y `POST`/`DELETE /api/marketplace/loan-requests/:id/quotes` (Fase 13). No aplica a lecturas, autoservicio sin rol específico, ni a `/api/auth/2fa/*`. Puede desactivarse temporalmente con `REQUIRE_TWO_FACTOR=false` (`D-P4-4`, ver [Variables de entorno](#variables-de-entorno)) |
 | `PASSWORD_CHANGE_REQUIRED` | 403 | `PATCH /api/borrowers/me` con `mustChangePassword=true` (`D-P4-2`) — el Deudor todavía no cambió la contraseña temporal que se le generó al crearlo |
+| `MESSAGING_NOT_ALLOWED` | 403 | `POST /api/lenders/me/messages` o `POST /api/borrowers/me/messages` (Fase 17) — no hay ninguna `LoanQuote` `SUBMITTED` en negociación ni ningún `Contract` fuera de `DRAFT` entre esa `LenderCompany` y ese `BorrowerProfile` |
+| `REVIEW_NOT_ALLOWED` | 403 | `POST /api/contracts/:id/reviews` (Fase 18) — el contrato está en `DRAFT`, `PENDING_ACCEPTANCE` o `CANCELLED` (solo `ACTIVE`/`DELINQUENT`/`PAID_OFF` se pueden calificar) |
+| `BORROWER_PROFILE_REQUIRED` | 400 | `POST /api/contracts/:id/reviews` (Fase 18) — el Lender no indicó a qué co-deudor califica |
+| `REVIEW_ALREADY_EXISTS` | 409 | `POST /api/contracts/:id/reviews` (Fase 18) — ya calificó a esa contraparte en ese contrato |
+| `SELF_REVIEW_NOT_ALLOWED` | 409 | `POST /api/contracts/:id/reviews` (Fase 18) — el usuario es ambas partes del mismo contrato |
 | `USER_NOT_FOUND` | 404 | `:id` no corresponde a ningún usuario (o está borrado lógicamente) |
 | `NOT_FOUND` | 404 | `requireContractAccess` (`BE-038`, usado por todo el módulo de Contratos y Pagos): el contrato no existe, o existe pero no pertenece a la sesión (`ADMIN` nunca cae acá, Fase 7). También (mientras estuvo activo) `POST /api/lenders/me/borrowers` con un `lenderCompanyId` que no es del Lender (`D-P5-1`, deshabilitado), `POST /api/contracts` con un `insuranceCompanyId`/`borrowerProfileId` ajeno, `POST /api/contracts/:id/borrowers` con un deudor no vinculado, `.../terms/:termsId*` con un `termsId` que no es de ese contrato, `.../fees/:feeId` con un fee que no es de esa versión, `GET /api/transactions/:id` o `POST .../reverse` con un `:id` que no corresponde a ninguna `Transaction`. También en el módulo de marketplace (Fase 13): un `LoanRequest` ajeno o inexistente, un `lenderCompanyId` inexistente en `.../targets`, un `LoanRequest` `PRIVATE` que el Lender no puede ver (sin `target`/no `PUBLISHED`), una `LoanQuote` que no es de ese `LoanRequest`. Mismo código para "no existe" y "existe pero no es tuyo" a propósito (anti-enumeración, §7.5); los casos de tenant mismatch además quedan auditados (`AuditLog.action=ACCESS_DENIED`, `BE-039`) |
 | `LENDER_NOT_FOUND` | 404 | `:id` de `/api/admin/lenders*` no corresponde a ningún `LenderProfile` ni `User.id` de un Lender (o está borrado lógicamente, `D-P4-7`); o el `User` autenticado en `/api/lenders/me*` no tiene `LenderProfile` |
 | `LENDER_COMPANY_NOT_FOUND` | 404 | `:companyId` de `PATCH`/`DELETE /api/admin/lenders/:id/companies/:companyId` no es una `LenderCompany` de ese `:id` (o está borrada lógicamente); mismo código en `PATCH`/`DELETE /api/lenders/me/companies/:companyId` (`D-P4-9`) si `:companyId` no es del Lender de la sesión |
 | `BORROWER_NOT_FOUND` | 404 | El `User` autenticado en `/api/borrowers/me*` no tiene `BorrowerProfile` |
+| `VERIFICATION_NOT_FOUND` | 404 | `POST /api/admin/verifications/:id/approve\|reject` — `:id` no corresponde a ninguna `VerificationRequest` (`AD-003`) |
+| `THREAD_NOT_FOUND` | 404 | `GET /api/lenders/me/messages/threads/:borrowerProfileId` o `GET /api/borrowers/me/messages/threads/:lenderCompanyId` (Fase 17) — nunca hubo ningún `Message` con esa contraparte |
 | `EMAIL_TAKEN` | 409 | `POST`/`PATCH /api/users`, y (mientras estuvo activo) `POST /api/lenders/me/borrowers` (`D-P5-1`, deshabilitado) con un correo que ya existe |
 | `EIN_TAKEN` | 409 | `POST /api/admin/lenders/:id/companies`, `POST /api/lenders/me/companies`, `POST /api/borrowers/me/become-lender` (`D-P7-1`), o `PATCH /api/admin\|lenders/.../companies/:companyId` (incluido `D-P4-9`) con un `ein` que ya usa otra `LenderCompany` |
 | `LENDER_PROFILE_ALREADY_EXISTS` | 409 | `POST /api/borrowers/me/become-lender` (`D-P7-1`) — el usuario ya tiene un `LenderProfile` |
@@ -1472,6 +1701,9 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 | `LENDER_HAS_ACTIVE_CONTRACTS` | 409 | `DELETE /api/admin/lenders/:id` (alguna de sus `LenderCompany` tiene un `Contract` `ACTIVE`/`DELINQUENT`) o `DELETE .../companies/:companyId` (esa empresa puntual lo tiene) — Admin o autoservicio (`D-P4-9`) |
 | `NO_LENDER_COMPANY` | 409 | `POST /api/marketplace/loan-requests/:id/quotes`, y (mientras estuvo activo) `POST /api/lenders/me/borrowers` (`D-P5-1`, deshabilitado) — el Lender todavía no tiene ninguna `LenderCompany` |
 | `BORROWER_HAS_ACTIVE_CONTRACTS` | 409 | `DELETE /api/lenders/me/borrowers/:id` — el deudor tiene un `Contract` `ACTIVE`/`DELINQUENT` con alguna de las empresas de las que se lo está desvinculando |
+| `VERIFICATION_PENDING` | 409 | `POST /api/lenders/me/companies/:companyId/verification` o `POST /api/borrowers/me/verification` — ya hay una `VerificationRequest` `PENDING` para ese sujeto (`AD-003`) |
+| `VERIFICATION_ALREADY_APPROVED` | 409 | Igual que arriba, pero ya está `APPROVED` — no tiene sentido reenviar |
+| `VERIFICATION_NOT_PENDING` | 409 | `POST /api/admin/verifications/:id/approve\|reject` sobre una solicitud que ya no está `PENDING` (ya revisada, incluida la carrera de dos Admins a la vez) |
 | `TWO_FACTOR_ALREADY_ENABLED` | 409 | `/2fa/setup` o `/2fa/verify` cuando el usuario ya tiene 2FA activo |
 | `TWO_FACTOR_NOT_ENABLED` | 409 | `/2fa/disable` o `/2fa/recovery-codes` cuando el usuario no tiene 2FA activo |
 | `TWO_FACTOR_SETUP_REQUIRED` | 409 | `/2fa/verify` sin haber llamado antes a `/2fa/setup` |
