@@ -6,7 +6,7 @@ import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 
 export default function BorrowerDashboardView() {
-  const { lang } = useSite();
+  const { lang, t } = useSite();
   const isEs = lang === "es";
 
   const [user, setUser] = useState<any>(null);
@@ -142,6 +142,11 @@ export default function BorrowerDashboardView() {
           <div className="h-[2px] min-w-[12px] flex-1 bg-rule"></div>
           <div className="flex flex-col items-center gap-[3px]"><div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-rule bg-surface text-[9px] font-[700] text-ink-3">5</div><div className="whitespace-nowrap text-[9px] text-ink-3">Funded</div></div>
         </div>
+        <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
+          <button disabled className="cursor-not-allowed rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3">
+            {t.dashboardBorrower.actions.rateLender}
+          </button>
+        </div>
       </div>
 
       <div className="mb-[10px] cursor-pointer rounded-[10px] border border-rule bg-surface p-[16px_20px] transition-shadow hover:shadow-md dark:hover:shadow-none dark:hover:border-ink-3">
@@ -169,10 +174,14 @@ export default function BorrowerDashboardView() {
           <div className="h-[2px] min-w-[12px] flex-1 bg-success"></div>
           <div className="flex flex-col items-center gap-[3px]"><div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-success bg-success text-[9px] font-[700] text-white">✓</div><div className="whitespace-nowrap text-[9px] text-success">Funded</div></div>
         </div>
+        <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
+          <Link href="/borrowerDashboard/leave-a-review" className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
+            {t.dashboardBorrower.actions.rateLender}
+          </Link>
+        </div>
       </div>
 
-      <div className="mb-[10px] cursor-pointer rounded-[10px] border border-rule bg-surface p-[16px_20px] transition-shadow hover:shadow-md dark:hover:shadow-none dark:hover:border-ink-3">
-        <div className="mb-[10px] flex items-start justify-between">
+      <div className="mb-[10px] cursor-pointer rounded-[10px] border border-rule bg-surface p-[16px_20px] transition-shadow hover:shadow-md dark:hover:shadow-none dark:hover:border-ink-3">        <div className="mb-[10px] flex items-start justify-between">
           <div>
             <div className="text-[14px] font-[700] text-ink">4215 Raleigh Ave, Memphis TN</div>
             <div className="mt-[2px] text-[12px] text-ink-3">Bridge · $75K requested · Posted Sept 20</div>
@@ -195,6 +204,11 @@ export default function BorrowerDashboardView() {
           <div className="flex flex-col items-center gap-[3px]"><div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-rule bg-surface text-[9px] font-[700] text-ink-3">4</div><div className="whitespace-nowrap text-[9px] text-ink-3">Closing</div></div>
           <div className="h-[2px] min-w-[12px] flex-1 bg-rule"></div>
           <div className="flex flex-col items-center gap-[3px]"><div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-rule bg-surface text-[9px] font-[700] text-ink-3">5</div><div className="whitespace-nowrap text-[9px] text-ink-3">Funded</div></div>
+        </div>
+        <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
+          <button disabled className="cursor-not-allowed rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3">
+            {t.dashboardBorrower.actions.rateLender}
+          </button>
         </div>
       </div>
 

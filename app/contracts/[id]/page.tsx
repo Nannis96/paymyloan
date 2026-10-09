@@ -25,6 +25,7 @@ interface ContractData {
     amortizationTermMonths: number;
     structure: string;
     calculatedMonthlyPayment: number | string | null;
+    maturityDate?: string;
   };
 }
 
@@ -139,6 +140,24 @@ function ContractDetailContent() {
     }
   };
 
+  // Determina si el contrato esta activo y vence en <= 60 dias
+  const isWithin60Days = () => {
+  if (contract?.status !== "ACTIVE" && contract?.status !== "DELINQUENT") return false;
+  if (!contract?.currentTerms?.maturityDate) return false;
+
+  const maturity = new Date(contract.currentTerms.maturityDate);
+  const today = new Date();
+  const diffTime = maturity.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays <= 60;
+  };
+
+  const isLatePayment = () => {
+  return ["DELINQUENT", "RETURNED_PAYMENT", "LATE"].includes(contract?.status || "");
+  };
+
+
   // Logica de paginacion local (el backend podria paginar en un futuro)
   const totalPages = Math.max(1, Math.ceil(payments.length / itemsPerPage));
   const currentPayments = payments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -191,8 +210,52 @@ function ContractDetailContent() {
             <Link href={`/contracts/${contract.id}/payoff`} className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
               {t.dashboardBorrower.actions.payoff}
             </Link>
+
+            {/* Boton conectado a la pagina existente de draw-request */}
+            <Link href={`/borrowerDashboard/draw-request?contractId=${contract.id}`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
+              {t.dashboardBorrower.actions.drawRequest}
+            </Link>
+
+            {/* Boton dinamico para pagos atrasados */}
+            <Link 
+              href={isLatePayment() ? `/borrowerDashboard/missed-payment?contractId=${contract.id}` : "#"} 
+              aria-disabled={!isLatePayment()}
+              className={`inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-all ${
+                isLatePayment() 
+                  ? "bg-crit text-white hover:opacity-90" 
+                  : "border border-rule-strong bg-surface text-ink-3 opacity-60 cursor-not-allowed pointer-events-none"
+              }`}
+            >
+              {t.dashboardBorrower.actions.resolveLate}
+            </Link>
           </div>
         </header>
+
+        <div className={`mb-8 flex flex-col justify-between gap-4 rounded-xl border p-5 md:flex-row md:items-center transition-colors ${
+          isWithin60Days() 
+            ? "border-amber/30 bg-amber-soft" 
+            : "border-rule bg-surface-2 opacity-80"
+        }`}>
+          <div>
+            <h3 className={`text-[15px] font-bold ${isWithin60Days() ? "text-amber" : "text-ink-3"}`}>
+              {t.extensionRequest.maturityBanner.title.replace("{date}", formatDate(contract?.currentTerms?.maturityDate || ""))}
+            </h3>
+            <p className="mt-1 text-[13px] text-ink-2">
+              {t.extensionRequest.maturityBanner.sub}
+            </p>
+          </div>
+          <Link
+            href={isWithin60Days() ? `/borrowerDashboard/extension-request?contractId=${contract?.id}` : "#"}
+            aria-disabled={!isWithin60Days()}
+            className={`shrink-0 whitespace-nowrap rounded-lg px-5 py-2.5 text-sm font-bold shadow-sm transition-all ${
+              isWithin60Days()
+                ? "bg-amber text-white hover:opacity-90"
+                : "border border-rule-strong bg-surface text-ink-3 opacity-60 cursor-not-allowed pointer-events-none"
+            }`}
+          >
+            {t.dashboardBorrower.actions.extensionRequest}
+          </Link>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {/* Box Partes Involucradas */}

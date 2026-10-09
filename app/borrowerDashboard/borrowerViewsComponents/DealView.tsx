@@ -11,25 +11,15 @@ export default function DealView() {
 
   return (
     <div className="min-h-screen bg-bg font-sans">
-      {/* NavBar */}
-      <nav className="flex h-[52px] items-center justify-between border-b border-rule bg-surface px-7">
-        <div className="text-[16px] font-black tracking-[-0.3px] text-accent">
-          PayMy<span className="text-ink">Loan</span>.ai
-        </div>
-        <div className="flex items-center gap-2.5">
-          <LangToggle className="h-[30px] rounded-md px-2 text-[11px] font-bold text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink" />
-          <ThemeToggle className="h-[30px] w-[30px] rounded-md text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink" iconSize={14} />
-          <Link
-            href="/borrowerDashboard"
-            className="cursor-pointer rounded-md border border-rule bg-surface px-3.5 py-1.5 text-[12px] font-semibold text-ink-2 transition-colors hover:border-accent hover:text-accent"
-          >
-            {dp.back}
-          </Link>
-        </div>
-      </nav>
-
       {/* Main Content */}
       <div className="mx-auto max-w-[800px] px-6 py-8 pb-20">
+        <Link
+          href="/borrowerDashboard"
+          className="mb-6 inline-block text-[13px] font-semibold text-ink-3 transition-colors hover:text-accent"
+        >
+          {dp.back}
+        </Link>
+
         {/* Header */}
         <div className="mb-6">
           <div className="text-[22px] font-black tracking-tight text-ink">3802 University Cove, Memphis TN 38127</div>

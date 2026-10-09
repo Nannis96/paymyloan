@@ -121,8 +121,8 @@ function ContractsContent() {
     let colorClass = "bg-gray-100 border-gray-200 text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400";
     if (isActiveType) colorClass = "bg-green-100 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400";
     if (isPendingType) colorClass = "bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400";
-    if (isErrorType) colorClass = "bg-red-600 text-white font-black animate-pulse shadow-sm"; // Alerta roja crítica para pagos tardíos/retornados
-    return { label: status, colorClass };
+    if (isErrorType) colorClass = "bg-red-600 text-white font-black animate-pulse shadow-sm hover:bg-red-700 transition-colors"; // Alerta roja critica para pagos tardios/retornados
+    return { label: status, colorClass, isErrorType };
   };
 
   return (
@@ -201,9 +201,17 @@ function ContractsContent() {
                         )}
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`inline-flex rounded-[4px] border px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider ${statusInfo.colorClass}`}>
-                          {statusInfo.label}
-                        </span>
+                        {statusInfo.isErrorType ? (
+                          <Link href={`/borrowerDashboard/missed-payment?contractId=${contract.id}`} className="no-underline">
+                            <span className={`inline-flex items-center gap-1 rounded-[4px] border px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider cursor-pointer ${statusInfo.colorClass}`}>
+                              {statusInfo.label} &rarr;
+                            </span>
+                          </Link>
+                        ) : (
+                          <span className={`inline-flex rounded-[4px] border px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider ${statusInfo.colorClass}`}>
+                            {statusInfo.label}
+                          </span>
+                        )}
                       </td>
                       <td className="px-5 py-4">
                         <Link href={`/contracts/${contract.id}`} className="text-sm font-bold text-accent hover:underline">

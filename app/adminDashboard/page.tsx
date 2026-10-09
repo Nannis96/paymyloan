@@ -54,6 +54,8 @@ function AdminDashboardContent() {
     { id: "affiliates", label: d.nav.affiliates },
     { id: "verifications", label: d.nav.verifications },
     { id: "promoCodes", label: d.nav.promoCodes },
+    { id: "catalog", label: d.nav.catalog, href: "/adminDashboard/catalog" },
+    { id: "auditLogs", label: d.nav.auditLogs, href: "/adminDashboard/audit-logs" },
     { id: "settings", label: d.nav.settings }
   ];
 
@@ -145,17 +147,27 @@ function AdminDashboardContent() {
       {/* Sidebar (Dinamico segun estado) */}
       <div className="fixed bottom-0 left-0 top-[52px] hidden w-[200px] flex-col border-r border-rule bg-brand-dark py-5 md:flex">
         {navItems.map(item => (
-          <div 
-            key={item.id} 
-            onClick={() => setActiveTab(item.id)}
-            className={`cursor-pointer border-l-4 px-5 py-2.5 text-[13px] transition-colors ${
-              activeTab === item.id 
-                ? "border-accent bg-accent/10 font-bold text-white" 
-                : "border-transparent text-ink-3 hover:text-white"
-            }`}
-          >
-            {item.label}
-          </div>
+          item.href ? (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="block cursor-pointer border-l-4 border-transparent px-5 py-2.5 text-[13px] text-ink-3 no-underline transition-colors hover:text-white"
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <div 
+               key={item.id}
+               onClick={() => setActiveTab(item.id)}
+              className={`cursor-pointer border-l-4 px-5 py-2.5 text-[13px] transition-colors ${
+                activeTab === item.id 
+                   ? "border-accent bg-accent/10 font-bold text-white" 
+                   : "border-transparent text-ink-3 hover:text-white"
+              }`}
+            >
+              {item.label}
+            </div>
+          )
         ))}
       </div>
 

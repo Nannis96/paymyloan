@@ -29,6 +29,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     payments: isEs ? "Pagos" : "Payments",
     settings: isEs ? "Configuración" : "Settings",
     postDeal: isEs ? "+ Analizar y Publicar" : "+ Analyze & Post a Deal",
+    inviteLender: isEs ? "Invita a tu Prestamista" : "Invite your Lender",
   };
 
   const navItemBase = "flex items-center gap-[10px] px-[18px] py-[10px] text-[13px] font-[500] text-ink-2 cursor-pointer relative no-underline hover:bg-surface-2 hover:text-ink transition-all w-full text-left";
@@ -96,6 +97,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {sb.settings}
           </Link>
           
+          <Link href="/borrowerDashboard/invite-flow" className="mx-[14px] mt-[16px] block rounded-[7px] border-[1.5px] border-accent bg-accent-soft p-[10px] text-center font-sans text-[13px] font-[700] text-accent no-underline transition-colors hover:bg-accent hover:text-white">
+            {sb.inviteLender}
+          </Link>
+
           <Link href="/submit-deal" className="mx-[14px] mt-[12px] block rounded-[7px] bg-accent p-[10px] text-center font-sans text-[13px] font-[700] text-accent-ink no-underline transition-colors hover:bg-blue-700">
             {sb.postDeal}
           </Link>
