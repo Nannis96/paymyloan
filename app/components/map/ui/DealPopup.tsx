@@ -30,13 +30,21 @@ export default function DealPopup({ deal, t }: { deal: any, t: any }) {
           <div className="text-xs font-bold text-ink">{arv > 0 ? formatMoney(arv) : "N/D"}</div>
         </div>
       </div>
-      
-      <Link 
-        href={`/marketplace/${deal.id}`}
-        className="block w-full rounded bg-accent py-1.5 text-center text-xs font-bold text-white transition-colors hover:bg-blue-700 no-underline"
-      >
-        {t?.marketplace?.table?.action || "Ver Detalles"}
-      </Link>
+             
+      <div className="mt-1 flex flex-col gap-2">
+        <Link 
+           href={`/lenderDashboard/browse-deals/${deal.id}`}
+          className="block w-full rounded bg-accent py-1.5 text-center text-xs font-bold text-white transition-colors hover:bg-blue-700 no-underline"
+        >
+          {t?.marketplace?.table?.action || "Ver Detalles"}
+        </Link>
+        <Link 
+           href={`/lenderDashboard/counter-offer?dealId=${deal.id}`}
+          className="block w-full rounded border border-accent bg-accent-soft py-1.5 text-center text-xs font-bold text-accent transition-colors hover:bg-[#e0deff] no-underline"
+        >
+          {dc?.counterOffer || "Contraoferta"}
+        </Link>
+      </div>
     </div>
   );
 }

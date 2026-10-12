@@ -294,11 +294,18 @@ export default function BrowseDealsView() {
                       </div>
                     </div>
                     
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-[8px]">
                       <Link 
-                        href={`/marketplace/${deal.id}`}
+                         href={`/lenderDashboard/counter-offer?dealId=${deal.id}`}
                         onClick={(e) => e.stopPropagation()} 
-                        className="cursor-pointer rounded-[6px] border-none bg-[#635bff] px-[12px] py-[5px] font-sans text-[11px] font-[600] text-white transition-colors hover:bg-[#524ddb]"
+                         className="cursor-pointer rounded-[6px] border border-[#635bff] bg-[#f0efff] px-[12px] py-[5px] font-sans text-[11px] font-[600] text-[#635bff] transition-colors hover:bg-[#e0deff]"
+                      >
+                        {t.uiComponents.dealCard.counterOffer}
+                      </Link>
+                      <Link 
+                         href={`/lenderDashboard/browse-deals/${deal.id}`}
+                        onClick={(e) => e.stopPropagation()} 
+                         className="cursor-pointer rounded-[6px] border-none bg-[#635bff] px-[12px] py-[5px] font-sans text-[11px] font-[600] text-white transition-colors hover:bg-[#524ddb]"
                       >
                         {isEs ? "Enviar oferta" : "Submit offer"}
                       </Link>

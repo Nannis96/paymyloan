@@ -15,6 +15,8 @@ import { OverviewView } from "./AdminViewsComponents/OverviewView";
 import { AllDealsView } from "./AdminViewsComponents/AllDealsView";
 import { LendersView } from "./AdminViewsComponents/LendersView";
 import { BorrowersView } from "./AdminViewsComponents/BorrowersView";
+import { CatalogView } from "./AdminViewsComponents/CatalogView";
+import { AuditLogsView } from "./AdminViewsComponents/AuditLogsView";
 import {
   RevenueView,
   AffiliatesView,
@@ -22,7 +24,6 @@ import {
   PromoCodesView,
   SettingsView
 } from "./AdminViewsComponents/PlaceholderViews";
-
 export default function AdminDashboardPage() {
   return (
     <SiteShell isMinimal={true}>
@@ -54,8 +55,8 @@ function AdminDashboardContent() {
     { id: "affiliates", label: d.nav.affiliates },
     { id: "verifications", label: d.nav.verifications },
     { id: "promoCodes", label: d.nav.promoCodes },
-    { id: "catalog", label: d.nav.catalog, href: "/adminDashboard/catalog" },
-    { id: "auditLogs", label: d.nav.auditLogs, href: "/adminDashboard/audit-logs" },
+    { id: "catalog", label: d.nav.catalog },
+    { id: "auditLogs", label: d.nav.auditLogs },
     { id: "settings", label: d.nav.settings }
   ];
 
@@ -147,27 +148,17 @@ function AdminDashboardContent() {
       {/* Sidebar (Dinamico segun estado) */}
       <div className="fixed bottom-0 left-0 top-[52px] hidden w-[200px] flex-col border-r border-rule bg-brand-dark py-5 md:flex">
         {navItems.map(item => (
-          item.href ? (
-            <Link
-              key={item.id}
-              href={item.href}
-              className="block cursor-pointer border-l-4 border-transparent px-5 py-2.5 text-[13px] text-ink-3 no-underline transition-colors hover:text-white"
-            >
-              {item.label}
-            </Link>
-          ) : (
-            <div 
-               key={item.id}
-               onClick={() => setActiveTab(item.id)}
-              className={`cursor-pointer border-l-4 px-5 py-2.5 text-[13px] transition-colors ${
-                activeTab === item.id 
-                   ? "border-accent bg-accent/10 font-bold text-white" 
-                   : "border-transparent text-ink-3 hover:text-white"
-              }`}
-            >
-              {item.label}
-            </div>
-          )
+          <div 
+             key={item.id}
+             onClick={() => setActiveTab(item.id)}
+            className={`cursor-pointer border-l-4 px-5 py-2.5 text-[13px] transition-colors ${
+              activeTab === item.id 
+                 ? "border-accent bg-accent/10 font-bold text-white" 
+                 : "border-transparent text-ink-3 hover:text-white"
+            }`}
+          >
+            {item.label}
+          </div>
         ))}
       </div>
 
@@ -188,8 +179,11 @@ function AdminDashboardContent() {
             affiliates: AffiliatesView,
             verifications: VerificationsView,
             promoCodes: PromoCodesView,
+            catalog: CatalogView,
+            auditLogs: AuditLogsView,
             settings: SettingsView
           };
+
           const ActiveComponent = VIEW_MAP[activeTab] || VIEW_MAP.overview;
           return <ActiveComponent contracts={contracts} users={users} setActiveTab={setActiveTab} />;
         })()}

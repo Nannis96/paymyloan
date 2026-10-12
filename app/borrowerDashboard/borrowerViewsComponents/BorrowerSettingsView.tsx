@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
-import BorrowerAccountSecurityModal from "./BorrowerAccountSecurityModal";
+import Link from "next/link";
 
 export default function BorrowerSettingsView() {
   const { t } = useSite();
-  
-  // Usamos el diccionario que coincide exactamente con la plantilla HTML proporcionada
-  const s = (t.dashboardLender.mimic as any).settings;
+  const s = (t.dashboardLender as any).settings || (t.dashboardLender.mimic as any).settings;
 
   // Estado del usuario traído de la API real
   const [user, setUser] = useState<{ name?: string; email?: string; phone?: string | null } | null>(null);
@@ -168,8 +166,21 @@ export default function BorrowerSettingsView() {
         </div>
       </div>
 
-      {/* Security Actions (Boton Modal) */}
-      <BorrowerAccountSecurityModal />
+      {/* Security Actions (Enlace a página independiente) */}
+      <div className="mb-[16px] overflow-hidden rounded-[10px] border border-rule bg-surface">
+        <div className="flex items-center justify-between border-b border-rule p-[18px_22px]">
+          <div>
+            <div className="text-[14px] font-[700] text-ink">{s.accountSecurity.title}</div>
+            <div className="mt-[2px] text-[12px] text-ink-3">{s.accountSecurity.sub}</div>
+          </div>
+          <Link
+            href="/borrowerDashboard/settings/security"
+            className="cursor-pointer rounded-[6px] border border-rule-strong bg-surface px-[14px] py-[6px] font-sans text-[12px] font-[600] text-ink-2 hover:border-ink-3 transition-colors no-underline"
+          >
+            {s.accountSecurity.buttonLabel}
+          </Link>
+        </div>
+      </div>
 
       {/* Danger zone */}
       <div className="mb-[16px] overflow-hidden rounded-[10px] border border-rule bg-surface">

@@ -1,85 +1,73 @@
-import SiteShell from "@/app/components/layout/SiteShell";
-import { AuditLogsClient, LogItem } from "./AuditLogsClient";
+"use client";
 
-interface PageProps {
-  searchParams: Promise<{
-    page?: string;
-    actorRole?: string;
-    search?: string;
-  }>;
-}
+import { useSite } from "@/app/components/layout/SiteShell";
 
-export default async function AuditLogsPage({ searchParams }: PageProps) {
-  // En Next.js 15+ es buena práctica hacer await de searchParams
-  const params = await searchParams;
-  const page = Math.max(1, Number(params.page) || 1);
-  
-  // Aquí construirías la URL para tu API real
-  /*
-  const queryParams = new URLSearchParams({
-    page: page.toString(),
-    limit: "15",
-    role: params.actorRole || "",
-    search: params.search || "",
-  });
-  
-  const res = await fetch(`https://api.paymyloan.ai/v1/admin/logs?${queryParams}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: "no-store" // Para que siempre traiga los datos frescos
-  });
-  const { data: logs, totalCount } = await res.json();
-  */
-
-  // --- DATOS SIMULADOS PARA EL DISEÑO ---
-  const totalCount = 45;
-  const totalPages = Math.ceil(totalCount / 15);
-  const logs: LogItem[] = [
-    {
-      id: "log_1",
-      actorRole: "SYSTEM",
-      actorName: "Webhook LeadConnector",
-      action: "CRM_SYNC_SUCCESS",
-      entityType: "INTEGRATION",
-      description: "Sincronización exitosa del prospecto Liam Brown hacia GoHighLevel.",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "log_2",
-      actorRole: "ADMIN",
-      actorName: "Andrés García",
-      action: "USER_VERIFIED",
-      entityType: "USER",
-      description: "Aprobación manual de documentos KYC (Know Your Customer).",
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-    }
-  ];
-  // ----------------------------------------
+export default function AuditLogsPage() {
+  const { t } = useSite();
+  const logs = t.auditLogs;
 
   return (
-    <SiteShell isDashboard={true}>
-      <div className="min-h-screen bg-bg p-6 lg:p-14">
-        <div className="mx-auto max-w-[1200px] space-y-8">
-          <div>
-            <h1 className="text-[32px] font-black tracking-tight text-ink">
-              Registro de Auditoría
-            </h1>
-            <p className="text-ink-2 mt-1">
-              Trazabilidad en tiempo real de acciones ejecutadas por Webhooks, Usuarios y Administradores.
-            </p>
-          </div>
+    <div className="animate-in fade-in duration-300 max-w-[1200px]">
+      {/* Encabezado */}
+      <div className="mb-[24px]">
+        <h1 className="text-[20px] font-[800] tracking-[-0.3px] text-[#0a2540]">
+          {t.dashboardAdmin.nav.auditLogs}
+        </h1>
+        <p className="mt-[2px] text-[13px] text-[#8898aa]">
+          {t.dashboardAdmin.views.auditLogs?.subtitle || "Historial completo de acciones y eventos del sistema."}
+        </p>
+      </div>
 
-          <AuditLogsClient
-            logs={logs}
-            currentPage={page}
-            totalPages={totalPages}
-            totalCount={totalCount}
-            currentFilters={{
-              actorRole: params.actorRole || "",
-              search: params.search || "",
-            }}
-          />
+      {/* Controles de filtro */}
+      <div className="mb-[20px] flex flex-col gap-[12px] sm:flex-row sm:items-center">
+        <input 
+          type="text" 
+          placeholder={logs.searchPlaceholder} 
+          className="flex-1 rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[9px] text-[13px] text-[#0a2540] outline-none transition-colors focus:border-[#635bff]" 
+        />
+        <select className="min-w-[180px] cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[9px] text-[13px] font-[500] text-[#425466] outline-none transition-colors focus:border-[#635bff]">
+          <option>{logs.allRoles}</option>
+          <option>{logs.system}</option>
+          <option>{logs.admins}</option>
+          <option>{logs.lenders}</option>
+          <option>{logs.borrowers}</option>
+        </select>
+      </div>
+
+      {/* Tabla de auditoria */}
+      <div className="overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left">
+            <thead className="bg-[#f6f9fc]">
+              <tr>
+                <th className="p-[12px_20px] text-[10px] font-[700] uppercase tracking-[0.5px] text-[#aab7c4]">{logs.dateHour}</th>
+                <th className="p-[12px_20px] text-[10px] font-[700] uppercase tracking-[0.5px] text-[#aab7c4]">{logs.actor}</th>
+                <th className="p-[12px_20px] text-[10px] font-[700] uppercase tracking-[0.5px] text-[#aab7c4]">{logs.action}</th>
+                <th className="p-[12px_20px] text-[10px] font-[700] uppercase tracking-[0.5px] text-[#aab7c4]">{logs.description}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colSpan={4} className="p-[60px] text-center text-[13px] text-[#8898aa]">
+                  {logs.noRecords}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Footer de Paginacion */}
+        <div className="flex items-center justify-between border-t border-[#e6ebf1] bg-[#fafbfd] p-[12px_20px]">
+          <div className="text-[12px] font-[500] text-[#8898aa]">
+            {logs.totalRecords} 0
+          </div>
+          <div className="flex items-center gap-[12px]">
+            <button className="cursor-not-allowed text-[12px] font-[600] text-[#aab7c4]">{logs.prev}</button>
+            <span className="text-[12px] text-[#425466]">{logs.page} 1 {logs.of} 1</span>
+            <button className="cursor-not-allowed text-[12px] font-[600] text-[#aab7c4]">{logs.next}</button>
+          </div>
         </div>
       </div>
-    </SiteShell>
+    </div>
   );
 }

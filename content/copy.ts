@@ -28,7 +28,8 @@ const es = {
       ltv: "LTV",
       offers: "ofertas",
       offer: "oferta",
-      makeOffer: "Hacer oferta"
+      makeOffer: "Hacer oferta",
+      counterOffer: "Contraoferta"
     },
     scoreCard: {
       tapToSee: "Toca para ver prestatario",
@@ -734,6 +735,8 @@ const es = {
       affiliates: { title: "Afiliados", subtitle: "Gestion de referidos y pagos a afiliados." },
       verifications: { title: "Verificaciones", subtitle: "Solicitudes de identidad y entidades pendientes." },
       promoCodes: { title: "Codigos Promo", subtitle: "Administracion de descuentos y cupones." },
+      catalog: { title: "Catálogo", subtitle: "Gestión de productos, suscripciones y cupones." },
+      auditLogs: { title: "Auditoría", subtitle: "Historial completo de acciones y eventos del sistema." },
       settings: { title: "Configuracion", subtitle: "Ajustes globales de la plataforma." },
       placeholder: { subtitle: "Esta vista estara disponible proximamente." }
     },
@@ -886,7 +889,28 @@ const es = {
       btnPurple: "Crear tu cuenta de prestamista"
     }
   },
-  dashboardLender: { title: "Panel de Prestamista", subtitle: "Control total sobre tu capital y rendimientos.", metrics: { availableCapital: "Capital (Disponible / Desplegado)", capitalDeployed: "Capital Desplegado", nextPayments: "Próximos Pagos (30 días)", avgInterest: "Tasa Promedio", activeBorrowers: "Prestatarios Activos" }, sections: { commitmentLetters: "Cartas de Compromiso Enviadas", upcomingClosings: "Próximos Cierres / Payoffs", activeLoans: "Préstamos Activos (Retorno)", }, tableHeaders: { borrower: "Prestatario", amount: "Monto", status: "Estado", type: "Tipo", date: "Fecha", action: "Acción", loan: "Préstamo", rateBalance: "Tasa / Saldo" }, labels: { cap: "Cap:", int: "Int:" }, recentPayments: "Últimos Pagos Recibidos", actions: { marketplace: "Explorar Mercado", viewContracts: "Ver mis contratos" }, toggle: { open: "Abierto a negocios", closed: "No aceptando préstamos" }, table: { date: "Fecha", borrower: "Prestatario", property: "Propiedad", total: "Pago Total", principal: "Capital", interest: "Interés" }, emptyHistory: "El resto del historial se renderizará aquí.", loading: "Cargando dashboard...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar la información del dashboard", errorNetwork: "Error de red desconocido", unassigned: "Sin asignar", borrowerFallback: "Deudor", emptyCommitments: "No hay compromisos pendientes", emptyClosings: "No hay cierres próximos en el sistema.", emptyLoans: "Sin préstamos activos", emptyPayments: "No hay pagos procesados recientemente.", mimic: { greeting: "Buenos dias, {name}.", portfolioSub: "{company} — resumen de portafolio.", stats: { capitalDeployed: "Capital desplegado", acrossActive: "En {n} prestamos activos", monthlyIncome: "Ingreso mensual", interestPayments: "Pagos de interes", newDeals: "Nuevos tratos hoy", matchCriteria: "Coinciden con tus criterios", maturingSoon: "Proximos a vencer", within60: "En menos de 60 dias" }, alerts: { maturityTitle: "Alerta de vencimiento", maturityMsg: "{address} vence en {days} dias — {date}", maturitySub: "{amount} al {rate}% · Contacta al prestatario para liquidacion o extension." }, cards: { activeLoans: "Prestamos activos", viewAll: "Ver todos", upcomingPayments: "Proximos pagos", allPayments: "Todos los pagos" }, browseCta: { title: "{n} nuevos tratos coinciden con tus criterios", sub: "Memphis · TN · MS · Hasta 75% LTV · 12%+", btn: "Explorar tratos" }, badges: { active: "Activo", closing: "Cerrando", maturity: "{n}d para vencer", pending: "Pendiente", received: "Recibido" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Fondeado 22 Sept · 12 meses", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mes", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Fondeado 3 Ago · 12 meses", loan2Amt: "$95,000", loan2Rate: "12% · $950/mes", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Cierre en progreso", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mes", pay1Date: "Vence 1 Oct", pay2Date: "Vence 1 Oct", pay3Date: "Pagado 1 Sept", pay4Date: "Pagado 1 Sept" },
+  dashboardLender: { title: "Panel de Prestamista", subtitle: "Control total sobre tu capital y rendimientos.", metrics: { availableCapital: "Capital (Disponible / Desplegado)", capitalDeployed: "Capital Desplegado", nextPayments: "Próximos Pagos (30 días)", avgInterest: "Tasa Promedio", activeBorrowers: "Prestatarios Activos" }, sections: { commitmentLetters: "Cartas de Compromiso Enviadas", upcomingClosings: "Próximos Cierres / Payoffs", activeLoans: "Préstamos Activos (Retorno)", }, tableHeaders: { borrower: "Prestatario", amount: "Monto", status: "Estado", type: "Tipo", date: "Fecha", action: "Acción", loan: "Préstamo", rateBalance: "Tasa / Saldo" }, labels: { cap: "Cap:", int: "Int:" },
+    recentPayments: "Últimos Pagos Recibidos",
+    offersSent: {
+      title: "Ofertas Enviadas",
+      subtitle: "Gestiona las cotizaciones que has enviado a prestatarios.",
+      table: {
+        property: "Propiedad",
+        amount: "Monto Ofertado",
+        rate: "Tasa Propuesta",
+        status: "Estado",
+        date: "Fecha Enviada",
+        action: "Ver Trato"
+      },
+      status: {
+        SUBMITTED: "Enviada",
+        SELECTED: "Aceptada",
+        DECLINED: "Rechazada",
+        WITHDRAWN: "Retirada"
+      },
+      empty: "No has enviado ninguna oferta aún."
+    },
+    actions: { marketplace: "Explorar Mercado", viewContracts: "Ver mis contratos", viewContractBtn: "Ver contrato" }  , toggle: { open: "Abierto a negocios", closed: "No aceptando préstamos" }, table: { date: "Fecha", borrower: "Prestatario", property: "Propiedad", total: "Pago Total", principal: "Capital", interest: "Interés" }, emptyHistory: "El resto del historial se renderizará aquí.", loading: "Cargando dashboard...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al cargar la información del dashboard", errorNetwork: "Error de red desconocido", unassigned: "Sin asignar", borrowerFallback: "Deudor", emptyCommitments: "No hay compromisos pendientes", emptyClosings: "No hay cierres próximos en el sistema.", emptyLoans: "Sin préstamos activos", emptyPayments: "No hay pagos procesados recientemente.", mimic: { greeting: "Buenos dias, {name}.", portfolioSub: "{company} — resumen de portafolio.", stats: { capitalDeployed: "Capital desplegado", acrossActive: "En {n} prestamos activos", monthlyIncome: "Ingreso mensual", interestPayments: "Pagos de interes", newDeals: "Nuevos tratos hoy", matchCriteria: "Coinciden con tus criterios", maturingSoon: "Proximos a vencer", within60: "En menos de 60 dias" }, alerts: { maturityTitle: "Alerta de vencimiento", maturityMsg: "{address} vence en {days} dias — {date}", maturitySub: "{amount} al {rate}% · Contacta al prestatario para liquidacion o extension." }, cards: { activeLoans: "Prestamos activos", viewAll: "Ver todos", upcomingPayments: "Proximos pagos", allPayments: "Todos los pagos" }, browseCta: { title: "{n} nuevos tratos coinciden con tus criterios", sub: "Memphis · TN · MS · Hasta 75% LTV · 12%+", btn: "Explorar tratos" }, badges: { active: "Activo", closing: "Cerrando", maturity: "{n}d para vencer", pending: "Pendiente", received: "Recibido" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Fondeado 22 Sept · 12 meses", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mes", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Fondeado 3 Ago · 12 meses", loan2Amt: "$95,000", loan2Rate: "12% · $950/mes", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Cierre en progreso", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mes", pay1Date: "Vence 1 Oct", pay2Date: "Vence 1 Oct", pay3Date: "Pagado 1 Sept", pay4Date: "Pagado 1 Sept" },
     sidebar: { menu: "Menú", dashboard: "Tablero", browse: "Explorar tratos", active: "Préstamos activos", payments: "Pagos", offers: "Ofertas enviadas", settings: "Configuración", preferences: "Preferencias", entities: "Entidades", verifyMsg: "Completar verificación" },  
     settings: {
         title: "Configuracion",
@@ -2122,7 +2146,8 @@ const en: Copy = {
       ltv: "LTV",
       offers: "offers",
       offer: "offer",
-      makeOffer: "Make offer"
+      makeOffer: "Make offer",
+      counterOffer: "Counter offer"
     },
     scoreCard: {
       tapToSee: "Tap to see borrower",
@@ -2828,6 +2853,8 @@ const en: Copy = {
       affiliates: { title: "Affiliates", subtitle: "Referral management and affiliate payouts." },
       verifications: { title: "Verifications", subtitle: "Pending identity and entity requests." },
       promoCodes: { title: "Promo Codes", subtitle: "Discount and coupon management." },
+      catalog: { title: "Catalog", subtitle: "Manage products, subscriptions, and coupons." },
+      auditLogs: { title: "Audit Logs", subtitle: "Complete history of system actions and events." },
       settings: { title: "Settings", subtitle: "Global platform settings." },
       placeholder: { subtitle: "This view will be available soon." }
     },
@@ -2980,7 +3007,28 @@ const en: Copy = {
       btnPurple: "Create your lender account"
     }
   },
-  dashboardLender: { title: "Lender Dashboard", subtitle: "Total control over your capital and yields.", metrics: { availableCapital: "Capital (Available / Deployed)", capitalDeployed: "Capital Deployed", nextPayments: "Next Payments (30 days)", avgInterest: "Avg. Interest Rate", activeBorrowers: "Active Borrowers" }, sections: { commitmentLetters: "Sent Commitment Letters", upcomingClosings: "Upcoming Closings / Payoffs", activeLoans: "Active Loans (Return)", }, tableHeaders: { borrower: "Borrower", amount: "Amount", status: "Status", type: "Type", date: "Date", action: "Action", loan: "Loan", rateBalance: "Rate / Balance" }, labels: { cap: "Prin:", int: "Int:" }, recentPayments: "Latest Received Payments", actions: { marketplace: "Browse Marketplace", viewContracts: "View my contracts" }, toggle: { open: "Open to deals", closed: "Not taking loans" }, table: { date: "Date", borrower: "Borrower", property: "Property", total: "Total Payment", principal: "Principal", interest: "Interest" }, emptyHistory: "The rest of the history will be rendered here.", loading: "Loading dashboard...", errorAuth: "Invalid or expired session.", errorFetch: "Error loading dashboard information", errorNetwork: "Unknown network error", unassigned: "Unassigned", borrowerFallback: "Borrower", emptyCommitments: "No pending commitments", emptyClosings: "No upcoming closings in the system.", emptyLoans: "No active loans", emptyPayments: "No recently processed payments.", mimic: { greeting: "Good morning, {name}.", portfolioSub: "{company} — lender portfolio overview.", stats: { capitalDeployed: "Capital deployed", acrossActive: "Across {n} active loans", monthlyIncome: "Monthly income", interestPayments: "Interest payments", newDeals: "New deals today", matchCriteria: "Match your criteria", maturingSoon: "Maturing soon", within60: "Within 60 days" }, alerts: { maturityTitle: "Maturity alert", maturityMsg: "{address} matures in {days} days — {date}", maturitySub: "{amount} @ {rate}% · Contact borrower to discuss payoff or extension." }, cards: { activeLoans: "Active loans", viewAll: "View all", upcomingPayments: "Upcoming payments", allPayments: "All payments" }, browseCta: { title: "{n} new deals match your criteria", sub: "Memphis · TN · MS · Up to 75% LTV · 12%+", btn: "Browse deals" }, badges: { active: "Active", closing: "Closing", maturity: "{n}d to maturity", pending: "Pending", received: "Received" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Funded Sept 22 · 12 months", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mo", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Funded Aug 3 · 12 months", loan2Amt: "$95,000", loan2Rate: "12% · $950/mo", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Closing in progress", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mo", pay1Date: "Due Oct 1", pay2Date: "Due Oct 1", pay3Date: "Paid Sept 1", pay4Date: "Paid Sept 1" },
+  dashboardLender: { title: "Lender Dashboard", subtitle: "Total control over your capital and yields.", metrics: { availableCapital: "Capital (Available / Deployed)", capitalDeployed: "Capital Deployed", nextPayments: "Next Payments (30 days)", avgInterest: "Avg. Interest Rate", activeBorrowers: "Active Borrowers" }, sections: { commitmentLetters: "Sent Commitment Letters", upcomingClosings: "Upcoming Closings / Payoffs", activeLoans: "Active Loans (Return)", }, tableHeaders: { borrower: "Borrower", amount: "Amount", status: "Status", type: "Type", date: "Date", action: "Action", loan: "Loan", rateBalance: "Rate / Balance" }, labels: { cap: "Prin:", int: "Int:" },
+    recentPayments: "Latest Received Payments",
+    offersSent: {
+      title: "Offers Sent",
+      subtitle: "Manage the quotes you have submitted to borrowers.",
+      table: {
+        property: "Property",
+        amount: "Offered Amount",
+        rate: "Proposed Rate",
+        status: "Status",
+        date: "Date Sent",
+        action: "View Deal"
+      },
+      status: {
+        SUBMITTED: "Submitted",
+        SELECTED: "Accepted",
+        DECLINED: "Declined",
+        WITHDRAWN: "Withdrawn"
+      },
+      empty: "You haven't sent any offers yet."
+    },
+    actions: { marketplace: "Browse Marketplace", viewContracts: "View my contracts", viewContractBtn: "View contract" }, toggle: { open: "Open to deals", closed: "Not taking loans" }, table: { date: "Date", borrower: "Borrower", property: "Property", total: "Total Payment", principal: "Principal", interest: "Interest" }, emptyHistory: "The rest of the history will be rendered here.", loading: "Loading dashboard...", errorAuth: "Invalid or expired session.", errorFetch: "Error loading dashboard information", errorNetwork: "Unknown network error", unassigned: "Unassigned", borrowerFallback: "Borrower", emptyCommitments: "No pending commitments", emptyClosings: "No upcoming closings in the system.", emptyLoans: "No active loans", emptyPayments: "No recently processed payments.", mimic: { greeting: "Good morning, {name}.", portfolioSub: "{company} — lender portfolio overview.", stats: { capitalDeployed: "Capital deployed", acrossActive: "Across {n} active loans", monthlyIncome: "Monthly income", interestPayments: "Interest payments", newDeals: "New deals today", matchCriteria: "Match your criteria", maturingSoon: "Maturing soon", within60: "Within 60 days" }, alerts: { maturityTitle: "Maturity alert", maturityMsg: "{address} matures in {days} days — {date}", maturitySub: "{amount} @ {rate}% · Contact borrower to discuss payoff or extension." }, cards: { activeLoans: "Active loans", viewAll: "View all", upcomingPayments: "Upcoming payments", allPayments: "All payments" }, browseCta: { title: "{n} new deals match your criteria", sub: "Memphis · TN · MS · Up to 75% LTV · 12%+", btn: "Browse deals" }, badges: { active: "Active", closing: "Closing", maturity: "{n}d to maturity", pending: "Pending", received: "Received" }, data: { loan1Addr: "3802 University Cove", loan1Sub: "Funded Sept 22 · 12 months", loan1Amt: "$115,000", loan1Rate: "12% · $1,150/mo", loan2Addr: "1144 Oakwood Dr", loan2Sub: "Funded Aug 3 · 12 months", loan2Amt: "$95,000", loan2Rate: "12% · $950/mo", loan3Addr: "4215 Raleigh Ave", loan3Sub: "Closing in progress", loan3Amt: "$75,000", loan3Rate: "11% · $687.50/mo", pay1Date: "Due Oct 1", pay2Date: "Due Oct 1", pay3Date: "Paid Sept 1", pay4Date: "Paid Sept 1" },
     sidebar: { menu: "Menu", dashboard: "Dashboard", browse: "Browse deals", active: "Active loans", payments: "Payments", offers: "Offers sent", settings: "Settings", preferences: "Preferences", entities: "Entities", verifyMsg: "Complete verification" },  
       settings: {
         title: "Settings",
