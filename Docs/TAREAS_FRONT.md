@@ -44,7 +44,7 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 - [x] **T0.2** En `apiFetch.ts`: 401 → `POST /auth/refresh` y reintento una vez (renovación compartida entre llamadas concurrentes, porque el back rota el token). Si falla → limpia sesión y `/login`. **HECHA 2026-10-14.**
 - [x] **T0.3** `endpoints.ts` sincronizado con las rutas del back: quitado `/terms/propose`; agregados 2FA, admin (overview/verifications), mensajes y become-* de ambos roles, ratings, notificaciones, reviews, transactions, fees/:feeId, payments/manual. **HECHA 2026-10-14.**
 - [x] **T0.4** Vistas sin `${BASE_URL}/api/...` armado a mano: usan `API_ROUTES` (users, audit-logs, contracts, accept/reject terms). `SiteShell` valida sesión con `apiFetch` (hereda refresh). Agregado `API_ROUTES.auditLogs`. Quedan `fetch` crudos solo en login/register/logout (públicos). **HECHA 2026-10-14.**
-- [ ] **T0.5** Arreglar `logout-all` (URL relativa + sin Authorization) y centralizar `LogoutButton`. dep: T0.1
+- [x] **T0.5** `cerrarSesion()` exportada desde `apiFetch.ts` (única limpieza de tokens + redirect a `/login`); usada en `LogoutButton`, `SiteShell`, marketplace y contracts. `BorrowerSecurityView`: `logout-all` con `API_ROUTES.auth.logoutAll`, revisa `res.ok` y cierra sesión local (opción A: el back revoca todas, incluida la actual); textos ya no dicen "freeze"/"otras sesiones". **HECHA 2026-10-14.**
 - [ ] **T0.6** Guard por rol en layouts (ADMIN/LENDER/BORROWER) + redirección post-login consistente.
 - [ ] **T0.7** Tipos TS de DTOs (contract, loanRequest, quote, notification, message, review) desde `Docs/API_REFERENCE.md`.
 

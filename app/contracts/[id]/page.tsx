@@ -1,7 +1,7 @@
 "use client";
 
 import { API_ROUTES } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -66,9 +66,7 @@ function ContractDetailContent() {
         
         if (!contractRes.ok) {
           if (contractRes.status === 401 || contractRes.status === 403) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.href = "/login";
+            cerrarSesion();
             return;
           }
           throw new Error(`HTTP ${contractRes.status}: ${cd.errorFetch}`);

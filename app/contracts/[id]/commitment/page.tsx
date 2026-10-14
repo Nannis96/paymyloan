@@ -1,7 +1,7 @@
 "use client";
 
 import { API_ROUTES } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -59,9 +59,7 @@ function CommitmentLetterContent() {
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.href = "/login";
+            cerrarSesion();
             return;
           }
           throw new Error(`HTTP ${response.status}: ${cl.errorFetch}`);

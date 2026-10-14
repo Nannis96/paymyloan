@@ -1,6 +1,6 @@
 "use client";
 
-import { apiFetch } from "@/app/lib/apiFetch";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MapPin, List as ListIcon, Map as MapIcon } from "lucide-react";
@@ -47,9 +47,7 @@ function MarketplaceContent() {
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.href = "/login";
+            cerrarSesion();
             return;
           }
           throw new Error(`HTTP ${response.status}: ${m.errorFetch}`);

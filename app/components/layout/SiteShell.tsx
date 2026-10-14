@@ -10,7 +10,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { API_ROUTES } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import en from "@/content/en";
 import type { Copy, Lang } from "@/content/copy";
 import {
@@ -154,9 +154,7 @@ export default function SiteShell({
           const res = await apiFetch(API_ROUTES.auth.me);
 
           if (!res.ok) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            router.push("/login");
+            cerrarSesion();
             return;
           }
           setIsVerifying(false);

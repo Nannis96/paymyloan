@@ -1,6 +1,7 @@
 import { API_ROUTES } from "./endpoints";
 
-const cerrarSesion = () => {
+// Limpia la sesion local y manda a /login. Unico lugar que lo hace.
+export const cerrarSesion = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   window.location.href = "/login";
