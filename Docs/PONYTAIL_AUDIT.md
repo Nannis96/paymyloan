@@ -92,7 +92,12 @@ Reemplazo: un `apiFetch(url, init)` de ~15 líneas en `app/lib/` (añade header,
 
 `const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"` copiado en `adminDashboard/users`, `add-user`, `AuditLogsView`, `contracts/*` (5 archivos), `bookkeeperDashboard`, aunque `endpoints.ts` ya exporta `BASE_URL`. Reemplazo: importar `API_ROUTES` (o exportar `BASE_URL`) y borrar las 10 constantes. −10 líneas más una fuente única de verdad.
 
-**Estado: HECHO** junto con §7 (`export const BASE_URL` en `endpoints.ts`; 9 constantes `API_URL` eliminadas, `bookkeeperDashboard` ya no la usaba).
+**Estado: HECHO (rama `fix-brenda`, implementado junto con §7).**
+- `endpoints.ts` es ahora la única fuente: `export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"`.
+- Eliminadas las constantes `API_URL` de `adminDashboard/users`, `add-user`, `AuditLogsView`, `contracts/page`, `contracts/[id]/{page,commitment,commitment-doc,issue-commitment}`; los usos pasaron a `${BASE_URL}`. `bookkeeperDashboard/page.tsx` la declaraba sin usarla (borrada).
+- Quitados además los comentarios "URL base de la API…" que quedaron huérfanos en `contracts/page.tsx` y `contracts/[id]/page.tsx`, y el import sin uso en `issue-commitment` (la constante solo estaba en un comentario).
+- Verificado: `grep API_URL app content` solo encuentra `BASE_URL`/`NEXT_PUBLIC_API_URL` en `endpoints.ts`; `tsc --noEmit` sin errores.
+- Pendiente fuera de §8: `app/lib/crm.ts` (§20) y `registro.ts` (§4) tienen sus propias URLs.
 
 ## 9. yagni: pares duplicados borrower/lender con ~70 % de diff mínimo
 

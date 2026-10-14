@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import DocumentVault from "@/app/components/ambos/DocumentVault";
 
-// URL base de la API. Toma la variable de entorno o usa localhost:4000 por defecto
 
 // Interfaces basadas en la respuesta del backend
 interface ContractData {
