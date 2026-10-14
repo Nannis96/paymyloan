@@ -28,6 +28,8 @@ try {
 }
 ```
 
+Tipos de respuesta: `import type { Contract } from "@/app/types/api"` y `api<Contract>(...)`. Los montos llegan como string (`Money`).
+
 Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si no puede, limpia sesión y redirige a `/login`. `apiFetch` sigue disponible si necesitas el `Response` crudo.
 
 ## Decisiones pendientes (de §7)
@@ -46,7 +48,7 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 - [x] **T0.4** Vistas sin `${BASE_URL}/api/...` armado a mano: usan `API_ROUTES` (users, audit-logs, contracts, accept/reject terms). `SiteShell` valida sesión con `apiFetch` (hereda refresh). Agregado `API_ROUTES.auditLogs`. Quedan `fetch` crudos solo en login/register/logout (públicos). **HECHA 2026-10-14.**
 - [x] **T0.5** `cerrarSesion()` exportada desde `apiFetch.ts` (única limpieza de tokens + redirect a `/login`); usada en `LogoutButton`, `SiteShell`, marketplace y contracts. `BorrowerSecurityView`: `logout-all` con `API_ROUTES.auth.logoutAll`, revisa `res.ok` y cierra sesión local (opción A: el back revoca todas, incluida la actual); textos ya no dicen "freeze"/"otras sesiones". **HECHA 2026-10-14.**
 - [x] **T0.6** `app/lib/roles.ts` (`HOME_BY_ROLE`, `roleForPath`). `SiteShell` redirige al dashboard propio si el rol no coincide (usa `roles` de `/auth/me`, así que un usuario dual entra a ambos); login usa la misma tabla. Es UX: la barrera real es el 403 del back. **HECHA 2026-10-14.**
-- [ ] **T0.7** Tipos TS de DTOs (contract, loanRequest, quote, notification, message, review) desde `Docs/API_REFERENCE.md`.
+- [x] **T0.7** `app/types/api.ts`: `Contract`, `ContractTerms`, `ScheduleItem`, `LoanRequest`, `Quote`, `Notification`, `Message`, `MessageThread`, `Review`, `Me`/`SafeUser`, enums y `Paginated<T>`. Montos como `Money` (string). Solo agregado: las vistas migran sus tipos locales/`any` al conectarse (T3.x…). **HECHA 2026-10-14.**
 
 ## Paso 1 — Mockups/vistas lender corregidos ⛔ D1
 - [ ] **T1.1** `lender/messaging`: versión lender (hilo con borrower, menú lender).
