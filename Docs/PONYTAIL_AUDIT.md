@@ -63,6 +63,15 @@ Cada vista vive en `*ViewsComponents/` y su página solo hace `return <XView />`
 15 % del repo. Todo el texto de todas las pantallas (incluidas las muertas de §1) viaja en el bundle de cliente en ambos idiomas, y `en: Copy = {...}` repite la estructura entera.
 Reemplazo: partir por pantalla/dominio (`copy/landing.ts`, `copy/admin.ts`…) y cargar solo el idioma activo; o `next-intl` si se espera un tercer idioma. Primero borrar las claves huérfanas tras §1 (estimado: 300-500 líneas es+en).
 
+**Estado: HECHO (rama `fix-brenda`).**
+- Claves huérfanas borradas en es y en: −346 líneas (twoFactorPage, benefits, cost, finalCta, pitchDeckModal, bankModal, loanTypes, categories, dashboardLayout, recentPayments y varias de `prototype`).
+- `content/copy.ts` partido en `content/{es,en}/{landing,auth,legal,admin,lender,borrower,shared}.ts` + `index.ts` por idioma; `content/copy.ts` solo exporta `Lang`, `LANGS` y `Copy`. `en` tipado como `typeof es` (paridad de claves garantizada por tsc).
+- Solo `en` va en el bundle inicial; `es` se carga con `import()` dinámico en `SiteShell` cuando `lang === "es"` (breve instante en inglés al entrar en español). `layout.tsx` y `aviso-de-privacidad` importan su dominio directo.
+- Para mantener `tsc` verde se borraron 9 archivos muertos de §1 que usaban claves eliminadas: `Verify2FA`, `AddBankModal`, `PitchDeckModal`, `RateLenderModal`, `landing/{Benefits,CostTable,FinalCta}`, `DashboardShell`, `LenderTables` (los otros 10 de §1 siguen pendientes).
+- Bug previo corregido de paso: `affiliates/page.tsx` leía `t.submitDeal.financials.mo` (no existía; crash en runtime) → literal `mes`.
+- Verificado: `tsc --noEmit` y `next build` sin errores.
+- Pendiente: `en`/`es` como `typeof` evita divergencias, pero un tercer idioma requeriría `next-intl` o replicar la carpeta.
+
 ## 7. stdlib/shrink: 34 archivos con `fetch` + `localStorage.getItem("accessToken")` copiado
 
 34 lecturas directas del token, 47 `fetch(`, 8 repeticiones del guard `router.push("/login")` si no hay token / `role !== X`, y el patrón `Array.isArray(json.data) ? json.data : json.data?.items || []` repetido.

@@ -136,8 +136,8 @@ function AffiliatesContent() {
               ))}
               <tr className="border-t border-rule bg-surface-2/50">
                 <td className="py-3 font-bold text-ink">{a.table.totalRow}</td>
-                <td className="py-3 font-bold text-ink">$182.33 / {t.submitDeal.financials.mo.replace('/ ', '')}</td>
-                <td className="py-3 text-[14px] font-bold text-accent">$45.58 / {t.submitDeal.financials.mo.replace('/ ', '')}</td>
+                <td className="py-3 font-bold text-ink">$182.33 / mes</td>
+                <td className="py-3 text-[14px] font-bold text-accent">$45.58 / mes</td>
                 <td className="py-3">Mensual</td>
               </tr>
               <tr>
