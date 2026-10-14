@@ -1,6 +1,6 @@
 // app/lib/endpoints.ts
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Exportamos todas las rutas de la API de forma centralizada.
 // Para rutas dinamicas usamos funciones que reciben los IDs.

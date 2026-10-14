@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
@@ -34,10 +35,7 @@ export default function ActiveLoansView() {
   useEffect(() => {
     async function fetchContracts() {
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const res = await fetch(API_ROUTES.contracts.base, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await apiFetch(API_ROUTES.contracts.base);
         
         const json = await res.json();
         

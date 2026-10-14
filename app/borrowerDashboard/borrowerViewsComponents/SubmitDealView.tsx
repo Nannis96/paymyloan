@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
@@ -113,7 +114,6 @@ export default function SubmitDealView() {
   const handlePostDeal = async () => {
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem("accessToken") || "";
       
       // Mapeo al estándar de backend (API_REFERENCE.md)
       const projectTypeMapping: Record<string, string> = {
@@ -143,9 +143,8 @@ export default function SubmitDealView() {
         visibility: "PUBLIC"
       };
 
-      const createRes = await fetch(API_ROUTES.borrowers.meLoanRequests, {
+      const createRes = await apiFetch(API_ROUTES.borrowers.meLoanRequests, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
 
@@ -154,9 +153,8 @@ export default function SubmitDealView() {
         const dealId = createJson.data?.id;
 
         if (dealId) {
-          await fetch(API_ROUTES.borrowers.publishLoanRequest(dealId), {
+          await apiFetch(API_ROUTES.borrowers.publishLoanRequest(dealId), {
             method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
           });
         }
       } else {

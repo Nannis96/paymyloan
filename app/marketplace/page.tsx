@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MapPin, List as ListIcon, Map as MapIcon } from "lucide-react";
@@ -42,14 +43,7 @@ function MarketplaceContent() {
   useEffect(() => {
     async function fetchDeals() {
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const response = await fetch(API_ROUTES.marketplace.loanRequests, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-        });
+        const response = await apiFetch(API_ROUTES.marketplace.loanRequests);
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {

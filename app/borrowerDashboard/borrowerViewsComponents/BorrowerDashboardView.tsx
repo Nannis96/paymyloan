@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch, toList } from "@/app/lib/apiFetch";
 
 export default function BorrowerDashboardView() {
   const { lang, t } = useSite();
@@ -19,66 +20,29 @@ export default function BorrowerDashboardView() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
+        if (!localStorage.getItem("accessToken")) return;
 
-        const headers = { Authorization: `Bearer ${token}` };
-
-        // 1. Fetch user data and profile
-        const resUser = await fetch(API_ROUTES.auth.me, { headers });
+        // 1. Fetch user
+        const resUser = await apiFetch(API_ROUTES.auth.me);
         const jsonUser = await resUser.json();
         if (jsonUser.success && jsonUser.data.user) {
           setUser(jsonUser.data.user);
         }
 
-        // 2. Fetch loan requests (Marketplace)
-        const resLR = await fetch(API_ROUTES.borrowers.meLoanRequests, { headers });
+        // 2. Fetch loan requests
+        const resLR = await apiFetch(API_ROUTES.borrowers.meLoanRequests);
         if (resLR.ok) {
           const jsonLR = await resLR.json();
-          if (jsonLR.success) setLoanRequests(jsonLR.data.items || []);
+          if (jsonLR.success) setLoanRequests(toList(jsonLR.data));
         }
 
-        // 3. Fetch active and closed contracts
-        const resContracts = await fetch(API_ROUTES.contracts.base, { headers });
-        let fetchedContracts: any[] = [];
+        // 3. Fetch contracts
+        const resContracts = await apiFetch(API_ROUTES.contracts.base);
         if (resContracts.ok) {
           const jsonContracts = await resContracts.json();
-          if (jsonContracts.success) {
-            fetchedContracts = jsonContracts.data.items || [];
-            setContracts(fetchedContracts);
-          }
+          if (jsonContracts.success) setContracts(toList(jsonContracts.data));
         }
 
-        // 4. Fetch schedules to build "Upcoming" and "Recent" payments lists
-        const upcoming: any[] = [];
-        const recent: any[] = [];
-
-        for (const contract of fetchedContracts) {
-          if (contract.status === "ACTIVE" || contract.status === "DELINQUENT") {
-            const resSched = await fetch(API_ROUTES.contracts.schedule(contract.id), { headers });
-            if (resSched.ok) {
-              const jsonSched = await resSched.json();
-              if (jsonSched.success) {
-                const schedule = jsonSched.data || [];
-                schedule.forEach((p: any) => {
-                  const paymentData = { ...p, contract };
-                  if (p.status === "PENDING" || p.status === "PARTIALLY_PAID") {
-                    upcoming.push(paymentData);
-                  } else if (p.status === "PAID" || p.amountPaid > 0) {
-                    recent.push(paymentData);
-                  }
-                });
-              }
-            }
-          }
-        }
-
-        // Sort schedules
-        upcoming.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-        recent.sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
-
-        setUpcomingPayments(upcoming.slice(0, 5));
-        setRecentPayments(recent.slice(0, 5));
       } catch (error) {
         console.error("Error fetching dashboard data", error);
       } finally {

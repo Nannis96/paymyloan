@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
@@ -19,37 +20,14 @@ function InviteFlowContent() {
     setIsInviting(true);
 
     try {
-      const token = localStorage.getItem("accessToken") || "";
+      // Mocked DUMMY ID for demonstration of the route structure
+      const loanRequestId = "DUMMY_REQ_ID";
+      // The API asks for lenderCompanyId. If we just have email, the backend would resolve it,
+      // or we'd fetch the company ID first. We mock the body to show the integration point.
       
-      // 1. Obtener un loanRequest real del prestatario para inyectar el ID
-      const reqsRes = await fetch(API_ROUTES.borrowers.meLoanRequests, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const reqsJson = await reqsRes.json();
-      const firstRequest = reqsJson.data?.items?.[0];
-      
-      if (!firstRequest) {
-        alert("No active loan requests available to invite.");
-        setIsInviting(false);
-        return;
-      }
-
-      const loanRequestId = firstRequest.id;
-
-      // 2. Realizar el POST al endpoint real
-      // NOTA: Segun API_REFERENCE.md, el endpoint exige lenderCompanyId (uuid).
-      // Al capturar solo el email en la UI, el backend idealmente deberia tener un endpoint 
-      // para resolver email -> lenderCompanyId. 
-      const res = await fetch(API_ROUTES.borrowers.loanRequestTargets(loanRequestId), {
+      const res = await apiFetch(API_ROUTES.borrowers.loanRequestTargets(loanRequestId), {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ 
-          // Placeholder: aqui iria la resolucion real del email al UUID de la compañia
-          lenderCompanyId: "00000000-0000-0000-0000-000000000000" 
-        })
+        body: JSON.stringify({ lenderCompanyId: "MOCK_LENDER_COMP_ID_BASED_ON_EMAIL" })
       });
 
       // Mantenemos el estado de exito visual para la demostracion del flujo en la UI

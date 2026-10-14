@@ -9,6 +9,7 @@ import ThemeToggle from "@/app/components/ambos/ThemeToggle";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import LogoutButton from "@/app/components/ambos/LogoutButton";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch, toList } from "@/app/lib/apiFetch";
 
 // Vistas individuales importadas
 import { OverviewView } from "./AdminViewsComponents/OverviewView";
@@ -63,29 +64,20 @@ function AdminDashboardContent() {
   useEffect(() => {
     async function fetchAdminData() {
       try {
-        const token = localStorage.getItem("accessToken");
-        
         // Si no hay token en el almacenamiento local, expulsar inmediatamente
-        if (!token) {
+        if (!localStorage.getItem("accessToken")) {
           router.push("/login");
           return;
         }
 
-        const headers = {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        };
-
         const [meRes, contractsRes, usersRes] = await Promise.all([
-          fetch(API_ROUTES.auth.me, { headers }),
-          fetch(API_ROUTES.contracts.base, { headers }),
-          fetch(API_ROUTES.users.base, { headers })
+          apiFetch(API_ROUTES.auth.me),
+          apiFetch(API_ROUTES.contracts.base),
+          apiFetch(API_ROUTES.users.base)
         ]);
 
-        // Si el token es invalido o expiro
+        // Si el token es invalido o expiro (apiFetch ya limpia la sesion en 401)
         if (!meRes.ok) {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
           router.push("/login");
           return;
         }
@@ -103,12 +95,12 @@ function AdminDashboardContent() {
 
         if (contractsRes.ok) {
           const cJson = await contractsRes.json();
-          setContracts(Array.isArray(cJson.data) ? cJson.data : (cJson.data?.items || []));
+          setContracts(toList(cJson.data));
         }
 
         if (usersRes.ok) {
           const uJson = await usersRes.json();
-          setUsers(Array.isArray(uJson.data) ? uJson.data : (uJson.data?.items || []));
+          setUsers(toList(uJson.data));
         }
       } catch (err) {
         setError(d.errorNetwork);

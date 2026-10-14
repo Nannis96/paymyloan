@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -38,13 +39,11 @@ export default function BorrowerOnboardingView() {
     setIsSubmitting(true);
     try {
       // De acuerdo con Docs/API_REFERENCE.md usamos PATCH /api/borrowers/me
-      const token = localStorage.getItem("accessToken") || "";
       
       // Nota: API_REFERENCE dice que PATCH recibe direccion, enviamos lo soportado
       // En un caso real el backend deberia actualizar estos campos en la Entidad
-      await fetch(API_ROUTES.borrowers.me, {
+      await apiFetch(API_ROUTES.borrowers.me, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({
           // Payload adaptado
           ...formData

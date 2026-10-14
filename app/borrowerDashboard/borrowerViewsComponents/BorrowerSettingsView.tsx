@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useEffect, useState } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
@@ -25,12 +26,8 @@ export default function BorrowerSettingsView() {
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
         
-        const res = await fetch(API_ROUTES.auth.me, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await apiFetch(API_ROUTES.auth.me);
         const json = await res.json();
         
         if (json.success && json.data.user) {

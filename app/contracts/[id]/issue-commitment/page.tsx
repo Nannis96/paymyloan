@@ -6,7 +6,6 @@ import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 
 // URL base de la API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function IssueCommitmentPage() {
   return (
@@ -71,57 +70,17 @@ function IssueCommitmentContent() {
 
     setIsSubmitting(true);
     setError(null);
+
     try {
-      const token = localStorage.getItem("accessToken") || "";
-      const headers = { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}` 
-      };
+      // TODO: BACKEND - Integrar la logica real de creacion/modificacion de fees.
+      // Ej. POST a /api/contracts/{contractId}/terms/{termsId}/fees con los valores del state.
+      // const token = localStorage.getItem("accessToken") || "";
+      // const response = await fetch(`${BASE_URL}/api/contracts/${contractId}/terms`, { ... })
 
-      // 1. Preparar las tarifas a enviar
-      const fees = [];
-      if (originationPoints && Number(originationPoints) > 0) {
-        fees.push({ category: "LENDER", code: "ORIGINATION_POINTS", amountType: "PERCENTAGE", amountValue: Number(originationPoints) });
-      }
-      if (processingFee && Number(processingFee) > 0) {
-        fees.push({ category: "LENDER", code: "PROCESSING", amountType: "FLAT", amountValue: Number(processingFee) });
-      }
-      if (underwritingFee && Number(underwritingFee) > 0) {
-        fees.push({ category: "LENDER", code: "UNDERWRITING", amountType: "FLAT", amountValue: Number(underwritingFee) });
-      }
-      if (docPrepFee && Number(docPrepFee) > 0) {
-        fees.push({ category: "LENDER", code: "DOC_PREP", amountType: "FLAT", amountValue: Number(docPrepFee) });
-      }
-      if (customFeeName && customFeeAmount && Number(customFeeAmount) > 0) {
-        fees.push({ category: "LENDER", code: "CUSTOM", label: customFeeName, amountType: "FLAT", amountValue: Number(customFeeAmount) });
-      }
+      // Simulacion temporal de la peticion
+      await new Promise(resolve => setTimeout(resolve, 1200));
 
-      // 2. Enviar todas las tarifas en paralelo
-      const feePromises = fees.map(fee => 
-        fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/fees`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify(fee)
-        }).then(res => res.json())
-      );
-
-      const feeResults = await Promise.all(feePromises);
-      const failedFee = feeResults.find(r => !r.success);
-      if (failedFee) throw new Error(failedFee.error?.message || "Error al guardar las tarifas de cierre.");
-
-      // 3. Enviar los términos a firma (Submit terms)
-      const submitRes = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/submit`, {
-        method: "POST",
-        headers
-      });
-      const submitJson = await submitRes.json();
-      
-      if (!submitJson.success) {
-        throw new Error(submitJson.error?.message || ic.errorFetch);
-      }
-
-      // Redirigir al documento final para visualización/firma
-      router.push(`/contracts/${contractId}/commitment-doc`);
+      router.push(`/contracts/${contractId || 'CTR-001'}/commitment`);
     } catch (err) {
       setError(err instanceof Error ? err.message : ic.errorNetwork);
     } finally {

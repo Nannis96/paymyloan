@@ -10,7 +10,8 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { API_ROUTES } from "@/app/lib/endpoints";
-import { copy, type Lang } from "@/content/copy";
+import en from "@/content/en";
+import type { Copy, Lang } from "@/content/copy";
 import {
   escribir,
   esquemaOscuroDelSistema,
@@ -47,7 +48,7 @@ const CLAVE_IDIOMA = "pml-lang";
 type SiteContextValue = {
   lang: Lang;
   setLang: (lang: Lang) => void;
-  t: (typeof copy)[Lang];
+  t: Copy;
   resolvedTheme: Theme;
   toggleTheme: () => void;
   appMode: AppMode;
@@ -94,6 +95,8 @@ export default function SiteShell({
   const [appMode, setAppMode] = useState<AppMode>("general");
   const [lastAppMode, setLastAppMode] = useState<"lender" | "borrower" |"why-pml"| null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
+  // "en" va en el bundle inicial; "es" se descarga solo si se usa.
+  const [es, setEs] = useState<Copy | null>(null);
   const [isVerifying, setIsVerifying] = useState<boolean>(true);
 
   const handleSetAppMode = (mode: AppMode) => {
@@ -106,6 +109,12 @@ export default function SiteShell({
   const setLang = (valor: Lang) => escribir(CLAVE_IDIOMA, valor);
   const toggleTheme = () =>
     escribir(CLAVE_TEMA, resolvedTheme === "dark" ? "light" : "dark");
+
+  useEffect(() => {
+    if (lang === "es") import("@/content/es").then((m) => setEs(m.default));
+  }, [lang]);
+
+  const t: Copy = lang === "es" && es ? es : en;
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -169,7 +178,7 @@ export default function SiteShell({
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg">
         <p className="text-sm font-semibold text-ink-3">
-          {copy[lang].loginPage.processing || "Procesando..."}
+          {t.loginPage.processing || "Procesando..."}
         </p>
       </div>
     );
@@ -180,7 +189,7 @@ export default function SiteShell({
       value={{
         lang,
         setLang,
-        t: copy[lang],
+        t,
         resolvedTheme,
         toggleTheme,
         appMode,

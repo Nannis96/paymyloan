@@ -1,11 +1,11 @@
 "use client";
 
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { useEffect, useState } from "react";
 import BackToDashboard from "@/app/components/ambos/BackToDashboard";
-// URL base de la API. Toma la variable de entorno o usa localhost:4000 por defecto
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Interfaces basadas en la respuesta de Prisma / Backend
 interface PropertyData {
@@ -51,15 +51,8 @@ function ContractsContent() {
   useEffect(() => {
     async function fetchContracts() {
       try {
-        const token = localStorage.getItem("accessToken") || "";
 
-        const response = await fetch(`${API_URL}/api/contracts`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-        });
+        const response = await apiFetch(`${BASE_URL}/api/contracts`);
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
@@ -52,10 +53,7 @@ function ClosingPrepContent() {
     if (contractId) {
       const fetchContract = async () => {
         try {
-          const token = localStorage.getItem("accessToken") || "";
-          const res = await fetch(API_ROUTES.contracts.byId(contractId), {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const res = await apiFetch(API_ROUTES.contracts.byId(contractId));
           const json = await res.json();
           if (json.success) setContract(json.data);
         } catch (e) {

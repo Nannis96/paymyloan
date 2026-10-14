@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import React, { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -24,11 +25,9 @@ function SecurityContent() {
     
     setIsFreezing(true);
     try {
-      const token = localStorage.getItem("accessToken") || "";
       // Llamada al endpoint documentado para revocar tokens
-      await fetch("/api/auth/logout-all", {
+      await apiFetch("/api/auth/logout-all", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
       });
       alert('Account frozen. Call [PML phone] to restore access.');
       router.push("/");
@@ -49,10 +48,8 @@ function SecurityContent() {
   const handleRevokeAll = async () => {
     setIsRevokingAll(true);
     try {
-      const token = localStorage.getItem("accessToken") || "";
-      await fetch("/api/auth/logout-all", {
+      await apiFetch("/api/auth/logout-all", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
       });
       alert('All other sessions revoked. You are now the only active session.');
     } catch (error) {
