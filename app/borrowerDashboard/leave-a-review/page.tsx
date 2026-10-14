@@ -73,12 +73,34 @@ function LeaveReviewContent() {
 
     setIsSubmitting(true);
     try {
-      // Mock de conexión a la API
-      // await fetch(`/api/contracts/${contractId}/reviews`, { method: "POST", ... })
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setIsSubmitted(true);
+      const token = localStorage.getItem("accessToken") || "";
+      
+      // La API no tiene campo para "tags", así que los anexamos al inicio del comentario
+      const finalComment = selectedTags.length > 0 
+        ? `[Tags: ${selectedTags.join(", ")}] ${reviewText.trim()}` 
+        : reviewText.trim();
+
+      const res = await fetch(`/api/contracts/${contractId}/reviews`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          rating,
+          comment: finalComment
+        })
+      });
+
+      const json = await res.json();
+      if (json.success) {
+        setIsSubmitted(true);
+      } else {
+        alert(json.error?.message || (lang === "es" ? "Error al enviar la resena" : "Error submitting review"));
+      }
     } catch (e) {
       console.error(e);
+      alert(lang === "es" ? "Error de red al enviar la resena" : "Network error submitting review");
     } finally {
       setIsSubmitting(false);
     }

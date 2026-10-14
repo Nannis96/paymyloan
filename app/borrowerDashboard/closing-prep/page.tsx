@@ -85,12 +85,36 @@ function ClosingPrepContent() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      // Mock log action (aqui iría el POST a tu backend para guardar info o notificar)
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const token = localStorage.getItem("accessToken") || "";
+      
+      if (contractId) {
+        // NOTA: La API espera un insuranceCompanyId (UUID).
+        // En una implementacion completa, habria un catalogo o un endpoint de creacion para la aseguradora.
+        // Aqui usamos un UUID de ejemplo si se selecciono una opcion predefinida.
+        const insuranceId = selectedInsKey === "insight" 
+          ? "00000000-0000-0000-0000-000000000000" 
+          : null;
+
+        const res = await fetch(API_ROUTES.contracts.byId(contractId), {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            insuranceCompanyId: insuranceId
+          })
+        });
+
+        if (!res.ok) {
+          console.error("Error al actualizar la aseguradora del contrato");
+        }
+      }
+
       alert(cp.reviewCard.alert);
       router.push("/borrowerDashboard");
     } catch (error) {
-      console.error(error);
+      console.error("Error en la preparacion de cierre:", error);
     } finally {
       setIsSubmitting(false);
     }

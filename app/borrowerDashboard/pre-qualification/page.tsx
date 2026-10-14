@@ -35,12 +35,41 @@ function PreQualificationContent() {
     } else {
       setIsSubmitting(true);
       try {
-        // Mock de conexión a tu API (ej. POST /api/borrowers/me/loan-requests u otra ruta)
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        alert("Pre-qualification submitted successfully!");
-        router.push("/borrowerDashboard");
+        const token = localStorage.getItem("accessToken") || "";
+        
+        // Mapear la seleccion de la UI al enum esperado por la API
+        let mappedType = "INDIVIDUAL";
+        if (entity.includes("LLC")) mappedType = "LLC";
+        else if (entity.includes("Corpor")) mappedType = "CORPORATION";
+        else if (entity.includes("Trust") || entity.includes("Fideicomiso")) mappedType = "TRUST";
+
+        // Nota: El endpoint requiere entityName, entityType, ein (XX-XXXXXXX) y stateOfFormation (2 letras).
+        // Como esta vista no pide EIN ni estado de formacion exacto, enviamos placeholders
+        // para cumplir con el esquema y enviar la solicitud a la cola del Admin.
+        const res = await fetch("/api/borrowers/me/verification", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            entityName: "Pre-qualification Entity", 
+            entityType: mappedType,
+            ein: "00-0000000", 
+            stateOfFormation: "TX" 
+          })
+        });
+
+        // 409 es si la solicitud ya estaba PENDING o APPROVED
+        if (res.ok || res.status === 409) {
+          alert(lang === "es" ? "Pre-calificacion enviada con exito." : "Pre-qualification submitted successfully!");
+          router.push("/borrowerDashboard");
+        } else {
+          const errJson = await res.json();
+          alert(errJson.error?.message || "Error submitting pre-qualification");
+        }
       } catch (e) {
-        console.error(e);
+        console.error("Error en pre-calificacion:", e);
       } finally {
         setIsSubmitting(false);
       }

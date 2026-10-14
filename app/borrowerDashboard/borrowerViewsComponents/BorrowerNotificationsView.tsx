@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
+import { API_ROUTES } from "@/app/lib/endpoints";
 
 export default function BorrowerNotificationsView() {
   const { t, lang } = useSite();
-  const n = t.notifications; // { title, markRead, empty }
+  const n = t.notifications; 
   const isEs = lang === "es";
-  
+
   const [activeTab, setActiveTab] = useState("all");
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const tabs = [
     { id: "all", label: isEs ? "Todas" : "All" },
@@ -18,86 +21,89 @@ export default function BorrowerNotificationsView() {
     { id: "alerts", label: isEs ? "Alertas" : "Alerts" }
   ];
 
-  // Datos mockeados basados en notifications.html
-  const groups = [
-    {
-      title: isEs ? "Hoy" : "Today",
-      items: [
-        {
-          id: 1,
-          type: "offer",
-          unread: true,
-          title: isEs ? "Nueva oferta — 3802 University Cove" : "New offer — 3802 University Cove",
-          sub: isEs ? "Moore Capital LLC te envió una oferta: $115,000 · 12% · 12 meses · 1 pt originación · Rehab en draws" : "Moore Capital LLC sent you an offer: $115,000 · 12% · 12 months · 1 pt origination · Rehab held in draws",
-          time: isEs ? "Hace 2h" : "2h ago",
-          actions: [
-            { label: isEs ? "Revisar oferta" : "Review offer", primary: true },
-            { label: isEs ? "Rechazar" : "Decline", primary: false }
-          ]
-        },
-        {
-          id: 2,
-          type: "counter",
-          unread: true,
-          title: isEs ? "Contraoferta — 4215 Raleigh Ave" : "Counter offer — 4215 Raleigh Ave",
-          sub: isEs ? "Summit Lending LLC respondió: $70,000 (pediste $75K) · 13% · 9 meses. Revisa y acepta o haz otra contraoferta." : "Summit Lending LLC countered your request: $70,000 (you asked $75K) · 13% · 9 months. Review and accept or counter back.",
-          time: isEs ? "Hace 4h" : "4h ago",
-          actions: [
-            { label: isEs ? "Ver contraoferta" : "View counter", primary: true },
-            { label: isEs ? "Contraofertar" : "Counter back", primary: false }
-          ]
-        },
-        {
-          id: 3,
-          type: "alert",
-          unread: true,
-          title: isEs ? "Seguro aún no vinculado — 3802 University Cove" : "Insurance not yet bound — 3802 University Cove",
-          sub: isEs ? "Tu prestamista puede requerir prueba del seguro antes del cierre. Contacta a Insight Risk Management para finalizar tu póliza." : "Your lender may require proof of binding before closing. Contact Insight Risk Management to finalize your policy.",
-          time: isEs ? "Hace 5h" : "5h ago"
-        }
-      ]
-    },
-    {
-      title: isEs ? "Ayer" : "Yesterday",
-      items: [
-        {
-          id: 4,
-          type: "closing",
-          unread: false,
-          title: isEs ? "Compañía de títulos confirmada — 3802 University Cove" : "Title company confirmed — 3802 University Cove",
-          sub: isEs ? "BAS Law & Title ha recibido tus instrucciones de transferencia. Ruweida Abdullahi te contactará para programar tu fecha de cierre." : "BAS Law & Title has received your wire instructions. Ruweida Abdullahi will contact you to schedule your closing date.",
-          time: isEs ? "Ayer" : "Yesterday"
-        },
-        {
-          id: 5,
-          type: "payment",
-          unread: false,
-          title: isEs ? "Pago vence en 10 días — 1144 Oakwood Dr" : "Payment due in 10 days — 1144 Oakwood Dr",
-          sub: isEs ? "Pago de interés de $950 vence el 1 de Oct. Tu prestamista Wilson Moore en Moore Capital LLC." : "$950 interest payment due Oct 1. Your lender Wilson Moore at Moore Capital LLC.",
-          time: isEs ? "Ayer" : "Yesterday",
-          actions: [
-            { label: isEs ? "Ver calendario de pagos" : "View payment schedule", primary: true }
-          ]
-        }
-      ]
-    },
-    {
-      title: isEs ? "Esta semana" : "This week",
-      items: [
-        {
-          id: 6,
-          type: "offer",
-          unread: false,
-          title: isEs ? "Trato en vivo — 4215 Raleigh Ave" : "Deal live — 4215 Raleigh Ave",
-          sub: isEs ? "Tu trato ya es visible para los prestamistas en la plataforma. Serás notificado cuando lleguen ofertas." : "Your deal is now visible to lenders on the platform. You'll be notified as offers come in.",
-          time: isEs ? "20 Sept" : "Sept 20"
-        }
-      ]
-    }
-  ];
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
-  const renderIcon = (type: string) => {
-    switch (type) {
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const res = await fetch("/api/notifications", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const json = await res.json();
+      if (json.success) {
+        setNotifications(json.data.items || []);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const res = await fetch("/api/notifications/read-all", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (res.ok) {
+        setNotifications(prev => prev.map(notif => ({ ...notif, isRead: true })));
+      }
+    } catch (error) {
+      console.error("Error marking all as read", error);
+    }
+  };
+
+  const markAsRead = async (id: string, isRead: boolean) => {
+    if (isRead) return; // Ya esta leida
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const res = await fetch(`/api/notifications/${id}/read`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (res.ok) {
+        setNotifications(prev => prev.map(notif => notif.id === id ? { ...notif, isRead: true } : notif));
+      }
+    } catch (error) {
+      console.error("Error marking as read", error);
+    }
+  };
+
+  // Función para mapear el tipo de API al tipo visual y asignación de pestañas
+  const getUIType = (apiType: string) => {
+    switch (apiType) {
+      case "LOAN_QUOTE_RECEIVED":
+      case "CONTRACT_TERMS_SUBMITTED":
+        return "offer";
+      case "CONTRACT_TERMS_REJECTED":
+        return "counter";
+      case "CONTRACT_ACTIVATED":
+      case "LOAN_QUOTE_SELECTED":
+      case "CONTRACT_TERMS_ACCEPTED":
+        return "closing";
+      case "MESSAGE_RECEIVED":
+      case "LOAN_QUOTE_REQUESTED":
+        return "alert";
+      default:
+        // Fallback genérico a alert o si agregas notificaciones de pago después
+        return "alert"; 
+    }
+  };
+
+  const renderIcon = (uiType: string) => {
+    switch (uiType) {
       case "offer":
         return (
           <div className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent">
@@ -133,6 +139,46 @@ export default function BorrowerNotificationsView() {
     }
   };
 
+  const groupNotificationsByDate = (notifs: any[]) => {
+    const grouped = [
+      { title: isEs ? "Hoy" : "Today", items: [] as any[] },
+      { title: isEs ? "Ayer" : "Yesterday", items: [] as any[] },
+      { title: isEs ? "Anteriores" : "Older", items: [] as any[] }
+    ];
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    notifs.forEach(notif => {
+      const date = new Date(notif.createdAt);
+      const isSameDay = (d1: Date, d2: Date) => d1.toDateString() === d2.toDateString();
+
+      const uiType = getUIType(notif.type);
+      const enrichedNotif = { ...notif, uiType };
+
+      if (isSameDay(date, today)) {
+        grouped[0].items.push(enrichedNotif);
+      } else if (isSameDay(date, yesterday)) {
+        grouped[1].items.push(enrichedNotif);
+      } else {
+        grouped[2].items.push(enrichedNotif);
+      }
+    });
+
+    return grouped.filter(g => g.items.length > 0);
+  };
+
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString(isEs ? "es-MX" : "en-US", { hour: '2-digit', minute: '2-digit' });
+  };
+
+  if (isLoading) {
+    return <div className="p-8 text-[13px] text-ink-3">{isEs ? "Cargando notificaciones..." : "Loading notifications..."}</div>;
+  }
+
+  const groupedNotifications = groupNotificationsByDate(notifications);
+
   return (
     <div className="animate-in fade-in duration-300 max-w-[680px]">
       
@@ -141,9 +187,11 @@ export default function BorrowerNotificationsView() {
         <div className="text-[20px] font-[800] tracking-[-0.3px] text-ink">
           {n.title || "Notifications"}
         </div>
-        <button className="text-[12px] font-[600] text-accent bg-transparent border-none cursor-pointer hover:underline">
-          {n.markRead || "Mark all as read"}
-        </button>
+        {notifications.length > 0 && (
+          <button onClick={markAllAsRead} className="text-[12px] font-[600] text-accent bg-transparent border-none cursor-pointer hover:underline">
+            {n.markRead || "Mark all as read"}
+          </button>
+        )}
       </div>
 
       {/* Tabs de Filtro */}
@@ -163,16 +211,22 @@ export default function BorrowerNotificationsView() {
         ))}
       </div>
 
+      {notifications.length === 0 && (
+        <div className="p-6 text-[13px] text-ink-3">
+          {n.empty || (isEs ? "No tienes notificaciones." : "You have no notifications.")}
+        </div>
+      )}
+
       {/* Lista de Notificaciones */}
       <div>
-        {groups.map((group, gIdx) => {
-          // Filtrado básico por tab seleccionado
+        {groupedNotifications.map((group, gIdx) => {
+          // Filtrado por tab seleccionado
           const filteredItems = group.items.filter(item => 
-             activeTab === "all" || 
-             (activeTab === "offers" && (item.type === "offer" || item.type === "counter")) ||
-            (activeTab === "closing" && item.type === "closing") ||
-            (activeTab === "payments" && item.type === "payment") ||
-            (activeTab === "alerts" && item.type === "alert")
+            activeTab === "all" ||
+            (activeTab === "offers" && (item.uiType === "offer" || item.uiType === "counter")) ||
+            (activeTab === "closing" && item.uiType === "closing") ||
+            (activeTab === "payments" && item.uiType === "payment") ||
+            (activeTab === "alerts" && item.uiType === "alert")
           );
 
           if (filteredItems.length === 0) return null;
@@ -186,43 +240,27 @@ export default function BorrowerNotificationsView() {
               {filteredItems.map((item) => (
                 <div 
                   key={item.id} 
+                  onClick={() => markAsRead(item.id, item.isRead)}
                   className={`relative mb-[8px] flex cursor-pointer gap-[12px] rounded-[8px] border bg-surface p-[14px_16px] transition-shadow hover:shadow-sm ${
-                    item.unread ? "border-rule border-l-[3px] border-l-accent" : "border-rule"
+                    !item.isRead ? "border-rule border-l-[3px] border-l-accent" : "border-rule"
                   }`}
                 >
-                  {renderIcon(item.type)}
+                  {renderIcon(item.uiType)}
                   
                   <div className="flex-1">
-                    <div className={`mb-[3px] text-[13px] font-[700] ${item.unread ? "text-accent" : "text-ink"}`}>
+                    <div className={`mb-[3px] text-[13px] font-[700] ${!item.isRead ? "text-accent" : "text-ink"}`}>
                       {item.title}
                     </div>
                     <div className="text-[12px] leading-[1.5] text-ink-2">
-                      {item.sub}
+                      {item.body}
                     </div>
-                    
-                    {item.actions && (
-                      <div className="mt-[8px] flex gap-[6px]">
-                        {item.actions.map((act, aIdx) => (
-                          <button 
-                            key={aIdx} 
-                            className={`cursor-pointer rounded-[5px] px-[12px] py-[5px] text-[11px] ${
-                              act.primary 
-                                ? "border-none bg-accent font-[700] text-accent-ink hover:bg-blue-700" 
-                                : "border border-rule bg-surface font-[600] text-ink-2 hover:bg-surface-2"
-                            }`}
-                          >
-                            {act.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                   
                   <div className="mt-[2px] whitespace-nowrap text-[11px] text-ink-3">
-                    {item.time}
+                    {formatTime(item.createdAt)}
                   </div>
                   
-                  {item.unread && (
+                  {!item.isRead && (
                     <div className="absolute right-[14px] top-[16px] h-[7px] w-[7px] rounded-full bg-accent"></div>
                   )}
                 </div>
