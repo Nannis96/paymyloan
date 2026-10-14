@@ -1,26 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, Check } from "lucide-react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { StatusPill } from "@/app/components/ui";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 function OnboardingContent() {
   const { t, appMode } = useSite();
   const o = t.onboarding;
   const router = useRouter();
-  
+
   const [activeTab, setActiveTab] = useState<"verification" | "contact" | "banking">("verification");
 
-  // Mock de usuario actual
-  const user = {
-    name: "John Smith",
+  const [user, setUser] = useState({
+    name: "Cargando...",
     roleLabel: appMode === "borrower" ? "Borrower" : "Lender",
-    email: "john@example.com",
-    phone: "+1 (901) 487-2991"
-  };
+    email: "Cargando...",
+    phone: ""
+  });
+
+  useEffect(() => {
+    async function fetchMe() {
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        const res = await fetch(`${BASE_URL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (json.success && json.data?.user) {
+          const u = json.data.user;
+          setUser({
+            name: u.name,
+            roleLabel: u.role,
+            email: u.email,
+            phone: u.phone || "No proporcionado"
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching user data", err);
+      }
+    }
+    fetchMe();
+  }, []);
 
   const handleComplete = () => {
     router.push(appMode === "lender" ? "/lenderDashboard" : "/borrowerDashboard");

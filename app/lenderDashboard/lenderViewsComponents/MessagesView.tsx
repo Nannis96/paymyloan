@@ -1,69 +1,164 @@
 "use client";
+
 import { useState, useRef, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 
-type Message = {
-  id: number;
-  type: "sys" | "msg";
-  isWarning?: boolean;
-  sender?: "me" | "other";
-  avatar?: string;
-  isLender?: boolean;
-  text: string;
-  time?: string;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+// Interfaces basadas en la API de Mensajeria
+interface Message {
+  id: string;
+  body: string;
+  sender: "LENDER" | "BORROWER" | "SYSTEM";
+  createdAt: string;
+  // Campos locales simulados para la UI si enviaran archivos (aun no en API)
   attachmentName?: string;
   isImage?: boolean;
   attachmentUrl?: string;
-};
+  isWarning?: boolean;
+}
+
+interface Thread {
+  borrowerProfileId?: string; // Cuando lo ve el Lender
+  lenderCompanyId?: string;   // Cuando lo ve el Borrower
+  borrowerProfile?: {
+    id: string;
+    user?: { name: string };
+  };
+  lastMessage: Message;
+  unreadCount: number;
+}
 
 export default function MessagesView() {
-  const { t } = useSite();
+  const { t, lang } = useSite();
   const m = t.messaging;
   
+  const [threads, setThreads] = useState<Thread[]>([]);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState("");
+  
+  const [isLoadingThreads, setIsLoadingThreads] = useState(true);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Mensajes iniciales de mock basados en tu diseno
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, type: "sys", text: `${m.offerAccepted} — Sep 20, 2026 at 2:14 PM` },
-    { id: 2, type: "msg", sender: "other", avatar: "JR", isLender: true, text: "Congrats on getting this one locked in. Looking forward to closing. Let me know when you have a date from title.", time: "Sep 20 · 2:18 PM" },
-    { id: 3, type: "msg", sender: "me", avatar: "MB", text: "Thanks! I'm working with Memphis Title Group. Should have a date by end of week.", time: "Sep 20 · 3:42 PM" },
-    { id: 4, type: "sys", text: `${m.achAuth} — Sep 21, 2026 at 10:05 AM` },
-    { id: 5, type: "msg", sender: "other", avatar: "JR", isLender: true, text: "Got the ACH confirmation — perfect. Here's my wire instructions for the payoff when the time comes. Call me before wiring — don't rely on this doc alone.", time: "Sep 21 · 11:20 AM", attachmentName: "wire_instructions_reference.pdf" },
-    { id: 6, type: "msg", sender: "me", avatar: "MB", text: "Got it. I'll call you before any wire. Title confirmed closing for Sep 29.", time: "Sep 22 · 9:14 AM" },
-    { id: 7, type: "sys", text: `${m.readyToClose} — Sep 22, 2026 at 9:30 AM` },
-    { id: 8, type: "msg", sender: "other", avatar: "JR", isLender: true, text: "Let me know when title confirms and I'll wire same day.", time: "Sep 22 · 9:47 AM · 2 min ago" },
-  ]);
+  // Cargar lista de conversaciones (Threads)
+  useEffect(() => {
+    async function fetchThreads() {
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        const res = await fetch(`${BASE_URL}/api/lenders/me/messages/threads`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          setThreads(json.data);
+          // Si hay hilos y no hay ninguno activo, seleccionamos el primero
+          if (json.data.length > 0 && !activeThreadId) {
+            setActiveThreadId(json.data[0].borrowerProfileId || json.data[0].borrowerProfile?.id);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching threads:", err);
+      } finally {
+        setIsLoadingThreads(false);
+      }
+    }
+    fetchThreads();
+  }, []);
+
+  // Cargar mensajes del hilo activo y marcar como leidos
+  useEffect(() => {
+    if (!activeThreadId) return;
+
+    async function fetchMessages() {
+      setIsLoadingMessages(true);
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        
+        // 1. Marcar como leidos
+        await fetch(`${BASE_URL}/api/lenders/me/messages/threads/${activeThreadId}/read`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        // 2. Obtener historial (paginado en API, tomamos items)
+        const res = await fetch(`${BASE_URL}/api/lenders/me/messages/threads/${activeThreadId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        
+        if (json.success && json.data?.items) {
+          setMessages(json.data.items);
+        }
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+      } finally {
+        setIsLoadingMessages(false);
+      }
+    }
+    fetchMessages();
+  }, [activeThreadId]);
 
   // Scroll automatico hacia abajo
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = () => {
-    if (!text.trim()) return;
+  const handleSend = async () => {
+    if (!text.trim() || !activeThreadId) return;
 
-    // Validacion de info de contacto
+    // Validacion local de info de contacto
     const phonePattern = /(\d[\s\-\.]?){7,}/;
     const emailPattern = /\S+@\S+\.\S+/;
     
     if (phonePattern.test(text) || emailPattern.test(text)) {
-      setMessages(prev => [...prev, { id: Date.now(), type: "sys", text: m.blockedMsg, isWarning: true }]);
+      setMessages(prev => [...prev, { 
+        id: `sys-${Date.now()}`, 
+        sender: "SYSTEM", 
+        body: m.blockedMsg, 
+        isWarning: true, 
+        createdAt: new Date().toISOString() 
+      }]);
       setText("");
       return;
     }
 
-    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setMessages(prev => [...prev, { 
-      id: Date.now(), 
-      type: "msg", 
-      sender: "me", 
-      avatar: "MB", 
-      text: text.trim(), 
-      time: `${m.justNow} · ${now}` 
-    }]);
-    setText("");
+    const currentText = text;
+    setText(""); // Limpieza optimista
+
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const res = await fetch(`${BASE_URL}/api/lenders/me/messages`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          borrowerProfileId: activeThreadId,
+          body: currentText
+        })
+      });
+      const json = await res.json();
+      
+      if (json.success && json.data) {
+        setMessages(prev => [...prev, json.data]);
+        
+        // Actualizamos el ultimo mensaje en el thread local
+        setThreads(prev => prev.map(t => {
+          const tId = t.borrowerProfileId || t.borrowerProfile?.id;
+          if (tId === activeThreadId) {
+            return { ...t, lastMessage: json.data };
+          }
+          return t;
+        }));
+      }
+    } catch (err) {
+      console.error("Error sending message:", err);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -73,28 +168,42 @@ export default function MessagesView() {
     }
   };
 
+  // Logica visual de adjuntos (Nota: La API aun no soporta archivos en mensajes)
   const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const isImage = file.type.startsWith("image/");
       const url = URL.createObjectURL(file);
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
       setMessages(prev => [...prev, {
-        id: Date.now(),
-        type: "msg",
-        sender: "me",
-        avatar: "MB",
-        text: "",
-        time: `${m.justNow} · ${now}`,
+        id: `local-${Date.now()}`,
+        sender: "LENDER",
+        body: "",
+        createdAt: new Date().toISOString(),
         attachmentName: file.name,
         isImage,
         attachmentUrl: url
       }]);
       
-      // Limpiamos el input para permitir volver a subir el mismo archivo si es necesario
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const activeThreadData = threads.find(t => (t.borrowerProfileId || t.borrowerProfile?.id) === activeThreadId);
+  const activeBorrowerName = activeThreadData?.borrowerProfile?.user?.name || "Prestatario";
+
+  // Formateador de fechas
+  const formatTime = (isoString: string) => {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleTimeString(lang === "es" ? "es-MX" : "en-US", { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatThreadDate = (isoString: string) => {
+    if (!isoString) return "";
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString(lang === "es" ? "es-MX" : "en-US", { month: "short", day: "numeric" });
   };
 
   return (
@@ -111,33 +220,40 @@ export default function MessagesView() {
             {m.dealThreads}
           </div>
           <div className="flex-1 overflow-y-auto">
-            {/* Hilo activo */}
-            <div className="cursor-pointer border-b border-[#f0f4f8] bg-[#f0efff] border-l-[3px] border-l-[#635bff] p-[14px_20px] transition-colors hover:bg-[#f8f9ff]">
-              <div className="mb-[4px] flex items-center justify-between">
-                <div className="text-[13px] font-[700] text-[#0a2540] mb-[2px]">1847 Oak Ridge Ln</div>
-                <div className="text-[11px] text-[#aab7c4]">2m ago</div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="text-[12px] text-[#8898aa] overflow-hidden text-ellipsis whitespace-nowrap">Let me know when title confirms...</div>
-                <div className="h-[8px] w-[8px] shrink-0 rounded-full bg-[#635bff]"></div>
-              </div>
-            </div>
-            {/* Hilo inactivo 1 */}
-            <div className="cursor-pointer border-b border-[#f0f4f8] p-[14px_20px] border-l-[3px] border-l-transparent transition-colors hover:bg-[#f8f9ff]">
-              <div className="mb-[4px] flex items-center justify-between">
-                <div className="text-[13px] font-[700] text-[#0a2540] mb-[2px]">3221 Poplar Ave</div>
-                <div className="text-[11px] text-[#aab7c4]">Yesterday</div>
-              </div>
-              <div className="text-[12px] text-[#8898aa] overflow-hidden text-ellipsis whitespace-nowrap">Offer accepted — next steps sent</div>
-            </div>
-            {/* Hilo inactivo 2 */}
-            <div className="cursor-pointer border-b border-[#f0f4f8] p-[14px_20px] border-l-[3px] border-l-transparent transition-colors hover:bg-[#f8f9ff]">
-              <div className="mb-[4px] flex items-center justify-between">
-                <div className="text-[13px] font-[700] text-[#0a2540] mb-[2px]">5508 Ridgeway Dr</div>
-                <div className="text-[11px] text-[#aab7c4]">Sep 18</div>
-              </div>
-              <div className="text-[12px] text-[#8898aa] overflow-hidden text-ellipsis whitespace-nowrap">Payoff wired this morning</div>
-            </div>
+            {isLoadingThreads ? (
+              <div className="p-6 text-center text-sm text-[#8898aa]">Cargando...</div>
+            ) : threads.length === 0 ? (
+              <div className="p-6 text-center text-sm text-[#8898aa]">Sin conversaciones</div>
+            ) : (
+              threads.map((thread) => {
+                const tId = thread.borrowerProfileId || thread.borrowerProfile?.id;
+                const isActive = activeThreadId === tId;
+                const name = thread.borrowerProfile?.user?.name || "Prestatario";
+                
+                return (
+                  <div 
+                    key={tId}
+                    onClick={() => setActiveThreadId(tId || null)}
+                    className={`cursor-pointer border-b border-[#f0f4f8] p-[14px_20px] transition-colors hover:bg-[#f8f9ff] ${
+                      isActive ? "bg-[#f0efff] border-l-[3px] border-l-[#635bff]" : "border-l-[3px] border-l-transparent"
+                    }`}
+                  >
+                    <div className="mb-[4px] flex items-center justify-between">
+                      <div className="text-[13px] font-[700] text-[#0a2540] mb-[2px]">{name}</div>
+                      <div className="text-[11px] text-[#aab7c4]">{formatThreadDate(thread.lastMessage?.createdAt)}</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-[12px] text-[#8898aa] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {thread.lastMessage?.body || "..."}
+                      </div>
+                      {thread.unreadCount > 0 && !isActive && (
+                        <div className="h-[8px] w-[8px] shrink-0 rounded-full bg-[#635bff]"></div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -146,8 +262,8 @@ export default function MessagesView() {
           
           <div className="flex items-center justify-between border-b border-[#e6ebf1] bg-white p-[16px_24px]">
             <div className="flex flex-col">
-              <div className="text-[15px] font-[800] text-[#0a2540]">1847 Oak Ridge Ln, Memphis TN 38117</div>
-              <div className="mt-[2px] text-[12px] text-[#8898aa]">Loan: $185,000 · 10% · 9 months · {m.status}</div>
+              <div className="text-[15px] font-[800] text-[#0a2540]">{activeBorrowerName}</div>
+              <div className="mt-[2px] text-[12px] text-[#8898aa]">{m.status}</div>
             </div>
             <span className="rounded-[12px] bg-[#f0efff] p-[3px_10px] text-[11px] font-[700] text-[#635bff] hidden sm:inline-block">
               {m.activeThread}
@@ -155,56 +271,67 @@ export default function MessagesView() {
           </div>
 
           <div className="flex flex-1 flex-col gap-[16px] overflow-y-auto p-[24px]">
-            {messages.map((msg) => {
-              if (msg.type === "sys") {
+            {isLoadingMessages ? (
+              <div className="text-center text-sm text-[#8898aa]">Cargando mensajes...</div>
+            ) : !activeThreadId ? (
+              <div className="text-center text-sm text-[#8898aa]">Selecciona una conversacion</div>
+            ) : messages.length === 0 ? (
+              <div className="text-center text-sm text-[#8898aa]">Escribe el primer mensaje</div>
+            ) : (
+              messages.map((msg) => {
+                // Si el mensaje es del sistema, se muestra centrado
+                if (msg.sender === "SYSTEM" || msg.isWarning) {
+                  return (
+                    <div key={msg.id} className="text-center">
+                      <div className={`inline-block rounded-[20px] p-[6px_16px] text-[12px] font-[500] ${msg.isWarning ? "bg-[#fff3cd] text-[#856404] border border-[#ffc107]" : "bg-[#f0f4f8] text-[#8898aa]"}`}>
+                        {msg.body}
+                      </div>
+                    </div>
+                  );
+                }
+
+                // El lender lo ve desde su perspectiva (isMe = true si sender es LENDER)
+                const isMe = msg.sender === "LENDER";
+                const avatar = isMe ? "MI" : activeBorrowerName.substring(0, 2).toUpperCase();
+                
                 return (
-                  <div key={msg.id} className="text-center">
-                    <div className={`inline-block rounded-[20px] p-[6px_16px] text-[12px] font-[500] ${msg.isWarning ? "bg-[#fff3cd] text-[#856404] border border-[#ffc107]" : "bg-[#f0f4f8] text-[#8898aa]"}`}>
-                      {msg.text}
+                  <div key={msg.id} className={`flex items-end gap-[10px] ${isMe ? "flex-row-reverse" : ""}`}>
+                    <div className={`flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full text-[12px] font-[700] text-white ${!isMe ? "bg-[#0a2540]" : "bg-[#635bff]"}`}>
+                      {avatar}
+                    </div>
+                    <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                      <div className={`max-w-[420px] rounded-[12px] p-[12px_16px] text-[13px] leading-[1.6] ${isMe ? "bg-[#635bff] text-white" : "bg-[#f0f4f8] text-[#0a2540]"}`}>
+                        
+                        {msg.body && <div>{msg.body}</div>}
+                        
+                        {/* Seccion de UI para adjuntos (simulada por ahora) */}
+                        {msg.attachmentName && !msg.isImage && (
+                          <div className={`mt-[8px] flex items-center gap-[10px] rounded-[8px] border p-[10px_14px] text-[12px] ${isMe ? "border-white/20 bg-white/10 text-white" : "border-[#e6ebf1] bg-white text-[#425466]"}`}>
+                            <span className="text-[18px]">📄</span> 
+                            <span>{msg.attachmentName}</span>
+                            <span className={`ml-auto cursor-pointer ${isMe ? "text-[#c7c4ff]" : "text-[#635bff]"}`}>{m.view}</span>
+                          </div>
+                        )}
+                        
+                        {msg.isImage && msg.attachmentUrl && (
+                          <div className="p-[4px]">
+                            <img src={msg.attachmentUrl} alt={msg.attachmentName} className="max-h-[200px] max-w-[260px] rounded-[6px] block" />
+                            <div className={`mt-[4px] text-[11px] ${isMe ? "text-white/60" : "text-[#8898aa]"}`}>{msg.attachmentName}</div>
+                          </div>
+                        )}
+                      </div>
+                      <div className={`mt-[4px] px-[4px] text-[11px] text-[#aab7c4] ${isMe ? "text-right" : ""}`}>
+                        {formatTime(msg.createdAt)}
+                      </div>
                     </div>
                   </div>
                 );
-              }
-
-              const isMe = msg.sender === "me";
-              
-              return (
-                <div key={msg.id} className={`flex items-end gap-[10px] ${isMe ? "flex-row-reverse" : ""}`}>
-                  <div className={`flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full text-[12px] font-[700] text-white ${msg.isLender ? "bg-[#0a2540]" : "bg-[#635bff]"}`}>
-                    {msg.avatar}
-                  </div>
-                  <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                    <div className={`max-w-[420px] rounded-[12px] p-[12px_16px] text-[13px] leading-[1.6] ${isMe ? "bg-[#635bff] text-white" : "bg-[#f0f4f8] text-[#0a2540]"}`}>
-                      
-                      {msg.text && <div>{msg.text}</div>}
-                      
-                      {msg.attachmentName && !msg.isImage && (
-                        <div className={`mt-[8px] flex items-center gap-[10px] rounded-[8px] border p-[10px_14px] text-[12px] ${isMe ? "border-white/20 bg-white/10 text-white" : "border-[#e6ebf1] bg-white text-[#425466]"}`}>
-                          <span className="text-[18px]">📄</span> 
-                          <span>{msg.attachmentName}</span>
-                          <span className={`ml-auto cursor-pointer ${isMe ? "text-[#c7c4ff]" : "text-[#635bff]"}`}>{m.view}</span>
-                        </div>
-                      )}
-                      
-                      {msg.isImage && msg.attachmentUrl && (
-                        <div className="p-[4px]">
-                          <img src={msg.attachmentUrl} alt={msg.attachmentName} className="max-h-[200px] max-w-[260px] rounded-[6px] block" />
-                          <div className={`mt-[4px] text-[11px] ${isMe ? "text-white/60" : "text-[#8898aa]"}`}>{msg.attachmentName}</div>
-                        </div>
-                      )}
-
-                    </div>
-                    <div className={`mt-[4px] px-[4px] text-[11px] text-[#aab7c4] ${isMe ? "text-right" : ""}`}>
-                      {msg.time}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+              })
+            )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* ÁREA DE INPUT */}
+          {/* AREA DE INPUT */}
           <div className="flex flex-col gap-[10px] border-t border-[#e6ebf1] bg-white p-[16px_24px]">
             <div className="flex items-end gap-[10px]">
               <button 
@@ -228,16 +355,18 @@ export default function MessagesView() {
                 placeholder={m.inputPlaceholder}
                 className="min-h-[44px] max-h-[120px] flex-1 resize-none rounded-[8px] border-[1.5px] border-[#e6ebf1] p-[10px_14px] font-sans text-[14px] outline-none transition-colors focus:border-[#635bff]" 
                 rows={1}
+                disabled={!activeThreadId}
               />
               <button 
                 onClick={handleSend}
-                className="h-[44px] shrink-0 cursor-pointer rounded-[8px] border-none bg-[#635bff] p-[10px_18px] text-[13px] font-[700] text-white hover:bg-[#524ddb] transition-colors"
+                disabled={!activeThreadId}
+                className="h-[44px] shrink-0 cursor-pointer rounded-[8px] border-none bg-[#635bff] p-[10px_18px] text-[13px] font-[700] text-white hover:bg-[#524ddb] transition-colors disabled:opacity-50"
               >
                 {m.send}
               </button>
             </div>
             <div className="flex items-center gap-[6px] text-[11px] text-[#aab7c4]">
-              <span className="font-[600] text-[#c62626]">⚠️</span>
+              <span className="font-[600] text-[#c62626]">🔒</span>
               <span>{m.warningNote}</span>
             </div>
           </div>

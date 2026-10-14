@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { ShieldCheck, Lock, CheckCircle2, AlertCircle, ChevronLeft, Image as ImageIcon } from "lucide-react";
@@ -15,11 +15,35 @@ export default function LenderDealDetailPage() {
   );
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 function LenderDealDetailContent() {
   const params = useParams();
   const router = useRouter();
   const { t } = useSite();
   const m = t.marketplace.dealDetails;
+
+  const [borrowerRating, setBorrowerRating] = useState<any>(null);
+
+  useEffect(() => {
+    // Aquí idealmente primero cargas el trato GET /api/marketplace/loan-requests/:id
+    // y con el borrowerProfileId llamas a /rating. Por simplicidad, simularemos 
+    // la estructura de la llamada cuando tengas el ID.
+    async function fetchRating() {
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        // Simulando que ya tienes el borrowerProfileId del trato. Reemplazar "ID" cuando integres el fetch del trato:
+        const res = await fetch(`${BASE_URL}/api/borrowers/MOCK_ID/rating`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (json.success) setBorrowerRating(json.data);
+      } catch (e) {
+        console.error("Error rating", e);
+      }
+    }
+    fetchRating();
+  }, []);
 
   const photos = [
     "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80",
@@ -140,13 +164,15 @@ function LenderDealDetailContent() {
               <div className="flex items-center justify-between border-b border-rule px-[18px] py-3.5">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-[52px] w-[52px] flex-col items-center justify-center rounded-full border-2 border-accent bg-accent-soft">
-                    <span className="text-lg font-black leading-none text-accent">742</span>
+                    <span className="text-lg font-black leading-none text-accent">
+                      {borrowerRating?.average ? borrowerRating.average.toFixed(1) : "N/D"}
+                    </span>
                     <span className="text-[8px] font-bold uppercase tracking-[0.5px] text-ink-3">{m.score}</span>
                   </div>
                   <div className="text-[11px] leading-[1.6] text-ink-2">
                     <strong className="text-ink">{m.goodStanding}</strong><br />
                     {m.memberSince} Q1 2025<br />
-                    {m.identityVerified}
+                    {borrowerRating?.count || 0} Tratos cerrados
                   </div>
                 </div>
                 <div className="rounded-lg bg-success-soft px-3 py-1 text-[11px] font-bold text-success">Verified</div>

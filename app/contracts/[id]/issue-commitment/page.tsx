@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 
@@ -20,7 +20,6 @@ function IssueCommitmentContent() {
   const params = useParams();
   const contractId = params?.id as string;
   const router = useRouter();
-  
   const { t } = useSite();
   const cd = t.contractDetail;
   const ic = t.issueCommitment;
@@ -34,33 +33,105 @@ function IssueCommitmentContent() {
   const [latePenalty, setLatePenalty] = useState("");
   const [prePayPenalty, setPrePayPenalty] = useState("");
 
+  const [termsId, setTermsId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const LABEL = "mb-2 block text-[11px] font-bold uppercase tracking-widest text-ink-3";
   const INPUT = "w-full rounded-lg border border-rule bg-surface-2 px-4 py-3 text-[15px] text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-accent";
 
+  // Obtener el termsId (ContractTerms vigente)
+  useEffect(() => {
+    async function fetchContract() {
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        const res = await fetch(`${API_URL}/api/contracts/${contractId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        
+        if (json.success && json.data?.currentTerms?.id) {
+          setTermsId(json.data.currentTerms.id);
+        } else {
+          throw new Error("No se encontraron términos en borrador para este contrato.");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : ic.errorNetwork);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    if (contractId) fetchContract();
+  }, [contractId, ic.errorNetwork]);
+
   const handleIssueLetter = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!termsId) return;
+
     setIsSubmitting(true);
     setError(null);
-
     try {
-      // TODO: BACKEND - Integrar la logica real de creacion/modificacion de fees.
-      // Ej. POST a /api/contracts/{contractId}/terms/{termsId}/fees con los valores del state.
-      // const token = localStorage.getItem("accessToken") || "";
-      // const response = await fetch(`${API_URL}/api/contracts/${contractId}/terms`, { ... })
+      const token = localStorage.getItem("accessToken") || "";
+      const headers = { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}` 
+      };
 
-      // Simulacion temporal de la peticion
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      // 1. Preparar las tarifas a enviar
+      const fees = [];
+      if (originationPoints && Number(originationPoints) > 0) {
+        fees.push({ category: "LENDER", code: "ORIGINATION_POINTS", amountType: "PERCENTAGE", amountValue: Number(originationPoints) });
+      }
+      if (processingFee && Number(processingFee) > 0) {
+        fees.push({ category: "LENDER", code: "PROCESSING", amountType: "FLAT", amountValue: Number(processingFee) });
+      }
+      if (underwritingFee && Number(underwritingFee) > 0) {
+        fees.push({ category: "LENDER", code: "UNDERWRITING", amountType: "FLAT", amountValue: Number(underwritingFee) });
+      }
+      if (docPrepFee && Number(docPrepFee) > 0) {
+        fees.push({ category: "LENDER", code: "DOC_PREP", amountType: "FLAT", amountValue: Number(docPrepFee) });
+      }
+      if (customFeeName && customFeeAmount && Number(customFeeAmount) > 0) {
+        fees.push({ category: "LENDER", code: "CUSTOM", label: customFeeName, amountType: "FLAT", amountValue: Number(customFeeAmount) });
+      }
 
-      router.push(`/contracts/${contractId || 'CTR-001'}/commitment`);
+      // 2. Enviar todas las tarifas en paralelo
+      const feePromises = fees.map(fee => 
+        fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/fees`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(fee)
+        }).then(res => res.json())
+      );
+
+      const feeResults = await Promise.all(feePromises);
+      const failedFee = feeResults.find(r => !r.success);
+      if (failedFee) throw new Error(failedFee.error?.message || "Error al guardar las tarifas de cierre.");
+
+      // 3. Enviar los términos a firma (Submit terms)
+      const submitRes = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/submit`, {
+        method: "POST",
+        headers
+      });
+      const submitJson = await submitRes.json();
+      
+      if (!submitJson.success) {
+        throw new Error(submitJson.error?.message || ic.errorFetch);
+      }
+
+      // Redirigir al documento final para visualización/firma
+      router.push(`/contracts/${contractId}/commitment-doc`);
     } catch (err) {
       setError(err instanceof Error ? err.message : ic.errorNetwork);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-bg p-6 lg:p-14 text-center text-ink-3">Cargando contrato...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-bg p-6 lg:p-14">
@@ -138,7 +209,7 @@ function IssueCommitmentContent() {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !termsId}
               className="mt-4 w-full rounded-lg bg-accent px-5 py-3.5 text-[15px] font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {isSubmitting ? ic.submitting : ic.submit}

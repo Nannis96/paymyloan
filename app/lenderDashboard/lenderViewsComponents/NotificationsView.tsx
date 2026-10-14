@@ -1,98 +1,163 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect, useMemo } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+// Interfaces basadas en la API de Notificaciones
+interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  relatedEntityType: string;
+  relatedEntityId: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
 
 export default function NotificationsView() {
   const { t, lang } = useSite();
-  const n = t.notifications; // { title, markRead, empty }
+  const n = t.notifications;
+  const isEs = lang === "es";
 
   const [activeTab, setActiveTab] = useState("all");
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const tabs = [
-    { id: "all", label: lang === "es" ? "Todas" : "All" },
-    { id: "offers", label: lang === "es" ? "Ofertas" : "Offers" },
-    { id: "closing", label: lang === "es" ? "Cierres" : "Closing" },
-    { id: "payments", label: lang === "es" ? "Pagos" : "Payments" },
-    { id: "alerts", label: lang === "es" ? "Alertas" : "Alerts" }
+    { id: "all", label: isEs ? "Todas" : "All" },
+    { id: "offers", label: isEs ? "Ofertas" : "Offers" },
+    { id: "closing", label: isEs ? "Cierres" : "Closing" },
+    { id: "payments", label: isEs ? "Pagos" : "Payments" },
+    { id: "alerts", label: isEs ? "Alertas" : "Alerts" }
   ];
 
-  // Datos mockeados y traducidos basados en notifications.html
-  const groups = [
-    {
-      title: lang === "es" ? "Hoy" : "Today",
-      items: [
-        {
-          id: 1,
-          type: "offer",
-          unread: true,
-          title: lang === "es" ? "Nueva oferta — 3802 University Cove" : "New offer — 3802 University Cove",
-          sub: lang === "es" ? "Moore Capital LLC te envio una oferta: $115,000 · 12% · 12 meses · 1 pt originacion · Rehab en draws" : "Moore Capital LLC sent you an offer: $115,000 · 12% · 12 months · 1 pt origination · Rehab held in draws",
-          time: lang === "es" ? "Hace 2h" : "2h ago",
-          actions: [
-            { label: lang === "es" ? "Revisar oferta" : "Review offer", primary: true },
-            { label: lang === "es" ? "Rechazar" : "Decline", primary: false }
-          ]
-        },
-        {
-          id: 2,
-          type: "counter",
-          unread: true,
-          title: lang === "es" ? "Contraoferta — 4215 Raleigh Ave" : "Counter offer — 4215 Raleigh Ave",
-          sub: lang === "es" ? "Summit Lending LLC respondio: $70,000 (pediste $75K) · 13% · 9 meses. Revisa y acepta o haz otra contraoferta." : "Summit Lending LLC countered your request: $70,000 (you asked $75K) · 13% · 9 months. Review and accept or counter back.",
-          time: lang === "es" ? "Hace 4h" : "4h ago",
-          actions: [
-            { label: lang === "es" ? "Ver contraoferta" : "View counter", primary: true },
-            { label: lang === "es" ? "Contraofertar" : "Counter back", primary: false }
-          ]
-        },
-        {
-          id: 3,
-          type: "alert",
-          unread: true,
-          title: lang === "es" ? "Seguro aun no vinculado — 3802 University Cove" : "Insurance not yet bound — 3802 University Cove",
-          sub: lang === "es" ? "Tu prestamista puede requerir prueba del seguro antes del cierre. Contacta a Insight Risk Management para finalizar tu poliza." : "Your lender may require proof of binding before closing. Contact Insight Risk Management to finalize your policy.",
-          time: lang === "es" ? "Hace 5h" : "5h ago"
+  // Obtener notificaciones al montar
+  useEffect(() => {
+    async function fetchNotifications() {
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        // Traemos las ultimas 50 notificaciones
+        const res = await fetch(`${BASE_URL}/api/notifications?pageSize=50`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        
+        if (json.success && json.data?.items) {
+          setNotifications(json.data.items);
         }
-      ]
-    },
-    {
-      title: lang === "es" ? "Ayer" : "Yesterday",
-      items: [
-        {
-          id: 4,
-          type: "closing",
-          unread: false,
-          title: lang === "es" ? "Compañia de titulos confirmada — 3802 University Cove" : "Title company confirmed — 3802 University Cove",
-          sub: lang === "es" ? "BAS Law & Title ha recibido tus instrucciones de transferencia. Ruweida Abdullahi te contactara para programar tu fecha de cierre." : "BAS Law & Title has received your wire instructions. Ruweida Abdullahi will contact you to schedule your closing date.",
-          time: lang === "es" ? "Ayer" : "Yesterday"
-        },
-        {
-          id: 5,
-          type: "payment",
-          unread: false,
-          title: lang === "es" ? "Pago vence en 10 dias — 1144 Oakwood Dr" : "Payment due in 10 days — 1144 Oakwood Dr",
-          sub: lang === "es" ? "Pago de interes de $950 vence el 1 de Oct. Tu prestamista Wilson Moore en Moore Capital LLC." : "$950 interest payment due Oct 1. Your lender Wilson Moore at Moore Capital LLC.",
-          time: lang === "es" ? "Ayer" : "Yesterday",
-          actions: [
-            { label: lang === "es" ? "Ver calendario de pagos" : "View payment schedule", primary: true }
-          ]
-        }
-      ]
-    },
-    {
-      title: lang === "es" ? "Esta semana" : "This week",
-      items: [
-        {
-          id: 6,
-          type: "offer",
-          unread: false,
-          title: lang === "es" ? "Trato en vivo — 4215 Raleigh Ave" : "Deal live — 4215 Raleigh Ave",
-          sub: lang === "es" ? "Tu trato ya es visible para los prestamistas en la plataforma. Seras notificado cuando lleguen ofertas." : "Your deal is now visible to lenders on the platform. You'll be notified as offers come in.",
-          time: lang === "es" ? "20 Sept" : "Sept 20"
-        }
-      ]
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  ];
+    fetchNotifications();
+  }, []);
+
+  // Marcar una notificacion como leida
+  const handleMarkAsRead = async (id: string, isRead: boolean) => {
+    if (isRead) return; // Ya esta leida
+    
+    // Actualizacion optimista
+    setNotifications(prev => prev.map(notif => notif.id === id ? { ...notif, isRead: true } : notif));
+
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      await fetch(`${BASE_URL}/api/notifications/${id}/read`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
+    }
+  };
+
+  // Marcar TODAS como leidas
+  const handleMarkAllAsRead = async () => {
+    // Actualizacion optimista
+    setNotifications(prev => prev.map(notif => ({ ...notif, isRead: true })));
+
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      await fetch(`${BASE_URL}/api/notifications/read-all`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.error("Error marking all as read:", err);
+    }
+  };
+
+  // Mapear los tipos de la API a las categorias visuales de tus tabs
+  const getTabCategory = (type: string) => {
+    if (type.includes("QUOTE")) return "offers";
+    if (type.includes("CONTRACT")) return "closing";
+    if (type.includes("PAYMENT")) return "payments";
+    return "alerts"; // MESSAGE_RECEIVED, REJECTED, etc.
+  };
+
+  // Mapear el tipo de la API a los iconos existentes
+  const getIconType = (type: string) => {
+    if (type.includes("QUOTE")) return "offer";
+    if (type.includes("REJECTED")) return "counter";
+    if (type.includes("CONTRACT")) return "closing";
+    if (type.includes("PAYMENT")) return "payment";
+    return "alert";
+  };
+
+  // Filtrado y agrupacion logica
+  const groupedNotifications = useMemo(() => {
+    // 1. Filtrar por tab activo
+    const filtered = notifications.filter(notif => {
+      if (activeTab === "all") return true;
+      return getTabCategory(notif.type) === activeTab;
+    });
+
+    // 2. Agrupar por fecha
+    const groupsMap: Record<string, NotificationItem[]> = {
+      today: [],
+      yesterday: [],
+      thisWeek: [],
+      older: []
+    };
+
+    const now = new Date();
+    const todayStr = now.toDateString();
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toDateString();
+    
+    // Hace 7 dias
+    const oneWeekAgo = new Date(now);
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    filtered.forEach(notif => {
+      const date = new Date(notif.createdAt);
+      const dateStr = date.toDateString();
+
+      if (dateStr === todayStr) {
+        groupsMap.today.push(notif);
+      } else if (dateStr === yesterdayStr) {
+        groupsMap.yesterday.push(notif);
+      } else if (date > oneWeekAgo) {
+        groupsMap.thisWeek.push(notif);
+      } else {
+        groupsMap.older.push(notif);
+      }
+    });
+
+    // 3. Formatear para el renderizado
+    const result = [];
+    if (groupsMap.today.length > 0) result.push({ title: isEs ? "Hoy" : "Today", items: groupsMap.today });
+    if (groupsMap.yesterday.length > 0) result.push({ title: isEs ? "Ayer" : "Yesterday", items: groupsMap.yesterday });
+    if (groupsMap.thisWeek.length > 0) result.push({ title: isEs ? "Esta semana" : "This week", items: groupsMap.thisWeek });
+    if (groupsMap.older.length > 0) result.push({ title: isEs ? "Anteriores" : "Older", items: groupsMap.older });
+
+    return result;
+  }, [notifications, activeTab, isEs]);
 
   // Renderizado condicional de iconos segun el tipo
   const renderIcon = (type: string) => {
@@ -132,6 +197,18 @@ export default function NotificationsView() {
     }
   };
 
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+
+    if (diffMins < 60) return isEs ? `Hace ${diffMins}m` : `${diffMins}m ago`;
+    if (diffHours < 24) return isEs ? `Hace ${diffHours}h` : `${diffHours}h ago`;
+    return date.toLocaleDateString(isEs ? "es-MX" : "en-US", { month: "short", day: "numeric" });
+  };
+
   return (
     <div className="animate-in fade-in duration-300 max-w-[680px]">
       
@@ -140,18 +217,21 @@ export default function NotificationsView() {
         <div className="text-[20px] font-[800] tracking-[-0.3px] text-[#0a2540]">
           {n.title || "Notifications"}
         </div>
-        <button className="text-[12px] font-[600] text-[#635bff] bg-transparent border-none cursor-pointer hover:underline">
+        <button 
+          onClick={handleMarkAllAsRead}
+          className="text-[12px] font-[600] text-[#635bff] bg-transparent border-none cursor-pointer hover:underline"
+        >
           {n.markRead || "Mark all as read"}
         </button>
       </div>
 
       {/* Tabs de Filtro */}
-      <div className="mb-[20px] flex gap-[6px]">
+      <div className="mb-[20px] flex gap-[6px] overflow-x-auto pb-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`cursor-pointer rounded-[20px] px-[14px] py-[6px] text-[12px] font-[600] transition-colors ${
+            className={`cursor-pointer whitespace-nowrap rounded-[20px] px-[14px] py-[6px] text-[12px] font-[600] transition-colors ${
               activeTab === tab.id
                 ? "border-[1.5px] border-[#635bff] bg-[#635bff] text-white"
                 : "border-[1.5px] border-[#e6ebf1] bg-white text-[#425466] hover:bg-[#f6f9fc]"
@@ -164,73 +244,49 @@ export default function NotificationsView() {
 
       {/* Lista de Notificaciones */}
       <div>
-        {groups.map((group, gIdx) => {
-          // Filtrado basico por tab seleccionado (simulado)
-          const filteredItems = group.items.filter(item => 
-            activeTab === "all" || 
-            (activeTab === "offers" && (item.type === "offer" || item.type === "counter")) ||
-            (activeTab === "closing" && item.type === "closing") ||
-            (activeTab === "payments" && item.type === "payment") ||
-            (activeTab === "alerts" && item.type === "alert")
-          );
-
-          if (filteredItems.length === 0) return null;
-
-          return (
+        {isLoading ? (
+          <div className="py-10 text-center text-[13px] text-[#8898aa]">Cargando notificaciones...</div>
+        ) : groupedNotifications.length === 0 ? (
+          <div className="py-10 text-center text-[13px] text-[#8898aa]">{n.empty || "No hay notificaciones."}</div>
+        ) : (
+          groupedNotifications.map((group, gIdx) => (
             <div key={gIdx}>
               <div className="mb-[8px] mt-[20px] text-[10px] font-[700] uppercase tracking-[0.6px] text-[#aab7c4] first:mt-0">
                 {group.title}
               </div>
               
-              {filteredItems.map((item) => (
+              {group.items.map((item) => (
                 <div 
-                  key={item.id} 
+                  key={item.id}
+                  onClick={() => handleMarkAsRead(item.id, item.isRead)}
                   className={`relative mb-[8px] flex cursor-pointer gap-[12px] rounded-[8px] border bg-white p-[14px_16px] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${
-                    item.unread ? "border-[#e6ebf1] border-l-[3px] border-l-[#635bff]" : "border-[#e6ebf1]"
+                    !item.isRead ? "border-[#e6ebf1] border-l-[3px] border-l-[#635bff]" : "border-[#e6ebf1]"
                   }`}
                 >
-                  {renderIcon(item.type)}
+                  {renderIcon(getIconType(item.type))}
                   
                   <div className="flex-1">
-                    <div className={`mb-[3px] text-[13px] font-[700] ${item.unread ? "text-[#635bff]" : "text-[#0a2540]"}`}>
+                    <div className={`mb-[3px] text-[13px] font-[700] ${!item.isRead ? "text-[#635bff]" : "text-[#0a2540]"}`}>
                       {item.title}
                     </div>
                     <div className="text-[12px] leading-[1.5] text-[#8898aa]">
-                      {item.sub}
+                      {item.body}
                     </div>
-                    
-                    {item.actions && (
-                      <div className="mt-[8px] flex gap-[6px]">
-                        {item.actions.map((act, aIdx) => (
-                          <button 
-                            key={aIdx} 
-                            className={`cursor-pointer rounded-[5px] px-[12px] py-[5px] text-[11px] ${
-                              act.primary 
-                                ? "border-none bg-[#635bff] font-[700] text-white hover:bg-[#524ddb]" 
-                                : "border border-[#e6ebf1] bg-white font-[600] text-[#425466] hover:bg-[#f6f9fc]"
-                            }`}
-                          >
-                            {act.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                   
                   <div className="mt-[2px] whitespace-nowrap text-[11px] text-[#aab7c4]">
-                    {item.time}
+                    {formatTimeAgo(item.createdAt)}
                   </div>
                   
-                  {item.unread && (
+                  {!item.isRead && (
                     <div className="absolute right-[14px] top-[16px] h-[7px] w-[7px] rounded-full bg-[#635bff]"></div>
                   )}
                 </div>
               ))}
             </div>
-          );
-        })}
+          ))
+        )}
       </div>
-
     </div>
   );
 }
