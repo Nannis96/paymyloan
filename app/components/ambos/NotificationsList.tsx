@@ -1,8 +1,10 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { api, ApiError } from "@/app/lib/apiFetch";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { HOME_BY_ROLE, roleForPath } from "@/app/lib/roles";
 import type { Notification, Paginated } from "@/app/types/api";
 
 const PAGE_SIZE = 20;
@@ -10,11 +12,34 @@ const PAGE_SIZE = 20;
 export const EVENTO_NOTIFICACIONES = "pml:notifications";
 const avisarCampana = () => window.dispatchEvent(new Event(EVENTO_NOTIFICACIONES));
 
+// Destino según relatedEntityType. Hoy no hay detalle de contrato ni de deal
+// del borrower con id: apuntan a la lista; afinar al cerrar T3.2 / T5.x.
+function destino(role: string | undefined, n: Notification) {
+  if (!role || !n.relatedEntityType) return null;
+  const home = HOME_BY_ROLE[role];
+  const id = n.relatedEntityId;
+  const lender = role === "LENDER";
+  switch (n.relatedEntityType) {
+    case "LoanRequest":
+      return lender && id ? `${home}/browse-deals/${id}` : `${home}/deals`;
+    case "LoanQuote":
+      return lender ? `${home}/offers-sent` : `${home}/deals`;
+    case "Contract":
+      return lender ? `${home}/active-loans` : `${home}/deals`;
+    case "MessageThread":
+      return `${home}/messages${id ? `?thread=${id}` : ""}`;
+    default:
+      return null;
+  }
+}
+
 // Listado compartido borrower/lender: el back ya filtra por el usuario de la sesión.
 export default function NotificationsList() {
   const { t, lang } = useSite();
   const n = t.notifications; // { title, markRead, empty }
   const isEs = lang === "es";
+  const router = useRouter();
+  const role = roleForPath(usePathname());
 
   const [soloNoLeidas, setSoloNoLeidas] = useState(false);
   const [items, setItems] = useState<Notification[]>([]);
@@ -113,9 +138,13 @@ export default function NotificationsList() {
       {items.map((item) => (
         <div
           key={item.id}
-          onClick={() => !item.isRead && marcar(item.id)}
-          className={`relative mb-[8px] flex gap-[12px] rounded-[8px] border bg-white p-[14px_16px] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${
-            item.isRead ? "border-[#e6ebf1]" : "cursor-pointer border-[#e6ebf1] border-l-[3px] border-l-[#635bff]"
+          onClick={() => {
+            if (!item.isRead) marcar(item.id);
+            const url = destino(role, item);
+            if (url) router.push(url);
+          }}
+          className={`relative cursor-pointer mb-[8px] flex gap-[12px] rounded-[8px] border bg-white p-[14px_16px] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${
+            item.isRead ? "border-[#e6ebf1]" : "border-[#e6ebf1] border-l-[3px] border-l-[#635bff]"
           }`}
         >
           <div className="flex-1">

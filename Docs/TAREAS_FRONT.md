@@ -121,7 +121,7 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 ## Paso 8 — Notificaciones
 - [x] **T8.1** Campana con `unread-count` (header, ambos roles): `NotificationBell` en `DashboardHeader`, polling 60 s, enlaza a `<dashboard del rol>/notifications`. **HECHA 2026-10-14.**
 - [x] **T8.2** Listado + marcar leída / todas: `components/ambos/NotificationsList.tsx` (paginado, filtro sin leer, refresca la campana). Reemplaza las vistas mock de borrower y lender. **HECHA 2026-10-14.**
-- [ ] **T8.3** Deep-link según `type`.
+- [x] **T8.3** Deep-link según `relatedEntityType` al hacer clic (marca leída y navega). Borrower: deals/messages; lender: browse-deals/:id, offers-sent, active-loans, messages?thread=. Afinar cuando existan detalle de contrato/deal. **HECHA 2026-10-14.**
 
 ## Paso 9 — Reviews y ratings
 - [ ] **T9.1** Formulario de review (`leave-a-review`, según `direction`).
