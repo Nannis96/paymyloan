@@ -120,7 +120,7 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 
 ## Paso 8 — Notificaciones
 - [x] **T8.1** Campana con `unread-count` (header, ambos roles): `NotificationBell` en `DashboardHeader`, polling 60 s, enlaza a `<dashboard del rol>/notifications`. **HECHA 2026-10-14.**
-- [ ] **T8.2** Listado + marcar leída / todas (componente compartido).
+- [x] **T8.2** Listado + marcar leída / todas: `components/ambos/NotificationsList.tsx` (paginado, filtro sin leer, refresca la campana). Reemplaza las vistas mock de borrower y lender. **HECHA 2026-10-14.**
 - [ ] **T8.3** Deep-link según `type`.
 
 ## Paso 9 — Reviews y ratings

@@ -24,7 +24,11 @@ export default function NotificationBell() {
         .catch(() => {}); // el badge es accesorio: ante error se queda como estaba
     cargar();
     const id = setInterval(cargar, POLL_MS);
-    return () => clearInterval(id);
+    window.addEventListener("pml:notifications", cargar); // el listado marcó leídas
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("pml:notifications", cargar);
+    };
   }, [role]);
 
   if (!role) return null;
