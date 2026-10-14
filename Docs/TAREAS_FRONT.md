@@ -112,11 +112,11 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 - [ ] **T6.7** Admin: reversar transacción.
 
 ## Paso 7 — Mensajería (mismo patrón, dos roles)
-- [ ] **T7.1** Borrower: bandeja de hilos (`threads`).
-- [ ] **T7.2** Borrower: hilo + enviar + marcar leído.
-- [ ] **T7.3** Lender: bandeja de hilos.
-- [ ] **T7.4** Lender: hilo + enviar + marcar leído.
-- [ ] **T7.5** Estado vacío para `403 MESSAGING_NOT_ALLOWED`.
+- [x] **T7.1** Borrower: bandeja de hilos (`threads`). Sidebar de `BorrowerMessagesView` carga `meMessageThreads`; el panel de chat sigue mock hasta T7.2. **HECHA 2026-10-14.**
+- [x] **T7.2** Borrower: hilo + enviar + marcar leído. Historial (1.ª página), `POST messages`, `POST .../read` (baja `unreadCount` local). Quitado el adjunto (el back no lo soporta) y los mensajes mock. **HECHA 2026-10-14.**
+- [x] **T7.3** Lender: bandeja de hilos. Sidebar de lender `MessagesView` carga `lenders.meMessageThreads`; chat sigue mock hasta T7.4. El nombre del borrower se lee de `borrowerProfile.user.name` (forma no documentada en API_REFERENCE; cae al id si no viene). **HECHA 2026-10-14.**
+- [x] **T7.4** Lender: hilo + enviar + marcar leído. Hilo = (borrower, `lenderCompanyId` del último mensaje); ambos se mandan siempre explícitos. Sin adjuntos ni mocks (igual que T7.2). **HECHA 2026-10-14.**
+- [x] **T7.5** Estado vacío para `403 MESSAGING_NOT_ALLOWED`. Al enviar, ambos chats reemplazan el input por un aviso (`messaging.notAllowed`); el historial sigue legible. Se reinicia al cambiar de hilo. **HECHA 2026-10-14.**
 
 ## Paso 8 — Notificaciones
 - [ ] **T8.1** Campana con `unread-count` (header, ambos roles).

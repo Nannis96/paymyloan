@@ -380,6 +380,8 @@ export const landing: typeof Es = {
             messaging: {
               title: "Messages",
               dealThreads: "Deal threads",
+              noThreads: "No conversations yet",
+              notAllowed: "Messaging is not available yet: it opens once there is an offer in negotiation or an active loan between you. You can still read this history.",
               activeThread: "Active thread",
               status: "Status: Pre-closing",
               inputPlaceholder: "Message...",

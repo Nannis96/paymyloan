@@ -196,7 +196,7 @@ export interface Message {
 
 /** Fila de GET .../messages/threads (la contraparte depende del rol que consulta). */
 export interface MessageThread {
-  borrowerProfile?: { id: string; [k: string]: unknown };
+  borrowerProfile?: { id: string; user?: { name: string }; [k: string]: unknown };
   lenderCompany?: LenderCompanySummary;
   lastMessage: Message;
   unreadCount: number;

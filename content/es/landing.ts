@@ -378,6 +378,8 @@ export const landing = {
             messaging: {
               title: "Mensajes",
               dealThreads: "Conversaciones",
+              noThreads: "Aún no hay conversaciones",
+              notAllowed: "La mensajería aún no está disponible: se habilita cuando hay una oferta en negociación o un préstamo activo entre ustedes. Aún puedes leer este historial.",
               activeThread: "Conversacion activa",
               status: "Estado: Pre-cierre",
               inputPlaceholder: "Mensaje...",
