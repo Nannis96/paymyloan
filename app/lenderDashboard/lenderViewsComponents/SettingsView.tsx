@@ -1,19 +1,17 @@
-// app/lender/lenderViewsComponents/SettingsView.tsx
 "use client";
-import { apiFetch } from "@/app/lib/apiFetch";
+
 import { useEffect, useState } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
-import { API_ROUTES } from "@/app/lib/endpoints";
 import AccountSecurityModal from "./AccountSecurityModal";
 
-
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function SettingsView() {
-  const { t } = useSite();
+  const { t, lang } = useSite();
   const s = (t.dashboardLender.mimic as any).settings;
 
-  // Estado del usuario traido de la API real
-  const [user, setUser] = useState<{ name?: string; email?: string; phone?: string | null } | null>(null);
+  const [user, setUser] = useState<{ name?: string; email?: string; phone?: string | null; isTwoFactorEnabled?: boolean } | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Estados locales para los toggles de notificaciones
@@ -26,27 +24,53 @@ export default function SettingsView() {
   };
 
   useEffect(() => {
-    async function fetchUserData() {
+    async function fetchSettingsData() {
       try {
+        const token = localStorage.getItem("accessToken") || "";
+        const headers = { Authorization: `Bearer ${token}` };
+
+        // 1. Obtener usuario
+        const authRes = await fetch(`${BASE_URL}/api/auth/me`, { headers });
+        const authJson = await authRes.json();
+        if (authJson.success && authJson.data.user) {
+          setUser(authJson.data.user);
+        }
+
+        // 2. Obtener empresas del prestamista
+        const lenderRes = await fetch(`${BASE_URL}/api/lenders/me`, { headers });
+        const lenderJson = await lenderRes.json();
         
-        const res = await apiFetch(API_ROUTES.auth.me);
-        const json = await res.json();
-        
-        if (json.success && json.data.user) {
-          setUser(json.data.user);
+        if (lenderJson.success && lenderJson.data?.lenderCompanies?.length > 0) {
+          const companyId = lenderJson.data.lenderCompanies[0].id;
+          
+          // 3. Obtener estado de verificacion
+          const verifRes = await fetch(`${BASE_URL}/api/lenders/me/companies/${companyId}/verification`, { headers });
+          const verifJson = await verifRes.json();
+          if (verifJson.success && verifJson.data) {
+            setVerificationStatus(verifJson.data.status);
+          }
         }
       } catch (error) {
-        console.error("Error fetching user data for settings mimic", error);
+        console.error("Error fetching settings data", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchUserData();
+    fetchSettingsData();
   }, []);
+
+  const getVerificationDisplay = (status: string | null) => {
+    if (status === "APPROVED") return { label: "Aprobado", color: "text-[#2e7d32]" };
+    if (status === "PENDING") return { label: "Pendiente", color: "text-[#b45309]" };
+    if (status === "REJECTED") return { label: "Rechazado", color: "text-[#dc2626]" };
+    return { label: s.verification.unverified, color: "text-[#b45309]" };
+  };
 
   if (isLoading) {
     return <div className="text-[13px] text-[#8898aa]">Cargando configuracion...</div>;
   }
+
+  const verifDisplay = getVerificationDisplay(verificationStatus);
 
   return (
     <div className="animate-in fade-in duration-300 max-w-[720px]">
@@ -58,14 +82,16 @@ export default function SettingsView() {
       </div>
 
       {/* Verification banner */}
-      <div className="mb-[16px] flex items-center justify-between rounded-[8px] border border-[#fcd34d] bg-[#fffbeb] p-[14px_18px]">
-        <div className="text-[13px] font-[500] text-[#b45309]">
-          <strong className="font-[700]">{s.verifyBanner.text1}</strong> {s.verifyBanner.text2}
+      {verificationStatus !== "APPROVED" && (
+        <div className="mb-[16px] flex items-center justify-between rounded-[8px] border border-[#fcd34d] bg-[#fffbeb] p-[14px_18px]">
+          <div className="text-[13px] font-[500] text-[#b45309]">
+            <strong className="font-[700]">{s.verifyBanner.text1}</strong> {s.verifyBanner.text2}
+          </div>
+          <button className="whitespace-nowrap rounded-[6px] border-none bg-[#635bff] px-[16px] py-[7px] font-sans text-[12px] font-[700] text-white cursor-pointer hover:opacity-90">
+            {s.verifyBanner.btn}
+          </button>
         </div>
-        <button className="whitespace-nowrap rounded-[6px] border-none bg-[#635bff] px-[16px] py-[7px] font-sans text-[12px] font-[700] text-white cursor-pointer hover:opacity-90">
-          {s.verifyBanner.btn}
-        </button>
-      </div>
+      )}
 
       {/* Profile */}
       <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
@@ -80,11 +106,11 @@ export default function SettingsView() {
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.name}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.name || "John Smith"}</div>
+          <div className="text-[13px] text-[#8898aa]">{user?.name || "N/A"}</div>
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.email}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.email || "john@example.com"}</div>
+          <div className="text-[13px] text-[#8898aa]">{user?.email || "N/A"}</div>
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.pass}</div>
@@ -106,7 +132,7 @@ export default function SettingsView() {
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.verification.biz}</div>
-          <div className="text-[13px] font-[600] text-[#b45309]">{s.verification.unverified}</div>
+          <div className={`text-[13px] font-[600] ${verifDisplay.color}`}>{verifDisplay.label}</div>
         </div>
         <div className="flex items-center justify-between p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.verification.id}</div>
@@ -166,7 +192,7 @@ export default function SettingsView() {
       </div>
 
       {/* Security Actions (Boton Modal) */}
-      <AccountSecurityModal />
+      <AccountSecurityModal userEmail={user?.email} userPhone={user?.phone} is2FAEnabled={user?.isTwoFactorEnabled} />
 
       {/* Danger zone */}
       <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
@@ -182,7 +208,6 @@ export default function SettingsView() {
           </button>
         </div>
       </div>
-
     </div>
   );
 }

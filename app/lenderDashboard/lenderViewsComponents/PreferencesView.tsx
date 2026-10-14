@@ -1,21 +1,45 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function PreferencesView() {
   const { lang } = useSite();
   const isEs = lang === "es";
 
-  // Estados interactivos
+  // Estados interactivos simulados para las preferencias
   const [ltv, setLtv] = useState(75);
   const [selectedStates, setSelectedStates] = useState<string[]>(["TN", "MS", "AR"]);
   const [notifs, setNotifs] = useState({ matches: true, trusted: true, closing: true });
-  const [borrowers, setBorrowers] = useState([
-    { id: 1, initials: "JS", name: "John Smith — Memphis Realty LLC", deals: 7, ltvLimit: "85%" },
-    { id: 2, initials: "MR", name: "Maria Rodriguez — MR Properties LLC", deals: 4, ltvLimit: "80%" }
-  ]);
-
+  
   const availableStates = ["TN", "MS", "AR", "AL", "GA", "TX", "FL", "MO", "KY", "OH", "IN", "IL"];
+
+  // Estados conectados a la API para Prestatarios
+  const [borrowers, setBorrowers] = useState<any[]>([]);
+  const [isLoadingBorrowers, setIsLoadingBorrowers] = useState(true);
+
+  useEffect(() => {
+    async function fetchBorrowers() {
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        const res = await fetch(`${BASE_URL}/api/lenders/me/borrowers`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        
+        if (json.success && json.data?.items) {
+          setBorrowers(json.data.items);
+        }
+      } catch (err) {
+        console.error("Error fetching borrowers:", err);
+      } finally {
+        setIsLoadingBorrowers(false);
+      }
+    }
+    fetchBorrowers();
+  }, []);
 
   const toggleState = (st: string) => {
     if (selectedStates.includes(st)) {
@@ -25,8 +49,31 @@ export default function PreferencesView() {
     }
   };
 
-  const removeBorrower = (id: number) => {
-    setBorrowers(borrowers.filter(b => b.id !== id));
+  const removeBorrower = async (id: string) => {
+    if (!confirm(isEs ? "¿Seguro que deseas desvincular a este prestatario?" : "Are you sure you want to remove this borrower?")) return;
+    
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const res = await fetch(`${BASE_URL}/api/lenders/me/borrowers/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const json = await res.json();
+      if (json.success) {
+        setBorrowers(borrowers.filter(b => b.id !== id));
+      } else {
+        alert(json.error?.message || (isEs ? "Error al desvincular prestatario" : "Error removing borrower"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert(isEs ? "Error de red" : "Network error");
+    }
+  };
+
+  const getInitials = (name: string) => {
+    if (!name) return "??";
+    return name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
   };
 
   const inputClass = "w-full rounded-[6px] border border-[#e6ebf1] bg-white px-[12px] py-[9px] font-sans text-[14px] text-[#0a2540] outline-none transition-colors focus:border-[#635bff] focus:shadow-[0_0_0_3px_rgba(99,91,255,0.1)]";
@@ -90,17 +137,17 @@ export default function PreferencesView() {
             <div>
               <label className={labelClass}>{isEs ? "Rango de tasa preferida" : "Preferred interest rate range"}</label>
               <select className={`${inputClass} cursor-pointer`}>
-                <option>10% – 12%</option>
-                <option>12% – 14%</option>
-                <option>14% – 16%</option>
-                <option>{isEs ? "Flexible — yo decido por trato" : "Flexible — I'll set per deal"}</option>
+                <option>10% - 12%</option>
+                <option>12% - 14%</option>
+                <option>14% - 16%</option>
+                <option>{isEs ? "Flexible - yo decido por trato" : "Flexible - I'll set per deal"}</option>
               </select>
             </div>
             <div>
               <label className={labelClass}>{isEs ? "Plazos preferidos" : "Preferred loan terms"}</label>
               <select className={`${inputClass} cursor-pointer`}>
                 <option>{isEs ? "Solo 6 meses" : "6 months only"}</option>
-                <option>{isEs ? "6 – 12 meses" : "6 – 12 months"}</option>
+                <option>{isEs ? "6 - 12 meses" : "6 - 12 months"}</option>
                 <option>{isEs ? "Hasta 18 meses" : "Up to 18 months"}</option>
                 <option>{isEs ? "Cualquier plazo" : "Any term"}</option>
               </select>
@@ -110,7 +157,7 @@ export default function PreferencesView() {
           <div className="mb-[16px]">
             <label className={labelClass}>{isEs ? "Experiencia minima del prestatario" : "Minimum borrower experience"}</label>
             <select className={`${inputClass} cursor-pointer`}>
-              <option>{isEs ? "Sin minimo — primeros tratos bienvenidos" : "No minimum — first deals welcome"}</option>
+              <option>{isEs ? "Sin minimo - primeros tratos bienvenidos" : "No minimum - first deals welcome"}</option>
               <option>{isEs ? "1+ tratos cerrados" : "1+ deals closed"}</option>
               <option>{isEs ? "3+ tratos cerrados" : "3+ deals closed"}</option>
               <option>{isEs ? "10+ tratos cerrados" : "10+ deals closed"}</option>
@@ -193,31 +240,40 @@ export default function PreferencesView() {
           </div>
         </div>
         <div className="p-[20px_24px]">
-          <div className="mt-[4px]">
-            {borrowers.map((b) => (
-              <div key={b.id} className="flex items-center gap-[10px] border-b border-[#f0f4f8] py-[10px] last:border-0">
-                <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-[#635bff] text-[11px] font-[700] text-white">
-                  {b.initials}
+          
+          {isLoadingBorrowers ? (
+            <div className="py-4 text-center text-sm text-[#8898aa]">Cargando prestatarios...</div>
+          ) : borrowers.length === 0 ? (
+            <div className="py-4 text-center text-sm text-[#8898aa]">
+              {isEs ? "No tienes prestatarios vinculados aún." : "No linked borrowers yet."}
+            </div>
+          ) : (
+            <div className="mt-[4px]">
+              {borrowers.map((b) => (
+                <div key={b.id} className="flex items-center gap-[10px] border-b border-[#f0f4f8] py-[10px] last:border-0">
+                  <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-[#635bff] text-[11px] font-[700] text-white">
+                    {getInitials(b.user?.name)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-[13px] font-[600] text-[#0a2540]">{b.user?.name || "Prestatario"}</div>
+                    <div className="text-[11px] text-[#8898aa]">
+                      {b.user?.email || "Sin correo"} • {isEs ? "Vinculado a tus empresas" : "Linked to your companies"}
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => removeBorrower(b.id)}
+                    title={isEs ? "Desvincular" : "Remove"}
+                    className="cursor-pointer border-none bg-transparent px-[6px] py-[2px] text-[16px] font-bold text-[#aab7c4] hover:text-[#dc2626]"
+                  >
+                    ×
+                  </button>
                 </div>
-                <div className="flex-1">
-                  <div className="text-[13px] font-[600] text-[#0a2540]">{b.name}</div>
-                  <div className="text-[11px] text-[#8898aa]">{b.deals} {isEs ? "tratos cerrados juntos" : "deals closed together"}</div>
-                </div>
-                <div className="rounded-[10px] bg-[#f0efff] px-[10px] py-[2px] text-[12px] font-[700] text-[#635bff]">
-                  {isEs ? "Hasta" : "Up to"} {b.ltvLimit} LTV
-                </div>
-                <button 
-                  onClick={() => removeBorrower(b.id)}
-                  className="cursor-pointer border-none bg-transparent px-[6px] py-[2px] text-[16px] text-[#aab7c4] hover:text-[#dc2626]"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <button 
-            onClick={() => alert(isEs ? "Buscar y agregar prestatario verificado" : "Search and add a verified borrower")}
+            onClick={() => alert(isEs ? "Buscar y agregar prestatario verificado (Próximamente)" : "Search and add a verified borrower (Coming soon)")}
             className="mt-[12px] flex w-full cursor-pointer items-center justify-center gap-[6px] rounded-[6px] border-[1.5px] border-dashed border-[#c7c4ff] bg-white p-[8px_14px] font-sans text-[13px] font-[600] text-[#635bff] transition-colors hover:bg-[#f0efff]"
           >
             + {isEs ? "Agregar prestatario de confianza" : "Add trusted borrower"}
@@ -231,7 +287,7 @@ export default function PreferencesView() {
           {isEs ? "Cancelar" : "Cancel"}
         </button>
         <button 
-          onClick={() => alert(isEs ? "Preferencias guardadas" : "Preferences saved!")}
+          onClick={() => alert(isEs ? "Preferencias guardadas (Simulado)" : "Preferences saved (Mocked)")}
           className="cursor-pointer rounded-[6px] border-none bg-[#635bff] p-[9px_24px] font-sans text-[13px] font-[700] text-white hover:bg-[#524ddb]"
         >
           {isEs ? "Guardar preferencias" : "Save preferences"}

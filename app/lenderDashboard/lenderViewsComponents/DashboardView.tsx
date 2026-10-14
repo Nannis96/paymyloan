@@ -14,6 +14,7 @@ export default function DashboardView() {
   const [user, setUser] = useState<any>(null);
   const [lenderData, setLenderData] = useState<any>(null);
   const [activeContracts, setActiveContracts] = useState<any[]>([]);
+  const [newDealsCount, setNewDealsCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -23,15 +24,17 @@ export default function DashboardView() {
         const headers = { Authorization: `Bearer ${token}` };
 
         // Llamadas en paralelo para poblar el dashboard
-        const [authRes, lenderRes, contractsRes] = await Promise.all([
+        const [authRes, lenderRes, contractsRes, marketplaceRes] = await Promise.all([
           fetch(`${BASE_URL}/api/auth/me`, { headers }),
           fetch(`${BASE_URL}/api/lenders/me`, { headers }),
-          fetch(`${BASE_URL}/api/contracts`, { headers })
+          fetch(`${BASE_URL}/api/contracts`, { headers }),
+          fetch(`${BASE_URL}/api/marketplace/loan-requests`, { headers })
         ]);
 
         const authJson = await authRes.json();
         const lenderJson = await lenderRes.json();
         const contractsJson = await contractsRes.json();
+        const marketplaceJson = await marketplaceRes.json();
 
         if (authJson.success) setUser(authJson.data.user);
         if (lenderJson.success) setLenderData(lenderJson.data);
@@ -43,12 +46,20 @@ export default function DashboardView() {
           );
           setActiveContracts(active);
         }
+
+        if (marketplaceJson.success) {
+          // Usamos el total paginado si existe, o el largo del array de items
+          const totalDeals = marketplaceJson.data?.total || marketplaceJson.data?.items?.length || 0;
+          setNewDealsCount(totalDeals);
+        }
+
       } catch (err) {
         console.error("Error fetching dashboard data", err);
       } finally {
         setIsLoading(false);
       }
     }
+
     fetchDashboardData();
   }, []);
 
@@ -72,7 +83,7 @@ export default function DashboardView() {
   };
 
   // Calculos para los KPIs basados en datos reales
-  const companyName = lenderData?.lenderCompanies?.[0]?.companyName || (isEs ? "Tu Compañía" : "Your Company");
+  const companyName = lenderData?.lenderCompanies?.[0]?.companyName || (isEs ? "Tu Compania" : "Your Company");
   const firstName = user?.name ? user.name.split(" ")[0] : "Lender";
   const totalActiveContracts = lenderData?.activeContractsCount || activeContracts.length;
   
@@ -106,6 +117,7 @@ export default function DashboardView() {
             {d.stats.acrossActive.replace("{n}", totalActiveContracts.toString())}
           </div>
         </div>
+
         <div className="rounded-[10px] border border-[#e6ebf1] bg-white p-[18px_20px]">
           <div className="mb-[6px] text-[11px] font-[700] uppercase tracking-[0.5px] text-[#aab7c4]">
             {d.stats.monthlyIncome}
@@ -113,16 +125,17 @@ export default function DashboardView() {
           <div className="text-[24px] font-[800] tracking-[-0.5px] text-[#2e7d32]">{formatCurrency(totalMonthlyIncome)}</div>
           <div className="mt-[3px] text-[11px] text-[#aab7c4]">{d.stats.interestPayments}</div>
         </div>
+
         <div className="rounded-[10px] border border-[#e6ebf1] bg-white p-[18px_20px]">
           <div className="mb-[6px] text-[11px] font-[700] uppercase tracking-[0.5px] text-[#aab7c4]">
             {d.stats.newDeals}
           </div>
           <div className="text-[24px] font-[800] tracking-[-0.5px] text-[#635bff]">
-            {/* Dato simulado hasta tener un count en la API de marketplace */}
-            12
+            {newDealsCount}
           </div>
           <div className="mt-[3px] text-[11px] text-[#aab7c4]">{d.stats.matchCriteria}</div>
         </div>
+
         <div className="rounded-[10px] border border-[#e6ebf1] bg-white p-[18px_20px]">
           <div className="mb-[6px] text-[11px] font-[700] uppercase tracking-[0.5px] text-[#aab7c4]">
             {d.stats.maturingSoon}
@@ -141,7 +154,7 @@ export default function DashboardView() {
       <div className="grid grid-cols-1 items-start gap-[16px] lg:grid-cols-[1fr_340px]">
         <div className="min-w-0">
           
-          {/* Alerta Dinámica (Mora o Vencimiento) */}
+          {/* Alerta Dinamica (Mora o Vencimiento) */}
           {delinquentContract ? (
             <div className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
               <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[14px_20px]">
@@ -185,7 +198,7 @@ export default function DashboardView() {
             )
           )}
 
-          {/* Préstamos Activos */}
+          {/* Prestamos Activos */}
           <div className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
             <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[14px_20px]">
               <div className="text-[13px] font-[700] text-[#0a2540]">{d.cards.activeLoans}</div>
@@ -200,6 +213,7 @@ export default function DashboardView() {
               activeContracts.slice(0, 3).map((contract) => {
                 const terms = contract.currentTerms;
                 const isPending = contract.status === "PENDING_ACCEPTANCE" || terms?.status !== "ACCEPTED";
+                
                 return (
                   <div key={contract.id} className="flex cursor-pointer items-center justify-between border-b border-[#f6f9fc] p-[12px_20px] transition-colors hover:bg-[#fafbfd] last:border-b-0">
                     <div>
@@ -211,7 +225,7 @@ export default function DashboardView() {
                     <div className="text-center">
                       <div className="text-[13px] font-[700] text-[#0a2540]">{formatCurrency(terms?.principalAmount)}</div>
                       <div className="text-[10px] text-[#aab7c4]">
-                        {terms?.interestRate}% · {formatCurrency(terms?.calculatedMonthlyPayment)}/mo
+                        {terms?.interestRate}% / {formatCurrency(terms?.calculatedMonthlyPayment)}/mo
                       </div>
                     </div>
                     <div className="text-right">
@@ -233,7 +247,7 @@ export default function DashboardView() {
         </div>
 
         <div>
-          {/* Próximos Pagos */}
+          {/* Proximos Pagos */}
           <div className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
             <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[14px_20px]">
               <div className="text-[13px] font-[700] text-[#0a2540]">{d.cards.upcomingPayments}</div>
@@ -269,7 +283,7 @@ export default function DashboardView() {
           <div className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
             <div className="m-[20px] rounded-[8px] border border-[#c7c4ff] bg-[#f0efff] p-[16px] text-center">
               <div className="mb-[6px] text-[13px] font-[700] text-[#635bff]">
-                {d.browseCta.title.replace("{n}", "12")}
+                {d.browseCta.title.replace("{n}", newDealsCount.toString())}
               </div>
               <div className="mb-[12px] text-[12px] text-[#8898aa]">
                 {d.browseCta.sub}
@@ -279,6 +293,7 @@ export default function DashboardView() {
               </Link>
             </div>
           </div>
+
         </div>
       </div>
     </div>

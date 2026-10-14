@@ -1,28 +1,82 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 interface AccountSecurityModalProps {
-  isSuspiciousAlertOpen?: boolean; // Para simular la vista desde un enlace de seguridad
+  isSuspiciousAlertOpen?: boolean;
+  userEmail?: string;
+  userPhone?: string | null;
+  is2FAEnabled?: boolean;
 }
 
 export default function AccountSecurityModal({
-  isSuspiciousAlertOpen = true,
+  isSuspiciousAlertOpen = false,
+  userEmail = "N/A",
+  userPhone = null,
+  is2FAEnabled = false
 }: AccountSecurityModalProps) {
-  const { t } = useSite();
-  // Accedemos a los textos del diccionario
+  const { t, lang } = useSite();
+  const isEs = lang === "es";
   const s = (t.dashboardLender.mimic as any).settings.accountSecurity;
 
   const [isOpen, setIsOpen] = useState(false);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+  const [isRevoking, setIsRevoking] = useState(false);
 
-  // Simulaciones de accion para los botones
+  useEffect(() => {
+    if (isOpen) {
+      fetchAuditLogs();
+    }
+  }, [isOpen]);
+
+  const fetchAuditLogs = async () => {
+    setIsLoadingLogs(true);
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const res = await fetch(`${BASE_URL}/api/audit-logs?pageSize=3`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const json = await res.json();
+      if (json.success && json.data?.items) {
+        setAuditLogs(json.data.items);
+      }
+    } catch (err) {
+      console.error("Error fetching audit logs", err);
+    } finally {
+      setIsLoadingLogs(false);
+    }
+  };
+
   const handleFreeze = () => alert(s.freezeTitle + " OK.");
-  const handleRevoke = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const btn = e.currentTarget;
-    btn.disabled = true;
-    btn.innerText = s.revoke + "d"; // Revoked / Revocado
-    btn.classList.add("opacity-50", "cursor-not-allowed");
+
+  const handleRevokeAll = async () => {
+    if (!confirm(isEs ? "¿Seguro que deseas cerrar todas tus sesiones?" : "Are you sure you want to log out all other sessions?")) return;
+    setIsRevoking(true);
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const res = await fetch(`${BASE_URL}/api/auth/logout-all`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        alert(isEs ? "Sesiones revocadas exitosamente." : "Sessions revoked successfully.");
+      } else {
+        alert(isEs ? "Error al revocar sesiones." : "Failed to revoke sessions.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRevoking(false);
+    }
+  };
+
+  const formatLogDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString(isEs ? "es-MX" : "en-US", { month: "short", day: "numeric", year: "numeric" });
   };
 
   return (
@@ -69,7 +123,7 @@ export default function AccountSecurityModal({
                     {s.alertTitle}
                   </div>
                   <div className="text-[14px] leading-relaxed text-ink-2">
-                    {s.alertSub} <strong className="text-crit font-bold">[PML phone number]</strong>.
+                    {s.alertSub} <strong className="text-crit font-bold">1-800-PAYMYLOAN</strong>.
                   </div>
                 </div>
               </div>
@@ -99,47 +153,28 @@ export default function AccountSecurityModal({
                 {s.loggedInDev}
               </div>
               
-              {/* Row 1 - Actual */}
               <div className="flex items-center justify-between border-b border-rule py-2.5 text-[13px]">
                 <div>
                   <div className="font-bold text-ink">
-                    Chrome on MacBook Pro 
+                    {isEs ? "Navegador Actual" : "Current Browser"} 
                     <span className="ml-2 rounded bg-success-soft px-2 py-0.5 text-[10px] font-bold text-success">
                       {s.thisDevice}
                     </span>
                   </div>
-                  <div className="text-[12px] text-ink-3">Memphis, TN · Last active just now</div>
+                  <div className="text-[12px] text-ink-3">Activo ahora</div>
                 </div>
                 <button disabled className="rounded-md border-[1.5px] border-rule bg-surface px-4 py-2 text-[13px] font-bold text-ink-3 opacity-50 cursor-not-allowed">
                   {s.current}
                 </button>
               </div>
 
-              {/* Row 2 */}
-              <div className="flex items-center justify-between border-b border-rule py-2.5 text-[13px]">
-                <div>
-                  <div className="font-bold text-ink">Safari on iPhone 15</div>
-                  <div className="text-[12px] text-ink-3">Memphis, TN · Last active 2 hours ago</div>
-                </div>
-                <button onClick={handleRevoke} className="rounded-md bg-crit px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90">
-                  {s.revoke}
-                </button>
-              </div>
-
-              {/* Row 3 */}
-              <div className="flex items-center justify-between border-b border-rule py-2.5 text-[13px]">
-                <div>
-                  <div className="font-bold text-ink">Chrome on Windows</div>
-                  <div className="text-[12px] text-ink-3">Unknown location · Last active 3 days ago</div>
-                </div>
-                <button onClick={handleRevoke} className="rounded-md bg-crit px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90">
-                  {s.revoke}
-                </button>
-              </div>
-
               <div className="mt-4">
-                <button className="w-full rounded-md bg-crit py-2.5 text-[13px] font-bold text-white transition-opacity hover:opacity-90">
-                  {s.revokeAll}
+                <button 
+                  onClick={handleRevokeAll}
+                  disabled={isRevoking}
+                  className="w-full rounded-md bg-crit py-2.5 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  {isRevoking ? "Cerrando sesiones..." : s.revokeAll}
                 </button>
               </div>
             </div>
@@ -152,10 +187,10 @@ export default function AccountSecurityModal({
               </div>
 
               {[
-                { label: s.password, meta: "Last changed 30 days ago" },
-                { label: s.phone, meta: "(901) ***-**91 · Used for 2FA" },
-                { label: s.email, meta: "j***@gmail.com" },
-                { label: s.bank, meta: "Account ending 4821 · Chase Bank" }
+                { label: s.password, meta: isEs ? "Recomendamos usar una contraseña fuerte" : "We recommend using a strong password" },
+                { label: s.phone, meta: userPhone ? `${userPhone} - ${is2FAEnabled ? '2FA Activo' : '2FA Inactivo'}` : (isEs ? "No proporcionado" : "Not provided") },
+                { label: s.email, meta: userEmail },
+                { label: s.bank, meta: "Cuenta pendiente de configuración" }
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center justify-between border-b border-rule py-3 last:border-0 last:pb-0">
                   <div>
@@ -180,29 +215,21 @@ export default function AccountSecurityModal({
                 {s.eventsTitle}
               </div>
               
-              <div className="flex items-center justify-between border-b border-rule py-2.5 text-[13px]">
-                <div>
-                  <div className="font-bold text-ink">Login from new device</div>
-                  <div className="text-[12px] text-ink-3">Chrome on Windows · Unknown location · Sep 22, 2026</div>
-                </div>
-                <span className="text-[12px] font-bold text-crit">{s.flagged}</span>
-              </div>
-
-              <div className="flex items-center justify-between border-b border-rule py-2.5 text-[13px]">
-                <div>
-                  <div className="font-bold text-ink">Bank account change attempted</div>
-                  <div className="text-[12px] text-ink-3">Safari on iPhone · Memphis, TN · Sep 20, 2026</div>
-                </div>
-                <span className="text-[12px] font-bold text-success">{s.confirmed}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5 text-[13px]">
-                <div>
-                  <div className="font-bold text-ink">Password changed</div>
-                  <div className="text-[12px] text-ink-3">Chrome on MacBook · Memphis, TN · Aug 23, 2026</div>
-                </div>
-                <span className="text-[12px] font-bold text-success">{s.confirmed}</span>
-              </div>
+              {isLoadingLogs ? (
+                <div className="py-4 text-center text-sm text-ink-3">Cargando eventos...</div>
+              ) : auditLogs.length === 0 ? (
+                <div className="py-4 text-center text-sm text-ink-3">Sin eventos recientes.</div>
+              ) : (
+                auditLogs.map((log) => (
+                  <div key={log.id} className="flex items-center justify-between border-b border-rule py-2.5 text-[13px] last:border-0">
+                    <div>
+                      <div className="font-bold text-ink uppercase text-[11px] tracking-wider">{log.action.replace(/_/g, " ")}</div>
+                      <div className="text-[12px] text-ink-3">{formatLogDate(log.createdAt)}</div>
+                    </div>
+                    <span className="text-[12px] font-bold text-success">{s.confirmed}</span>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Contacto de Emergencia */}
@@ -212,7 +239,7 @@ export default function AccountSecurityModal({
                 {s.emergencyTitle}
               </div>
               <div className="text-[14px] leading-relaxed text-ink-2">
-                {s.emergencyText1} <strong className="text-ink font-bold">[PML phone number]</strong>
+                {s.emergencyText1} <strong className="text-ink font-bold">1-800-PAYMYLOAN</strong>
                 <br />
                 {s.emergencyText2}
               </div>

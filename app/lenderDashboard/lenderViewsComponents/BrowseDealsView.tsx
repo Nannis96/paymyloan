@@ -69,18 +69,7 @@ export default function BrowseDealsView() {
         const json = await response.json();
 
         if (json.success) {
-          let items = json.data.items || [];
-          
-          // Fallback a mocks si la base de datos esta vacia agregando lat y lng reales
-          if (items.length === 0) {
-            items = [
-              { id: "1", property: { addressLine1: "2847 Lamar Ave", city: "Memphis", state: "TN", afterRepairValue: 210000 }, projectType: "BRIDGE", totalLoanAmountRequested: 145000, status: "PUBLISHED", lat: 35.092226, lng: -89.967683 },
-              { id: "2", property: { addressLine1: "1032 S Wellington St", city: "Memphis", state: "TN", afterRepairValue: 148000 }, projectType: "FIX_AND_FLIP", totalLoanAmountRequested: 92000, status: "PUBLISHED", lat: 35.119001, lng: -90.047118 },
-              { id: "3", property: { addressLine1: "4412 Raleigh Lagrange Rd", city: "Memphis", state: "TN", afterRepairValue: 255000 }, projectType: "BRIDGE", totalLoanAmountRequested: 168000, status: "MATCHED", lat: 35.200777, lng: -89.916074 },
-              { id: "4", property: { addressLine1: "5541 Getwell Rd", city: "Southaven", state: "MS", afterRepairValue: 195000 }, projectType: "BRIDGE", totalLoanAmountRequested: 130000, status: "PUBLISHED", lat: 34.938882, lng: -89.936791 },
-            ];
-          }
-          setDeals(items);
+          setDeals(json.data.items || []);
         } else {
           throw new Error(json.error?.message || m.errorFetch);
         }

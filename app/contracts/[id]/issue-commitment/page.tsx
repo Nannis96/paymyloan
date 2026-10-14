@@ -6,6 +6,7 @@ import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 
 // URL base de la API
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 export default function IssueCommitmentPage() {
   return (

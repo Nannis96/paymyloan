@@ -5,16 +5,12 @@ import { useSite } from "@/app/components/layout/SiteShell";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-// Interfaces basadas en la API de Mensajeria
+// Interfaces basadas en la API de Mensajería
 interface Message {
   id: string;
   body: string;
   sender: "LENDER" | "BORROWER" | "SYSTEM";
   createdAt: string;
-  // Campos locales simulados para la UI si enviaran archivos (aun no en API)
-  attachmentName?: string;
-  isImage?: boolean;
-  attachmentUrl?: string;
   isWarning?: boolean;
 }
 
@@ -32,7 +28,7 @@ interface Thread {
 export default function MessagesView() {
   const { t, lang } = useSite();
   const m = t.messaging;
-  
+
   const [threads, setThreads] = useState<Thread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -40,8 +36,7 @@ export default function MessagesView() {
   
   const [isLoadingThreads, setIsLoadingThreads] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Cargar lista de conversaciones (Threads)
@@ -53,6 +48,7 @@ export default function MessagesView() {
           headers: { Authorization: `Bearer ${token}` }
         });
         const json = await res.json();
+        
         if (json.success && json.data) {
           setThreads(json.data);
           // Si hay hilos y no hay ninguno activo, seleccionamos el primero
@@ -69,7 +65,7 @@ export default function MessagesView() {
     fetchThreads();
   }, []);
 
-  // Cargar mensajes del hilo activo y marcar como leidos
+  // Cargar mensajes del hilo activo y marcar como leídos
   useEffect(() => {
     if (!activeThreadId) return;
 
@@ -78,13 +74,13 @@ export default function MessagesView() {
       try {
         const token = localStorage.getItem("accessToken") || "";
         
-        // 1. Marcar como leidos
+        // 1. Marcar como leídos
         await fetch(`${BASE_URL}/api/lenders/me/messages/threads/${activeThreadId}/read`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        // 2. Obtener historial (paginado en API, tomamos items)
+        // 2. Obtener historial
         const res = await fetch(`${BASE_URL}/api/lenders/me/messages/threads/${activeThreadId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -102,7 +98,7 @@ export default function MessagesView() {
     fetchMessages();
   }, [activeThreadId]);
 
-  // Scroll automatico hacia abajo
+  // Scroll automático hacia abajo
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -110,7 +106,7 @@ export default function MessagesView() {
   const handleSend = async () => {
     if (!text.trim() || !activeThreadId) return;
 
-    // Validacion local de info de contacto
+    // Validación local de info de contacto
     const phonePattern = /(\d[\s\-\.]?){7,}/;
     const emailPattern = /\S+@\S+\.\S+/;
     
@@ -135,7 +131,7 @@ export default function MessagesView() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}` 
         },
         body: JSON.stringify({
           borrowerProfileId: activeThreadId,
@@ -147,7 +143,7 @@ export default function MessagesView() {
       if (json.success && json.data) {
         setMessages(prev => [...prev, json.data]);
         
-        // Actualizamos el ultimo mensaje en el thread local
+        // Actualizamos el último mensaje en el thread local
         setThreads(prev => prev.map(t => {
           const tId = t.borrowerProfileId || t.borrowerProfile?.id;
           if (tId === activeThreadId) {
@@ -165,27 +161,6 @@ export default function MessagesView() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
-    }
-  };
-
-  // Logica visual de adjuntos (Nota: La API aun no soporta archivos en mensajes)
-  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const isImage = file.type.startsWith("image/");
-      const url = URL.createObjectURL(file);
-      
-      setMessages(prev => [...prev, {
-        id: `local-${Date.now()}`,
-        sender: "LENDER",
-        body: "",
-        createdAt: new Date().toISOString(),
-        attachmentName: file.name,
-        isImage,
-        attachmentUrl: url
-      }]);
-      
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -257,7 +232,7 @@ export default function MessagesView() {
           </div>
         </div>
 
-        {/* AREA DE CHAT */}
+        {/* ÁREA DE CHAT */}
         <div className="flex flex-1 flex-col overflow-hidden">
           
           <div className="flex items-center justify-between border-b border-[#e6ebf1] bg-white p-[16px_24px]">
@@ -274,7 +249,7 @@ export default function MessagesView() {
             {isLoadingMessages ? (
               <div className="text-center text-sm text-[#8898aa]">Cargando mensajes...</div>
             ) : !activeThreadId ? (
-              <div className="text-center text-sm text-[#8898aa]">Selecciona una conversacion</div>
+              <div className="text-center text-sm text-[#8898aa]">Selecciona una conversación</div>
             ) : messages.length === 0 ? (
               <div className="text-center text-sm text-[#8898aa]">Escribe el primer mensaje</div>
             ) : (
@@ -301,24 +276,7 @@ export default function MessagesView() {
                     </div>
                     <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
                       <div className={`max-w-[420px] rounded-[12px] p-[12px_16px] text-[13px] leading-[1.6] ${isMe ? "bg-[#635bff] text-white" : "bg-[#f0f4f8] text-[#0a2540]"}`}>
-                        
                         {msg.body && <div>{msg.body}</div>}
-                        
-                        {/* Seccion de UI para adjuntos (simulada por ahora) */}
-                        {msg.attachmentName && !msg.isImage && (
-                          <div className={`mt-[8px] flex items-center gap-[10px] rounded-[8px] border p-[10px_14px] text-[12px] ${isMe ? "border-white/20 bg-white/10 text-white" : "border-[#e6ebf1] bg-white text-[#425466]"}`}>
-                            <span className="text-[18px]">📄</span> 
-                            <span>{msg.attachmentName}</span>
-                            <span className={`ml-auto cursor-pointer ${isMe ? "text-[#c7c4ff]" : "text-[#635bff]"}`}>{m.view}</span>
-                          </div>
-                        )}
-                        
-                        {msg.isImage && msg.attachmentUrl && (
-                          <div className="p-[4px]">
-                            <img src={msg.attachmentUrl} alt={msg.attachmentName} className="max-h-[200px] max-w-[260px] rounded-[6px] block" />
-                            <div className={`mt-[4px] text-[11px] ${isMe ? "text-white/60" : "text-[#8898aa]"}`}>{msg.attachmentName}</div>
-                          </div>
-                        )}
                       </div>
                       <div className={`mt-[4px] px-[4px] text-[11px] text-[#aab7c4] ${isMe ? "text-right" : ""}`}>
                         {formatTime(msg.createdAt)}
@@ -331,23 +289,9 @@ export default function MessagesView() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* AREA DE INPUT */}
+          {/* ÁREA DE INPUT */}
           <div className="flex flex-col gap-[10px] border-t border-[#e6ebf1] bg-white p-[16px_24px]">
             <div className="flex items-end gap-[10px]">
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="h-[44px] cursor-pointer rounded-[8px] border-none bg-[#f0f4f8] p-[10px_14px] text-[13px] text-[#425466] hover:bg-[#e6ebf1] transition-colors" 
-                title="Attach file or image"
-              >
-                📎
-              </button>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" 
-                className="hidden" 
-                onChange={handleFiles} 
-              />
               <textarea 
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -367,10 +311,9 @@ export default function MessagesView() {
             </div>
             <div className="flex items-center gap-[6px] text-[11px] text-[#aab7c4]">
               <span className="font-[600] text-[#c62626]">🔒</span>
-              <span>{m.warningNote}</span>
+              <span>{m.warningNote.split(" | ")[0]}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
