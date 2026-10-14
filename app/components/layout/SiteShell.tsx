@@ -11,6 +11,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
+import { HOME_BY_ROLE, roleForPath } from "@/app/lib/roles";
 import en from "@/content/en";
 import type { Copy, Lang } from "@/content/copy";
 import {
@@ -155,6 +156,14 @@ export default function SiteShell({
 
           if (!res.ok) {
             cerrarSesion();
+            return;
+          }
+          // Cada rol, su dashboard. `roles` puede traer LENDER y BORROWER a la vez.
+          const me = (await res.json())?.data;
+          const roles: string[] = me?.roles ?? [me?.user?.role];
+          const required = roleForPath(pathname);
+          if (required && !roles.includes(required)) {
+            router.replace(HOME_BY_ROLE[roles[0]] ?? "/");
             return;
           }
           setIsVerifying(false);
