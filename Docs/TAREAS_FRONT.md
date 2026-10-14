@@ -119,7 +119,7 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 - [ ] **T7.5** Estado vacío para `403 MESSAGING_NOT_ALLOWED`.
 
 ## Paso 8 — Notificaciones
-- [ ] **T8.1** Campana con `unread-count` (header, ambos roles).
+- [x] **T8.1** Campana con `unread-count` (header, ambos roles): `NotificationBell` en `DashboardHeader`, polling 60 s, enlaza a `<dashboard del rol>/notifications`. **HECHA 2026-10-14.**
 - [ ] **T8.2** Listado + marcar leída / todas (componente compartido).
 - [ ] **T8.3** Deep-link según `type`.
 
