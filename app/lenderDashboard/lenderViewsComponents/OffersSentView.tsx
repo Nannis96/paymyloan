@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
@@ -34,10 +35,7 @@ export default function OffersSentView() {
   useEffect(() => {
     async function fetchSentOffers() {
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const res = await fetch(API_ROUTES.marketplace.loanRequests, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await apiFetch(API_ROUTES.marketplace.loanRequests);
         
         const json = await res.json();
         

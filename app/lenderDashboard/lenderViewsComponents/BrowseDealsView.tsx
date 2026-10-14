@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
@@ -62,10 +63,7 @@ export default function BrowseDealsView() {
   useEffect(() => {
     async function fetchDeals() {
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const response = await fetch(API_ROUTES.marketplace.loanRequests, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await apiFetch(API_ROUTES.marketplace.loanRequests);
 
         if (!response.ok) throw new Error(m.errorFetch);
         const json = await response.json();

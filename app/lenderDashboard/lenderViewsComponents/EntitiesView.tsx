@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
@@ -26,11 +27,8 @@ export default function EntitiesView() {
   useEffect(() => {
     async function fetchEntities() {
       try {
-        const token = localStorage.getItem("accessToken") || "";
         // Hacemos fetch al perfil del prestamista que incluye sus entidades
-        const res = await fetch(API_ROUTES.lenders.me, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await apiFetch(API_ROUTES.lenders.me);
         
         const json = await res.json();
         

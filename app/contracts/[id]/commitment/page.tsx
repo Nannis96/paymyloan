@@ -1,5 +1,7 @@
 "use client";
 
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -7,7 +9,6 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { Building, X } from "lucide-react";
 
 // URL base de la API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Interfaces basadas en la respuesta de Prisma
 interface FeeItem {
@@ -54,10 +55,7 @@ function CommitmentLetterContent() {
     async function fetchContract() {
       if (!contractId) return;
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const response = await fetch(`${API_URL}/api/contracts/${contractId}`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
+        const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}`);
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
@@ -91,15 +89,10 @@ function CommitmentLetterContent() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const token = localStorage.getItem("accessToken") || "";
       const termsId = contract.currentTerms.id;
       
-      const response = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/accept`, {
+      const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}/terms/${termsId}/accept`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
       });
 
       const json = await response.json();
@@ -121,15 +114,10 @@ function CommitmentLetterContent() {
     setIsRejecting(true);
     setError(null);
     try {
-      const token = localStorage.getItem("accessToken") || "";
       const termsId = contract.currentTerms.id;
       
-      const response = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/reject`, {
+      const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}/terms/${termsId}/reject`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
         body: JSON.stringify({ comment })
       });
 

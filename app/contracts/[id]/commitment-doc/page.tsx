@@ -1,5 +1,7 @@
 "use client";
 
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -7,7 +9,6 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 interface FeeItem {
   id: string;
@@ -76,10 +77,7 @@ function CommitmentLetterDocContent() {
     async function fetchContract() {
       if (!contractId) return;
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const response = await fetch(`${API_URL}/api/contracts/${contractId}`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
+        const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}`);
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: Error al cargar contrato`);

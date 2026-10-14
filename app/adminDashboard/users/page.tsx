@@ -1,11 +1,12 @@
 "use client";
 
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 
 // URL base de la API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Interfaz basada en SafeUser del backend
 interface UserItem {
@@ -28,15 +29,8 @@ function UsersListContent() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const token = localStorage.getItem("accessToken") || "";
         
-        const response = await fetch(`${API_URL}/api/users`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-        });
+        const response = await apiFetch(`${BASE_URL}/api/users`);
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {

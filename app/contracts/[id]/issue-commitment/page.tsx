@@ -6,7 +6,6 @@ import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 
 // URL base de la API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function IssueCommitmentPage() {
   return (
@@ -49,7 +48,7 @@ function IssueCommitmentContent() {
       // TODO: BACKEND - Integrar la logica real de creacion/modificacion de fees.
       // Ej. POST a /api/contracts/{contractId}/terms/{termsId}/fees con los valores del state.
       // const token = localStorage.getItem("accessToken") || "";
-      // const response = await fetch(`${API_URL}/api/contracts/${contractId}/terms`, { ... })
+      // const response = await fetch(`${BASE_URL}/api/contracts/${contractId}/terms`, { ... })
 
       // Simulacion temporal de la peticion
       await new Promise(resolve => setTimeout(resolve, 1200));

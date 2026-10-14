@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState } from "react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
@@ -24,14 +25,9 @@ function InviteFlowContent() {
       const loanRequestId = "DUMMY_REQ_ID";
       // The API asks for lenderCompanyId. If we just have email, the backend would resolve it,
       // or we'd fetch the company ID first. We mock the body to show the integration point.
-      const token = localStorage.getItem("accessToken") || "";
       
-      const res = await fetch(API_ROUTES.borrowers.loanRequestTargets(loanRequestId), {
+      const res = await apiFetch(API_ROUTES.borrowers.loanRequestTargets(loanRequestId), {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
         body: JSON.stringify({ lenderCompanyId: "MOCK_LENDER_COMP_ID_BASED_ON_EMAIL" })
       });
 

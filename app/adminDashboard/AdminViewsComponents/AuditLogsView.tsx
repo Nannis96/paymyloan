@@ -1,11 +1,12 @@
 // app/admin/AdminViewsComponents/AuditLogsView.tsx
 "use client";
 
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, User, Shield, Cpu, Calendar } from "lucide-react";
 import { useSite } from "@/app/components/layout/SiteShell";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export type ActorRole = "ADMIN" | "LENDER" | "BORROWER" | "SYSTEM";
 
@@ -40,8 +41,6 @@ export function AuditLogsView() {
       setError(null);
       
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) throw new Error("No token found");
 
         const params = new URLSearchParams({
           page: String(currentPage),
@@ -51,13 +50,7 @@ export function AuditLogsView() {
         if (search) params.set("action", search);
         if (actorRole) params.set("actorRole", actorRole);
 
-        const response = await fetch(`${API_URL}/api/audit-logs?${params.toString()}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
-        });
+        const response = await apiFetch(`${BASE_URL}/api/audit-logs?${params.toString()}`);
 
         if (!response.ok) {
           throw new Error("Error al cargar los registros de auditoria");

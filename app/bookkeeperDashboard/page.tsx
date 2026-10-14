@@ -7,7 +7,6 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 
 // URL base de la API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 function BookkeeperDashboardContent() {
   const { t } = useSite();

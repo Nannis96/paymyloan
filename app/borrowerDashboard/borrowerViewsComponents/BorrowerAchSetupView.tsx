@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 
 export default function BorrowerAchSetupView() {
   const params = useParams();
@@ -28,12 +29,9 @@ export default function BorrowerAchSetupView() {
         return;
       }
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const headers = { Authorization: `Bearer ${token}` };
-
         const [contractRes, scheduleRes] = await Promise.all([
-          fetch(API_ROUTES.contracts.byId(contractId), { headers }),
-          fetch(API_ROUTES.contracts.schedule(contractId), { headers })
+          apiFetch(API_ROUTES.contracts.byId(contractId)),
+          apiFetch(API_ROUTES.contracts.schedule(contractId))
         ]);
 
         if (contractRes.ok) {

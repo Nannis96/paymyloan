@@ -78,9 +78,21 @@ Reemplazo: partir por pantalla/dominio (`copy/landing.ts`, `copy/admin.ts`…) y
 Reemplazo: un `apiFetch(url, init)` de ~15 líneas en `app/lib/` (añade header, parsea `json.data`, redirige a `/login` en 401) y un hook `useAuthedUser(role)` para el guard. Cada pantalla pierde 10-20 líneas de try/catch/loading; estimado −500 líneas.
 `auth.refresh` existe en las rutas pero nadie lo llama — o se implementa en `apiFetch` o se borra.
 
+**Estado: HECHO (rama `fix-brenda`).**
+- Nuevo `app/lib/apiFetch.ts` (~20 líneas): añade `Authorization`, pone `Content-Type: application/json` si hay `body`, y ante un 401 limpia `accessToken`/`refreshToken` y manda a `/login`. Devuelve el `Response` tal cual, así que cada llamada solo cambia `fetch(url, {headers…})` → `apiFetch(url)`. Incluye `toList(data)` para el patrón `Array.isArray(data) ? data : data?.items || []`.
+- Migradas 29 llamadas en 24 archivos (admin, lender, borrower, contracts, marketplace); se eliminaron los `const token = localStorage.getItem("accessToken")`, los bloques `headers: { Authorization… }` y los guards `if (!token)` redundantes. −~76 líneas netas (50 ins / 126 del en la migración).
+- Sin migrar a propósito: `login`, `register` (sin sesión), `SiteShell` (verifica `/auth/me` con su propia lógica) y `LogoutButton` (necesita el refresh token y limpia siempre).
+- Se omitió `useAuthedUser(role)`: el guard por rol solo existe en `adminDashboard/page.tsx` (1 sitio, no 8) — YAGNI; añadir si aparece un segundo.
+- `auth.refresh` sigue sin usarse: se deja para §3 (borrar) en vez de implementar refresh en `apiFetch`.
+- De paso se hizo §8: `BASE_URL` ahora se exporta de `endpoints.ts` y se eliminaron las constantes `API_URL` duplicadas (9 archivos).
+- Verificado: `tsc --noEmit` sin errores (entorno Docker `docker-compose.dev.yml`).
+- Nota de comportamiento: antes cada pantalla trataba el 401 a su manera (o lo ignoraba, mostrando datos vacíos); ahora todas redirigen a `/login`.
+
 ## 8. shrink: `NEXT_PUBLIC_API_URL` redefinido en 10 archivos
 
 `const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"` copiado en `adminDashboard/users`, `add-user`, `AuditLogsView`, `contracts/*` (5 archivos), `bookkeeperDashboard`, aunque `endpoints.ts` ya exporta `BASE_URL`. Reemplazo: importar `API_ROUTES` (o exportar `BASE_URL`) y borrar las 10 constantes. −10 líneas más una fuente única de verdad.
+
+**Estado: HECHO** junto con §7 (`export const BASE_URL` en `endpoints.ts`; 9 constantes `API_URL` eliminadas, `bookkeeperDashboard` ya no la usaba).
 
 ## 9. yagni: pares duplicados borrower/lender con ~70 % de diff mínimo
 

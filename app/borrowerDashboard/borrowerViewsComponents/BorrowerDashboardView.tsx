@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch, toList } from "@/app/lib/apiFetch";
 
 export default function BorrowerDashboardView() {
   const { lang, t } = useSite();
@@ -16,30 +17,27 @@ export default function BorrowerDashboardView() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
-        
-        const headers = { Authorization: `Bearer ${token}` };
+        if (!localStorage.getItem("accessToken")) return;
 
         // 1. Fetch user
-        const resUser = await fetch(API_ROUTES.auth.me, { headers });
+        const resUser = await apiFetch(API_ROUTES.auth.me);
         const jsonUser = await resUser.json();
         if (jsonUser.success && jsonUser.data.user) {
           setUser(jsonUser.data.user);
         }
 
         // 2. Fetch loan requests
-        const resLR = await fetch(API_ROUTES.borrowers.meLoanRequests, { headers });
+        const resLR = await apiFetch(API_ROUTES.borrowers.meLoanRequests);
         if (resLR.ok) {
           const jsonLR = await resLR.json();
-          if (jsonLR.success) setLoanRequests(jsonLR.data.items || []);
+          if (jsonLR.success) setLoanRequests(toList(jsonLR.data));
         }
 
         // 3. Fetch contracts
-        const resContracts = await fetch(API_ROUTES.contracts.base, { headers });
+        const resContracts = await apiFetch(API_ROUTES.contracts.base);
         if (resContracts.ok) {
           const jsonContracts = await resContracts.json();
-          if (jsonContracts.success) setContracts(jsonContracts.data.items || []);
+          if (jsonContracts.success) setContracts(toList(jsonContracts.data));
         }
 
       } catch (error) {

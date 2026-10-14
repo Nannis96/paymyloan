@@ -1,5 +1,7 @@
 "use client";
 
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -7,7 +9,6 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { CheckCircle2 } from "lucide-react";
 
 // URL base de la API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 function AddUserContent() {
   const { t } = useSite();
@@ -35,14 +36,9 @@ function AddUserContent() {
     setError(null);
 
     try {
-      const token = localStorage.getItem("accessToken") || "";
       
-      const response = await fetch(`${API_URL}/api/users`, {
+      const response = await apiFetch(`${BASE_URL}/api/users`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
         body: JSON.stringify({
           name,
           email,

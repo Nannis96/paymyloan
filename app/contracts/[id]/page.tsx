@@ -1,5 +1,7 @@
 "use client";
 
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -7,7 +9,6 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import DocumentVault from "@/app/components/ambos/DocumentVault";
 
 // URL base de la API. Toma la variable de entorno o usa localhost:4000 por defecto
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Interfaces basadas en la respuesta del backend
 interface ContractData {
@@ -61,14 +62,8 @@ function ContractDetailContent() {
       if (!contractId) return;
 
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const headers = {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        };
-
         // Obtenemos los detalles del contrato
-        const contractRes = await fetch(`${API_URL}/api/contracts/${contractId}`, { headers });
+        const contractRes = await apiFetch(`${BASE_URL}/api/contracts/${contractId}`);
         
         if (!contractRes.ok) {
           if (contractRes.status === 401 || contractRes.status === 403) {
@@ -89,7 +84,7 @@ function ContractDetailContent() {
 
         // Intentamos cargar el calendario de pagos (schedule) si el endpoint existe
         try {
-          const scheduleRes = await fetch(`${API_URL}/api/contracts/${contractId}/schedule`, { headers });
+          const scheduleRes = await apiFetch(`${BASE_URL}/api/contracts/${contractId}/schedule`);
           if (scheduleRes.ok) {
             const scheduleJson = await scheduleRes.json();
             if (scheduleJson.success && Array.isArray(scheduleJson.data)) {
