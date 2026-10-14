@@ -1,19 +1,55 @@
-// fetch autenticado: añade el token, Content-Type JSON si hay body y,
-// ante un 401, limpia la sesion y manda a /login.
+import { API_ROUTES } from "./endpoints";
+
+const cerrarSesion = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  window.location.href = "/login";
+};
+
+// El back rota el refresh token en cada uso (reusar uno viejo revoca toda la
+// cadena), asi que las llamadas concurrentes comparten una sola renovacion.
+let refrescando: Promise<boolean> | null = null;
+
+function renovarSesion(): Promise<boolean> {
+  refrescando ??= (async () => {
+    try {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) return false;
+      const res = await fetch(API_ROUTES.auth.refresh, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+      if (!res.ok) return false;
+      const { data } = await res.json();
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      refrescando = null;
+    }
+  })();
+  return refrescando;
+}
+
+// fetch autenticado: anade el token y Content-Type JSON si hay body. Ante un
+// 401 intenta renovar la sesion y reintenta una vez; si falla, manda a /login.
 export async function apiFetch(url: string, init: RequestInit = {}) {
-  const token = localStorage.getItem("accessToken") || "";
-  const res = await fetch(url, {
-    ...init,
-    headers: {
-      ...(init.body ? { "Content-Type": "application/json" } : {}),
-      Authorization: `Bearer ${token}`,
-      ...init.headers,
-    },
-  });
+  const enviar = () =>
+    fetch(url, {
+      ...init,
+      headers: {
+        ...(init.body ? { "Content-Type": "application/json" } : {}),
+        Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
+        ...init.headers,
+      },
+    });
+  let res = await enviar();
   if (res.status === 401) {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    window.location.href = "/login";
+    if (await renovarSesion()) res = await enviar();
+    if (res.status === 401) cerrarSesion();
   }
   return res;
 }

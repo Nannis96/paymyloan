@@ -28,7 +28,7 @@ try {
 }
 ```
 
-Notas: 401 ya limpia sesión y redirige a `/login` (el refresh llega en T0.2). `apiFetch` sigue disponible si necesitas el `Response` crudo.
+Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si no puede, limpia sesión y redirige a `/login`. `apiFetch` sigue disponible si necesitas el `Response` crudo.
 
 ## Decisiones pendientes (de §7)
 - D1: Mockups lender corregidos: ¿los entrega Spencer o los reconstruyo yo? (recomendado: yo)
@@ -41,7 +41,7 @@ Notas: 401 ya limpia sesión y redirige a `/login` (el refresh llega en T0.2). `
 
 ## Paso 0 — Base técnica
 - [x] **T0.1** ~~Crear `app/lib/api.ts`~~ Ya existía `app/lib/apiFetch.ts` (base URL vive en `endpoints.ts`, Authorization y 401→login). Se le agregó `api<T>()` + `ApiError` con errores tipados `{error:{code,message}}`. **HECHA 2026-10-14.**
-- [ ] **T0.2** En `api.ts`: manejo de 401 → `POST /auth/refresh` y reintento una vez. dep: T0.1
+- [x] **T0.2** En `apiFetch.ts`: 401 → `POST /auth/refresh` y reintento una vez (renovación compartida entre llamadas concurrentes, porque el back rota el token). Si falla → limpia sesión y `/login`. **HECHA 2026-10-14.**
 - [ ] **T0.3** Sincronizar `endpoints.ts`: quitar `/terms/propose`, agregar mensajes, notificaciones, reviews, verificaciones, overview, transactions, 2FA, become-*.
 - [ ] **T0.4** Reemplazar `API_URL` duplicados en vistas por `API_ROUTES`/`api.ts`. dep: T0.1, T0.3
 - [ ] **T0.5** Arreglar `logout-all` (URL relativa + sin Authorization) y centralizar `LogoutButton`. dep: T0.1
