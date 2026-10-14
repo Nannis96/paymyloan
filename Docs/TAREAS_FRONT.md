@@ -43,7 +43,7 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 - [x] **T0.1** ~~Crear `app/lib/api.ts`~~ Ya existía `app/lib/apiFetch.ts` (base URL vive en `endpoints.ts`, Authorization y 401→login). Se le agregó `api<T>()` + `ApiError` con errores tipados `{error:{code,message}}`. **HECHA 2026-10-14.**
 - [x] **T0.2** En `apiFetch.ts`: 401 → `POST /auth/refresh` y reintento una vez (renovación compartida entre llamadas concurrentes, porque el back rota el token). Si falla → limpia sesión y `/login`. **HECHA 2026-10-14.**
 - [ ] **T0.3** Sincronizar `endpoints.ts`: quitar `/terms/propose`, agregar mensajes, notificaciones, reviews, verificaciones, overview, transactions, 2FA, become-*.
-- [ ] **T0.4** Reemplazar `API_URL` duplicados en vistas por `API_ROUTES`/`api.ts`. dep: T0.1, T0.3
+- [x] **T0.4** Vistas sin `${BASE_URL}/api/...` armado a mano: usan `API_ROUTES` (users, audit-logs, contracts, accept/reject terms). `SiteShell` valida sesión con `apiFetch` (hereda refresh). Agregado `API_ROUTES.auditLogs`. Quedan `fetch` crudos solo en login/register/logout (públicos). **HECHA 2026-10-14.**
 - [ ] **T0.5** Arreglar `logout-all` (URL relativa + sin Authorization) y centralizar `LogoutButton`. dep: T0.1
 - [ ] **T0.6** Guard por rol en layouts (ADMIN/LENDER/BORROWER) + redirección post-login consistente.
 - [ ] **T0.7** Tipos TS de DTOs (contract, loanRequest, quote, notification, message, review) desde `Docs/API_REFERENCE.md`.

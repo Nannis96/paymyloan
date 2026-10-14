@@ -1,6 +1,6 @@
 "use client";
 
-import { BASE_URL } from "@/app/lib/endpoints";
+import { API_ROUTES } from "@/app/lib/endpoints";
 import { apiFetch } from "@/app/lib/apiFetch";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -55,7 +55,7 @@ function CommitmentLetterContent() {
     async function fetchContract() {
       if (!contractId) return;
       try {
-        const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}`);
+        const response = await apiFetch(API_ROUTES.contracts.byId(contractId));
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
@@ -91,7 +91,7 @@ function CommitmentLetterContent() {
     try {
       const termsId = contract.currentTerms.id;
       
-      const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}/terms/${termsId}/accept`, {
+      const response = await apiFetch(API_ROUTES.contracts.acceptTerms(contractId, termsId), {
         method: "POST",
       });
 
@@ -116,7 +116,7 @@ function CommitmentLetterContent() {
     try {
       const termsId = contract.currentTerms.id;
       
-      const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}/terms/${termsId}/reject`, {
+      const response = await apiFetch(API_ROUTES.contracts.rejectTerms(contractId, termsId), {
         method: "POST",
         body: JSON.stringify({ comment })
       });

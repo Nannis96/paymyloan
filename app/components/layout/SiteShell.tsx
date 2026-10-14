@@ -10,6 +10,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 import en from "@/content/en";
 import type { Copy, Lang } from "@/content/copy";
 import {
@@ -150,9 +151,7 @@ export default function SiteShell({
         }
 
         try {
-          const res = await fetch(API_ROUTES.auth.me, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const res = await apiFetch(API_ROUTES.auth.me);
 
           if (!res.ok) {
             localStorage.removeItem("accessToken");

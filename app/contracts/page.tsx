@@ -1,6 +1,6 @@
 "use client";
 
-import { BASE_URL } from "@/app/lib/endpoints";
+import { API_ROUTES } from "@/app/lib/endpoints";
 import { apiFetch } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
@@ -52,7 +52,7 @@ function ContractsContent() {
     async function fetchContracts() {
       try {
 
-        const response = await apiFetch(`${BASE_URL}/api/contracts`);
+        const response = await apiFetch(API_ROUTES.contracts.base);
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {

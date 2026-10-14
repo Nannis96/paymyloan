@@ -59,6 +59,7 @@ export const API_ROUTES = {
     schedule: (id: string) => `${BASE_URL}/api/contracts/${id}/schedule`,
     balance: (id: string) => `${BASE_URL}/api/contracts/${id}/balance`,
   },
+  auditLogs: `${BASE_URL}/api/audit-logs`,
   marketplace: {
     loanRequests: `${BASE_URL}/api/marketplace/loan-requests`,
     loanRequestById: (id: string) => `${BASE_URL}/api/marketplace/loan-requests/${id}`,
