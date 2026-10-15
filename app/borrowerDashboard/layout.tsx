@@ -1,7 +1,8 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { apiFetch } from "@/app/lib/apiFetch";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import LogoutButton from "@/app/components/ambos/LogoutButton";
 import LangToggle from "@/app/components/ambos/LangToggle";
@@ -19,6 +20,41 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { lang } = useSite();
   const isEs = lang === "es";
+
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [unreadMsgs, setUnreadMsgs] = useState(0);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (!token) return;
+
+        // Notificaciones
+        const resNotifs = await apiFetch("/api/notifications/unread-count");
+        if (resNotifs.ok) {
+          const dataNotifs = await resNotifs.json();
+          if (dataNotifs.success) setUnreadNotifs(dataNotifs.data.unread || 0);
+        }
+
+        // Mensajes
+        const resMsgs = await apiFetch("/api/borrowers/me/messages/threads");
+        if (resMsgs.ok) {
+          const dataMsgs = await resMsgs.json();
+          if (dataMsgs.success && Array.isArray(dataMsgs.data)) {
+            const totalUnread = dataMsgs.data.reduce((acc: number, thread: any) => acc + (thread.unreadCount || 0), 0);
+            setUnreadMsgs(totalUnread);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching unread counts", error);
+      }
+    };
+
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 60000); // Polling cada 60s
+    return () => clearInterval(interval);
+  }, []);
 
   // Textos para la sidebar
   const sb = {
@@ -49,13 +85,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           {/* Mensajes */}
           <Link href="/borrowerDashboard/messages" className="relative cursor-pointer block hover:text-ink transition-colors text-ink-2">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>
+            {unreadMsgs > 0 && <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>}
           </Link>
-
           {/* Notificaciones */}
           <Link href="/borrowerDashboard/notifications" className="relative cursor-pointer block hover:text-ink transition-colors text-ink-2">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" strokeWidth="1.4"/><path d="M8 16a2 2 0 004 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
-            <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>
+            {unreadNotifs > 0 && <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>}
           </Link>
 
           <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-brand-dark text-[12px] font-[700] text-white cursor-pointer select-none">
@@ -76,17 +111,16 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <Link href="/borrowerDashboard/deals" className={`${navItemBase} ${pathname.includes("/deals") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/deals") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M2 7h14" stroke="currentColor" strokeWidth="1.4"/><path d="M6 1v4M12 1v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
             {sb.deals}
-            <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">3</span>
           </Link>
           <Link href="/borrowerDashboard/notifications" className={`${navItemBase} ${pathname.includes("/notifications") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/notifications") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><path d="M9 2l1.6 3.3 3.6.5-2.6 2.6.6 3.6L9 10.3l-3.2 1.7.6-3.6L3.8 5.8l3.6-.5L9 2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>
             {sb.notifications}
-            <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">2</span>
+            {unreadNotifs > 0 && <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">{unreadNotifs}</span>}
           </Link>
           <Link href="/borrowerDashboard/messages" className={`${navItemBase} ${pathname.includes("/messages") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/messages") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><path d="M3 4h12a1 1 0 011 1v7a1 1 0 01-1 1H5l-3 2V5a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>
             {sb.messages}
-            <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">1</span>
+            {unreadMsgs > 0 && <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">{unreadMsgs}</span>}
           </Link>
           <Link href="/borrowerDashboard/payments" className={`${navItemBase} ${pathname.includes("/payments") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/payments") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M2 8h14" stroke="currentColor" strokeWidth="1.4"/><circle cx="6" cy="12" r="1" fill="currentColor"/></svg>
@@ -101,7 +135,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {sb.inviteLender}
           </Link>
 
-          <Link href="/submit-deal" className="mx-[14px] mt-[12px] block rounded-[7px] bg-accent p-[10px] text-center font-sans text-[13px] font-[700] text-accent-ink no-underline transition-colors hover:bg-blue-700">
+          <Link href="/borrowerDashboard/submit-deal" className="mx-[14px] mt-[12px] block rounded-[7px] bg-accent p-[10px] text-center font-sans text-[13px] font-[700] text-accent-ink no-underline transition-colors hover:bg-blue-700">
             {sb.postDeal}
           </Link>
         </div>

@@ -36,18 +36,6 @@ export function AffiliatesView() {
   );
 }
 
-export function VerificationsView() {
-  const { t } = useSite();
-  const v = t.dashboardAdmin.views.verifications;
-  return (
-    <div className="animate-in fade-in duration-300">
-      <h1 className="mb-1 text-[22px] font-extrabold text-ink">{v.title}</h1>
-      <p className="mb-6 text-[13px] text-ink-3">{v.subtitle}</p>
-      <PlaceholderView />
-    </div>
-  );
-}
-
 export function PromoCodesView() {
   const { t } = useSite();
   const v = t.dashboardAdmin.views.promoCodes;

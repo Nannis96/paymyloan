@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import AccountSecurityModal from "./AccountSecurityModal";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function SettingsView() {
+  const router = useRouter();
   const { t, lang } = useSite();
   const s = (t.dashboardLender.mimic as any).settings;
 
@@ -87,7 +89,7 @@ export default function SettingsView() {
           <div className="text-[13px] font-[500] text-[#b45309]">
             <strong className="font-[700]">{s.verifyBanner.text1}</strong> {s.verifyBanner.text2}
           </div>
-          <button className="whitespace-nowrap rounded-[6px] border-none bg-[#635bff] px-[16px] py-[7px] font-sans text-[12px] font-[700] text-white cursor-pointer hover:opacity-90">
+          <button onClick={() => router.push("/lenderDashboard/verification")} className="whitespace-nowrap rounded-[6px] border-none bg-[#635bff] px-[16px] py-[7px] font-sans text-[12px] font-[700] text-white cursor-pointer hover:opacity-90">
             {s.verifyBanner.btn}
           </button>
         </div>

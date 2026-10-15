@@ -1,19 +1,63 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
+import { BASE_URL } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 
-export function BorrowersView({ users }: { users: any[] }) {
+export function BorrowersView() {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
   const v = d.views.borrowers;
-  
-  const borrowers = users.filter(u => u.role === "BORROWER");
+
+  const [borrowers, setBorrowers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchBorrowers() {
+      try {
+        const res = await apiFetch(`${BASE_URL}/api/users`);
+        if (!res.ok) {
+          throw new Error(d.errorFetch || "Error al cargar prestatarios");
+        }
+        const json = await res.json();
+        if (json.success) {
+          const allUsers = json.data || [];
+          setBorrowers(allUsers.filter((u: any) => u.role === "BORROWER"));
+        } else {
+          throw new Error(json.error?.message || d.errorFetch);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Error de red");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchBorrowers();
+  }, [d.errorFetch]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-[13px] text-ink-3">{d.loading || "Cargando..."}</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-[13px] font-bold text-crit">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-in fade-in duration-300">
       <h1 className="mb-1 text-[22px] font-extrabold text-ink">{v.title}</h1>
       <p className="mb-6 text-[13px] text-ink-3">{v.subtitle}</p>
-
+      
       <div className="overflow-hidden rounded-[10px] border border-rule bg-surface shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">

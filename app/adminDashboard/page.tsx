@@ -18,10 +18,10 @@ import { LendersView } from "./AdminViewsComponents/LendersView";
 import { BorrowersView } from "./AdminViewsComponents/BorrowersView";
 import { CatalogView } from "./AdminViewsComponents/CatalogView";
 import { AuditLogsView } from "./AdminViewsComponents/AuditLogsView";
+import { VerificationsView } from "./AdminViewsComponents/VerificationsView";
 import {
   RevenueView,
   AffiliatesView,
-  VerificationsView,
   PromoCodesView,
   SettingsView
 } from "./AdminViewsComponents/PlaceholderViews";
@@ -43,9 +43,6 @@ function AdminDashboardContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [contracts, setContracts] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-
   // Array para iterar el menu lateral facilmente
   const navItems = [
     { id: "overview", label: d.nav.overview },
@@ -70,11 +67,7 @@ function AdminDashboardContent() {
           return;
         }
 
-        const [meRes, contractsRes, usersRes] = await Promise.all([
-          apiFetch(API_ROUTES.auth.me),
-          apiFetch(API_ROUTES.contracts.base),
-          apiFetch(API_ROUTES.users.base)
-        ]);
+        const meRes = await apiFetch(API_ROUTES.auth.me);
 
         // Si el token es invalido o expiro (apiFetch ya limpia la sesion en 401)
         if (!meRes.ok) {
@@ -92,16 +85,6 @@ function AdminDashboardContent() {
         }
 
         setCurrentUser(user);
-
-        if (contractsRes.ok) {
-          const cJson = await contractsRes.json();
-          setContracts(toList(cJson.data));
-        }
-
-        if (usersRes.ok) {
-          const uJson = await usersRes.json();
-          setUsers(toList(uJson.data));
-        }
       } catch (err) {
         setError(d.errorNetwork);
       } finally {
@@ -177,7 +160,8 @@ function AdminDashboardContent() {
           };
 
           const ActiveComponent = VIEW_MAP[activeTab] || VIEW_MAP.overview;
-          return <ActiveComponent contracts={contracts} users={users} setActiveTab={setActiveTab} />;
+
+          return <ActiveComponent setActiveTab={setActiveTab} />;
         })()}
       </div>
     </div>

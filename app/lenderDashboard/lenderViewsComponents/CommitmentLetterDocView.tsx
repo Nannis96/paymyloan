@@ -96,9 +96,8 @@ function CommitmentLetterDocContent() {
   // Calculo total de fees
   const totalFees = fees.reduce((sum: number, fee: any) => sum + Number(fee.computedAmount || fee.amountValue || 0), 0);
 
-  // Datos simulados en caso de que la API no resuelva los nombres unidos (JOINs) todavia
-  const lenderName = contract.lenderCompany?.companyName || "Lender Company LLC";
-  const borrowerName = contract.borrowers?.[0]?.borrowerProfile?.user?.name || "Borrower Entity LLC";
+  const lenderName = contract.lenderCompany?.companyName || doc.labels.lender;
+  const borrowerName = contract.borrowers?.[0]?.borrowerProfile?.user?.name || doc.labels.borrower;
 
   return (
     <div className="mx-auto w-full max-w-[680px] p-[32px_16px] font-sans">
@@ -294,7 +293,7 @@ function CommitmentLetterDocContent() {
                   ) : null}
                 </div>
                 <div className="text-[13px] font-[700] text-[#0a2540]">{lenderName}</div>
-                <div className="text-[11px] text-[#8898aa]">Lender</div>
+                <div className="text-[11px] text-[#8898aa]">{doc.labels.lender}</div>
               </div>
               
               <div>
@@ -309,7 +308,7 @@ function CommitmentLetterDocContent() {
                   ) : null}
                 </div>
                 <div className="text-[13px] font-[700] text-[#0a2540]">{borrowerName}</div>
-                <div className="text-[11px] text-[#8898aa]">Borrower</div>
+                <div className="text-[11px] text-[#8898aa]">{doc.labels.borrower}</div>
               </div>
             </div>
           </div>

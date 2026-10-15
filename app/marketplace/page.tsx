@@ -59,25 +59,7 @@ function MarketplaceContent() {
         
         if (json.success) {
           const items = json.data.items || [];
-          if (items.length === 0) {
-            // Mock de respaldo mientras el backend no tenga seed para LoanRequests
-            setDeals([{
-              id: "2847-lamar-ave",
-              property: {
-                addressLine1: "2847 Lamar Ave",
-                city: "Memphis",
-                state: "TN",
-                afterRepairValue: 210000
-              },
-              projectType: "BRIDGE_FLIP",
-              totalLoanAmountRequested: 145000,
-              rehabAmount: 38000,
-              requestedClosingDate: new Date().toISOString(),
-              _count: { quotes: 2 }
-            }]);
-          } else {
-            setDeals(items);
-          }
+          setDeals(items);
         } else {
           throw new Error(json.error?.message || m.errorFetch);
         }

@@ -75,7 +75,6 @@ function RegisterContent() {
     });
 
     try {
-      // Mock: Password no se envia a nuestra API por diseño (API_REFERENCE.md)
       const response = await fetch(API_ROUTES.auth.register, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,10 +82,10 @@ function RegisterContent() {
           name: fullName,
           email: correo.trim(),
           phone: telefono.replace(/\D/g, ""),
+          password: password,
           role: intent === "lender" ? "LENDER" : "BORROWER"
         }),
       });
-
       const json = await response.json();
       if (!response.ok) throw new Error(json.error?.message || f.errors.submit);
 

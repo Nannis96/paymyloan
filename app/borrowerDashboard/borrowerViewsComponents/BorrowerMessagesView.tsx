@@ -13,8 +13,6 @@ export default function BorrowerMessagesView() {
   const [messages, setMessages] = useState<any[]>([]);
   const [text, setText] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll automatico hacia abajo
@@ -147,27 +145,6 @@ export default function BorrowerMessagesView() {
     }
   };
 
-  // Mantenemos la logica visual de archivos (API actual solo soporta body string)
-  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const isImage = file.type.startsWith("image/");
-      const url = URL.createObjectURL(file);
-      
-      setMessages(prev => [...prev, {
-        id: Date.now(),
-        senderUserId: currentUserId,
-        body: `[Archivo adjunto: ${file.name}]`,
-        createdAt: new Date().toISOString(),
-        attachmentName: file.name,
-        isImage,
-        attachmentUrl: url
-      }]);
-      
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -277,21 +254,6 @@ export default function BorrowerMessagesView() {
                         <div className={`max-w-[420px] rounded-[12px] p-[12px_16px] text-[13px] leading-[1.6] ${isMe ? "bg-accent text-white" : "bg-surface-2 text-ink"}`}>
                           
                           {msg.body && <div>{msg.body}</div>}
-                          
-                          {msg.attachmentName && !msg.isImage && (
-                            <div className={`mt-[8px] flex items-center gap-[10px] rounded-[8px] border p-[10px_14px] text-[12px] ${isMe ? "border-white/20 bg-white/10 text-white" : "border-rule bg-surface text-ink-2"}`}>
-                              <span className="text-[18px]">📄</span> 
-                              <span>{msg.attachmentName}</span>
-                              <span className={`ml-auto cursor-pointer ${isMe ? "text-white/80" : "text-accent"}`}>{m.view}</span>
-                            </div>
-                          )}
-                          
-                          {msg.isImage && msg.attachmentUrl && (
-                            <div className="p-[4px]">
-                              <img src={msg.attachmentUrl} alt={msg.attachmentName} className="block max-h-[200px] max-w-[260px] rounded-[6px]" />
-                              <div className={`mt-[4px] text-[11px] ${isMe ? "text-white/60" : "text-ink-3"}`}>{msg.attachmentName}</div>
-                            </div>
-                          )}
                         </div>
                         <div className={`mt-[4px] px-[4px] text-[11px] text-ink-3 ${isMe ? "text-right" : ""}`}>
                           {formatTime(msg.createdAt)}
@@ -306,20 +268,6 @@ export default function BorrowerMessagesView() {
               {/* AREA DE INPUT */}
               <div className="flex flex-col gap-[10px] border-t border-rule bg-surface p-[16px_24px]">
                 <div className="flex items-end gap-[10px]">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="h-[44px] cursor-pointer rounded-[8px] border-none bg-surface-2 p-[10px_14px] text-[13px] text-ink-2 transition-colors hover:bg-rule"
-                    title="Attach file or image"
-                  >
-                    📎
-                  </button>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
-                    className="hidden"
-                    onChange={handleFiles}
-                  />
                   <textarea
                     value={text}
                     onChange={(e) => setText(e.target.value)}

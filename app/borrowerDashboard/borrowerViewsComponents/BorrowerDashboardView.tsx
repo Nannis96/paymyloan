@@ -16,17 +16,44 @@ export default function BorrowerDashboardView() {
   const [upcomingPayments, setUpcomingPayments] = useState<any[]>([]);
   const [recentPayments, setRecentPayments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [score, setScore] = useState<number | null>(null);
+  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     async function fetchDashboardData() {
       try {
         if (!localStorage.getItem("accessToken")) return;
 
-        // 1. Fetch user
+        // 1. Fetch user & score
         const resUser = await apiFetch(API_ROUTES.auth.me);
         const jsonUser = await resUser.json();
         if (jsonUser.success && jsonUser.data.user) {
           setUser(jsonUser.data.user);
+          if (jsonUser.data.borrowerProfile) {
+            const bId = jsonUser.data.borrowerProfile.id;
+            try {
+              const [resRating, resVerif] = await Promise.all([
+                apiFetch(`/api/borrowers/${bId}/rating`),
+                apiFetch(`/api/borrowers/me/verification`)
+              ]);
+              
+              if (resRating.ok) {
+                const jsonRating = await resRating.json();
+                if (jsonRating.success && jsonRating.data) {
+                  // Convertimos el promedio (1-5) a un formato 0-100 para la UI
+                  setScore(jsonRating.data.average ? Math.round(jsonRating.data.average * 20) : null);
+                }
+              }
+              if (resVerif.ok) {
+                const jsonVerif = await resVerif.json();
+                if (jsonVerif.success && jsonVerif.data?.status === "APPROVED") {
+                  setIsVerified(true);
+                }
+              }
+            } catch (e) {
+              console.error("Error fetching rating/verification", e);
+            }
+          }
         }
 
         // 2. Fetch loan requests
@@ -148,8 +175,7 @@ export default function BorrowerDashboardView() {
       {/* Borrower Score / KPIs */}
       <div className="mb-[24px] flex flex-wrap items-center gap-[28px] rounded-[12px] bg-brand-dark p-[24px_28px]">
         <div className="flex h-[80px] w-[80px] shrink-0 flex-col items-center justify-center rounded-full border-[4px] border-accent bg-accent/20">
-          {/* Note: the score is mocked as 82 because it is a v2 feature, but we dynamically render the rest */}
-          <div className="leading-none text-[26px] font-[800] text-white">82</div>
+          <div className="leading-none text-[26px] font-[800] text-white">{score !== null ? score : "--"}</div>
           <div className="mt-[2px] text-[9px] font-[700] uppercase tracking-[0.5px] text-accent">Score</div>
         </div>
         <div className="flex flex-1 flex-wrap gap-[24px]">
@@ -171,12 +197,15 @@ export default function BorrowerDashboardView() {
           </div>
         </div>
         <div className="ml-auto flex flex-col gap-[6px]">
-          <div className="inline-flex items-center gap-[5px] rounded-[10px] bg-success/20 px-[10px] py-[4px] text-[11px] font-[700] text-green-400">
-            {isEs ? "Negocio verificado" : "Business verified"}
-          </div>
-          <div className="inline-flex items-center gap-[5px] rounded-[10px] bg-accent/30 px-[10px] py-[4px] text-[11px] font-[700] text-brand-purple">
-            {isEs ? "Identidad verificada" : "Identity verified"}
-          </div>
+          {isVerified ? (
+            <div className="inline-flex items-center gap-[5px] rounded-[10px] bg-success/20 px-[10px] py-[4px] text-[11px] font-[700] text-green-400">
+              {isEs ? "Negocio verificado" : "Business verified"}
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-[5px] rounded-[10px] bg-rule-strong/20 px-[10px] py-[4px] text-[11px] font-[700] text-ink-3">
+              {isEs ? "Negocio no verificado" : "Business unverified"}
+            </div>
+          )}
         </div>
       </div>
 
