@@ -4,13 +4,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { api, ApiError } from "@/app/lib/apiFetch";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { NOTIFICATIONS_EVENT } from "@/app/lib/useUnreadNotifications";
 import { HOME_BY_ROLE, roleForPath } from "@/app/lib/roles";
 import type { Notification, Paginated } from "@/app/types/api";
 
 const PAGE_SIZE = 20;
-// La campana del header escucha este evento para refrescar su contador.
-export const EVENTO_NOTIFICACIONES = "pml:notifications";
-const avisarCampana = () => window.dispatchEvent(new Event(EVENTO_NOTIFICACIONES));
+const avisarCampana = () => window.dispatchEvent(new Event(NOTIFICATIONS_EVENT));
 
 // Destino según relatedEntityType. Hoy no hay detalle de contrato ni de deal
 // del borrower con id: apuntan a la lista; afinar al cerrar T3.2 / T5.x.

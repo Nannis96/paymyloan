@@ -7,6 +7,7 @@ import LogoutButton from "@/app/components/ambos/LogoutButton";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
 import { useUnreadMessages } from "@/app/lib/useUnreadMessages";
+import { useUnreadNotifications } from "@/app/lib/useUnreadNotifications";
 
 export default function BorrowerDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -20,6 +21,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { lang } = useSite();
   const unreadMessages = useUnreadMessages("borrower");
+  const unreadNotifications = useUnreadNotifications();
   const isEs = lang === "es";
 
   // Textos para la sidebar
@@ -57,7 +59,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           {/* Notificaciones */}
           <Link href="/borrowerDashboard/notifications" className="relative cursor-pointer block hover:text-ink transition-colors text-ink-2">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" strokeWidth="1.4"/><path d="M8 16a2 2 0 004 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
-            <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>
+            {unreadNotifications > 0 && <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>}
           </Link>
 
           <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-brand-dark text-[12px] font-[700] text-white cursor-pointer select-none">

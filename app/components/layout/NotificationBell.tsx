@@ -1,35 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
-import { api } from "@/app/lib/apiFetch";
-import { API_ROUTES } from "@/app/lib/endpoints";
+import { useUnreadNotifications } from "@/app/lib/useUnreadNotifications";
 import { HOME_BY_ROLE, roleForPath } from "@/app/lib/roles";
 import { useSite } from "./SiteShell";
-
-const POLL_MS = 60_000;
 
 export default function NotificationBell() {
   const { t } = useSite();
   const pathname = usePathname();
   const role = roleForPath(pathname);
-  const [unread, setUnread] = useState(0);
-
-  useEffect(() => {
-    if (!role) return;
-    const cargar = () =>
-      api<{ unread: number }>(API_ROUTES.notifications.unreadCount)
-        .then((d) => setUnread(d.unread ?? 0))
-        .catch(() => {}); // el badge es accesorio: ante error se queda como estaba
-    cargar();
-    const id = setInterval(cargar, POLL_MS);
-    window.addEventListener("pml:notifications", cargar); // el listado marcó leídas
-    return () => {
-      clearInterval(id);
-      window.removeEventListener("pml:notifications", cargar);
-    };
-  }, [role]);
+  const unread = useUnreadNotifications();
 
   if (!role) return null;
   return (
