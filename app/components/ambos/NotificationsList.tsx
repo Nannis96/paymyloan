@@ -55,7 +55,9 @@ export default function NotificationsList() {
         const qs = new URLSearchParams({ page: String(p), pageSize: String(PAGE_SIZE) });
         if (soloNoLeidas) qs.set("isRead", "false");
         const d = await api<Paginated<Notification>>(`${API_ROUTES.notifications.base}?${qs}`);
-        setItems((prev) => (p === 1 ? d.items : [...prev, ...d.items]));
+        // Los mensajes viven en su propia bandeja (T7.x), no aquí.
+        const nuevos = d.items.filter((i) => i.type !== "MESSAGE_RECEIVED");
+        setItems((prev) => (p === 1 ? nuevos : [...prev, ...nuevos]));
         setPage(d.page);
         setTotalPages(d.totalPages);
       } catch (e) {
