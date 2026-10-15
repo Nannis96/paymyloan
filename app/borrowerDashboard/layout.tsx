@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
@@ -8,6 +9,9 @@ import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
 import { useUnreadMessages } from "@/app/lib/useUnreadMessages";
 import { useUnreadNotifications } from "@/app/lib/useUnreadNotifications";
+import { api, toList } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import type { LoanRequest } from "@/app/types/api";
 
 export default function BorrowerDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,6 +27,14 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const unreadMessages = useUnreadMessages("borrower");
   const unreadNotifications = useUnreadNotifications();
   const isEs = lang === "es";
+
+  // Tratos abiertos = solicitudes PUBLISHED (esperando ofertas). Se recarga al navegar.
+  const [openDeals, setOpenDeals] = useState(0);
+  useEffect(() => {
+    api(API_ROUTES.borrowers.meLoanRequests)
+      .then((d) => setOpenDeals(toList<LoanRequest>(d).filter((r) => r.status === "PUBLISHED").length))
+      .catch(() => {});
+  }, [pathname]);
 
   // Textos para la sidebar
   const sb = {
@@ -80,17 +92,17 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <Link href="/borrowerDashboard/deals" className={`${navItemBase} ${pathname.includes("/deals") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/deals") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M2 7h14" stroke="currentColor" strokeWidth="1.4"/><path d="M6 1v4M12 1v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
             {sb.deals}
-            <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">3</span>
+            {openDeals > 0 && <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">{openDeals}</span>}
           </Link>
           <Link href="/borrowerDashboard/notifications" className={`${navItemBase} ${pathname.includes("/notifications") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/notifications") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><path d="M9 2l1.6 3.3 3.6.5-2.6 2.6.6 3.6L9 10.3l-3.2 1.7.6-3.6L3.8 5.8l3.6-.5L9 2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>
             {sb.notifications}
-            <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">2</span>
+            {unreadNotifications > 0 && <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">{unreadNotifications}</span>}
           </Link>
           <Link href="/borrowerDashboard/messages" className={`${navItemBase} ${pathname.includes("/messages") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/messages") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><path d="M3 4h12a1 1 0 011 1v7a1 1 0 01-1 1H5l-3 2V5a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>
             {sb.messages}
-            <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">1</span>
+            {unreadMessages > 0 && <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">{unreadMessages}</span>}
           </Link>
           <Link href="/borrowerDashboard/payments" className={`${navItemBase} ${pathname.includes("/payments") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/payments") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M2 8h14" stroke="currentColor" strokeWidth="1.4"/><circle cx="6" cy="12" r="1" fill="currentColor"/></svg>
