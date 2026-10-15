@@ -1,5 +1,5 @@
-import NotificationsView from "../lenderViewsComponents/NotificationsView";
+import NotificationsList from "@/app/components/ambos/NotificationsList";
 
 export default function NotificationsPage() {
-  return <NotificationsView />;
+  return <NotificationsList />;
 }

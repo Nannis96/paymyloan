@@ -1,5 +1,5 @@
-import BorrowerNotificationsView from "../borrowerViewsComponents/BorrowerNotificationsView";
+import NotificationsList from "@/app/components/ambos/NotificationsList";
 
 export default function NotificationsPage() {
-  return <BorrowerNotificationsView />;
+  return <NotificationsList />;
 }

@@ -130,7 +130,7 @@ export const landing = {
 
   welcomeModal: { brand: "PayMyLoan", brandSuffix: ".ai", tagline: "Préstamos privados — simplificados.", question: "¿Cómo podemos ayudarte hoy?", lender: { icon: "💰", title: "¿Tienes fondos para desplegar?", sub: "Quiero fondear tratos inmobiliarios" }, borrower: { icon: " ", title: "¿Quieres fondear un trato?", sub: "Necesito capital para mi siguiente trato" }, signin: { icon: "🔑", title: "Iniciar sesión", sub: "Accede a tu portal" } },
 
-  nav: { skip: "Saltar al formulario de registro", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "Cómo funciona" }, { href: "#costo", label: "Costo de la plataforma" }, { href: "#seguridad", label: "Seguridad" }, ], features: "Funcionalidades", howItWorks: "Cómo funciona", login: "Iniciar sesión", logout: "Cerrar sesión", cta: "Ingresar", themeToggle: "Cambiar tema", langToggle: "Cambiar idioma", backToDashboard: "Volver al panel", },
+  nav: { skip: "Saltar al formulario de registro", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "Cómo funciona" }, { href: "#costo", label: "Costo de la plataforma" }, { href: "#seguridad", label: "Seguridad" }, ], features: "Funcionalidades", howItWorks: "Cómo funciona", login: "Iniciar sesión", logout: "Cerrar sesión", notifications: "Notificaciones",cta: "Ingresar", themeToggle: "Cambiar tema", langToggle: "Cambiar idioma", backToDashboard: "Volver al panel", },
 
   landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why: "Por qué PML", demo: "Demo", affiliates: "Afiliados", signIn: "Iniciar sesión", getStarted: "Comenzar gratis" },
 
