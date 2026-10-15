@@ -3,8 +3,10 @@ import { useState, useRef, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { api, toList, ApiError } from "@/app/lib/apiFetch";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { MESSAGES_READ_EVENT } from "@/app/lib/useUnreadMessages";
 import type { Message, MessageThread } from "@/app/types/api";
 
+const POLL_MS = 8000;
 const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 // Un hilo es (borrower, empresa del lender): un lender con varias empresas tiene varios.
 const threadKey = (th: MessageThread) =>
@@ -28,14 +30,20 @@ export default function MessagesView() {
   const lenderCompanyId = current?.lastMessage.lenderCompanyId;
   const borrowerName = current?.borrowerProfile?.user?.name ?? "";
 
+  // ponytail: polling cada POLL_MS en vez de push (SSE/WebSocket) hasta que el back lo ofrezca.
   useEffect(() => {
-    api(API_ROUTES.lenders.meMessageThreads)
-      .then((d) => {
-        const list = toList<MessageThread>(d);
-        setThreads(list);
-        setSelectedKey((cur) => cur ?? (list[0] ? threadKey(list[0]) : null));
-      })
-      .catch((e) => setThreadsError(e instanceof Error ? e.message : "Error"));
+    const load = () =>
+      api(API_ROUTES.lenders.meMessageThreads)
+        .then((d) => {
+          const list = toList<MessageThread>(d);
+          setThreads(list);
+          setSelectedKey((cur) => cur ?? (list[0] ? threadKey(list[0]) : null));
+          setThreadsError("");
+        })
+        .catch((e) => setThreadsError(e instanceof Error ? e.message : "Error"));
+    load();
+    const id = setInterval(() => !document.hidden && load(), POLL_MS);
+    return () => clearInterval(id);
   }, []);
 
   // Abrir hilo: historial + marcar leido. lenderCompanyId siempre explicito (el back lo exige con >1 empresa).
@@ -46,13 +54,22 @@ export default function MessagesView() {
     setMessages([]);
     setSendError("");
     setNotAllowed(false);
-    api(API_ROUTES.lenders.meMessageThread(borrowerId) + qs)
-      .then(async (d) => {
-        setMessages(toList<Message>(d));
-        await api(API_ROUTES.lenders.meMessageThreadRead(borrowerId) + qs, { method: "POST" });
-        setThreads((ts) => ts && ts.map((th) => (threadKey(th) === selectedKey ? { ...th, unreadCount: 0 } : th)));
-      })
-      .catch((e) => setSendError(e instanceof Error ? e.message : "Error"));
+    let count = -1; // solo re-render y re-marca leido si cambio el numero de mensajes
+    const load = () =>
+      api(API_ROUTES.lenders.meMessageThread(borrowerId) + qs)
+        .then(async (d) => {
+          const list = toList<Message>(d);
+          if (list.length === count) return;
+          count = list.length;
+          setMessages(list);
+          await api(API_ROUTES.lenders.meMessageThreadRead(borrowerId) + qs, { method: "POST" });
+          window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
+          setThreads((ts) => ts && ts.map((th) => (threadKey(th) === selectedKey ? { ...th, unreadCount: 0 } : th)));
+        })
+        .catch((e) => setSendError(e instanceof Error ? e.message : "Error"));
+    load();
+    const id = setInterval(() => !document.hidden && load(), POLL_MS);
+    return () => clearInterval(id);
   }, [borrowerId, lenderCompanyId, selectedKey]);
 
   // Scroll automatico hacia abajo

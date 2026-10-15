@@ -5,6 +5,7 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import LogoutButton from "@/app/components/ambos/LogoutButton";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
+import { useUnreadMessages } from "@/app/lib/useUnreadMessages";
 
 export default function LenderDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -24,6 +25,7 @@ export default function LenderDashboardLayout({ children }: { children: React.Re
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { t, lang } = useSite();
+  const unreadMessages = useUnreadMessages("lender");
   
   const isVerified = false; // Mock para mostrar el menu llamativo
   const sb = (t.dashboardLender.mimic as any).sidebar;
@@ -43,7 +45,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <LogoutButton className="h-[30px] rounded-[4px] px-2 text-[11px] font-[700] text-[#aab7c4] hover:bg-[#f6f9fc] hover:text-[#c62626] transition-colors" iconSize={15} />
           <Link href="/lenderDashboard/messages" className="relative cursor-pointer ml-2 block hover:text-[#0a2540] transition-colors text-[#425466]">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-white bg-[#635bff]"></div>
+            {unreadMessages > 0 && <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-white bg-[#635bff]"></div>}
           </Link>
           <Link href="/lenderDashboard/notifications" className="relative cursor-pointer ml-3 block">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2h15L16 11V8a6 6 0 00-6-6z" stroke="#425466" strokeWidth="1.4"/><path d="M8 16a2 2 0 004 0" stroke="#425466" strokeWidth="1.4" strokeLinecap="round"/></svg>

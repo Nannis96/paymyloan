@@ -6,6 +6,7 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import LogoutButton from "@/app/components/ambos/LogoutButton";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
+import { useUnreadMessages } from "@/app/lib/useUnreadMessages";
 
 export default function BorrowerDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export default function BorrowerDashboardLayout({ children }: { children: React.
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { lang } = useSite();
+  const unreadMessages = useUnreadMessages("borrower");
   const isEs = lang === "es";
 
   // Textos para la sidebar
@@ -49,7 +51,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           {/* Mensajes */}
           <Link href="/borrowerDashboard/messages" className="relative cursor-pointer block hover:text-ink transition-colors text-ink-2">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>
+            {unreadMessages > 0 && <div className="absolute -right-[2px] -top-[2px] h-[8px] w-[8px] rounded-full border-2 border-surface bg-accent"></div>}
           </Link>
 
           {/* Notificaciones */}
