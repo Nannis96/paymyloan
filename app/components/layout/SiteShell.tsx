@@ -10,6 +10,8 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
+import { HOME_BY_ROLE, roleForPath } from "@/app/lib/roles";
 import en from "@/content/en";
 import type { Copy, Lang } from "@/content/copy";
 import {
@@ -150,14 +152,18 @@ export default function SiteShell({
         }
 
         try {
-          const res = await fetch(API_ROUTES.auth.me, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const res = await apiFetch(API_ROUTES.auth.me);
 
           if (!res.ok) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            router.push("/login");
+            cerrarSesion();
+            return;
+          }
+          // Cada rol, su dashboard. `roles` puede traer LENDER y BORROWER a la vez.
+          const me = (await res.json())?.data;
+          const roles: string[] = me?.roles ?? [me?.user?.role];
+          const required = roleForPath(pathname);
+          if (required && !roles.includes(required)) {
+            router.replace(HOME_BY_ROLE[roles[0]] ?? "/");
             return;
           }
           setIsVerifying(false);

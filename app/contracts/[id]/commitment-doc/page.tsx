@@ -1,6 +1,6 @@
 "use client";
 
-import { BASE_URL } from "@/app/lib/endpoints";
+import { API_ROUTES } from "@/app/lib/endpoints";
 import { apiFetch } from "@/app/lib/apiFetch";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
@@ -77,7 +77,7 @@ function CommitmentLetterDocContent() {
     async function fetchContract() {
       if (!contractId) return;
       try {
-        const response = await apiFetch(`${BASE_URL}/api/contracts/${contractId}`);
+        const response = await apiFetch(API_ROUTES.contracts.byId(contractId));
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: Error al cargar contrato`);

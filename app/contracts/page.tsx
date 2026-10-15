@@ -1,7 +1,7 @@
 "use client";
 
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { useEffect, useState } from "react";
@@ -52,13 +52,11 @@ function ContractsContent() {
     async function fetchContracts() {
       try {
 
-        const response = await apiFetch(`${BASE_URL}/api/contracts`);
+        const response = await apiFetch(API_ROUTES.contracts.base);
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.href = "/login";
+            cerrarSesion();
             return;
           }
           throw new Error(`HTTP ${response.status}: ${c.errorFetch}`);

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { useSite } from "./SiteShell";
 import { CONTAINER } from "../ui";
+import NotificationBell from "./NotificationBell";
 import ThemeToggle from "../ambos/ThemeToggle";
 import LangToggle from "../ambos/LangToggle";
 
@@ -21,6 +22,7 @@ export default function DashboardHeader() {
         </Link>
 
         <div className="flex items-center gap-2">
+          <NotificationBell />
           <LangToggle className="eyebrow h-11 min-w-11 rounded-[2px] border border-rule px-2 text-ink-2 hover:border-accent hover:text-accent" />
           <ThemeToggle className="h-11 w-11 rounded-[2px] border border-rule text-ink-2 hover:border-accent hover:text-accent" iconSize={18} />
           <Link

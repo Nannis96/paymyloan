@@ -1,6 +1,6 @@
 "use client";
 
-import { BASE_URL } from "@/app/lib/endpoints";
+import { API_ROUTES } from "@/app/lib/endpoints";
 import { apiFetch } from "@/app/lib/apiFetch";
 import { useState } from "react";
 import Link from "next/link";
@@ -37,7 +37,7 @@ function AddUserContent() {
 
     try {
       
-      const response = await apiFetch(`${BASE_URL}/api/users`, {
+      const response = await apiFetch(API_ROUTES.users.base, {
         method: "POST",
         body: JSON.stringify({
           name,

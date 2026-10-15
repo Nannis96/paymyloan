@@ -7,6 +7,7 @@ import { X, Lock } from "lucide-react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import RegisterForm from "@/app/components/landing/RegisterForm";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { HOME_BY_ROLE } from "@/app/lib/roles";
 
 function LoginContent() {
   const { t: siteT } = useSite();
@@ -35,18 +36,7 @@ function LoginContent() {
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
     
-    const role = data.user.role;
-    if (role === "ADMIN") {
-      router.push("/adminDashboard");
-    } else if (role === "LENDER") {
-      router.push("/lenderDashboard");
-    } else if (role === "BORROWER") {
-      router.push("/borrowerDashboard");
-    } else if (role === "BOOKKEEPER") {
-      router.push("/bookkeeperDashboard");
-    } else {
-      router.push("/");
-    }
+    router.push(HOME_BY_ROLE[data.user.role] ?? "/");
   };
 
   const handleLogin = async (e: React.FormEvent) => {

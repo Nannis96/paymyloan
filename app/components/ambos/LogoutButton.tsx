@@ -2,10 +2,10 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { cerrarSesion } from "@/app/lib/apiFetch";
 
 export default function LogoutButton({ 
   className = "", 
@@ -15,7 +15,6 @@ export default function LogoutButton({
   iconSize?: number;
 }) {
   const { t } = useSite();
-  const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -39,9 +38,7 @@ export default function LogoutButton({
       console.error("Error during logout", e);
     } finally {
       // Limpiamos el almacenamiento local y redirigimos siempre
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      router.push("/login");
+      cerrarSesion();
     }
   };
 

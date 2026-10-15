@@ -6,6 +6,8 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import LogoutButton from "@/app/components/ambos/LogoutButton";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
+import { useUnreadMessages } from "@/app/lib/useUnreadMessages";
+import { useUnreadNotifications } from "@/app/lib/useUnreadNotifications";
 
 export default function LenderDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -25,10 +27,10 @@ export default function LenderDashboardLayout({ children }: { children: React.Re
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { t, lang } = useSite();
+  const unreadMsgs = useUnreadMessages("lender");
+  const unreadNotifs = useUnreadNotifications();
   const sb = (t.dashboardLender.mimic as any).sidebar;
 
-  const [unreadNotifs, setUnreadNotifs] = useState(0);
-  const [unreadMsgs, setUnreadMsgs] = useState(0);
   const [browseCount, setBrowseCount] = useState(0);
   const [offersCount, setOffersCount] = useState(0);
   // Inicializamos en true para evitar que el banner parpadee antes de que responda la API
@@ -44,24 +46,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         const headers = { Authorization: `Bearer ${token}` };
         const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-        // 1. Notificaciones
-        fetch(`${BASE_URL}/api/notifications/unread-count`, { headers })
-          .then(res => res.json())
-          .then(json => { if (json.success) setUnreadNotifs(json.data.unread || 0); })
-          .catch(console.error);
-
-        // 2. Mensajes (Sumamos el unreadCount de todos los hilos)
-        fetch(`${BASE_URL}/api/lenders/me/messages/threads`, { headers })
-          .then(res => res.json())
-          .then(json => {
-            if (json.success && json.data) {
-              const unread = json.data.reduce((acc: number, thread: any) => acc + (thread.unreadCount || 0), 0);
-              setUnreadMsgs(unread);
-            }
-          })
-          .catch(console.error);
-
-        // 3. Tratos y Ofertas
+        // 1. Tratos y Ofertas
         fetch(`${BASE_URL}/api/marketplace/loan-requests`, { headers })
           .then(res => res.json())
           .then(json => {
@@ -73,7 +58,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           })
           .catch(console.error);
 
-        // 4. Verificacion de entidad
+        // 2. Verificacion de entidad
         const meRes = await fetch(`${BASE_URL}/api/lenders/me`, { headers });
         const meJson = await meRes.json();
         

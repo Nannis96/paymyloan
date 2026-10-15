@@ -1,8 +1,9 @@
 "use client";
 
-import { apiFetch } from "@/app/lib/apiFetch";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
 import React, { useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 
@@ -12,7 +13,6 @@ function SecurityContent() {
   const s = (t.dashboardLender.mimic as any).settings.accountSecurity;
   
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   // Permite activar la alerta si la URL contiene ?report=1 (desde un correo)
   const isSuspiciousAlertOpen = searchParams?.get("report") === "1";
@@ -20,22 +20,23 @@ function SecurityContent() {
   const [isFreezing, setIsFreezing] = useState(false);
   const [isRevokingAll, setIsRevokingAll] = useState(false);
 
-  const handleFreeze = async () => {
-    if (!confirm('Freeze your account? All logins, payments, and changes will be blocked until you unfreeze it by calling PayMyLoan.')) return;
-    
-    setIsFreezing(true);
+  // El back revoca todas las sesiones (tambien la actual): cierra y manda a /login.
+  const cerrarTodas = async (setBusy: (v: boolean) => void) => {
+    setBusy(true);
     try {
-      // Llamada al endpoint documentado para revocar tokens
-      await apiFetch("/api/auth/logout-all", {
-        method: "POST",
-      });
-      alert('Account frozen. Call [PML phone] to restore access.');
-      router.push("/");
+      const res = await apiFetch(API_ROUTES.auth.logoutAll, { method: "POST" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      cerrarSesion();
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsFreezing(false);
+      alert("Could not sign out of all devices. Try again.");
+      setBusy(false);
     }
+  };
+
+  const handleFreeze = async () => {
+    if (!confirm('Sign out of ALL devices, including this one? You will need to log in again.')) return;
+    await cerrarTodas(setIsFreezing);
   };
 
   const handleRevoke = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -46,17 +47,8 @@ function SecurityContent() {
   };
 
   const handleRevokeAll = async () => {
-    setIsRevokingAll(true);
-    try {
-      await apiFetch("/api/auth/logout-all", {
-        method: "POST",
-      });
-      alert('All other sessions revoked. You are now the only active session.');
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsRevokingAll(false);
-    }
+    if (!confirm('Sign out of ALL devices, including this one? You will need to log in again.')) return;
+    await cerrarTodas(setIsRevokingAll);
   };
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -62,13 +62,11 @@ function ContractDetailContent() {
 
       try {
         // Obtenemos los detalles del contrato
-        const contractRes = await apiFetch(`${BASE_URL}/api/contracts/${contractId}`);
+        const contractRes = await apiFetch(API_ROUTES.contracts.byId(contractId));
         
         if (!contractRes.ok) {
           if (contractRes.status === 401 || contractRes.status === 403) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.href = "/login";
+            cerrarSesion();
             return;
           }
           throw new Error(`HTTP ${contractRes.status}: ${cd.errorFetch}`);
@@ -83,7 +81,7 @@ function ContractDetailContent() {
 
         // Intentamos cargar el calendario de pagos (schedule) si el endpoint existe
         try {
-          const scheduleRes = await apiFetch(`${BASE_URL}/api/contracts/${contractId}/schedule`);
+          const scheduleRes = await apiFetch(API_ROUTES.contracts.schedule(contractId));
           if (scheduleRes.ok) {
             const scheduleJson = await scheduleRes.json();
             if (scheduleJson.success && Array.isArray(scheduleJson.data)) {

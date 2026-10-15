@@ -1,7 +1,7 @@
 // app/admin/AdminViewsComponents/AuditLogsView.tsx
 "use client";
 
-import { BASE_URL } from "@/app/lib/endpoints";
+import { API_ROUTES } from "@/app/lib/endpoints";
 import { apiFetch } from "@/app/lib/apiFetch";
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, User, Shield, Cpu, Calendar } from "lucide-react";
@@ -50,7 +50,7 @@ export function AuditLogsView() {
         if (search) params.set("action", search);
         if (actorRole) params.set("actorRole", actorRole);
 
-        const response = await apiFetch(`${BASE_URL}/api/audit-logs?${params.toString()}`);
+        const response = await apiFetch(`${API_ROUTES.auditLogs}?${params.toString()}`);
 
         if (!response.ok) {
           throw new Error("Error al cargar los registros de auditoria");

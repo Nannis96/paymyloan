@@ -132,7 +132,7 @@ export const landing: typeof Es = {
 
   welcomeModal: { brand: "PayMyLoan", brandSuffix: ".ai", tagline: "Private money lending — simplified.", question: "How can we help you today?", lender: { icon: " ", title: "Have Funds to Deploy?", sub: "I want to fund real estate deals" }, borrower: { icon: " ", title: "Want a Deal Funded?", sub: "I need capital for my next deal" }, signin: { icon: "🔑", title: "User Sign In", sub: "Access your portal" } },
 
-  nav: { skip: "Skip to the sign-up form", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "How it works" }, { href: "#costo", label: "Platform cost" }, { href: "#seguridad", label: "Security" }, ], features: "Features", howItWorks: "How it works", login: "Log in", logout: "Log out", cta: "Log in", themeToggle: "Switch theme", langToggle: "Switch language", backToDashboard: "Back to dashboard", },
+  nav: { skip: "Skip to the sign-up form", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "How it works" }, { href: "#costo", label: "Platform cost" }, { href: "#seguridad", label: "Security" }, ], features: "Features", howItWorks: "How it works", login: "Log in", logout: "Log out", notifications: "Notifications",cta: "Log in", themeToggle: "Switch theme", langToggle: "Switch language", backToDashboard: "Back to dashboard", },
 
   landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML", demo: "Demo", affiliates: "Affiliates", signIn: "Sign in", getStarted: "Get started free" },
 
@@ -380,6 +380,8 @@ export const landing: typeof Es = {
             messaging: {
               title: "Messages",
               dealThreads: "Deal threads",
+              noThreads: "No conversations yet",
+              notAllowed: "Messaging is not available yet: it opens once there is an offer in negotiation or an active loan between you. You can still read this history.",
               activeThread: "Active thread",
               status: "Status: Pre-closing",
               inputPlaceholder: "Message...",
