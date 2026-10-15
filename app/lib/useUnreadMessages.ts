@@ -18,10 +18,13 @@ export function useUnreadMessages(role: "lender" | "borrower", pollMs = 8000) {
         .then((d) => setUnread(toList<MessageThread>(d).reduce((n, th) => n + th.unreadCount, 0)))
         .catch(() => {});
     load();
-    const id = setInterval(() => !document.hidden && load(), pollMs);
+    const tick = () => !document.hidden && load();
+    const id = setInterval(tick, pollMs);
+    document.addEventListener("visibilitychange", tick); // al volver a la pestana, refresca ya
     window.addEventListener(MESSAGES_READ_EVENT, load);
     return () => {
       clearInterval(id);
+      document.removeEventListener("visibilitychange", tick);
       window.removeEventListener(MESSAGES_READ_EVENT, load);
     };
   }, [role, pollMs]);

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { api, toList, ApiError } from "@/app/lib/apiFetch";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { fetchLatestMessages } from "@/app/lib/messages";
 import { MESSAGES_READ_EVENT } from "@/app/lib/useUnreadMessages";
 import type { Message, MessageThread } from "@/app/types/api";
 
@@ -35,24 +36,28 @@ export default function BorrowerMessagesView() {
         })
         .catch((e) => setThreadsError(e instanceof Error ? e.message : "Error"));
     load();
-    const id = setInterval(() => !document.hidden && load(), POLL_MS);
-    return () => clearInterval(id);
+    const tick = () => !document.hidden && load();
+    const id = setInterval(tick, POLL_MS);
+    document.addEventListener("visibilitychange", tick); // al volver a la pestana, refresca ya
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", tick);
+    };
   }, []);
 
   // Abrir hilo: historial + marcar leido.
-  // ponytail: solo la primera pagina del historial; paginar si los hilos crecen.
   useEffect(() => {
     if (!selectedId) return;
     setMessages([]);
     setSendError("");
     setNotAllowed(false);
-    let count = -1; // solo re-render y re-marca leido si cambio el numero de mensajes
+    let lastId = ""; // solo re-render y re-marca leido si llego/salio un mensaje nuevo
     const load = () =>
-      api(API_ROUTES.borrowers.meMessageThread(selectedId))
-        .then(async (d) => {
-          const list = toList<Message>(d);
-          if (list.length === count) return;
-          count = list.length;
+      fetchLatestMessages(API_ROUTES.borrowers.meMessageThread(selectedId))
+        .then(async (list) => {
+          const newest = list[list.length - 1]?.id ?? "";
+          if (newest === lastId) return;
+          lastId = newest;
           setMessages(list);
           await api(API_ROUTES.borrowers.meMessageThreadRead(selectedId), { method: "POST" });
           window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
@@ -60,8 +65,13 @@ export default function BorrowerMessagesView() {
         })
         .catch((e) => setSendError(e instanceof Error ? e.message : "Error"));
     load();
-    const id = setInterval(() => !document.hidden && load(), POLL_MS);
-    return () => clearInterval(id);
+    const tick = () => !document.hidden && load();
+    const id = setInterval(tick, POLL_MS);
+    document.addEventListener("visibilitychange", tick); // al volver a la pestana, refresca ya
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", tick);
+    };
   }, [selectedId]);
 
   // Scroll automatico hacia abajo
