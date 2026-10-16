@@ -1,9 +1,10 @@
 "use client";
 
 import { apiFetch } from "@/app/lib/apiFetch";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import EntityCreation from "./EntityCreation";
 
 interface LenderCompanySummary {
   id: string;
@@ -24,34 +25,40 @@ export default function EntitiesView() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchEntities() {
-      try {
-        // Hacemos fetch al perfil del prestamista que incluye sus entidades
-        const res = await apiFetch(API_ROUTES.lenders.me);
-        
-        const json = await res.json();
-        
-        if (json.success) {
-          setCompanies(json.data.lenderCompanies || []);
-        } else {
-          throw new Error(json.error?.message || "Error al cargar las entidades");
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Error de red");
-      } finally {
-        setIsLoading(false);
+  // Extraemos fetchEntities para poder llamarlo desde el componente de creacion
+  const fetchEntities = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await apiFetch(API_ROUTES.lenders.me);
+      
+      const json = await res.json();
+      
+      if (json.success) {
+        setCompanies(json.data.lenderCompanies || []);
+        setError(null);
+      } else {
+        throw new Error(json.error?.message || "Error al cargar las entidades");
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error de red");
+    } finally {
+      setIsLoading(false);
     }
-    fetchEntities();
   }, []);
+
+  useEffect(() => {
+    fetchEntities();
+  }, [fetchEntities]);
 
   return (
     <div className="animate-in fade-in duration-300 max-w-[800px]">
       <div className="mb-[16px] text-[20px] font-[800] tracking-[-0.3px] text-[#0a2540]">
         {title}
       </div>
-      
+
+      {/* Componente para crear nuevas entidades */}
+      <EntityCreation onSuccess={fetchEntities} />
+
       <div className="flex flex-col gap-[14px]">
         {isLoading ? (
           <div className="rounded-[10px] border border-[#e6ebf1] bg-white p-[40px] text-center text-[#8898aa]">
@@ -84,7 +91,7 @@ export default function EntitiesView() {
                 <div className="grid grid-cols-2 gap-[10px] border-t border-[#f0f4f8] pt-[12px]">
                   <div>
                     <div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-[#aab7c4]">
-                      {isEs ? "Ubicacion" : "Location"}
+                      {isEs ? "Ubicación" : "Location"}
                     </div>
                     <div className="mt-[2px] text-[13px] font-[600] text-[#425466]">
                       {company.city && company.state ? `${company.city}, ${company.state}` : (isEs ? "No especificada" : "Unspecified")}

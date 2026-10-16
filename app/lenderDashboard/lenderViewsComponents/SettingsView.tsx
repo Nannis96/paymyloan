@@ -1,9 +1,8 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
-import AccountSecurityModal from "./AccountSecurityModal";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -193,8 +192,21 @@ export default function SettingsView() {
         </div>
       </div>
 
-      {/* Security Actions (Boton Modal) */}
-      <AccountSecurityModal userEmail={user?.email} userPhone={user?.phone} is2FAEnabled={user?.isTwoFactorEnabled} />
+      {/* Security Actions (Redirige a la nueva ruta) */}
+      <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
+        <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[18px_22px]">
+          <div>
+            <div className="text-[14px] font-[700] text-[#0a2540]">{s.accountSecurity.title}</div>
+            <div className="mt-[2px] text-[12px] text-[#8898aa]">{s.accountSecurity.sub}</div>
+          </div>
+          <Link 
+            href="/lenderDashboard/settings/security"
+            className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4] hover:bg-[#f6f9fc] no-underline transition-colors"
+          >
+            {s.accountSecurity.buttonLabel}
+          </Link>
+        </div>
+      </div>
 
       {/* Danger zone */}
       <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
