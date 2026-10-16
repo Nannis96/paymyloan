@@ -1,5 +1,6 @@
 "use client";
 
+import { X, Check } from "lucide-react";
 import { useSite } from "../layout/SiteShell";
 
 export default function BeforeAfter() {
@@ -9,51 +10,51 @@ export default function BeforeAfter() {
   return (
     <section className="bg-bg px-6 py-20 lg:px-14">
       <div className="mx-auto max-w-[1100px]">
-        <div className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-accent">
+        <div className="mb-5 text-center text-[clamp(14px,2.5vw,22px)] font-bold uppercase tracking-widest text-accent">
           {b.eyebrow}
         </div>
         <h2 className="mb-12 text-center text-[40px] font-black leading-tight tracking-[-1.5px] text-ink">
           {b.title}
         </h2>
 
-        <div className="grid grid-cols-1 gap-7 lg:grid-cols-2">
-          {/* ANTES */}
-          <div className="overflow-hidden rounded-2xl border-2 border-red-100 dark:border-red-900/40">
-            <div className="flex items-center gap-2.5 bg-red-500 px-6 py-3.5">
-              <span className="text-lg">{b.before.icon}</span>
-              <span className="text-base font-extrabold text-white">{b.before.badge}</span>
-            </div>
-            <img src="/pml_before.png" alt="Stressed investor without PML" className="block w-full" />
-            <div className="bg-red-50 p-6 dark:bg-red-950/20">
-              <ul className="flex flex-col gap-3">
-                {b.before.items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-[14px] text-ink-2">
-                    <span className="mt-[2px] font-extrabold text-red-500">✗</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* DESPUES */}
-          <div className="overflow-hidden rounded-2xl border-2 border-green-200 dark:border-green-900/40">
-            <div className="flex items-center gap-2.5 bg-green-600 px-6 py-3.5">
-              <span className="text-lg">{b.after.icon}</span>
-              <span className="text-base font-extrabold text-white">{b.after.badge}</span>
-            </div>
-            <img src="/pml_after.png" alt="Organized investor with PML" className="block w-full" />
-            <div className="bg-green-50 p-6 dark:bg-green-950/20">
-              <ul className="flex flex-col gap-3">
-                {b.after.items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-[14px] text-ink-2">
-                    <span className="mt-[2px] font-extrabold text-green-600">✓</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+        <div className="overflow-hidden rounded-2xl border border-rule bg-surface shadow-sm">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b-2 border-rule bg-surface-2">
+                <th className="w-1/2 border-r border-rule p-5 text-[15px] font-extrabold text-ink-2 md:p-6">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400">
+                      <X size={16} strokeWidth={3} />
+                    </span>
+                    {b.before.badge}
+                  </div>
+                </th>
+                <th className="w-1/2 p-5 text-[15px] font-extrabold text-ink md:p-6">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400">
+                      <Check size={16} strokeWidth={3} />
+                    </span>
+                    {b.after.badge}
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-rule">
+              {b.before.items.map((item, i) => (
+                <tr key={i} className="transition-colors hover:bg-surface-2/50">
+                  <td className="border-r border-rule p-5 align-top text-[14px] leading-relaxed text-ink-3 md:p-6">
+                    {item}
+                  </td>
+                  <td className="p-5 align-top text-[14px] font-medium leading-relaxed text-ink md:p-6">
+                    <div className="flex items-start gap-3">
+                      <Check size={18} className="mt-0.5 shrink-0 text-accent" strokeWidth={2.5} />
+                      <span>{b.after.items[i]}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>

@@ -45,7 +45,7 @@ export default function WelcomeModal() {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0a2540]/60 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-[480px] animate-in fade-in zoom-in-95 duration-300 rounded-2xl bg-surface px-6 py-10 text-center shadow-[0_20px_60px_rgba(10,37,64,0.18)] sm:px-12">
+      <div className="relative w-[90vw] md:w-[70vw] lg:w-[50vw] max-w-[800px] animate-in fade-in zoom-in-95 duration-300 rounded-2xl bg-surface px-6 py-12 text-center shadow-[0_20px_60px_rgba(10,37,64,0.18)] sm:px-16">
         
         {/* Boton de Cerrar */}
         <button
@@ -86,31 +86,31 @@ export default function WelcomeModal() {
           {/* Opcion Prestamista */}
           <button
             onClick={() => handleChoice("lender")}
-            className="group flex w-full items-center gap-4 rounded-xl border-2 border-rule bg-bg p-4 text-left transition-all hover:border-accent hover:bg-accent-soft/40"
+            className="group flex w-full items-center gap-5 rounded-xl border-2 border-rule bg-bg p-5 text-left transition-all hover:border-accent hover:bg-accent-soft/40"
           >
-            <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-accent-soft text-xl transition-colors group-hover:bg-accent group-hover:text-white">
+            <div className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-xl bg-accent-soft text-2xl font-black transition-colors group-hover:bg-accent group-hover:text-white">
               {m.lender.icon}
             </div>
             <div className="flex-1">
-              <div className="mb-0.5 text-[15px] font-bold text-ink">{m.lender.title}</div>
-              <div className="text-[12px] text-ink-2">{m.lender.sub}</div>
+              <div className="mb-1 text-[17px] font-bold text-ink">{m.lender.title}</div>
+              <div className="text-[14px] text-ink-2">{m.lender.sub}</div>
             </div>
-            <div className="text-lg text-accent transition-transform group-hover:translate-x-1">&rarr;</div>
+            <div className="text-xl text-accent transition-transform group-hover:translate-x-1">&rarr;</div>
           </button>
 
           {/* Opcion Prestatario */}
           <button
             onClick={() => handleChoice("borrower")}
-            className="group flex w-full items-center gap-4 rounded-xl border-2 border-rule bg-bg p-4 text-left transition-all hover:border-accent hover:bg-accent-soft/40"
+            className="group flex w-full items-center gap-5 rounded-xl border-2 border-rule bg-bg p-5 text-left transition-all hover:border-accent hover:bg-accent-soft/40"
           >
-            <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-accent-soft text-xl transition-colors group-hover:bg-accent group-hover:text-white">
+            <div className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-xl bg-accent-soft text-2xl font-black transition-colors group-hover:bg-accent group-hover:text-white">
               {m.borrower.icon}
             </div>
             <div className="flex-1">
-              <div className="mb-0.5 text-[15px] font-bold text-ink">{m.borrower.title}</div>
-              <div className="text-[12px] text-ink-2">{m.borrower.sub}</div>
+              <div className="mb-1 text-[17px] font-bold text-ink">{m.borrower.title}</div>
+              <div className="text-[14px] text-ink-2">{m.borrower.sub}</div>
             </div>
-            <div className="text-lg text-accent transition-transform group-hover:translate-x-1">&rarr;</div>
+            <div className="text-xl text-accent transition-transform group-hover:translate-x-1">&rarr;</div>
           </button>
         </div>
 
