@@ -2,32 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { api, toList } from "@/app/lib/apiFetch";
+import type { SafeUser } from "@/app/types/api";
 
 export function BorrowersView() {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
   const v = d.views.borrowers;
 
-  const [borrowers, setBorrowers] = useState<any[]>([]);
+  const [borrowers, setBorrowers] = useState<SafeUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchBorrowers() {
       try {
-        const res = await apiFetch(`${BASE_URL}/api/users`);
-        if (!res.ok) {
-          throw new Error(d.errorFetch || "Error al cargar prestatarios");
-        }
-        const json = await res.json();
-        if (json.success) {
-          const allUsers = json.data || [];
-          setBorrowers(allUsers.filter((u: any) => u.role === "BORROWER"));
-        } else {
-          throw new Error(json.error?.message || d.errorFetch);
-        }
+        const allUsers = toList<SafeUser>(await api<unknown>(API_ROUTES.users.base));
+        setBorrowers(allUsers.filter((u) => u.role === "BORROWER"));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error de red");
       } finally {

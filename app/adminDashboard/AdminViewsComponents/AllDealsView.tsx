@@ -3,31 +3,23 @@
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { formatShortCurrency } from "./utils";
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { api, toList } from "@/app/lib/apiFetch";
+import type { Contract } from "@/app/types/api";
 
 export function AllDealsView() {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
   const v = d.views.allDeals;
 
-  const [contracts, setContracts] = useState<any[]>([]);
+  const [contracts, setContracts] = useState<Contract[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchContracts() {
       try {
-        const res = await apiFetch(`${BASE_URL}/api/contracts?pageSize=50`);
-        if (!res.ok) {
-          throw new Error(d.errorFetch || "Error al cargar contratos");
-        }
-        const json = await res.json();
-        if (json.success) {
-          setContracts(json.data.items || []);
-        } else {
-          throw new Error(json.error?.message || d.errorFetch);
-        }
+        setContracts(toList<Contract>(await api<unknown>(`${API_ROUTES.contracts.base}?pageSize=50`)));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error de red");
       } finally {

@@ -3,30 +3,22 @@
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { formatCurrency, formatShortCurrency } from "./utils";
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { api } from "@/app/lib/apiFetch";
+import type { AdminOverview } from "@/app/types/api";
 
-export function OverviewView({ contracts, users, setActiveTab }: { contracts?: any[], users?: any[], setActiveTab: (t: string) => void }) {
+export function OverviewView({ contracts, users, setActiveTab }: { contracts?: unknown[], users?: unknown[], setActiveTab: (t: string) => void }) {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
 
-  const [overview, setOverview] = useState<any>(null);
+  const [overview, setOverview] = useState<AdminOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchOverview() {
       try {
-        const res = await apiFetch(`${BASE_URL}/api/admin/overview`);
-        if (!res.ok) {
-          throw new Error(d.errorFetch || "Error al cargar datos del dashboard");
-        }
-        const json = await res.json();
-        if (json.success) {
-          setOverview(json.data);
-        } else {
-          throw new Error(json.error?.message || d.errorFetch);
-        }
+        setOverview(await api<AdminOverview>(API_ROUTES.admin.overview));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error de red");
       } finally {
@@ -53,8 +45,8 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: a
   }
 
   // Desestructuracion segura de la respuesta de la API
-  const kpis = overview?.kpis || {};
-  const revenue = overview?.revenue || {};
+  const kpis: Partial<AdminOverview["kpis"]> = overview?.kpis || {};
+  const revenue: Partial<AdminOverview["revenue"]> = overview?.revenue || {};
   const activeDealsList = overview?.activeDeals || [];
   const needsAttentionList = overview?.needsAttention || [];
   const signupsList = overview?.recentSignups || [];
@@ -68,10 +60,13 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: a
 
   // Mapeo de Ingresos
   const closingFees = revenue.closingFees ? Number(revenue.closingFees) : 0;
-  const subscriptions = revenue.subscriptions ? Number(revenue.subscriptions) : 0;
-  const interestShare = revenue.interestShare ? Number(revenue.interestShare) : 0;
-  const affiliatePayouts = revenue.affiliatePayouts ? Number(revenue.affiliatePayouts) : 0;
-  const netRevenue = revenue.net ? Number(revenue.net) : (closingFees + subscriptions + interestShare - affiliatePayouts);
+  // null = el back aun no tiene fuente: la tarjeta se oculta en vez de mostrar $0
+  const optional = (v?: string | null) => (v == null ? null : Number(v));
+  const subscriptions = optional(revenue.subscriptions);
+  const interestShare = optional(revenue.interestShare);
+  const affiliatePayouts = optional(revenue.affiliatePayouts);
+  const net = optional(revenue.net);
+  const netRevenue = net ?? (closingFees + (subscriptions ?? 0) + (interestShare ?? 0) - (affiliatePayouts ?? 0));
 
   // Manejo de fechas
   const today = new Date();
@@ -88,7 +83,7 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: a
   // Preparacion de la grafica
   const last6MonthsData = revenue.last6Months || [];
   // Evitar division por 0 si no hay datos altos
-  const maxMonthRev = Math.max(...last6MonthsData.map((m: any) => Number(m.total) || 0), 1000);
+  const maxMonthRev = Math.max(...last6MonthsData.map((m) => Number(m.total) || 0), 1000);
 
   return (
     <div className="animate-in fade-in duration-300">
@@ -141,31 +136,39 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: a
           </div>
         </div>
         <div className="mb-4 flex flex-wrap gap-5 border-b border-rule pb-6">
-          <div className="text-center">
-            <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.subscriptions}</div>
-            <div className="mt-1 text-[15px] font-extrabold text-ink">{formatCurrency(subscriptions)}</div>
-          </div>
+          {subscriptions != null && (
+            <div className="text-center">
+              <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.subscriptions}</div>
+              <div className="mt-1 text-[15px] font-extrabold text-ink">{formatCurrency(subscriptions)}</div>
+            </div>
+          )}
           <div className="text-center">
             <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.closingFees}</div>
             <div className="mt-1 text-[15px] font-extrabold text-ink">{formatCurrency(closingFees)}</div>
           </div>
-          <div className="text-center">
-            <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.interestShare}</div>
-            <div className="mt-1 text-[15px] font-extrabold text-ink">{formatCurrency(interestShare)}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.affiliatePayouts}</div>
-            <div className="mt-1 text-[15px] font-extrabold text-crit">{formatCurrency(affiliatePayouts)}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.netRevenue}</div>
-            <div className="mt-1 text-[15px] font-extrabold text-success">{formatCurrency(netRevenue)}</div>
-          </div>
+          {interestShare != null && (
+            <div className="text-center">
+              <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.interestShare}</div>
+              <div className="mt-1 text-[15px] font-extrabold text-ink">{formatCurrency(interestShare)}</div>
+            </div>
+          )}
+          {affiliatePayouts != null && (
+            <div className="text-center">
+              <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.affiliatePayouts}</div>
+              <div className="mt-1 text-[15px] font-extrabold text-crit">{formatCurrency(affiliatePayouts)}</div>
+            </div>
+          )}
+          {net != null && (
+            <div className="text-center">
+              <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{d.revenue.netRevenue}</div>
+              <div className="mt-1 text-[15px] font-extrabold text-success">{formatCurrency(net)}</div>
+            </div>
+          )}
         </div>
         
         {/* Grafica dinamica */}
         <div className="flex h-[100px] items-end gap-2">
-          {last6MonthsData.length > 0 ? last6MonthsData.map((dataPt: any, i: number) => {
+          {last6MonthsData.length > 0 ? last6MonthsData.map((dataPt, i) => {
             const h = Math.max((Number(dataPt.total) / maxMonthRev) * 100, 10);
             const [yyyy, mm] = dataPt.month.split("-");
             const dateObj = new Date(Number(yyyy), Number(mm) - 1);
@@ -202,7 +205,7 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: a
                 </tr>
               </thead>
               <tbody className="divide-y divide-rule text-[12px] text-ink-2">
-                {activeDealsList.length > 0 ? activeDealsList.map((deal: any, i: number) => (
+                {activeDealsList.length > 0 ? activeDealsList.map((deal, i) => (
                   <tr key={deal.contractId || i} className="hover:bg-surface-2 transition-colors">
                     <td className="px-4 py-2.5 font-bold text-ink">{deal.property?.addressLine1 || "N/A"}</td>
                     <td className="px-4 py-2.5">{formatShortCurrency(Number(deal.principalAmount) || 0)}</td>
@@ -230,7 +233,7 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: a
             <span className="cursor-pointer text-[12px] font-semibold text-accent hover:underline">{d.actions.clearAll}</span>
           </div>
           <ul className="divide-y divide-rule">
-            {needsAttentionList.length > 0 ? needsAttentionList.map((item: any, i: number) => (
+            {needsAttentionList.length > 0 ? needsAttentionList.map((item, i) => (
               <li key={i} className="flex cursor-pointer items-start gap-3 p-3 transition-colors hover:bg-surface-2">
                 <div className={`mt-1 h-2 w-2 shrink-0 rounded-full ${item.severity === 'red' ? 'bg-crit' : item.severity === 'yellow' ? 'bg-amber' : 'bg-accent'}`}></div>
                 <div className="flex-1 text-[12px] text-ink-2">
@@ -265,7 +268,7 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: a
               </tr>
             </thead>
             <tbody className="divide-y divide-rule text-[12px] text-ink-2">
-              {signupsList.length > 0 ? signupsList.map((u: any, i: number) => (
+              {signupsList.length > 0 ? signupsList.map((u, i) => (
                 <tr key={u.userId || i} className="transition-colors hover:bg-surface-2">
                   <td className="px-4 py-2.5 font-bold text-ink">{u.name || "N/A"}</td>
                   <td className="px-4 py-2.5 capitalize">{u.role?.toLowerCase() || "-"}</td>

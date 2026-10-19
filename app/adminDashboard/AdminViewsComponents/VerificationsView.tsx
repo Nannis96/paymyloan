@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { api, toList } from "@/app/lib/apiFetch";
+import type { VerificationRequest } from "@/app/types/api";
 
 export function VerificationsView() {
   const { t, lang } = useSite();
   const v = t.dashboardAdmin.views.verifications;
 
-  const [verifications, setVerifications] = useState<any[]>([]);
+  const [verifications, setVerifications] = useState<VerificationRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("PENDING");
@@ -18,16 +19,7 @@ export function VerificationsView() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await apiFetch(`${BASE_URL}/api/admin/verifications?status=${statusFilter}`);
-      if (!res.ok) {
-        throw new Error("Error al cargar las verificaciones");
-      }
-      const json = await res.json();
-      if (json.success) {
-        setVerifications(json.data.items || []);
-      } else {
-        throw new Error(json.error?.message || "Error al cargar las verificaciones");
-      }
+      setVerifications(toList<VerificationRequest>(await api<unknown>(`${API_ROUTES.admin.verifications}?status=${statusFilter}`)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error de red");
     } finally {
@@ -45,19 +37,11 @@ export function VerificationsView() {
     try {
       // El backend exige un "reason" al rechazar
       const body = action === "reject" ? JSON.stringify({ reason: "Rechazado por el administrador" }) : undefined;
-      const res = await apiFetch(`${BASE_URL}/api/admin/verifications/${id}/${action}`, {
-        method: "POST",
-        body
-      });
-      
-      if (res.ok) {
-        fetchVerifications();
-      } else {
-        const json = await res.json();
-        alert(json.error?.message || "Error al procesar la solicitud");
-      }
+      const url = action === "approve" ? API_ROUTES.admin.approveVerification(id) : API_ROUTES.admin.rejectVerification(id);
+      await api(url, { method: "POST", body });
+      fetchVerifications();
     } catch (err) {
-      alert("Error de red al procesar la solicitud");
+      alert(err instanceof Error ? err.message : "Error de red al procesar la solicitud");
     }
   };
 
