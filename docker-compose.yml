@@ -16,6 +16,7 @@ services:
         # Se incrustan al compilar. Cambiarlas exige reconstruir la imagen.
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://paymyloan.ai}
         NEXT_PUBLIC_REGISTRO_ENDPOINT: ${NEXT_PUBLIC_REGISTRO_ENDPOINT:-}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.paymyloan.ai}
     image: paymyloan-landing:latest
     restart: unless-stopped
     expose:
