@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import SiteShell from "@/app/components/layout/SiteShell";
-import PrivacyNotice from "@/app/components/PrivacyNotice";
-import { copy } from "@/content/copy";
+import PrivacyNotice from "@/app/components/landing/PrivacyNotice";
+import { legal } from "@/content/es/legal";
 
 export const metadata: Metadata = {
-  title: `${copy.es.privacy.title} — PayMyLoan.ai`,
-  description: copy.es.privacy.intro[0],
+  title: `${legal.privacy.title} — PayMyLoan.ai`,
+  description: legal.privacy.sections[0].paragraphs[0],
   alternates: { canonical: "/aviso-de-privacidad" },
   robots: { index: true, follow: true },
 };
 
 export default function AvisoDePrivacidadPage() {
   return (
-    <SiteShell>
+    <SiteShell isMinimal={true}>
       <PrivacyNotice />
     </SiteShell>
   );

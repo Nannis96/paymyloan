@@ -1,30 +1,28 @@
 @import "tailwindcss";
 
-/* =========================================================================
-   Sistema visual de PayMyLoan.ai
-   Los valores estan tomados tal cual del documento de alcance
-   (paymyloan-alcance.html). No se redondean ni se sustituyen por defaults
-   de framework: el documento es la unica pieza con marca PayMyLoan y es
-   la fuente de verdad del color, la tipografia y las reglas.
-   ========================================================================= */
-
 :root {
-  --bg: #ffffff;
-  --surface: #fafafa;
-  --surface-2: #f5f5f5;
-  --ink: #0a0a0a;
-  --ink-2: #555555;
-  --ink-3: #888888;
-  --rule: #eeeeee;
-  --rule-strong: #e5e5e5;
-  --accent: #2563eb;
-  --accent-soft: #eff6ff;
-  --amber: #F0C000;
-  --amber-soft: #fef9c3;
-  --crit: #ef4444;
-  --crit-soft: #fee2e2;
+  --bg: #f6f9fc;
+  --surface: #ffffff;
+  --surface-2: #fafbfd;
+  --ink: #0a2540;
+  --ink-2: #425466;
+  --ink-3: #8898aa;
+  --rule: #e6ebf1;
+  --rule-strong: #c7c4ff;
+  --accent: #635bff;
+  --accent-soft: #f0efff;
+  --amber: #b45309;
+  --amber-soft: #fff8e1;
+  --crit: #c62626;
+  --crit-soft: #fff0f0;
+  --success: #2e7d32;
+  --success-soft: #e8f5e9;
+  --info: #1565c0;
+  --info-soft: #e3f2fd;
   --accent-ink: #ffffff;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --brand-dark: #0a2540;
+  --brand-purple: #a78bfa;
+  --shadow: 0 4px 12px rgba(10, 37, 64, 0.08), 0 1px 3px rgba(10, 37, 64, 0.04);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,13 +35,19 @@
     --ink-3: #666666;
     --rule: #2a2a2a;
     --rule-strong: #333333;
-    --accent: #2563eb;
-    --accent-soft: #1e3a8a;
-    --amber: #F0C000;
+    --accent: #818cf8;
+    --accent-soft: #1e1b4b;
+    --amber: #fbbf24;
     --amber-soft: #713f12;
     --crit: #ef4444;
     --crit-soft: #7f1d1d;
+    --success: #4ade80;
+    --success-soft: #064e3b;
+    --info: #60a5fa;
+    --info-soft: #1e3a8a;
     --accent-ink: #ffffff;
+    --brand-dark: #0a2540;
+    --brand-purple: #a78bfa;
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   }
 }
@@ -57,13 +61,19 @@
   --ink-3: #666666;
   --rule: #2a2a2a;
   --rule-strong: #333333;
-  --accent: #2563eb;
-  --accent-soft: #1e3a8a;
-  --amber: #F0C000;
+  --accent: #818cf8;
+  --accent-soft: #1e1b4b;
+  --amber: #fbbf24;
   --amber-soft: #713f12;
   --crit: #ef4444;
   --crit-soft: #7f1d1d;
+  --success: #4ade80;
+  --success-soft: #064e3b;
+  --info: #60a5fa;
+  --info-soft: #1e3a8a;
   --accent-ink: #ffffff;
+  --brand-dark: #0a2540;
+  --brand-purple: #a78bfa;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
 }
 
@@ -86,7 +96,12 @@
   --color-amber-soft: var(--amber-soft);
   --color-crit: var(--crit);
   --color-crit-soft: var(--crit-soft);
-
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-purple: var(--brand-purple);
   --font-serif: var(--font-inter), sans-serif;
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
@@ -141,3 +156,24 @@ body {
     animation: none !important;
   }
 }
+
+/* Estilos personalizados para los popups de Leaflet */
+.leaflet-popup-content-wrapper {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--rule) !important;
+  box-shadow: var(--shadow) !important;
+}
+.leaflet-popup-tip {
+  background: var(--surface) !important;
+  border: 1px solid var(--rule) !important;
+}
+.leaflet-popup-content {
+  margin: 14px !important;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--ink-3) !important;
+  padding: 4px 10px !important;
+}
+

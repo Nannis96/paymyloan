@@ -20,7 +20,7 @@ export default function WhoItHelps() {
     <>
       <section className="bg-surface py-20 px-6 lg:px-14">
         <div className="mx-auto max-w-[1100px]">
-          <div className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-accent">
+          <div className="mb-5 text-center text-[clamp(14px,2.5vw,22px)] font-bold uppercase tracking-widest text-accent">
             {w.eyebrow}
           </div>
           <h2 className="mb-4 text-center text-[44px] font-black leading-[1.1] tracking-[-1.5px] text-ink">
@@ -34,9 +34,9 @@ export default function WhoItHelps() {
             {w.cards.map((card, i) => {
               const color = CARD_COLORS[i % CARD_COLORS.length];
               return (
-                <div key={card.role} className={`rounded-[14px] border border-rule bg-bg p-7 border-t-[3px] ${color.border}`}>
+                <div key={card.role} className={`rounded-[14px] border border-rule bg-bg p-7 border-t-[3px] ${color.border} transition-all duration-300 hover:scale-[1.2] active:scale-[1.2] hover:shadow-xl cursor-default`}>
                   <div className="mb-3 text-[28px]">{card.icon}</div>
-                  <div className={`mb-1.5 text-[11px] font-extrabold uppercase tracking-widest ${color.text}`}>
+                  <div className={`mb-2 text-[clamp(13px,1.8vw,18px)] font-extrabold uppercase tracking-widest ${color.text}`}>
                     {card.role}
                   </div>
                   <h3 className="mb-2.5 text-base font-black text-ink">{card.title}</h3>

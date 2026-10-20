@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { copy } from "@/content/copy";
+import { shared } from "@/content/en/shared";
 
 /* La nueva fuente base es Inter para todo el diseño de PML */
 const inter = Inter({
@@ -15,8 +15,8 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://paymyloan.ai";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: copy.en.meta.title,
-  description: copy.en.meta.description,
+  title: shared.meta.title,
+  description: shared.meta.description,
   alternates: {
     canonical: "/",
     languages: { en: "/", es: "/?lang=es" },
@@ -25,23 +25,25 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     siteName: "PayMyLoan.ai",
-    title: copy.en.meta.title,
-    description: copy.en.meta.description,
+    title: shared.meta.title,
+    description: shared.meta.description,
   },
   robots: { index: true, follow: true },
 };
 
-/* Se aplica el tema guardado antes del primer paint para que no haya
-   parpadeo de claro a oscuro al cargar. */
+/* Se aplica el tema guardado antes del primer paint. 
+   Si no hay tema guardado, se fuerza el modo claro por defecto. */
 const themeInit = `
-(function () {
-  try {
-    var t = localStorage.getItem("pml-theme");
-    if (t === "dark" || t === "light") {
-      document.documentElement.setAttribute("data-theme", t);
-    }
-  } catch (e) {}
-})();
+  (function () {
+    try {
+      var t = localStorage.getItem("pml-theme");
+      if (t === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    } catch (e) {}
+  })();
 `;
 
 export default function RootLayout({

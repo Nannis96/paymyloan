@@ -5,9 +5,15 @@ import {
   useContext,
   useEffect,
   useSyncExternalStore,
+  useState,
   type ReactNode,
 } from "react";
-import { copy, type Lang } from "@/content/copy";
+import { usePathname, useRouter } from "next/navigation";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
+import { HOME_BY_ROLE, roleForPath } from "@/app/lib/roles";
+import en from "@/content/en";
+import type { Copy, Lang } from "@/content/copy";
 import {
   escribir,
   esquemaOscuroDelSistema,
@@ -15,12 +21,14 @@ import {
   suscribir,
   suscribirEsquemaOscuro,
 } from "@/app/lib/preferencias";
+
 import SiteFooter from "./SiteFooter";
 import DashboardHeader from "./DashboardHeader";
-import PmlHeader from "./PmlHeader";
 import PmlFooter from "./PmlFooter";
-
-// Componentes de landing
+import LandingHeader from "../landing/LandingHeader";
+import WelcomeModal from "../landing/WelcomeModal";
+import LenderLandingView from "../landing/LenderLandingView";
+import BorrowerLandingView from "../landing/BorrowerLandingView";
 import PmlHero from "../landing/PmlHero";
 import WhoItHelps from "../landing/WhoItHelps";
 import BeforeAfter from "../landing/BeforeAfter";
@@ -31,8 +39,10 @@ import LiveActivity from "../landing/LiveActivity";
 import ProfilesDirectory from "../landing/ProfilesDirectory";
 import Marketplace from "../landing/Marketplace";
 import PmlCta from "../landing/PmlCta";
+import WhyPml from "../landing/WhyPml";
 
 type Theme = "light" | "dark";
+type AppMode = "general" | "lender" | "borrower" | "why-pml";
 
 const CLAVE_TEMA = "pml-theme";
 const CLAVE_IDIOMA = "pml-lang";
@@ -40,10 +50,14 @@ const CLAVE_IDIOMA = "pml-lang";
 type SiteContextValue = {
   lang: Lang;
   setLang: (lang: Lang) => void;
-  t: (typeof copy)[Lang];
-  /** Tema realmente pintado: el elegido por el visitante, si no el del sistema. */
+  t: Copy;
   resolvedTheme: Theme;
   toggleTheme: () => void;
+  appMode: AppMode;
+  setAppMode: (mode: AppMode) => void;
+  lastAppMode: "lender" | "borrower" |"why-pml"| null;
+  activeTab: number;
+  setActiveTab: (tab: number) => void;
 };
 
 const SiteContext = createContext<SiteContextValue | null>(null);
@@ -59,45 +73,141 @@ const leerIdioma = () => leer(CLAVE_IDIOMA);
 const sinValor = () => null;
 const sinEsquemaOscuro = () => false;
 
-export default function SiteShell({ children, isDashboard = false, isMinimal = false }: { children?: ReactNode; isDashboard?: boolean; isMinimal?: boolean }) {
+export default function SiteShell({
+  children,
+  isDashboard = false,
+  isMinimal = false,
+}: {
+  children?: ReactNode;
+  isDashboard?: boolean;
+  isMinimal?: boolean;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const temaGuardado = useSyncExternalStore(suscribir, leerTema, sinValor);
   const idiomaGuardado = useSyncExternalStore(suscribir, leerIdioma, sinValor);
-  const sistemaOscuro = useSyncExternalStore(
-    suscribirEsquemaOscuro,
-    esquemaOscuroDelSistema,
-    sinEsquemaOscuro,
-  );
 
   const lang: Lang = idiomaGuardado === "es" ? "es" : "en";
-
   const temaElegido: Theme | null =
     temaGuardado === "dark" || temaGuardado === "light" ? temaGuardado : null;
-  const resolvedTheme: Theme = temaElegido ?? (sistemaOscuro ? "dark" : "light");
+
+  const resolvedTheme: Theme = temaElegido ?? "light";
+
+  const [appMode, setAppMode] = useState<AppMode>("general");
+  const [lastAppMode, setLastAppMode] = useState<"lender" | "borrower" |"why-pml"| null>(null);
+  const [activeTab, setActiveTab] = useState<number>(0);
+  // "en" va en el bundle inicial; "es" se descarga solo si se usa.
+  const [es, setEs] = useState<Copy | null>(null);
+  const [isVerifying, setIsVerifying] = useState<boolean>(true);
+
+  const handleSetAppMode = (mode: AppMode) => {
+    if (appMode !== "general" && mode === "general") {
+      setLastAppMode(appMode);
+    }
+    setAppMode(mode);
+  };
 
   const setLang = (valor: Lang) => escribir(CLAVE_IDIOMA, valor);
   const toggleTheme = () =>
     escribir(CLAVE_TEMA, resolvedTheme === "dark" ? "light" : "dark");
 
-  // Único efecto: reflejar el estado en el DOM. No cambia estado de React.
+  useEffect(() => {
+    if (lang === "es") import("@/content/es").then((m) => setEs(m.default));
+  }, [lang]);
+
+  const t: Copy = lang === "es" && es ? es : en;
+
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
 
   useEffect(() => {
-    if (!temaElegido) {
-      document.documentElement.removeAttribute("data-theme");
-      return;
-    }
-    document.documentElement.setAttribute("data-theme", temaElegido);
-  }, [temaElegido]);
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+  }, [resolvedTheme]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Rutas que requieren que el usuario este autenticado
+      const protectedRoutes = [
+        "/lenderDashboard",
+        "/borrowerDashboard",
+        "/adminDashboard",
+        "/bookkeeperDashboard",
+        "/marketplace",
+        "/contracts",
+        "/settings",
+        "/profile",
+        "/apply",
+        "/term-sheets"
+      ];
+
+      const isProtected = protectedRoutes.some(route => pathname?.startsWith(route));
+
+      if (isProtected) {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          router.push("/login");
+          return;
+        }
+
+        try {
+          const res = await apiFetch(API_ROUTES.auth.me);
+
+          if (!res.ok) {
+            cerrarSesion();
+            return;
+          }
+          // Cada rol, su dashboard. `roles` puede traer LENDER y BORROWER a la vez.
+          const me = (await res.json())?.data;
+          const roles: string[] = me?.roles ?? [me?.user?.role];
+          const required = roleForPath(pathname);
+          if (required && !roles.includes(required)) {
+            router.replace(HOME_BY_ROLE[roles[0]] ?? "/");
+            return;
+          }
+          setIsVerifying(false);
+        } catch (err) {
+          console.error("Auth check error:", err);
+          router.push("/login");
+        }
+      } else {
+        setIsVerifying(false);
+      }
+    };
+
+    checkAuth();
+  }, [pathname, router]);
+
+  // Pantalla de carga para evitar destellos de informacion protegida
+  if (isVerifying) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="text-sm font-semibold text-ink-3">
+          {t.loginPage.processing || "Procesando..."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <SiteContext.Provider
-      value={{ lang, setLang, t: copy[lang], resolvedTheme, toggleTheme }}
+      value={{
+        lang,
+        setLang,
+        t,
+        resolvedTheme,
+        toggleTheme,
+        appMode,
+        setAppMode: handleSetAppMode,
+        lastAppMode,
+        activeTab,
+        setActiveTab,
+      }}
     >
-      {!isMinimal && (isDashboard ? <DashboardHeader /> : <PmlHeader />)}
-      
-      <main id="contenido">
+      {!isMinimal && (isDashboard ? <DashboardHeader /> : <LandingHeader />)}
+      <main id="contenido" className={isDashboard ? "dashboard-wrapper" : ""}>
+        {!isMinimal && !isDashboard && <WelcomeModal />}
         {children ?? (
           <>
             <PmlHero />

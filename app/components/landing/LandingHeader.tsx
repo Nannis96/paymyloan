@@ -1,0 +1,75 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+import { useSite } from "@/app/components/layout/SiteShell";
+import ThemeToggle from "@/app/components/ambos/ThemeToggle";
+import LangToggle from "@/app/components/ambos/LangToggle";
+
+export default function LandingHeader() {
+  const { t, setAppMode, setActiveTab } = useSite();
+  const ln = t.landingNav;
+  const router = useRouter();
+  const pathname = usePathname();
+
+  return (
+    <nav className="sticky top-0 z-[100] flex h-[64px] items-center justify-between border-b border-rule bg-surface px-6 md:px-10">
+      <div className="flex items-center">
+        <Link
+           href="/"
+           className="mr-10 text-[19px] font-extrabold text-ink no-underline"
+        >
+          PayMy<span className="text-accent">Loan</span>.ai
+        </Link>
+        
+        <div className="hidden flex-1 items-center gap-8 text-[14px] lg:flex">
+          <Link
+             href="/lender"
+             className={`transition-colors ${pathname === '/lender' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.lenders}
+          </Link>
+          <Link
+            href="/borrower"
+            className={`transition-colors ${pathname === '/borrower' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.borrowers}
+          </Link>
+          <Link
+             href="/why-pml"
+             className={`transition-colors ${pathname === '/why-pml' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.why}
+          </Link>
+          <Link
+             href="/demo"
+             className={`transition-colors ${pathname === '/demo' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.demo}
+          </Link>
+          <Link
+             href="/founder-story"
+             className={`transition-colors ${pathname === '/founder-story' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.founderStory}
+          </Link>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-5">
+        <div className="hidden items-center gap-5 sm:flex">
+          <Link href="/login" className="text-[14px] font-semibold text-ink-2 transition-colors hover:text-ink">
+            {ln.signIn}
+          </Link>
+          <Link href="/register" className="rounded-md bg-accent px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-blue-700">
+            {ln.getStarted}
+          </Link>
+        </div>
+        <div className="flex items-center gap-2 border-l border-rule pl-5">
+          <LangToggle className="h-9 min-w-9 rounded-md px-1 text-sm font-bold text-ink-3 hover:bg-surface-2 hover:text-ink" />
+          <ThemeToggle iconSize={17} className="h-9 w-9 rounded-md text-ink-3 hover:bg-surface-2 hover:text-ink" />
+        </div>
+      </div>
+    </nav>
+  );
+}
