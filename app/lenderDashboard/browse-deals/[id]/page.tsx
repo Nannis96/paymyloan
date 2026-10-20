@@ -3,18 +3,13 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import { Lock, ChevronLeft } from "lucide-react";
-import MapLoader from "@/app/components/map/MapLoader";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function LenderDealDetailPage() {
-  return (
-    <SiteShell isMinimal={false}>
-      <LenderDealDetailContent />
-    </SiteShell>
-  );
+  return <LenderDealDetailContent />;
 }
 
 function LenderDealDetailContent() {
@@ -165,13 +160,6 @@ function LenderDealDetailContent() {
   const displayAddress = deal.property?.addressLine1 || (isEs ? "Direccion oculta" : "Address shielded");
   const displayCityState = `${deal.property?.city || "Ciudad"}, ${deal.property?.state || "Estado"}`;
 
-  const mapCenter: [number, number] = [deal.lat || 35.127, deal.lng || -89.977];
-  const subjectMarker = { lat: mapCenter[0], lng: mapCenter[1], address: displayAddress };
-  const salesMarkers = [
-    { lat: mapCenter[0] - 0.003, lng: mapCenter[1] - 0.001, address: 'Comp 1', price: formatCurrency(arv * 0.95) },
-    { lat: mapCenter[0] + 0.003, lng: mapCenter[1] + 0.002, address: 'Comp 2', price: formatCurrency(arv * 1.05) }
-  ];
-
   return (
     <div className="min-h-screen bg-bg p-4 sm:p-6 lg:p-10 font-sans">
       <div className="mx-auto max-w-[1100px]">
@@ -309,21 +297,6 @@ function LenderDealDetailContent() {
                 <div><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.5px] text-ink-3">{m.rehabBudget}</span><span className="text-[13px] font-semibold text-ink">{formatCurrency(rehab)}</span></div>
                 <div><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.5px] text-ink-3">{m.allInCost}</span><span className="text-[13px] font-semibold text-ink">{formatCurrency(allIn)}</span></div>
                 <div><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.5px] text-ink-3">{m.profitArv}</span><span className="text-[13px] font-semibold text-ink">{formatCurrency(profit)}</span></div>
-              </div>
-            </div>
-
-            {/* Map */}
-            <div className="rounded-[10px] border border-rule bg-surface p-5">
-              <div className="mb-3.5 border-b-2 border-accent-soft pb-2 text-[12px] font-bold uppercase tracking-[0.7px] text-accent">
-                {m.mapTitle}
-              </div>
-              <div className="relative h-[260px] w-full overflow-hidden rounded-lg border border-rule bg-surface-2 z-0">
-                <MapLoader
-                  center={mapCenter}
-                  subject={subjectMarker}
-                  sales={salesMarkers}
-                  zoom={14}
-                />
               </div>
             </div>
           </div>

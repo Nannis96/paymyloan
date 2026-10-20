@@ -5,13 +5,13 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
-import MapLoader from "@/app/components/map/MapLoader";
 
 // Interfaces para mapear los datos del backend a la vista
 interface PropertyData {
   addressLine1?: string;
   city: string;
   state: string;
+  postalCode?: string;
   afterRepairValue?: number | string;
 }
 
@@ -23,6 +23,7 @@ interface LoanRequestItem {
   rehabAmount?: number | string;
   requestedClosingDate: string;
   status: string;
+  createdAt?: string;
   _count?: {
     quotes?: number;
   };
@@ -41,11 +42,12 @@ export default function BrowseDealsView() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados de filtros
-  const [activeFilter, setActiveFilter] = useState<string>("ALL");
+// Estados de filtros
+  const [activeFilter, setActiveFilter] = useState<string>("ALL"); // ALL, BRIDGE, SLOW_FLIP, NEW
   const [filterState, setFilterState] = useState("");
+  const [filterZip, setFilterZip] = useState("");
   const [filterLtv, setFilterLtv] = useState("");
-  const [filterRate, setFilterRate] = useState("");
+
   const [viewMode, setViewMode] = useState<"map" | "grid">("map");
   const [mapCenter, setMapCenter] = useState<[number, number]>([35.13, -89.99]);
   const [mapZoom, setMapZoom] = useState<number>(11);
@@ -85,23 +87,31 @@ export default function BrowseDealsView() {
   // Filtrado de tratos
   const filteredDeals = useMemo(() => {
     return deals.filter(deal => {
-      // Filtro de boton principal
-      if (activeFilter !== "ALL" && deal.status !== activeFilter) return false;
+      // Ocultar borradores del marketplace
+      if (deal.status === "DRAFT") return false;
+
+      // Filtro de chips (Tipo de proyecto o Novedad)
+      if (activeFilter === "BRIDGE" && deal.projectType !== "FIX_AND_FLIP") return false;
+      if (activeFilter === "SLOW_FLIP" && deal.projectType !== "SLOW_FLIP") return false;
+      if (activeFilter === "NEW") {
+        if (!deal.createdAt) return false;
+        const daysOld = (new Date().getTime() - new Date(deal.createdAt).getTime()) / 86400000;
+        if (daysOld > 7) return false;
+      }
       
-      // Filtros desplegables
+      // Filtros de texto/desplegables
       if (filterState && deal.property?.state !== filterState) return false;
+      if (filterZip && (!deal.property?.postalCode || !deal.property.postalCode.includes(filterZip))) return false;
       
       const arv = Number(deal.property?.afterRepairValue || 0);
       const loan = Number(deal.totalLoanAmountRequested || 0);
       const ltv = arv > 0 ? (loan / arv) * 100 : 0;
       
       if (filterLtv && ltv >= parseInt(filterLtv)) return false;
-      // Simulamos filtrado de tasa
-      if (filterRate) return false;
       
       return true;
     });
-  }, [deals, activeFilter, filterState, filterLtv, filterRate]);
+  }, [deals, activeFilter, filterState, filterZip, filterLtv]);
 
   // Funciones de utilidad
   const formatCurrency = (val: number | string) => {
@@ -117,194 +127,153 @@ export default function BrowseDealsView() {
     return arv > 0 ? Math.round((loan / arv) * 100) : 0;
   };
 
-  const handleDealClick = (deal: LoanRequestItem) => {
-    setSelectedDealId(deal.id);
-    if (deal.lat && deal.lng) {
-      setMapCenter([deal.lat, deal.lng]);
-      setMapZoom(14); // Hacemos zoom in a nivel de vecindario
-    }
+  const getTimeAgo = (dateString?: string) => {
+    if (!dateString) return "";
+    const diff = new Date().getTime() - new Date(dateString).getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours/24)}d ago`;
   };
 
-  // Evitamos el padding global del dashboard aplicando margenes negativos
+  // Stats calculation
+  const activeDealsCount = deals.filter(d => d.status === "PUBLISHED" || d.status === "MATCHED").length;
+  const avgLoanAmt = deals.length > 0 ? deals.reduce((acc, d) => acc + Number(d.totalLoanAmountRequested || 0), 0) / deals.length : 0;
+  const avgLtvVal = deals.length > 0 ? deals.reduce((acc, d) => acc + getCalculatedLtv(d), 0) / deals.length : 0;
+
   return (
-    <div className="-mx-[32px] -my-[28px] flex h-[calc(100vh-52px)] flex-col bg-white overflow-hidden font-sans text-ink">
+    <div className="animate-in fade-in flex flex-col bg-white font-sans text-[#0a2540] duration-300">
+      <div className="mb-[20px] flex items-center justify-between">
+        <div className="text-[22px] font-[700] tracking-[-0.3px] text-[#0a2540]">{m.title || "Browse deals"}</div>
+      </div>
 
-      {/* FILTER BAR */}
-      <div className="flex h-[52px] shrink-0 items-center gap-[12px] border-b border-rule bg-white px-[16px] z-[800]">
-        
-        {/* Toggle principal */}
-        <div className="flex overflow-hidden rounded-[8px] border border-rule">
-          <button 
-            onClick={() => setActiveFilter("ALL")} 
-            className={`cursor-pointer whitespace-nowrap border-r border-rule px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "ALL" ? "bg-[#f6f9fc] text-[#0a2540]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
-          >
-            {isEs ? "Todos" : "All"}
-          </button>
-          <button 
-            onClick={() => setActiveFilter("PUBLISHED")} 
-            className={`cursor-pointer whitespace-nowrap border-r border-rule px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "PUBLISHED" ? "bg-[#f0fdf4] text-[#16a34a]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
-          >
-            {isEs ? "Necesita Fondeo" : "Needs Funding"}
-          </button>
-          <button 
-            onClick={() => setActiveFilter("MATCHED")} 
-            className={`cursor-pointer whitespace-nowrap border-r border-rule px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "MATCHED" ? "bg-[#eff6ff] text-[#2563eb]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
-          >
-            {isEs ? "Fondeo Activo" : "Active Funding"}
-          </button>
-          <button 
-            onClick={() => setActiveFilter("CLOSED")} 
-            className={`cursor-pointer whitespace-nowrap px-[12px] py-[6px] text-[12px] font-[500] transition-colors ${activeFilter === "CLOSED" ? "bg-[#f3f4f6] text-[#6b7280]" : "bg-white text-[#425466] hover:bg-surface-2"}`}
-          >
-            {isEs ? "Cerrado" : "Closed"}
-          </button>
+      {/* STATS STRIP */}
+      <div className="mb-[24px] grid grid-cols-1 gap-[1px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-[#e6ebf1] md:grid-cols-3">
+        <div className="bg-white p-[16px_20px]">
+          <div className="mb-[6px] text-[11px] font-[600] uppercase tracking-[0.5px] text-[#8898aa]">Active deals</div>
+          <div className="text-[22px] font-[700] tracking-[-0.5px] text-[#0a2540]">{activeDealsCount}</div>
         </div>
+        <div className="bg-white p-[16px_20px]">
+          <div className="mb-[6px] text-[11px] font-[600] uppercase tracking-[0.5px] text-[#8898aa]">Avg loan amount</div>
+          <div className="text-[22px] font-[700] tracking-[-0.5px] text-[#0a2540]">{formatCurrency(avgLoanAmt)}</div>
+        </div>
+        <div className="bg-white p-[16px_20px]">
+          <div className="mb-[6px] text-[11px] font-[600] uppercase tracking-[0.5px] text-[#8898aa]">Avg LTV</div>
+          <div className="text-[22px] font-[700] tracking-[-0.5px] text-[#0a2540]">{Math.round(avgLtvVal)}%</div>
+        </div>
+      </div>
 
-        <div className="h-[24px] w-[1px] shrink-0 bg-rule"></div>
-
-        <select 
-          value={filterState} 
-          onChange={(e) => setFilterState(e.target.value)} 
-          className="min-w-[100px] cursor-pointer appearance-none rounded-[6px] border border-rule bg-white px-[10px] py-[6px] pr-[26px] text-[12px] text-[#425466] outline-none"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238898aa' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
-        >
-          <option value="">{isEs ? "Todos los Estados" : "All States"}</option>
-          <option value="TN">Tennessee</option>
-          <option value="MS">Mississippi</option>
+      {/* FILTER ROW */}
+      <div className="mb-[20px] flex flex-wrap items-center gap-[8px]">
+        <button onClick={() => setActiveFilter("ALL")} className={`cursor-pointer rounded-[20px] border px-[12px] py-[6px] font-sans text-[12px] font-[500] transition-colors ${activeFilter === "ALL" ? "border-[#635bff] bg-[#f0efff] text-[#635bff]" : "border-[#e6ebf1] bg-white text-[#425466] hover:border-[#aab7c4] hover:text-[#0a2540]"}`}>{isEs ? "Todos" : "All"}</button>
+        <button onClick={() => setActiveFilter("BRIDGE")} className={`cursor-pointer rounded-[20px] border px-[12px] py-[6px] font-sans text-[12px] font-[500] transition-colors ${activeFilter === "BRIDGE" ? "border-[#635bff] bg-[#f0efff] text-[#635bff]" : "border-[#e6ebf1] bg-white text-[#425466] hover:border-[#aab7c4] hover:text-[#0a2540]"}`}>Bridge</button>
+        <button onClick={() => setActiveFilter("SLOW_FLIP")} className={`cursor-pointer rounded-[20px] border px-[12px] py-[6px] font-sans text-[12px] font-[500] transition-colors ${activeFilter === "SLOW_FLIP" ? "border-[#635bff] bg-[#f0efff] text-[#635bff]" : "border-[#e6ebf1] bg-white text-[#425466] hover:border-[#aab7c4] hover:text-[#0a2540]"}`}>Slow flip</button>
+        <button onClick={() => setActiveFilter("NEW")} className={`cursor-pointer rounded-[20px] border px-[12px] py-[6px] font-sans text-[12px] font-[500] transition-colors ${activeFilter === "NEW" ? "border-[#635bff] bg-[#f0efff] text-[#635bff]" : "border-[#e6ebf1] bg-white text-[#425466] hover:border-[#aab7c4] hover:text-[#0a2540]"}`}>{isEs ? "Nuevos" : "New this week"}</button>
+        
+        <div className="mx-[4px] h-[20px] w-[1px] bg-[#e6ebf1]"></div>
+        
+        <select value={filterState} onChange={(e) => setFilterState(e.target.value)} className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[10px] py-[6px] font-sans text-[12px] text-[#425466] outline-none focus:border-[#635bff]">
+          <option value="">{isEs ? "Todos los Estados" : "Any state"}</option>
+          <option value="TN">TN</option>
+          <option value="MS">MS</option>
+          <option value="AR">AR</option>
         </select>
 
-        <select 
-          value={filterLtv} 
-          onChange={(e) => setFilterLtv(e.target.value)} 
-          className="min-w-[100px] cursor-pointer appearance-none rounded-[6px] border border-rule bg-white px-[10px] py-[6px] pr-[26px] text-[12px] text-[#425466] outline-none"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238898aa' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
-        >
+        <input 
+          type="text" 
+          placeholder="ZIP" 
+          value={filterZip} 
+          onChange={(e) => setFilterZip(e.target.value)} 
+          className="w-[80px] rounded-[6px] border border-[#e6ebf1] bg-white px-[10px] py-[6px] font-sans text-[12px] text-[#425466] outline-none focus:border-[#635bff]"
+        />
+        
+        <select value={filterLtv} onChange={(e) => setFilterLtv(e.target.value)} className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[10px] py-[6px] font-sans text-[12px] text-[#425466] outline-none focus:border-[#635bff]">
           <option value="">LTV: {isEs ? "Cualquiera" : "Any"}</option>
-          <option value="65">Under 65%</option>
-          <option value="70">Under 70%</option>
-          <option value="75">Under 75%</option>
+          <option value="65">&le; 65%</option>
+          <option value="70">&le; 70%</option>
+          <option value="75">&le; 75%</option>
+          <option value="80">&le; 80%</option>
         </select>
-
-        <span className="ml-[4px] whitespace-nowrap text-[12px] text-[#8898aa]">
-          {isEs ? "Mostrando" : "Showing"} <strong className="font-[600] text-[#0a2540]">{filteredDeals.length}</strong> {isEs ? "tratos" : "deals"}
-        </span>
-
-        {/* View Toggle */}
-        <div className="ml-auto flex overflow-hidden rounded-[6px] border border-rule bg-white">
-          <button 
-            onClick={() => setViewMode("grid")}
-            className={`cursor-pointer border-r border-rule px-[10px] py-[6px] transition-colors ${viewMode === "grid" ? "bg-[#f0efff] text-[#635bff]" : "text-[#8898aa]"}`}
-            title="Grid view"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          </button>
-          <button 
-            onClick={() => setViewMode("map")}
-            className={`cursor-pointer px-[10px] py-[6px] transition-colors ${viewMode === "map" ? "bg-[#f0efff] text-[#635bff]" : "text-[#8898aa]"}`}
-            title="Map view"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-          </button>
-        </div>
-      </div>
-
-      {/* CONTENT AREA */}
-      <div className="flex flex-1 overflow-hidden">
         
-        {/* MAP CONTAINER - Usa el componente MapLoader para evitar errores de SSR */}
-        <div id="map-container" className={`relative flex-1 ${viewMode === "grid" ? "hidden md:block" : "block"}`}>
-          <MapLoader 
-            deals={filteredDeals} 
-            t={t} 
-            center={mapCenter} 
-            zoom={mapZoom} 
-            onMarkerClick={handleDealClick}
-          />
+        <div className="ml-auto flex items-center gap-[6px]">
+          <span className="text-[12px] text-[#8898aa]">
+            {isEs ? "Mostrando" : "Showing"} <strong className="font-[600] text-[#0a2540]">{filteredDeals.length}</strong> {isEs ? "tratos" : "deals"}
+          </span>
         </div>
-
-        {/* DEAL LIST PANEL */}
-        <div id="deal-list-panel" className={`flex w-full md:w-[380px] shrink-0 flex-col border-l border-rule bg-white ${viewMode === "map" ? "hidden md:flex" : "flex"}`}>
-          <div className="shrink-0 border-b border-rule p-[16px]">
-            <div className="text-[15px] font-[600] text-[#0a2540]">{isEs ? "Tratos a la vista" : "Deals in view"}</div>
-            <div className="mt-[2px] text-[12px] text-[#8898aa]">
-              {filteredDeals.length} {isEs ? "tratos visibles" : "deals visible"}
-            </div>
-          </div>
-          
-          <div className="flex flex-1 flex-col gap-[8px] overflow-y-auto p-[12px] scrollbar-thin scrollbar-thumb-rule hover:scrollbar-thumb-rule-strong">
-            {isLoading ? (
-              <div className="text-center text-[13px] text-[#8898aa] py-10">{m.loading}</div>
-            ) : filteredDeals.length === 0 ? (
-              <div className="text-center text-[13px] text-[#8898aa] py-10">{m.empty}</div>
-            ) : (
-              filteredDeals.map(deal => {
-                const cfg = statusConfig[deal.status] || statusConfig["DRAFT"];
-                const ltv = getCalculatedLtv(deal);
-
-                return (
-                  <div 
-                    key={deal.id}
-                    onClick={() => handleDealClick(deal)}
-                    className={`relative cursor-pointer rounded-[10px] border bg-white p-[12px_12px_12px_16px] transition-all hover:-translate-y-[1px] hover:shadow-[0_2px_12px_rgba(10,37,64,0.08)] ${selectedDealId === deal.id ? "border-[#635bff] shadow-[0_0_0_2px_#635bff33]" : "border-rule"}`}
-                    style={{ borderLeftWidth: '4px', borderLeftColor: cfg.color }}
-                  >
-                    <div className="mb-[8px] flex items-start justify-between">
-                      <div>
-                        <div className="line-clamp-1 text-[13px] font-[600] leading-[1.3] text-[#0a2540]">
-                          {deal.property?.addressLine1 || "Direccion Pendiente"}
-                        </div>
-                        <div className="mt-[1px] text-[11px] text-[#8898aa]">{deal.property?.city}, {deal.property?.state}</div>
-                      </div>
-                      <span className={`ml-[8px] shrink-0 whitespace-nowrap rounded-[20px] px-[8px] py-[3px] text-[10px] font-[600] ${cfg.pillClass}`}>
-                        {cfg.label}
-                      </span>
-                    </div>
-                    
-                    <div className="mb-[8px] flex gap-[16px]">
-                      <div className="flex-1">
-                        <div className="text-[10px] font-[500] uppercase tracking-[0.4px] text-[#8898aa]">{isEs ? "Monto" : "Loan"}</div>
-                        <div className="mt-[1px] text-[12px] font-[600] text-[#0a2540]">{formatCurrency(deal.totalLoanAmountRequested)}</div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[10px] font-[500] uppercase tracking-[0.4px] text-[#8898aa]">ARV</div>
-                        <div className="mt-[1px] text-[12px] font-[600] text-[#0a2540]">{formatCurrency(deal.property?.afterRepairValue || 0)}</div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[10px] font-[500] uppercase tracking-[0.4px] text-[#8898aa]">{isEs ? "Tasa/Plazo" : "Rate/Term"}</div>
-                        <div className="mt-[1px] text-[12px] font-[600] text-[#0a2540]">12% / 12mo</div>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-[8px]">
-                      <div className="h-[3px] rounded-[2px] bg-rule">
-                        <div className="h-[3px] rounded-[2px] bg-[#635bff] transition-all duration-300" style={{ width: `${ltv}%` }}></div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-end gap-[8px]">
-                      <Link 
-                         href={`/lenderDashboard/counter-offer?dealId=${deal.id}`}
-                        onClick={(e) => e.stopPropagation()} 
-                         className="cursor-pointer rounded-[6px] border border-[#635bff] bg-[#f0efff] px-[12px] py-[5px] font-sans text-[11px] font-[600] text-[#635bff] transition-colors hover:bg-[#e0deff]"
-                      >
-                        {t.uiComponents.dealCard.counterOffer}
-                      </Link>
-                      <Link 
-                         href={`/lenderDashboard/browse-deals/${deal.id}`}
-                        onClick={(e) => e.stopPropagation()} 
-                         className="cursor-pointer rounded-[6px] border-none bg-[#635bff] px-[12px] py-[5px] font-sans text-[11px] font-[600] text-white transition-colors hover:bg-[#524ddb]"
-                      >
-                        {isEs ? "Enviar oferta" : "Submit offer"}
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
       </div>
+
+      {/* DEAL GRID */}
+      {isLoading ? (
+        <div className="py-10 text-center text-[13px] text-[#8898aa]">{m.loading}</div>
+      ) : filteredDeals.length === 0 ? (
+        <div className="py-10 text-center text-[13px] text-[#8898aa]">{m.empty}</div>
+      ) : (
+        <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 lg:grid-cols-3">
+          {filteredDeals.map(deal => {
+            const ltv = getCalculatedLtv(deal);
+            const isSlowFlip = deal.projectType === 'SLOW_FLIP';
+            
+            return (
+              <Link href={`/lenderDashboard/browse-deals/${deal.id}`} key={deal.id} className="flex cursor-pointer flex-col overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white tracking-normal text-[#0a2540] no-underline transition-all hover:border-[#aab7c4] hover:shadow-[0_4px_12px_rgba(10,37,64,0.06)]">
+                
+                <div className="border-b border-[#e6ebf1] p-[18px_18px_14px]">
+                  <div className="mb-[8px] flex items-center justify-between">
+                    <span className={`inline-flex items-center gap-[5px] rounded-[10px] px-[10px] py-[3px] text-[11px] font-[600] ${isSlowFlip ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-[#f0efff] text-[#635bff]'}`}>
+                      {isSlowFlip ? '🏡 Slow flip' : '⚡ Bridge'}
+                    </span>
+                  </div>
+                  <div className="mb-[2px] text-[14px] font-[700] text-[#0a2540]">{deal.property?.addressLine1 || (isEs ? "Dirección oculta" : "Address shielded")}</div>
+                  <div className="text-[12px] text-[#8898aa]">{deal.property?.city}, {deal.property?.state} {deal.property?.postalCode ? `· ${deal.property.postalCode}` : ''}</div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-[10px] p-[14px_18px]">
+                  <div className="flex flex-col gap-[2px]">
+                    <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{isSlowFlip ? (isEs ? "Monto" : "Loan amount") : (isEs ? "Solicitud" : "Loan request")}</div>
+                    <div className="text-[14px] font-[700] text-[#0a2540]">{formatCurrency(deal.totalLoanAmountRequested)}</div>
+                  </div>
+                  <div className="flex flex-col gap-[2px]">
+                    <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{isSlowFlip ? (isEs ? "Compra" : "Purchase price") : "ARV"}</div>
+                    <div className="text-[14px] font-[700] text-[#0a2540]">{formatCurrency(deal.property?.afterRepairValue || 0)}</div>
+                  </div>
+                  <div className="flex flex-col gap-[2px]">
+                    <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{isEs ? "Tasa/Plazo" : "Rate/Term"}</div>
+                    <div className="text-[14px] font-[700] text-[#0a2540]">{isEs ? "Por definir" : "TBD by you"}</div>
+                  </div>
+                  <div className="flex flex-col gap-[2px]">
+                    <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">{isSlowFlip ? (isEs ? "P&I Mensual" : "Monthly P&I") : "Rehab"}</div>
+                    <div className="text-[14px] font-[700] text-[#0a2540]">{formatCurrency(deal.rehabAmount || 0)}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between bg-[#f6f9fc] p-[12px_18px]">
+                  <div className="mr-[16px] flex flex-1 flex-col gap-[4px]">
+                    <div className="text-[10px] font-[600] uppercase tracking-[0.4px] text-[#8898aa]">LTV</div>
+                    <div className="h-[4px] overflow-hidden rounded-[2px] bg-[#e6ebf1]">
+                      <div className="h-full rounded-[2px] transition-all duration-300" style={{ width: `${ltv}%`, backgroundColor: isSlowFlip ? '#2e7d32' : '#635bff' }}></div>
+                    </div>
+                    <div className="mt-[2px] text-[11px] font-[700]" style={{ color: isSlowFlip ? '#2e7d32' : '#635bff' }}>{ltv}%</div>
+                  </div>
+                  <div className="flex flex-col items-end gap-[6px]">
+                    <div className="text-right text-[11px] text-[#8898aa]"><strong className="block text-[13px] text-[#0a2540]">{deal._count?.quotes || 0}</strong> {isEs ? 'ofertas' : 'offers'}</div>
+                    <button className="cursor-pointer whitespace-nowrap rounded-[6px] border-none px-[14px] py-[7px] font-sans text-[12px] font-[600] text-white hover:opacity-90" style={{ backgroundColor: isSlowFlip ? '#2e7d32' : '#635bff' }}>
+                      {isEs ? 'Ver detalles' : 'See details'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-[#e6ebf1] p-[10px_18px]">
+                  <div className="flex items-center gap-[7px]">
+                    <div className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border border-[#e6ebf1] bg-[#f6f9fc] text-[10px] text-[#aab7c4]">🔒</div>
+                    <span className="text-[11px] italic text-[#aab7c4]">{isEs ? 'Identidad oculta' : 'Borrower identity hidden'}</span>
+                  </div>
+                  <span className="text-[11px] text-[#aab7c4]">
+                    {getTimeAgo(deal.createdAt)}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

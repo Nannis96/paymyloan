@@ -1,10 +1,10 @@
 import SiteShell from "@/app/components/layout/SiteShell";
-import DealView from "../borrowerViewsComponents/DealView";
+import BorrowerDealsListView from "@/app/borrowerDashboard/borrowerViewsComponents/DealsComponents/BorrowerDealsListView";
 
-export default function DealPage() {
+export default function DealsListPage() {
   return (
     <SiteShell isMinimal={true}>
-      <DealView />
+      <BorrowerDealsListView />
     </SiteShell>
   );
 }

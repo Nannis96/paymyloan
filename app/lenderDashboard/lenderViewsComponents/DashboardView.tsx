@@ -23,30 +23,40 @@ export default function DashboardView() {
         const token = localStorage.getItem("accessToken") || "";
         const headers = { Authorization: `Bearer ${token}` };
 
-        // Llamadas en paralelo para poblar el dashboard
-        const [authRes, lenderRes, contractsRes, marketplaceRes] = await Promise.all([
+        // Llamadas en paralelo para poblar el dashboard (obtenemos la primera pagina de contratos aqui)
+        const [authRes, lenderRes, firstContractsRes, marketplaceRes] = await Promise.all([
           fetch(`${BASE_URL}/api/auth/me`, { headers }),
           fetch(`${BASE_URL}/api/lenders/me`, { headers }),
-          fetch(`${BASE_URL}/api/contracts`, { headers }),
+          fetch(`${BASE_URL}/api/contracts?page=1&pageSize=100`, { headers }),
           fetch(`${BASE_URL}/api/marketplace/loan-requests`, { headers })
         ]);
-
         const authJson = await authRes.json();
         const lenderJson = await lenderRes.json();
-        const contractsJson = await contractsRes.json();
+        const firstContractsJson = await firstContractsRes.json();
         const marketplaceJson = await marketplaceRes.json();
 
         if (authJson.success) setUser(authJson.data.user);
         if (lenderJson.success) setLenderData(lenderJson.data);
         
-        if (contractsJson.success && contractsJson.data?.items) {
-          // Filtramos solo los contratos que estan corriendo
-          const active = contractsJson.data.items.filter((c: any) => 
+        if (firstContractsJson.success && firstContractsJson.data) {
+          let allContracts = [...(firstContractsJson.data.items || [])];
+          let totalPages = firstContractsJson.data.totalPages || 1;
+          
+          // Paginacion completa para los KPIs
+          for (let page = 2; page <= totalPages; page++) {
+            const nextRes = await fetch(`${BASE_URL}/api/contracts?page=${page}&pageSize=100`, { headers });
+            const nextJson = await nextRes.json();
+            if (nextJson.success && nextJson.data?.items) {
+              allContracts = [...allContracts, ...nextJson.data.items];
+            }
+          }
+
+          // Filtramos solo los contratos activos, pendientes o en mora desde el frontend
+          const active = allContracts.filter((c: any) => 
             c.status === "ACTIVE" || c.status === "PENDING_ACCEPTANCE" || c.status === "DELINQUENT"
           );
           setActiveContracts(active);
         }
-
         if (marketplaceJson.success) {
           // Usamos el total paginado si existe, o el largo del array de items
           const totalDeals = marketplaceJson.data?.total || marketplaceJson.data?.items?.length || 0;
@@ -91,8 +101,21 @@ export default function DashboardView() {
   const totalDeployed = activeContracts.reduce((sum, c) => sum + Number(c.currentTerms?.principalAmount || 0), 0);
   const totalMonthlyIncome = activeContracts.reduce((sum, c) => sum + Number(c.currentTerms?.calculatedMonthlyPayment || 0), 0);
 
-  // Buscamos si hay algun contrato en mora (DELINQUENT) para la alerta
-  const delinquentContract = activeContracts.find(c => c.status === "DELINQUENT");
+  // Buscamos TODOS los contratos en mora (DELINQUENT) para mostrarlos en alertas multiples
+  const delinquentContracts = activeContracts.filter(c => c.status === "DELINQUENT");
+
+  // Contratos proximos a vencer (< 35 dias)
+  const maturingContracts = activeContracts.filter(c => {
+    if(!c.currentTerms?.maturityDate) return false;
+    const days = (new Date(c.currentTerms.maturityDate).getTime() - new Date().getTime()) / 86400000;
+    return days > 0 && days <= 35;
+  });
+
+  // Pagos proximos ordenados por fecha del mas cercano al mas lejano
+  const upcomingPayments = [...activeContracts]
+    .filter(c => c.nextPaymentDueDate)
+    .sort((a, b) => new Date(a.nextPaymentDueDate).getTime() - new Date(b.nextPaymentDueDate).getTime())
+    .slice(0, 4);
 
   if (isLoading) {
     return <div className="p-10 text-center text-[#8898aa]">Cargando tu panel principal...</div>;
@@ -141,22 +164,18 @@ export default function DashboardView() {
             {d.stats.maturingSoon}
           </div>
           <div className="text-[24px] font-[800] tracking-[-0.5px] text-[#b45309]">
-            {activeContracts.filter(c => {
-              if(!c.currentTerms?.maturityDate) return false;
-              const days = (new Date(c.currentTerms.maturityDate).getTime() - new Date().getTime()) / 86400000;
-              return days > 0 && days <= 60;
-            }).length}
+            {maturingContracts.length}
           </div>
-          <div className="mt-[3px] text-[11px] text-[#aab7c4]">{d.stats.within60}</div>
+          <div className="mt-[3px] text-[11px] text-[#aab7c4]">{isEs ? "En menos de 35 dias" : "Within 35 days"}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 items-start gap-[16px] lg:grid-cols-[1fr_340px]">
         <div className="min-w-0">
           
-          {/* Alerta Dinamica (Mora o Vencimiento) */}
-          {delinquentContract ? (
-            <div className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
+          {/* Alertas Dinamicas Multiples (Mora) */}
+          {delinquentContracts.map(contract => (
+            <div key={`delinquent-${contract.id}`} className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
               <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[14px_20px]">
                 <div className="text-[13px] font-[700] text-[#0a2540]">{isEs ? "Alerta de mora" : "Delinquency alert"}</div>
               </div>
@@ -164,17 +183,21 @@ export default function DashboardView() {
                 {AlertIcon}
                 <div>
                   <div className="text-[12px] font-[700] text-red-800">
-                    {delinquentContract.property?.addressLine1} - {isEs ? "Pago atrasado" : "Payment past due"}
+                    {contract.property?.addressLine1} - {isEs ? "Pago atrasado" : "Payment past due"}
                   </div>
                   <div className="mt-[2px] text-[11px] text-red-600">
-                    {formatCurrency(delinquentContract.currentTerms?.principalAmount)} al {delinquentContract.currentTerms?.interestRate}%
+                    {formatCurrency(contract.currentTerms?.principalAmount)} al {contract.currentTerms?.interestRate}%
                   </div>
                 </div>
               </div>
             </div>
-          ) : (
-            activeContracts.length > 0 && activeContracts[0].currentTerms?.maturityDate && (
-              <div className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
+          ))}
+
+          {/* Alertas Dinamicas Multiples (Vencimiento < 35 dias) */}
+          {maturingContracts.map(contract => {
+            const daysLeft = Math.round((new Date(contract.currentTerms.maturityDate).getTime() - new Date().getTime()) / 86400000);
+            return (
+              <div key={`maturing-${contract.id}`} className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
                 <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[14px_20px]">
                   <div className="text-[13px] font-[700] text-[#0a2540]">{d.alerts.maturityTitle}</div>
                 </div>
@@ -183,20 +206,20 @@ export default function DashboardView() {
                   <div>
                     <div className="text-[12px] font-[700] text-[#92400e]">
                       {d.alerts.maturityMsg
-                        .replace("{address}", activeContracts[0].property?.addressLine1 || "")
-                        .replace("{days}", Math.round((new Date(activeContracts[0].currentTerms.maturityDate).getTime() - new Date().getTime()) / 86400000).toString())
-                        .replace("{date}", formatShortDate(activeContracts[0].currentTerms.maturityDate))}
+                        .replace("{address}", contract.property?.addressLine1 || "")
+                        .replace("{days}", daysLeft.toString())
+                        .replace("{date}", formatShortDate(contract.currentTerms.maturityDate))}
                     </div>
                     <div className="mt-[2px] text-[11px] text-[#b45309]">
                       {d.alerts.maturitySub
-                        .replace("{amount}", formatCurrency(activeContracts[0].currentTerms.principalAmount))
-                        .replace("{rate}", activeContracts[0].currentTerms.interestRate.toString())}
+                        .replace("{amount}", formatCurrency(contract.currentTerms.principalAmount))
+                        .replace("{rate}", contract.currentTerms.interestRate.toString())}
                     </div>
                   </div>
                 </div>
               </div>
-            )
-          )}
+            );
+          })}
 
           {/* Prestamos Activos */}
           <div className="mb-[14px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
@@ -256,10 +279,10 @@ export default function DashboardView() {
               </Link>
             </div>
             
-            {activeContracts.length === 0 ? (
-              <div className="p-6 text-center text-sm text-[#8898aa]">No hay pagos programados.</div>
+            {upcomingPayments.length === 0 ? (
+              <div className="p-6 text-center text-sm text-[#8898aa]">{isEs ? "No hay pagos programados." : "No upcoming payments."}</div>
             ) : (
-              activeContracts.slice(0, 4).map((contract) => {
+              upcomingPayments.map((contract) => {
                 const nextPayment = contract.nextPaymentDueDate;
                 return (
                   <div key={`pay-${contract.id}`} className="flex items-center justify-between border-b border-[#f6f9fc] p-[10px_20px] last:border-b-0">

@@ -2,7 +2,8 @@
 
 import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
+import { apiFetch } from "@/app/lib/apiFetch";
 
 function PreQualificationContent() {
   const { t, lang } = useSite();
@@ -43,15 +44,9 @@ function PreQualificationContent() {
         else if (entity.includes("Corpor")) mappedType = "CORPORATION";
         else if (entity.includes("Trust") || entity.includes("Fideicomiso")) mappedType = "TRUST";
 
-        // Nota: El endpoint requiere entityName, entityType, ein (XX-XXXXXXX) y stateOfFormation (2 letras).
-        // Como esta vista no pide EIN ni estado de formacion exacto, enviamos placeholders
-        // para cumplir con el esquema y enviar la solicitud a la cola del Admin.
-        const res = await fetch("/api/borrowers/me/verification", {
+        // Usamos apiFetch para manejar automaticamente los headers y la sesion
+        const res = await apiFetch("/api/borrowers/me/verification", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
           body: JSON.stringify({
             entityName: "Pre-qualification Entity", 
             entityType: mappedType,
@@ -60,13 +55,20 @@ function PreQualificationContent() {
           })
         });
 
-        // 409 es si la solicitud ya estaba PENDING o APPROVED
+        // 409 es si la solicitud ya estaba PENDING o APPROVED[cite: 2]
         if (res.ok || res.status === 409) {
           alert(lang === "es" ? "Pre-calificacion enviada con exito." : "Pre-qualification submitted successfully!");
           router.push("/borrowerDashboard");
         } else {
-          const errJson = await res.json();
-          alert(errJson.error?.message || "Error submitting pre-qualification");
+          // Prevenimos el error "Unexpected token '<'" verificando que sea JSON
+          const text = await res.text();
+          try {
+            const errJson = JSON.parse(text);
+            alert(errJson.error?.message || (lang === "es" ? "Error al enviar pre-calificacion" : "Error submitting pre-qualification"));
+          } catch (parseError) {
+            console.error("Error del servidor (no JSON):", text);
+            alert(lang === "es" ? "Error del servidor. Revisa la consola para mas detalles." : "Server error. Check console for details.");
+          }
         }
       } catch (e) {
         console.error("Error en pre-calificacion:", e);
@@ -408,10 +410,8 @@ function PreQualificationContent() {
 
 export default function PreQualificationPage() {
   return (
-    <SiteShell isDashboard={true}>
-      <Suspense fallback={<div className="p-8 text-[#8898aa]">Cargando vista...</div>}>
-        <PreQualificationContent />
-      </Suspense>
-    </SiteShell>
+    <Suspense fallback={<div className="p-8 text-[#8898aa]">Cargando vista...</div>}>
+      <PreQualificationContent />
+    </Suspense>
   );
 }

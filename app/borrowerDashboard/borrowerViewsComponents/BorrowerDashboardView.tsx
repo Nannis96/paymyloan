@@ -225,7 +225,9 @@ export default function BorrowerDashboardView() {
       {/* My Deals Section */}
       <div className="mb-[12px] flex items-center justify-between">
         <div className="text-[14px] font-[800] text-ink">{isEs ? "Mis tratos" : "My deals"}</div>
-        <button className="cursor-pointer border-none bg-transparent font-sans text-[12px] font-[600] text-accent hover:underline">{isEs ? "Ver todos" : "View all"}</button>
+        <Link href="/borrowerDashboard/deals" className="cursor-pointer border-none bg-transparent font-sans text-[12px] font-[600] text-accent hover:underline no-underline">
+          {isEs ? "Ver todos" : "View all"}
+        </Link>
       </div>
 
       {loanRequests.length === 0 && contracts.length === 0 && (
@@ -234,8 +236,8 @@ export default function BorrowerDashboardView() {
         </div>
       )}
 
-      {/* Map Loan Requests */}
-      {loanRequests.map((req) => (
+      {/* Map Loan Requests (Limitado a los 3 mas recientes) */}
+      {loanRequests.slice(0, 3).map((req) => (
         <div key={req.id} className="mb-[10px] cursor-pointer rounded-[10px] border border-rule bg-surface p-[16px_20px] transition-shadow hover:shadow-md dark:hover:shadow-none dark:hover:border-ink-3">
           <div className="mb-[10px] flex items-start justify-between">
             <div>
@@ -258,8 +260,8 @@ export default function BorrowerDashboardView() {
         </div>
       ))}
 
-      {/* Map Contracts */}
-      {contracts.map((contract) => (
+      {/* Map Contracts (Limitado a los 3 mas recientes) */}
+      {contracts.slice(0, 3).map((contract) => (
         <div key={contract.id} className="mb-[10px] cursor-pointer rounded-[10px] border border-rule bg-surface p-[16px_20px] transition-shadow hover:shadow-md dark:hover:shadow-none dark:hover:border-ink-3">
           <div className="mb-[10px] flex items-start justify-between">
             <div>
@@ -294,7 +296,9 @@ export default function BorrowerDashboardView() {
       {/* Payments section */}
       <div className="mb-[12px] mt-[24px] flex items-center justify-between">
         <div className="text-[14px] font-[800] text-ink">{isEs ? "Pagos" : "Payments"}</div>
-        <button className="cursor-pointer border-none bg-transparent font-sans text-[12px] font-[600] text-accent hover:underline">{isEs ? "Ver calendario completo" : "View full schedule"}</button>
+        <Link href="/borrowerDashboard/payments" className="cursor-pointer border-none bg-transparent font-sans text-[12px] font-[600] text-accent hover:underline no-underline">
+          {isEs ? "Ver calendario completo" : "View full schedule"}
+        </Link>
       </div>
 
       <div className="overflow-hidden rounded-[10px] border border-rule bg-surface">
