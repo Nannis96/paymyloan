@@ -33,6 +33,22 @@ function UsersListContent() {
   const [editError, setEditError] = useState<{ field?: "email"; message: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
+  async function deleteUser(user: UserItem) {
+    if (!window.confirm(u.deleteConfirm.replace("{name}", user.name))) return;
+    setBusyId(user.id);
+    setError(null);
+    try {
+      // Borrado logico: el back pone deletedAt y GET /api/users ya no lo lista.
+      await api(API_ROUTES.users.byId(user.id), { method: "DELETE" });
+      setUsers((prev) => prev.filter((x) => x.id !== user.id));
+    } catch (err) {
+      if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setError(u.errorTwoFactor);
+      else setError(err instanceof Error ? err.message : u.errorNetwork);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   function openEdit(user: UserItem) {
     setEditing(user);
     setForm({ name: user.name, email: user.email, phone: user.phone ?? "" });
@@ -209,6 +225,14 @@ function UsersListContent() {
                         className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-50 ${user.isActive ? "border-rule text-ink-2 hover:border-crit hover:text-crit" : "border-accent text-accent hover:bg-accent hover:text-accent-ink"}`}
                       >
                         {busyId === user.id ? "..." : user.isActive ? u.deactivate : u.activate}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteUser(user)}
+                        disabled={busyId === user.id}
+                        className="rounded-lg border border-rule px-3 py-1.5 text-xs font-bold text-ink-2 transition-colors hover:border-crit hover:text-crit disabled:opacity-50"
+                      >
+                        {u.delete}
                       </button>
                     </td>
                   </tr>
