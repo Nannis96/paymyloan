@@ -14,7 +14,7 @@ Patrón de conexión: ver "Cómo conectar una API nueva" en [TAREAS_FRONT.md](TA
 | Borrowers | 🟡 filtra `/api/users` en cliente | `GET /api/users` |
 | Verifications | ✅ lista + aprobar/rechazar | `GET /api/admin/verifications`, `POST .../approve\|reject` |
 | Audit logs | ✅ conectada (`audit-logs/` y `AuditLogsView`, duplicadas) | `GET /api/audit-logs` |
-| Users (`users/page`) | 🟡 lista + activar/desactivar | `GET /api/users`, `POST /api/admin/users/:id/activate\|deactivate` |
+| Users (`users/page`) | 🟡 lista + activar/desactivar + editar | `GET`/`PATCH /api/users[/:id]`, `POST /api/admin/users/:id/activate\|deactivate` |
 | Add user | ✅ crea | `POST /api/users` |
 | Revenue, Affiliates, Promo codes, Catalog, Settings | ❌ placeholder | back no existe (ver back AB-05..AB-09) |
 
@@ -28,7 +28,7 @@ Existen en el back y **no se usan** en el admin: activate/deactivate, `PATCH`/`D
 
 ## B. Gestión de usuarios (back ya listo)
 - [x] **AF-05** Botón Activar/Desactivar en `users/page` → `POST /api/admin/users/:id/activate|deactivate`. Si responde `temporaryPassword`, mostrarla en un modal (una sola vez). Manejar `TWO_FACTOR_REQUIRED` (ver AF-12).
-- [ ] **AF-06** Editar usuario (nombre/email/teléfono) → `PATCH /api/users/:id`. dep: AF-05.
+- [x] **AF-06** Editar usuario (nombre/email/teléfono) → `PATCH /api/users/:id`. dep: AF-05.
 - [ ] **AF-07** Eliminar usuario (soft delete) con confirmación → `DELETE /api/users/:id`.
 - [ ] **AF-08** `add-user`: mostrar `temporaryPassword`/`emailSent` de la respuesta del `POST` y el error `EMAIL_TAKEN` por campo.
 - [ ] **AF-09** Unificar `users/page` con la tabla de Borrowers/Lenders (misma tabla con filtro de rol) para no duplicar `GET /api/users`.

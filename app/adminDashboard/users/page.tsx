@@ -28,6 +28,44 @@ function UsersListContent() {
   const [busyId, setBusyId] = useState<string | null>(null);
   // Se muestra una sola vez: al cerrar el modal se descarta.
   const [tempPw, setTempPw] = useState<{ name: string; password: string; emailSent: boolean } | null>(null);
+  const [editing, setEditing] = useState<UserItem | null>(null);
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [editError, setEditError] = useState<{ field?: "email"; message: string } | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  function openEdit(user: UserItem) {
+    setEditing(user);
+    setForm({ name: user.name, email: user.email, phone: user.phone ?? "" });
+    setEditError(null);
+  }
+
+  async function saveEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editing) return;
+    // Solo los campos que cambiaron. El back no permite borrar el telefono (sin null).
+    const body: Record<string, string> = {};
+    if (form.name.trim() !== editing.name) body.name = form.name.trim();
+    if (form.email.trim().toLowerCase() !== editing.email) body.email = form.email.trim();
+    if (form.phone.trim() && form.phone.trim() !== (editing.phone ?? "")) body.phone = form.phone.trim();
+    if (Object.keys(body).length === 0) return setEditing(null);
+
+    setSaving(true);
+    setEditError(null);
+    try {
+      const updated = await api<UserItem>(API_ROUTES.users.byId(editing.id), {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      });
+      setUsers((prev) => prev.map((x) => (x.id === editing.id ? { ...x, name: updated.name, email: updated.email, phone: updated.phone } : x)));
+      setEditing(null);
+    } catch (err) {
+      if (err instanceof ApiError && err.code === "EMAIL_TAKEN") setEditError({ field: "email", message: u.errorEmailTaken });
+      else if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setEditError({ message: u.errorTwoFactor });
+      else setEditError({ message: err instanceof Error ? err.message : u.errorNetwork });
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function toggleActive(user: UserItem) {
     setBusyId(user.id);
@@ -156,7 +194,14 @@ function UsersListContent() {
                         {user.role.toLowerCase()}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="flex gap-2 px-5 py-4">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(user)}
+                        className="rounded-lg border border-rule px-3 py-1.5 text-xs font-bold text-ink-2 transition-colors hover:border-accent hover:text-accent"
+                      >
+                        {u.edit}
+                      </button>
                       <button
                         type="button"
                         onClick={() => toggleActive(user)}
@@ -173,6 +218,62 @@ function UsersListContent() {
           </table>
         </div>
       </div>
+
+      {editing && (
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
+          <form onSubmit={saveEdit} className="w-full max-w-[440px] rounded-2xl border border-rule bg-surface p-6 shadow-2xl">
+            <h2 className="mb-5 text-lg font-black text-ink">{u.editTitle}</h2>
+            {editError && !editError.field && (
+              <div className="mb-4 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm text-red-500">{editError.message}</div>
+            )}
+            <label className="mb-1 block text-xs font-bold text-ink-3">{u.table.name}</label>
+            <input
+              required
+              maxLength={120}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="mb-4 w-full rounded-lg border border-rule bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none focus:border-accent"
+            />
+            <label className="mb-1 block text-xs font-bold text-ink-3">{u.table.email}</label>
+            <input
+              required
+              type="email"
+              value={form.email}
+              onChange={(e) => { setForm({ ...form, email: e.target.value }); if (editError?.field) setEditError(null); }}
+              className={`w-full rounded-lg border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none focus:border-accent ${editError?.field === "email" ? "border-red-500" : "border-rule"}`}
+            />
+            {editError?.field === "email" && <span className="mt-1 block text-xs text-red-500">{editError.message}</span>}
+            <label className="mb-1 mt-4 block text-xs font-bold text-ink-3">{u.table.phone}</label>
+            <input
+              type="tel"
+              inputMode="numeric"
+              pattern="\d{10}"
+              maxLength={10}
+              title={u.phoneHint}
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              className="w-full rounded-lg border border-rule bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none focus:border-accent"
+            />
+            <span className="mb-6 mt-1 block text-[10px] text-ink-3">{u.phoneHint}</span>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setEditing(null)}
+                className="flex-1 rounded-lg border border-rule px-5 py-3 text-sm font-bold text-ink hover:bg-surface-2"
+              >
+                {u.cancel}
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex-1 rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {saving ? "..." : u.save}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {tempPw && (
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
