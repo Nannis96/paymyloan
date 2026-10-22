@@ -5,7 +5,7 @@ import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import { Building, X } from "lucide-react";
 
 // URL base de la API
@@ -296,9 +296,5 @@ function CommitmentLetterContent() {
 }
 
 export default function CommitmentLetterPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <CommitmentLetterContent />
-    </SiteShell>
-  );
+  return <CommitmentLetterContent />;
 }

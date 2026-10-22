@@ -4,8 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
 
 export default function PayoffRequestPage() {
   return (
@@ -42,14 +42,10 @@ function PayoffRequestContent() {
     async function fetchPayoffData() {
       if (!contractId) return;
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        const headers = { Authorization: `Bearer ${token}` };
-
         const [contractRes, balanceRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/contracts/${contractId}`, { headers }),
-          fetch(`${BASE_URL}/api/contracts/${contractId}/balance`, { headers })
+          apiFetch(API_ROUTES.contracts.byId(contractId)),
+          apiFetch(`/api/contracts/${contractId}/balance`)
         ]);
-
         const contractJson = await contractRes.json();
         const balanceJson = await balanceRes.json();
 

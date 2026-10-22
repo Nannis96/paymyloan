@@ -5,7 +5,7 @@ import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import DocumentVault from "@/app/components/ambos/DocumentVault";
 
 
@@ -55,6 +55,11 @@ function ContractDetailContent() {
   // Paginacion
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Modal Cancelacion
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [isCanceling, setIsCanceling] = useState(false);
 
   useEffect(() => {
     async function fetchContractDetails() {
@@ -132,6 +137,35 @@ function ContractDetailContent() {
     }
   };
 
+  const handleConfirmCancel = async () => {
+    if (!cancelReason.trim()) {
+      alert(lang === "es" ? "Por favor ingresa un motivo." : "Please enter a reason.");
+      return;
+    }
+    setIsCanceling(true);
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const res = await fetch(API_ROUTES.contracts.byId(contractId) + "/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reason: cancelReason })
+      });
+      const json = await res.json();
+      if (json.success) {
+        alert(lang === "es" ? "Contrato cancelado exitosamente." : "Contract canceled successfully.");
+        setContract(prev => prev ? { ...prev, status: "CANCELLED" } : null);
+        setIsCancelModalOpen(false);
+        setCancelReason("");
+      } else {
+        alert(json.error?.message || (lang === "es" ? "Error al cancelar" : "Error canceling contract"));
+      }
+    } catch (err) {
+      alert(lang === "es" ? "Error de red" : "Network error");
+    } finally {
+      setIsCanceling(false);
+    }
+  };
+
   // Determina si el contrato esta activo y vence en <= 60 dias
   const isWithin60Days = () => {
   if (contract?.status !== "ACTIVE" && contract?.status !== "DELINQUENT") return false;
@@ -153,6 +187,81 @@ function ContractDetailContent() {
   // Logica de paginacion local (el backend podria paginar en un futuro)
   const totalPages = Math.max(1, Math.ceil(payments.length / itemsPerPage));
   const currentPayments = payments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handleMarkAsPaid = async (payment: PaymentData) => {
+    const confirmMsg = lang === "es" ? `¿Registrar pago por ${formatCurrency(payment.totalDue)}?` : `Log payment for ${formatCurrency(payment.totalDue)}?`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const res = await fetch(`${API_ROUTES.contracts.byId(contractId)}/payments/manual`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          amount: Number(payment.totalDue),
+          method: "MANUAL",
+          occurredAt: new Date().toISOString()
+        })
+      });
+      
+      const json = await res.json();
+      if (json.success) {
+        alert(lang === "es" ? "Pago registrado exitosamente" : "Payment registered successfully");
+        // Refrescamos el estado localmente para reflejar el cambio sin recargar la página
+        setPayments(prev => prev.map(p => p.id === payment.id ? { ...p, status: "PAID" } : p));
+      } else {
+        alert(json.error?.message || (lang === "es" ? "Error al registrar el pago" : "Error registering payment"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert(lang === "es" ? "Error de red" : "Network error");
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (!payments || payments.length === 0) {
+      alert(lang === "es" ? "No hay pagos para exportar." : "No payments to export.");
+      return;
+    }
+
+    const headers = [
+      "Sequence",
+      "Due Date",
+      "Status",
+      "Total Due",
+      "Principal",
+      "Interest",
+      "Remaining Balance"
+    ];
+
+    const csvRows = payments.map(p => {
+      const cleanDate = p.dueDate ? p.dueDate.split('T')[0] : "N/D";
+      return [
+        p.sequenceNumber,
+        cleanDate,
+        p.status,
+        Number(p.totalDue).toFixed(2),
+        Number(p.principalDue).toFixed(2),
+        Number(p.interestDue).toFixed(2),
+        Number(p.projectedRemainingBalance).toFixed(2)
+      ].join(",");
+    });
+
+    const csvContent = [headers.join(","), ...csvRows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `CPA_Report_${contract?.contractNumber || contractId}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   if (isLoading) {
     return (
@@ -198,33 +307,32 @@ function ContractDetailContent() {
               {t.dashboardBorrower.actions.payoff}
             </Link>
 
-            {/* Boton conectado a la pagina existente de draw-request */}
-            <Link href={`/borrowerDashboard/draw-request?contractId=${contract.id}`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
+            <Link href={`/lenderDashboard/contracts/${contract.id}/draws`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
               {t.dashboardBorrower.actions.drawRequest}
             </Link>
 
-            {/* Boton dinamico para pagos atrasados */}
+            {/* Boton dinamico para pagos atrasados (Siempre activo para testing DEV) */}
             <Link 
-              href={isLatePayment() ? `/borrowerDashboard/missed-payment?contractId=${contract.id}` : "#"} 
-              aria-disabled={!isLatePayment()}
-              className={`inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-all ${
-                isLatePayment() 
-                  ? "bg-crit text-white hover:opacity-90" 
-                  : "border border-rule-strong bg-surface text-ink-3 opacity-60 cursor-not-allowed pointer-events-none"
-              }`}
+              href={`/lenderDashboard/contracts/${contract.id}/missed-payment`} 
+              className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-all bg-crit text-white hover:opacity-90"
             >
               {t.dashboardBorrower.actions.resolveLate}
             </Link>
+            
+            {["ACTIVE", "PENDING_ACCEPTANCE", "DELINQUENT"].includes(contract.status) && (
+              <button 
+                onClick={() => setIsCancelModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-lg border border-crit bg-crit-soft px-4 py-2 text-sm font-bold text-crit transition-colors hover:bg-crit hover:text-white shadow-sm cursor-pointer"
+              >
+                {lang === "es" ? "Cancelar Contrato" : "Cancel Contract"}
+              </button>
+            )}
           </div>
         </header>
 
-        <div className={`mb-8 flex flex-col justify-between gap-4 rounded-xl border p-5 md:flex-row md:items-center transition-colors ${
-          isWithin60Days() 
-            ? "border-amber/30 bg-amber-soft" 
-            : "border-rule bg-surface-2 opacity-80"
-        }`}>
+        <div className="mb-8 flex flex-col justify-between gap-4 rounded-xl border p-5 md:flex-row md:items-center transition-colors border-amber/30 bg-amber-soft">
           <div>
-            <h3 className={`text-[15px] font-bold ${isWithin60Days() ? "text-amber" : "text-ink-3"}`}>
+            <h3 className="text-[15px] font-bold text-amber">
               {t.extensionRequest.maturityBanner.title.replace("{date}", formatDate(contract?.currentTerms?.maturityDate || ""))}
             </h3>
             <p className="mt-1 text-[13px] text-ink-2">
@@ -232,13 +340,8 @@ function ContractDetailContent() {
             </p>
           </div>
           <Link
-            href={isWithin60Days() ? `/borrowerDashboard/extension-request?contractId=${contract?.id}` : "#"}
-            aria-disabled={!isWithin60Days()}
-            className={`shrink-0 whitespace-nowrap rounded-lg px-5 py-2.5 text-sm font-bold shadow-sm transition-all ${
-              isWithin60Days()
-                ? "bg-amber text-white hover:opacity-90"
-                : "border border-rule-strong bg-surface text-ink-3 opacity-60 cursor-not-allowed pointer-events-none"
-            }`}
+            href={`/lenderDashboard/contracts/${contract.id}/extension-request`}
+            className="shrink-0 whitespace-nowrap rounded-lg px-5 py-2.5 text-sm font-bold shadow-sm transition-all bg-amber text-white hover:opacity-90"
           >
             {t.dashboardBorrower.actions.extensionRequest}
           </Link>
@@ -305,8 +408,8 @@ function ContractDetailContent() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-widest text-ink-3">{cd.breakdownTitle}</h2>
             <button 
-              onClick={() => alert(cd.generateReportAlert)}
-              className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-xs font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm"
+              onClick={handleExportCSV}
+              className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-xs font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm cursor-pointer"
             >
               {cd.exportReport} &darr;
             </button>
@@ -322,28 +425,42 @@ function ContractDetailContent() {
                   <th className="px-5 py-4 font-bold text-ink-3">{cd.table.principal}</th>
                   <th className="px-5 py-4 font-bold text-ink-3">{cd.table.interest}</th>
                   <th className="px-5 py-4 font-bold text-ink-3">{cd.table.balance}</th>
+                  <th className="px-5 py-4 font-bold text-ink-3">{lang === "es" ? "Acción" : "Action"}</th>
                 </tr>
               </thead>
               <tbody className="text-ink-2">
                 {currentPayments.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-ink-3">
+                    <td colSpan={7} className="px-5 py-8 text-center text-ink-3">
                       {cd.emptyPayments}
                     </td>
                   </tr>
                 ) : (
-                  currentPayments.map((payment) => (
-                    <tr key={payment.id} className="border-b border-rule hover:bg-surface-2 transition-colors">
-                      <td className="px-5 py-4">{formatDate(payment.dueDate)}</td>
-                      <td className={`px-5 py-4 font-bold uppercase text-[11px] tracking-wider ${getStatusStyle(payment.status)}`}>
-                        {cd.paymentStatus[payment.status.toLowerCase() as keyof typeof cd.paymentStatus] || payment.status}
-                      </td>
-                      <td className="px-5 py-4 font-mono font-bold text-ink">{formatCurrency(payment.totalDue)}</td>
-                      <td className="px-5 py-4 font-mono">{formatCurrency(payment.principalDue)}</td>
-                      <td className="px-5 py-4 font-mono text-amber">{formatCurrency(payment.interestDue)}</td>
-                      <td className="px-5 py-4 font-mono font-bold text-ink">{formatCurrency(payment.projectedRemainingBalance)}</td>
-                    </tr>
-                  ))
+                  currentPayments.map((payment) => {
+                    const isPayable = ["PENDING", "PARTIALLY_PAID", "LATE", "DELINQUENT"].includes((payment.status || "").toUpperCase());
+                    return (
+                      <tr key={payment.id} className="border-b border-rule hover:bg-surface-2 transition-colors">
+                        <td className="px-5 py-4">{formatDate(payment.dueDate)}</td>
+                        <td className={`px-5 py-4 font-bold uppercase text-[11px] tracking-wider ${getStatusStyle(payment.status)}`}>
+                          {cd.paymentStatus[payment.status.toLowerCase() as keyof typeof cd.paymentStatus] || payment.status}
+                        </td>
+                        <td className="px-5 py-4 font-mono font-bold text-ink">{formatCurrency(payment.totalDue)}</td>
+                        <td className="px-5 py-4 font-mono">{formatCurrency(payment.principalDue)}</td>
+                        <td className="px-5 py-4 font-mono text-amber">{formatCurrency(payment.interestDue)}</td>
+                        <td className="px-5 py-4 font-mono font-bold text-ink">{formatCurrency(payment.projectedRemainingBalance)}</td>
+                        <td className="px-5 py-4">
+                          {isPayable && (
+                            <button 
+                              onClick={() => handleMarkAsPaid(payment)}
+                              className="rounded border border-rule bg-surface px-3 py-1.5 text-[11px] font-bold text-accent transition-colors hover:bg-accent-soft cursor-pointer"
+                            >
+                              {lang === "es" ? "Registrar Pago" : "Mark Paid"}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -375,6 +492,44 @@ function ContractDetailContent() {
           )}
         </section>
       </div>
+
+      {/* Modal de Cancelación */}
+      {isCancelModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-[400px] rounded-2xl bg-surface p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="mb-2 text-lg font-black tracking-tight text-ink">
+              {lang === "es" ? "¿Cancelar contrato?" : "Cancel contract?"}
+            </h3>
+            <p className="mb-4 text-sm text-ink-3">
+              {lang === "es" 
+                ? "Esta acción detendrá el contrato y los pagos futuros, pero mantendrá el historial. Requiere un motivo para auditoría." 
+                : "This action stops the contract and future payments, but keeps the history. Requires a reason for audit."}
+            </p>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder={lang === "es" ? "Motivo de cancelación..." : "Reason for cancellation..."}
+              className="mb-4 h-[80px] w-full resize-none rounded-md border border-rule px-3 py-2 text-[13px] text-ink outline-none transition-colors focus:border-crit"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setIsCancelModalOpen(false)}
+                disabled={isCanceling}
+                className="cursor-pointer rounded-md border border-rule bg-surface px-4 py-2 text-sm font-semibold text-ink-2 transition-colors hover:bg-surface-2"
+              >
+                {lang === "es" ? "Cerrar" : "Close"}
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                disabled={isCanceling || !cancelReason.trim()}
+                className="cursor-pointer rounded-md bg-crit px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+              >
+                {isCanceling ? (lang === "es" ? "Cancelando..." : "Canceling...") : (lang === "es" ? "Confirmar Cancelación" : "Confirm Cancellation")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

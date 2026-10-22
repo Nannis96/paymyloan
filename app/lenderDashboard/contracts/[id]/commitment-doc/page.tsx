@@ -5,7 +5,7 @@ import { apiFetch } from "@/app/lib/apiFetch";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 
 interface FeeItem {
   id: string;
@@ -49,11 +49,7 @@ interface ContractData {
 }
 
 export default function CommitmentLetterDocPage() {
-  return (
-    <SiteShell isMinimal={true}>
-      <CommitmentLetterDocContent />
-    </SiteShell>
-  );
+  return <CommitmentLetterDocContent />;
 }
 
 function CommitmentLetterDocContent() {
