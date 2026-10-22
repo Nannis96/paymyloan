@@ -102,12 +102,21 @@ export default function ActiveLoansView() {
                     {isAccepted ? badgeActive : badgePending}
                   </span>
                   
-                  <Link 
-                    href={`/lenderDashboard/commitment-letter?contractId=${contract.id}`}
-                    className={`inline-flex cursor-pointer items-center justify-center rounded-[6px] border border-[#e6ebf1] bg-[#f6f9fc] px-[12px] py-[6px] text-[12px] font-[600] text-[#425466] transition-all hover:bg-white hover:border-[#635bff] hover:text-[#635bff] ${isAccepted ? '' : 'opacity-50 hover:opacity-70'}`}
-                  >
-                    {viewContractText}
-                  </Link>
+                  <div className="flex gap-2">
+                            <Link 
+                              href={`/lenderDashboard/active-loans/${contract.id}`}
+                              className={`inline-flex cursor-pointer items-center justify-center rounded-[6px] border border-[#e6ebf1] bg-[#f6f9fc] px-[12px] py-[6px] text-[12px] font-[600] text-[#425466] transition-all hover:bg-white hover:border-[#635bff] hover:text-[#635bff] ${isAccepted ? '' : 'opacity-50 hover:opacity-70'}`}
+                            >
+                              {t.contractsList?.viewDetails || "Detalles"}
+                            </Link>
+                            
+                            <Link
+                               href={`/lenderDashboard/contracts/${contract.id}`}
+                              className={`inline-flex cursor-pointer items-center justify-center rounded-[6px] border border-[#c7c4ff] bg-[#f0efff] px-[12px] py-[6px] text-[12px] font-[600] text-[#635bff] transition-all hover:bg-[#e0deff] ${isAccepted ? '' : 'opacity-50 hover:opacity-70'}`}
+                            >
+                              {viewContractText}
+                            </Link>
+                          </div>
                 </div>
               </div>
             );

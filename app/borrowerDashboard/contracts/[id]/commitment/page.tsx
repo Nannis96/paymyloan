@@ -151,7 +151,7 @@ function CommitmentLetterContent() {
     <div className="min-h-screen bg-bg p-6 lg:p-14">
       <div className="mx-auto max-w-[800px]">
         <Link
-          href={`/contracts/${contractId || ''}`}
+          href={`/borrowerDashboard/contracts/${contractId || ''}`}
           className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {cd.back}

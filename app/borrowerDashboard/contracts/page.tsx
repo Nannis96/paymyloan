@@ -3,9 +3,8 @@
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import { useEffect, useState } from "react";
-import BackToDashboard from "@/app/components/ambos/BackToDashboard";
 
 // Interfaces basadas en la respuesta de Prisma / Backend
 interface PropertyData {
@@ -117,18 +116,14 @@ function ContractsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-bg p-6 lg:p-14">
-      <div className="mx-auto max-w-[1200px]">
+    <div className="animate-in fade-in duration-300">
+      <div className="w-full">
         
-        <BackToDashboard />
-
-        <header className="mb-10">
-          <h1 className="text-[32px] font-black tracking-tight text-ink">{c.title}</h1>
-          <p className="text-ink-2">{c.subtitle}</p>
+        <header className="mb-8">
+          <h1 className="text-[28px] font-[900] tracking-tight text-ink">{c.title}</h1>
+          <p className="mt-[4px] text-[14px] text-ink-3">{c.subtitle}</p>
         </header>
-
-        <div className="overflow-x-auto rounded-xl border border-rule bg-surface shadow-sm">
-          <table className="w-full min-w-[900px] border-collapse text-left text-[14px]">
+        <div className="overflow-x-auto rounded-xl border border-rule bg-surface shadow-sm">          <table className="w-full min-w-[900px] border-collapse text-left text-[14px]">
             <thead className="border-b border-rule bg-surface-2">
               <tr>
                 <th className="px-5 py-4 font-bold text-ink-3">{c.table.id}</th>
@@ -205,7 +200,7 @@ function ContractsContent() {
                         )}
                       </td>
                       <td className="px-5 py-4">
-                        <Link href={`/contracts/${contract.id}`} className="text-sm font-bold text-accent hover:underline">
+                        <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="text-sm font-bold text-accent hover:underline">
                           {c.viewDetails} &rarr;
                         </Link>
                       </td>
@@ -222,9 +217,5 @@ function ContractsContent() {
 }
 
 export default function ContractsPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <ContractsContent />
-    </SiteShell>
-  );
+  return <ContractsContent />;
 }

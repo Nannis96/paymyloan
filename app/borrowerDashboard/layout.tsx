@@ -123,7 +123,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* MAIN CONTENT */}
-        <div className="flex-1 p-[28px_32px] max-w-[820px]">
+        <div className="flex-1 p-[28px_32px] max-w-[1200px]">
           {children}
         </div>
       </div>

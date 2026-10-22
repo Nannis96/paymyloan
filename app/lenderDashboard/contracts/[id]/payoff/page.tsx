@@ -74,7 +74,7 @@ function PayoffRequestContent() {
       // Simulación de la petición de generación del PDF (la API no expone un POST de payoff directo por ahora)
       await new Promise(resolve => setTimeout(resolve, 1000));
       alert(po.successAlert);
-      router.push(`/contracts/${contractId || ''}`);
+      router.push(`/lenderDashboard/contracts/${contractId || ''}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : po.errorNetwork);
     } finally {
@@ -138,7 +138,7 @@ function PayoffRequestContent() {
     <div className="animate-in fade-in duration-300 max-w-[720px]">
       
       <Link 
-        href={`/contracts/${contractId || ''}`}
+        href={`/lenderDashboard/contracts/${contractId || ''}`}
         className="mb-[20px] inline-flex items-center gap-[8px] text-[12px] font-[700] uppercase tracking-wide text-[#8898aa] transition-colors hover:text-[#635bff]"
       >
         <span>&larr;</span> {cd.back}

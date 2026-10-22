@@ -184,9 +184,8 @@ function CommitmentLetterDocContent() {
               {doc.errorState.reason2Desc}
             </div>
           </div>
-
           <Link 
-            href={contract ? `/contracts/${contractId}` : "/contracts"} 
+            href={contract ? `/borrowerDashboard/contracts/${contractId}` : "/borrowerDashboard/contracts"} 
             className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-5 py-3.5 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-sm"
           >
             {contract ? doc.errorState.btnContract : doc.errorState.btnAll}
@@ -216,7 +215,7 @@ function CommitmentLetterDocContent() {
         {/* Top Actions - Ocultos al imprimir */}
         <div className="mb-[16px] flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center print:hidden">
           <div className="flex w-full items-center justify-between sm:w-auto sm:justify-start sm:gap-4">
-            <Link href={`/contracts/${contractId}`} className="text-[12px] font-[600] text-[#8898aa] hover:text-[#635bff] transition-colors">
+            <Link href={`/borrowerDashboard/contracts/${contractId}`} className="text-[12px] font-[600] text-[#8898aa] hover:text-[#635bff] transition-colors">
               &larr; Volver al contrato
             </Link>
             <div className="hidden h-5 w-px bg-rule sm:block"></div>

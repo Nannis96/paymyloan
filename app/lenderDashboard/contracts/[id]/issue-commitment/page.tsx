@@ -3,17 +3,13 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 
 // URL base de la API
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 export default function IssueCommitmentPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <IssueCommitmentContent />
-    </SiteShell>
-  );
+  return <IssueCommitmentContent />;
 }
 
 function IssueCommitmentContent() {
@@ -68,20 +64,48 @@ function IssueCommitmentContent() {
   const handleIssueLetter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!termsId) return;
-
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // TODO: BACKEND - Integrar la logica real de creacion/modificacion de fees.
-      // Ej. POST a /api/contracts/{contractId}/terms/{termsId}/fees con los valores del state.
-      // const token = localStorage.getItem("accessToken") || "";
-      // const response = await fetch(`${BASE_URL}/api/contracts/${contractId}/terms`, { ... })
+      const token = localStorage.getItem("accessToken") || "";
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      };
 
-      // Simulacion temporal de la peticion
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      const addFee = async (code: string, amountType: string, amountValue: number, label?: string) => {
+        if (!amountValue) return;
+        const res = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/fees`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ category: "LENDER", code, amountType, amountValue, label })
+        });
+        const json = await res.json();
+        if (!json.success && json.error?.code !== "RESERVED_FEE_CODE") {
+          throw new Error(json.error?.message || `Error al agregar tarifa ${code}`);
+        }
+      };
 
-      router.push(`/contracts/${contractId || 'CTR-001'}/commitment`);
+      // 1. Agregar las tarifas individualmente a la version en DRAFT
+      if (Number(originationPoints) > 0) await addFee("ORIGINATION_POINTS", "PERCENTAGE", Number(originationPoints));
+      if (Number(processingFee) > 0) await addFee("PROCESSING", "FLAT", Number(processingFee));
+      if (Number(underwritingFee) > 0) await addFee("UNDERWRITING", "FLAT", Number(underwritingFee));
+      if (Number(docPrepFee) > 0) await addFee("DOC_PREP", "FLAT", Number(docPrepFee));
+      if (Number(customFeeAmount) > 0) await addFee("CUSTOM", "FLAT", Number(customFeeAmount), customFeeName || "Tarifa Personalizada");
+
+      // 2. Enviar los terminos a firma (DRAFT -> PENDING_ACCEPTANCE)
+      const submitRes = await fetch(`${API_URL}/api/contracts/${contractId}/terms/${termsId}/submit`, {
+        method: "POST",
+        headers
+      });
+      const submitJson = await submitRes.json();
+      if (!submitJson.success) {
+        throw new Error(submitJson.error?.message || "Error al emitir la carta de compromiso");
+      }
+
+      // Redirigir al detalle del contrato (el prestatario es quien debe firmarlo ahora)
+      router.push(`/lenderDashboard/contracts/${contractId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : ic.errorNetwork);
     } finally {
@@ -97,7 +121,7 @@ function IssueCommitmentContent() {
     <div className="min-h-screen bg-bg p-6 lg:p-14">
       <div className="mx-auto max-w-[600px]">
         <Link
-          href={`/contracts/${contractId || ''}`}
+          href={`/lenderDashboard/contracts/${contractId || ''}`}
           className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {cd.back}

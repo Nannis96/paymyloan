@@ -201,9 +201,5 @@ function ManagePaymentsContent() {
 }
 
 export default function ManagePaymentsPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <ManagePaymentsContent />
-    </SiteShell>
-  );
+  return <ManagePaymentsContent />;
 }

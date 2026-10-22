@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { Lock, ChevronLeft } from "lucide-react";
 
+import SubmitOfferModal from "@/app/lenderDashboard/lenderViewsComponents/browseDeals/SubmitOfferModal";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function LenderDealDetailPage() {
@@ -25,13 +27,8 @@ function LenderDealDetailContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados del formulario de oferta
-  const [loanRaw, setLoanRaw] = useState("");
-  const [rateStr, setRateStr] = useState("");
-  const [termMonths, setTermMonths] = useState(12);
-  const [pointsVal, setPointsVal] = useState(0); // Mantenido para el calculo en UI
-  const [offerMessage, setOfferMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Estado para el modal de oferta
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
 
   // Mock de fotos (Aun no soportado en la API segun API_REFERENCE.md)
   const photos = [
@@ -55,7 +52,7 @@ function LenderDealDetailContent() {
         if (dealJson.success && dealJson.data) {
           const dealData = dealJson.data;
           setDeal(dealData);
-          setLoanRaw(dealData.totalLoanAmountRequested?.toString() || "");
+          // El estado loanRaw ahora se maneja internamente en el SubmitOfferModal
 
           // 2. Si el trato tiene borrowerProfileId, cargamos su calificacion
           if (dealData.borrowerProfileId) {
@@ -77,45 +74,6 @@ function LenderDealDetailContent() {
     fetchDealData();
   }, [params.id, t.marketplace.errorFetch, t.marketplace.errorNetwork]);
 
-  // Enviar Oferta (POST /quotes)
-  const handleSubmitOffer = async () => {
-    setIsSubmitting(true);
-    try {
-      const token = localStorage.getItem("accessToken") || "";
-      const loanAmount = parseInt(loanRaw.replace(/[^0-9]/g, "")) || 0;
-      const rate = parseFloat(rateStr) || 0;
-
-      const body = {
-        structure: "INTEREST_ONLY", // Por defecto para prestamos puente en esta fase
-        principalAmount: loanAmount,
-        interestRate: rate,
-        amortizationTermMonths: termMonths,
-        message: offerMessage
-      };
-
-      const res = await fetch(`${BASE_URL}/api/marketplace/loan-requests/${params.id}/quotes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(body)
-      });
-
-      const json = await res.json();
-      if (json.success) {
-        // Redirigir a ofertas enviadas
-        router.push("/lenderDashboard/offers-sent");
-      } else {
-        alert(json.error?.message || "Error al enviar la oferta");
-      }
-    } catch (e) {
-      alert("Error de red");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleCounterOffer = () => {
     router.push(`/lenderDashboard/counter-offer?dealId=${params.id}`);
   };
@@ -124,13 +82,6 @@ function LenderDealDetailContent() {
     const num = Number(val) || 0;
     return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(num);
   };
-
-  // Calculos de UI para el formulario
-  const loanAmount = parseInt(loanRaw.replace(/[^0-9]/g, "")) || 0;
-  const rate = parseFloat(rateStr) || 0;
-  const monthlyPmt = Math.round(loanAmount * (rate / 100) / 12);
-  const pointsCost = Math.round(loanAmount * (pointsVal / 100));
-  const totalInterest = (monthlyPmt * termMonths) + pointsCost;
 
   if (isLoading) {
     return (
@@ -306,63 +257,23 @@ function LenderDealDetailContent() {
             <h2 className="mb-1 text-[18px] font-extrabold text-ink">{m.submitOffer}</h2>
             <p className="mb-5 text-xs text-ink-3">{displayAddress}, {displayCityState}</p>
 
-            <div className="mb-3.5">
-              <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.5px] text-ink-2">{m.formLoanAmount}</label>
-              <input
-                type="text"
-                value={loanRaw}
-                onChange={(e) => {
-                  const numStr = e.target.value.replace(/[^0-9]/g, "");
-                  setLoanRaw(numStr ? parseInt(numStr).toLocaleString() : "");
-                }}
-                className="w-full rounded-md border border-rule px-3 py-2 text-[13px] text-ink outline-none transition-colors focus:border-accent"
-              />
-            </div>
-
-            <div className="mb-3.5 grid grid-cols-2 gap-2.5">
-              <div>
-                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.5px] text-ink-2">{m.formRate}</label>
-                <input type="number" step="0.1" value={rateStr} onChange={(e) => setRateStr(e.target.value)} placeholder="Ej. 12" className="w-full rounded-md border border-rule px-3 py-2 text-[13px] text-ink outline-none transition-colors focus:border-accent" />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.5px] text-ink-2">{m.formTerm}</label>
-                <select value={termMonths} onChange={(e) => setTermMonths(Number(e.target.value))} className="w-full rounded-md border border-rule px-3 py-2 text-[13px] text-ink outline-none transition-colors focus:border-accent bg-white">
-                  <option value={6}>6 mo</option>
-                  <option value={9}>9 mo</option>
-                  <option value={12}>12 mo</option>
-                  <option value={18}>18 mo</option>
-                  <option value={24}>24 mo</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="mb-3.5">
-              <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.5px] text-ink-2">{m.formMsg || "Mensaje (Opcional)"}</label>
-              <textarea 
-                value={offerMessage}
-                onChange={(e) => setOfferMessage(e.target.value)}
-                placeholder={m.formMsgPh || "Escribe un mensaje al prestatario..."}
-                className="w-full h-[80px] resize-none rounded-md border border-rule px-3 py-2 text-[13px] text-ink outline-none transition-colors focus:border-accent" 
-              />
-            </div>
-
-            <div className="mb-4 rounded-lg border border-rule bg-surface-2 p-3.5 text-xs text-ink-2">
-              <div className="mb-1 flex justify-between">
+            <div className="mb-4 rounded-lg border border-rule bg-surface-2 p-4 text-sm text-ink-2">
+              <div className="mb-2 flex justify-between">
                 <span>{m.formLoanAmount}</span>
-                <span className="font-semibold">{formatCurrency(loanAmount)}</span>
+                <span className="font-semibold text-ink">{formatCurrency(requested)}</span>
               </div>
-              <div className="mb-1 flex justify-between">
-                <span>{m.calcMoInt}</span>
-                <span className="font-semibold">{formatCurrency(monthlyPmt)}</span>
+              <div className="mb-2 flex justify-between">
+                <span>{m.arv}</span>
+                <span className="font-semibold text-ink">{formatCurrency(arv)}</span>
               </div>
-              <div className="mt-1 flex justify-between border-t border-rule pt-2 text-sm font-extrabold text-ink">
-                <span>{m.calcTotalInt}</span>
-                <span>{formatCurrency(totalInterest)}</span>
+              <div className="flex justify-between border-t border-rule pt-3 font-extrabold text-ink">
+                <span>{m.ltvLabel}</span>
+                <span className={ltv > 75 ? "text-red-500" : "text-accent"}>{ltv}%</span>
               </div>
             </div>
 
-            <button disabled={isSubmitting} onClick={handleSubmitOffer} className="mb-2 w-full rounded-md bg-accent py-3 text-[14px] font-bold text-white transition-colors hover:bg-[#524ddb] disabled:opacity-50">
-              {isSubmitting ? "Enviando..." : m.btnSubmit}
+            <button onClick={() => setIsOfferModalOpen(true)} className="mb-2 w-full cursor-pointer rounded-md bg-accent py-3 text-[14px] font-bold text-white transition-colors hover:bg-blue-700 shadow-sm">
+              {m.btnSubmit}
             </button>
 
             {/* Contraoferta */}
@@ -377,6 +288,12 @@ function LenderDealDetailContent() {
           </div>
         </div>
       </div>
+    <SubmitOfferModal 
+        isOpen={isOfferModalOpen} 
+        onClose={() => setIsOfferModalOpen(false)} 
+        dealId={params.id as string} 
+        requestedAmount={requested} 
+      />
     </div>
   );
 }
