@@ -11,10 +11,10 @@ Patrón de conexión: ver "Cómo conectar una API nueva" en [TAREAS_FRONT.md](TA
 | Overview | ✅ conectada (revenue extra = `null` en back) | `GET /api/admin/overview` |
 | All deals | ✅ conectada (sin paginación, `pageSize=50`) | `GET /api/contracts` |
 | Lenders | 🟡 solo lista | `GET /api/admin/lenders` |
-| Borrowers | 🟡 filtra `/api/users` en cliente | `GET /api/users` |
+| Borrowers | ✅ usa `UsersTable` (rol `BORROWER` + acciones de usuario) | `GET /api/users` |
 | Verifications | ✅ lista + aprobar/rechazar | `GET /api/admin/verifications`, `POST .../approve\|reject` |
 | Audit logs | ✅ conectada (`audit-logs/` y `AuditLogsView`, duplicadas) | `GET /api/audit-logs` |
-| Users (`users/page`) | ✅ lista + activar/desactivar + editar + eliminar | `GET`/`PATCH`/`DELETE /api/users[/:id]`, `POST /api/admin/users/:id/activate\|deactivate` |
+| Users (`users/page`) | ✅ `UsersTable` con filtro de rol: lista + activar/desactivar + editar + eliminar | `GET`/`PATCH`/`DELETE /api/users[/:id]`, `POST /api/admin/users/:id/activate\|deactivate` |
 | Add user | ✅ crea (solo ADMIN/BOOKKEEPER/INSURANCE_COMPANY) + contraseña temporal + `EMAIL_TAKEN` | `POST /api/users` |
 | Revenue, Affiliates, Promo codes, Catalog, Settings | ❌ placeholder | back no existe (ver back AB-05..AB-09) |
 
@@ -31,7 +31,7 @@ Existen en el back y **no se usan** en el admin: activate/deactivate, `PATCH`/`D
 - [x] **AF-06** Editar usuario (nombre/email/teléfono) → `PATCH /api/users/:id`. dep: AF-05.
 - [x] **AF-07** Eliminar usuario (soft delete) con confirmación → `DELETE /api/users/:id`.
 - [x] **AF-08** `add-user`: mostrar `temporaryPassword`/`emailSent` de la respuesta del `POST` y el error `EMAIL_TAKEN` por campo.
-- [ ] **AF-09** Unificar `users/page` con la tabla de Borrowers/Lenders (misma tabla con filtro de rol) para no duplicar `GET /api/users`.
+- [x] **AF-09** Unificar `users/page` con la tabla de Borrowers/Lenders (misma tabla con filtro de rol) para no duplicar `GET /api/users`.
 
 ## C. Lenders (back ya listo)
 - [ ] **AF-10** Detalle de lender (drawer/página) → `GET /api/admin/lenders/:id` (empresas, conteo de deudores y contratos activos).
