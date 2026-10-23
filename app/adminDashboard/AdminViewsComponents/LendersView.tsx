@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { api, toList } from "@/app/lib/apiFetch";
+import type { AdminLender } from "@/app/types/api";
 
-export function LendersView({ users }: { users?: any[] }) {
+export function LendersView({ users }: { users?: unknown[] }) {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
   const v = d.views.lenders;
 
-  const [lenders, setLenders] = useState<any[]>([]);
+  const [lenders, setLenders] = useState<AdminLender[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,16 +19,7 @@ export function LendersView({ users }: { users?: any[] }) {
     async function fetchLenders() {
       try {
         // Obtenemos los prestamistas con su informacion enriquecida
-        const res = await apiFetch(`${BASE_URL}/api/admin/lenders`);
-        if (!res.ok) {
-          throw new Error(d.errorFetch || "Error al cargar prestamistas");
-        }
-        const json = await res.json();
-        if (json.success) {
-          setLenders(json.data.items || []);
-        } else {
-          throw new Error(json.error?.message || d.errorFetch);
-        }
+        setLenders(toList<AdminLender>(await api<unknown>(API_ROUTES.lenders.adminBase)));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error de red");
       } finally {

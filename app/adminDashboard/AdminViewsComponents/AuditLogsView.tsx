@@ -2,7 +2,8 @@
 "use client";
 
 import { API_ROUTES } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { api } from "@/app/lib/apiFetch";
+import type { Paginated } from "@/app/types/api";
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, User, Shield, Cpu, Calendar } from "lucide-react";
 import { useSite } from "@/app/components/layout/SiteShell";
@@ -50,22 +51,11 @@ export function AuditLogsView() {
         if (search) params.set("action", search);
         if (actorRole) params.set("actorRole", actorRole);
 
-        const response = await apiFetch(`${API_ROUTES.auditLogs}?${params.toString()}`);
-
-        if (!response.ok) {
-          throw new Error("Error al cargar los registros de auditoria");
-        }
-
-        const json = await response.json();
-        
-        if (json.success) {
-          setLogs(json.data.items || []);
-          setCurrentPage(json.data.page || 1);
-          setTotalPages(json.data.totalPages || 1);
-          setTotalCount(json.data.total || 0);
-        } else {
-          throw new Error(json.error?.message || "Error de la API");
-        }
+        const data = await api<Paginated<LogItem>>(`${API_ROUTES.auditLogs}?${params.toString()}`);
+        setLogs(data.items || []);
+        setCurrentPage(data.page || 1);
+        setTotalPages(data.totalPages || 1);
+        setTotalCount(data.total || 0);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error de red");
       } finally {
