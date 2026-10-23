@@ -63,11 +63,61 @@ export default function BorrowerDashboardView() {
           if (jsonLR.success) setLoanRequests(toList(jsonLR.data));
         }
 
-        // 3. Fetch contracts
+        // 3. Fetch contracts, schedules and transactions
         const resContracts = await apiFetch(API_ROUTES.contracts.base);
         if (resContracts.ok) {
           const jsonContracts = await resContracts.json();
-          if (jsonContracts.success) setContracts(toList(jsonContracts.data));
+          if (jsonContracts.success) {
+            const fetchedContracts = toList<any>(jsonContracts.data);
+            setContracts(fetchedContracts);
+
+            // Filtrar contratos activos para buscar sus pagos
+            const activeContracts = fetchedContracts.filter(
+              (c: any) => c.status === "ACTIVE" || c.status === "DELINQUENT"
+            );
+            
+            let allUpcoming: any[] = [];
+            let allRecent: any[] = [];
+
+            // Obtener cronograma y transacciones por cada contrato activo
+            for (const contract of activeContracts) {
+              // Proximos pagos (Schedule)
+              const resSched = await apiFetch(API_ROUTES.contracts.schedule(contract.id));
+              if (resSched.ok) {
+                const jsonSched = await resSched.json();
+                if (jsonSched.success) {
+                  const schedule = jsonSched.data || [];
+                  const pending = schedule.filter((p: any) => p.status === "PENDING" || p.status === "PARTIALLY_PAID");
+                  pending.forEach((p: any) => allUpcoming.push({ ...p, contract }));
+                }
+              }
+
+              // Pagos recientes (Transactions)
+              const resTrans = await apiFetch(API_ROUTES.contracts.transactions(contract.id));
+              if (resTrans.ok) {
+                const jsonTrans = await resTrans.json();
+                if (jsonTrans.success) {
+                  const transactions = jsonTrans.data.items || [];
+                  transactions.forEach((t: any) => {
+                    allRecent.push({
+                      ...t,
+                      contract,
+                      dueDate: t.occurredAt || t.createdAt, // Usamos la fecha en la que ocurrio
+                      totalDue: t.amount // Adaptamos la propiedad para que la UI la lea correctamente
+                    });
+                  });
+                }
+              }
+            }
+
+            // Ordenar los resultados por fecha
+            allUpcoming.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+            allRecent.sort((a, b) => new Date(b.occurredAt || b.createdAt).getTime() - new Date(a.occurredAt || a.createdAt).getTime());
+
+            // Mostrar solo los 3 mas relevantes en el dashboard
+            setUpcomingPayments(allUpcoming.slice(0, 3));
+            setRecentPayments(allRecent.slice(0, 3));
+          }
         }
 
       } catch (error) {
@@ -281,15 +331,15 @@ export default function BorrowerDashboardView() {
           {renderProgressBar("contract", contract.status)}
           <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
             {contract.status === "PAID_OFF" ? (
-              <Link href={`/borrowerDashboard/leave-a-review?contractId=${contract.id}`} className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
-                {t.dashboardBorrower.actions.rateLender}
-              </Link>
-            ) : (
-              <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
-                {isEs ? "Ver contrato" : "View contract"}
-              </Link>
-            )}
-          </div>
+                  <Link href={`/borrowerDashboard/leave-a-review?contractId=${contract.id}`} className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
+                    {t.dashboardBorrower.actions.rateLender}
+                  </Link>
+                ) : (
+                  <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
+                    {isEs ? "Ver contrato" : "View contract"}
+                  </Link>
+                )}
+              </div>
         </div>
       ))}
 

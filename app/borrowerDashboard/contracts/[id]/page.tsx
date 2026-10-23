@@ -156,7 +156,7 @@ function ContractDetailContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-bg p-6 lg:p-14 flex items-center justify-center">
+      <div className="flex p-10 items-center justify-center">
         <p className="text-ink-3">{cd.loading}</p>
       </div>
     );
@@ -164,42 +164,24 @@ function ContractDetailContent() {
 
   if (error || !contract) {
     return (
-      <div className="min-h-screen bg-bg p-6 lg:p-14 flex flex-col items-center justify-center">
+      <div className="animate-in fade-in duration-300 flex flex-col items-center justify-center py-12">
         <p className="text-crit mb-4">{error || cd.errorNotFound}</p>
-        <Link href="/contracts" className="text-accent font-bold">&larr; {cd.back}</Link>
+        <Link href="/borrowerDashboard/contracts" className="text-accent font-bold">&larr; {cd.back}</Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-bg p-6 lg:p-14">
-      <div className="mx-auto max-w-[1100px]">
+    <div className="animate-in fade-in duration-300">
+      <div className="w-full">
         
-        <Link
-          href="/contracts"
-          className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
-        >
-          <span>&larr;</span> {cd.back}
-        </Link>
-
         <header className="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <h1 className="text-[32px] font-black tracking-tight text-ink">{cd.title}: {contract.contractNumber}</h1>
-            <p className="text-ink-2">{cd.subtitle}</p>
+            <h1 className="text-[28px] font-[900] tracking-tight text-ink">{cd.title}: {contract.contractNumber}</h1>
+            <p className="mt-[4px] text-[14px] text-ink-3">{cd.subtitle}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href={`/contracts/${contract.id}/issue-commitment`} className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-4 py-2 text-sm font-bold text-accent transition-colors hover:opacity-80">
-              {t.issueCommitment.title}
-            </Link>
-            {/* Este boton lleva a la vista del PDF */}
-            <Link href={`/contracts/${contract.id}/commitment-doc`} className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-soft px-4 py-2 text-sm font-bold text-accent transition-colors hover:opacity-80">
-              {t.commitmentLetter.title}
-            </Link>
-            {/* Este boton lleva a la firma para el prestatario */}
-            <Link href={`/contracts/${contract.id}/commitment`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
-              {t.dashboardBorrower.reviewCommitment}
-            </Link>
-            <Link href={`/contracts/${contract.id}/payoff`} className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
+            <Link href={`/borrowerDashboard/contracts/${contract.id}/payoff`} className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
               {t.dashboardBorrower.actions.payoff}
             </Link>
 
@@ -207,7 +189,10 @@ function ContractDetailContent() {
             <Link href={`/borrowerDashboard/draw-request?contractId=${contract.id}`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
               {t.dashboardBorrower.actions.drawRequest}
             </Link>
-
+            {/* Boton para solicitar extension */}
+            <Link href={`/borrowerDashboard/extension-request?contractId=${contract.id}`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
+              {t.dashboardBorrower.actions.extensionRequest}
+            </Link>
             {/* Boton dinamico para pagos atrasados */}
             <Link 
               href={isLatePayment() ? `/borrowerDashboard/missed-payment?contractId=${contract.id}` : "#"} 
@@ -385,9 +370,5 @@ function ContractDetailContent() {
 }
 
 export default function ContractDetailPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <ContractDetailContent />
-    </SiteShell>
-  );
+  return <ContractDetailContent />;
 }

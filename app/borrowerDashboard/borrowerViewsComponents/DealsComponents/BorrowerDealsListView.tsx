@@ -252,15 +252,15 @@ export default function BorrowerDealsListView() {
 
                 <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
                   {contract.status === "PAID_OFF" ? (
-                    <Link href={`/borrowerDashboard/leave-a-review?contractId=${contract.id}`} className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
-                      {isEs ? "Calificar prestamista" : "Rate lender"}
-                    </Link>
-                  ) : (
-                    <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
+                  <Link href={`/borrowerDashboard/leave-a-review?contractId=${contract.id}`} className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
+                    {isEs ? "Calificar prestamista" : "Rate lender"}
+                  </Link>
+                ) : (
+                  <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
                       {isEs ? "Ver contrato" : "View contract"}
                     </Link>
-                  )}
-                </div>
+                )}
+              </div>
               </div>
             ))}
 

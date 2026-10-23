@@ -5,7 +5,7 @@ import { apiFetch, cerrarSesion } from "@/app/lib/apiFetch";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import { Building, X } from "lucide-react";
 
 // URL base de la API
@@ -151,7 +151,7 @@ function CommitmentLetterContent() {
     <div className="min-h-screen bg-bg p-6 lg:p-14">
       <div className="mx-auto max-w-[800px]">
         <Link
-          href={`/contracts/${contractId || ''}`}
+          href={`/lenderDashboard/contracts/${contractId || ''}`}
           className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {cd.back}
@@ -296,9 +296,5 @@ function CommitmentLetterContent() {
 }
 
 export default function CommitmentLetterPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <CommitmentLetterContent />
-    </SiteShell>
-  );
+  return <CommitmentLetterContent />;
 }

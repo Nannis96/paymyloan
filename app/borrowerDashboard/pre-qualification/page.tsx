@@ -36,8 +36,6 @@ function PreQualificationContent() {
     } else {
       setIsSubmitting(true);
       try {
-        const token = localStorage.getItem("accessToken") || "";
-        
         // Mapear la seleccion de la UI al enum esperado por la API
         let mappedType = "INDIVIDUAL";
         if (entity.includes("LLC")) mappedType = "LLC";

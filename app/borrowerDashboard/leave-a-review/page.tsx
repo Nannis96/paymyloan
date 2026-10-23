@@ -71,19 +71,13 @@ function LeaveReviewContent() {
 
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem("accessToken") || "";
-      
-      // La API no tiene campo para "tags", así que los anexamos al inicio del comentario
+      // La API no tiene campo para "tags", asi que los anexamos al inicio del comentario
       const finalComment = selectedTags.length > 0 
-        ? `[Tags: ${selectedTags.join(", ")}] ${reviewText.trim()}` 
+        ? `[Tags: ${selectedTags.join(", ")}] ${reviewText.trim()}`
         : reviewText.trim();
 
-      const res = await fetch(`/api/contracts/${contractId}/reviews`, {
+      const res = await apiFetch(`/api/contracts/${contractId}/reviews`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
         body: JSON.stringify({
           rating,
           comment: finalComment

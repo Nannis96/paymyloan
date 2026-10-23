@@ -1,18 +1,14 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function PayoffRequestPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <PayoffRequestContent />
-    </SiteShell>
-  );
+  return <PayoffRequestContent />;
 }
 
 function PayoffRequestContent() {
@@ -36,6 +32,7 @@ function PayoffRequestContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Obtener datos del contrato y del balance
   useEffect(() => {
@@ -68,13 +65,23 @@ function PayoffRequestContent() {
   }, [contractId, po.errorNetwork]);
 
   const handleGenerate = async () => {
+    if (!contentRef.current) return;
     setIsSubmitting(true);
     setError(null);
     try {
-      // Simulación de la petición de generación del PDF (la API no expone un POST de payoff directo por ahora)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert(po.successAlert);
-      router.push(`/contracts/${contractId || ''}`);
+      // @ts-ignore
+      const html2pdf = (await import("html2pdf.js")).default;
+      const opt = {
+        margin: [15, 15, 15, 15] as [number, number, number, number],
+        filename: `Payoff_Statement_${contract?.contractNumber || contractId}.pdf`,
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm' as const, format: 'letter' as const, orientation: 'portrait' as const }
+      };
+      
+      await html2pdf().set(opt).from(contentRef.current).save();
+      alert(isEs ? "PDF de liquidación generado y descargado." : "Payoff PDF generated and downloaded.");
+      router.push(`/lenderDashboard/contracts/${contractId || ''}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : po.errorNetwork);
     } finally {
@@ -138,15 +145,16 @@ function PayoffRequestContent() {
     <div className="animate-in fade-in duration-300 max-w-[720px]">
       
       <Link 
-        href={`/contracts/${contractId || ''}`}
+        href={`/lenderDashboard/contracts/${contractId || ''}`}
         className="mb-[20px] inline-flex items-center gap-[8px] text-[12px] font-[700] uppercase tracking-wide text-[#8898aa] transition-colors hover:text-[#635bff]"
       >
         <span>&larr;</span> {cd.back}
       </Link>
 
-      <div className="mb-[4px] text-[22px] font-[800] tracking-[-0.3px] text-[#0a2540]">
-        {po.title || "Payoff Request"}
-      </div>
+      <div ref={contentRef} className="print:bg-white print:p-8">
+        <div className="mb-[4px] text-[22px] font-[800] tracking-[-0.3px] text-[#0a2540]">
+          {po.title || "Payoff Request"}
+        </div>
       <div className="mb-[24px] text-[13px] text-[#8898aa]">
         {contract.property?.addressLine1} • {isEs ? "Genera una carta oficial de liquidacion valida hasta una fecha especifica" : "Generate an official payoff letter good through a specific date"}
       </div>
@@ -265,6 +273,8 @@ function PayoffRequestContent() {
         {isEs 
           ? `Esta liquidacion esta calculada a la tasa original del contrato de ${calc.rate}% usando un ano de 360 dias. Si pagas despues de la fecha indicada, el interes seguira acumulandose a ${formatCurrency(calc.perDiem)} por dia. Contacta a tu prestamista directamente para coordinar las instrucciones de transferencia (wire).` 
           : `This payoff is calculated at the original contract rate of ${calc.rate}% using a 360-day year. If you pay after the target date, interest continues to accrue at ${formatCurrency(calc.perDiem)} per day. Contact your lender directly to arrange wire instructions.`}
+      </div>
+
       </div>
 
       <button 

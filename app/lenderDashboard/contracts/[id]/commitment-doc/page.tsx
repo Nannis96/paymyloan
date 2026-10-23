@@ -5,10 +5,7 @@ import { apiFetch } from "@/app/lib/apiFetch";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
-import LangToggle from "@/app/components/ambos/LangToggle";
-import ThemeToggle from "@/app/components/ambos/ThemeToggle";
-
+import { useSite } from "@/app/components/layout/SiteShell";
 
 interface FeeItem {
   id: string;
@@ -52,11 +49,7 @@ interface ContractData {
 }
 
 export default function CommitmentLetterDocPage() {
-  return (
-    <SiteShell isMinimal={true}>
-      <CommitmentLetterDocContent />
-    </SiteShell>
-  );
+  return <CommitmentLetterDocContent />;
 }
 
 function CommitmentLetterDocContent() {
@@ -184,9 +177,8 @@ function CommitmentLetterDocContent() {
               {doc.errorState.reason2Desc}
             </div>
           </div>
-
           <Link 
-            href={contract ? `/contracts/${contractId}` : "/contracts"} 
+            href={contract ? `/lenderDashboard/contracts/${contractId}` : "/lenderDashboard/contracts"} 
             className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-5 py-3.5 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-sm"
           >
             {contract ? doc.errorState.btnContract : doc.errorState.btnAll}
@@ -214,16 +206,11 @@ function CommitmentLetterDocContent() {
       <div className="mx-auto w-full max-w-[680px] print:max-w-full">
         
         {/* Top Actions - Ocultos al imprimir */}
-        <div className="mb-[16px] flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center print:hidden">
-          <div className="flex w-full items-center justify-between sm:w-auto sm:justify-start sm:gap-4">
-            <Link href={`/contracts/${contractId}`} className="text-[12px] font-[600] text-[#8898aa] hover:text-[#635bff] transition-colors">
+      <div className="mb-[16px] flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center print:hidden">
+        <div className="flex w-full items-center justify-between sm:w-auto sm:justify-start sm:gap-4">
+            <Link href={`/lenderDashboard/contracts/${contractId}`} className="text-[12px] font-[600] text-[#8898aa] hover:text-[#635bff] transition-colors">
               &larr; Volver al contrato
             </Link>
-            <div className="hidden h-5 w-px bg-rule sm:block"></div>
-            <div className="flex items-center gap-2">
-              <LangToggle className="h-8 min-w-8 rounded-md border border-rule-strong bg-surface px-2 text-xs font-bold text-ink-2 transition-colors hover:border-accent hover:text-accent" />
-              <ThemeToggle className="h-8 w-8 rounded-md border border-rule-strong bg-surface text-ink-2 transition-colors hover:border-accent hover:text-accent" iconSize={14} />
-            </div>
           </div>
           <div className="flex w-full gap-[8px] sm:w-auto">
             <button onClick={handlePrint} className="flex-1 cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[7px] text-[12px] font-[600] text-[#425466] transition-colors hover:bg-[#f6f9fc] sm:flex-none">
