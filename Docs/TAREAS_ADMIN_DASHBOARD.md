@@ -10,7 +10,7 @@ Patrón de conexión: ver "Cómo conectar una API nueva" en [TAREAS_FRONT.md](TA
 |---|---|---|
 | Overview | ✅ conectada (revenue extra = `null` en back) | `GET /api/admin/overview` |
 | All deals | ✅ conectada (sin paginación, `pageSize=50`) | `GET /api/contracts` |
-| Lenders | 🟡 solo lista | `GET /api/admin/lenders` |
+| Lenders | 🟡 lista + ficha en drawer (`LenderDetailDrawer`) | `GET /api/admin/lenders[/:id]` |
 | Borrowers | ✅ usa `UsersTable` (rol `BORROWER` + acciones de usuario) | `GET /api/users` |
 | Verifications | ✅ lista + aprobar/rechazar | `GET /api/admin/verifications`, `POST .../approve\|reject` |
 | Audit logs | ✅ conectada (`audit-logs/` y `AuditLogsView`, duplicadas) | `GET /api/audit-logs` |
@@ -51,7 +51,7 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 - [x] **AF-09** Unificar `users/page` con la tabla de Borrowers/Lenders (misma tabla con filtro de rol) para no duplicar `GET /api/users`.
 
 ## C. Lenders (back ya listo)
-- [ ] **AF-10** Detalle de lender (drawer/página) → `GET /api/admin/lenders/:id` (empresas, conteo de deudores y contratos activos).
+- [x] **AF-10** Detalle de lender (drawer/página) → `GET /api/admin/lenders/:id` (empresas, conteo de deudores y contratos activos).
 - [ ] **AF-11** Empresas del lender: crear / editar (incluye `status`, `isOpenToDeals`) / borrar → `POST|PATCH|DELETE /api/admin/lenders/:id/companies[/:companyId]`; manejar `EIN_TAKEN`, `LENDER_HAS_ACTIVE_CONTRACTS`. dep: AF-10.
 - [ ] **AF-12** Banner "activa 2FA para operar" cuando una escritura devuelve `403 TWO_FACTOR_REQUIRED`, con flujo `2fa/setup` → `2fa/verify` → mostrar recovery codes (una vez). Sin esto ninguna acción de B/C/D funciona para un Admin sin 2FA.
   - **Nota 2026-10-22:** el flujo setup → verify → recovery codes **ya existe** (`TwoFactorSetupModal`, ver revisión arriba) y un Admin puede activar 2FA desde Settings. Falta solo el banner: cuando `UsersTable` / `add-user` reciben `TWO_FACTOR_REQUIRED` (hoy solo muestran un mensaje, AF-05..08), abrir `TwoFactorSetupModal` y reintentar. De paso, migrar el modal a `api<T>()`.

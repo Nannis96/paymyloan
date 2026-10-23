@@ -73,7 +73,7 @@ export const admin: typeof Es = {
     },
     views: {
       allDeals: { title: "All Deals", subtitle: "Complete list of active, delinquent, and closed contracts." },
-      lenders: { title: "Lenders", subtitle: "Directory of investors and entities." },
+      lenders: { title: "Lenders", subtitle: "Directory of investors and entities.", companies: "Companies", detailTitle: "Lender profile", close: "Close", borrowers: "Borrowers", activeContracts: "Active contracts", noCompanies: "This lender has no companies yet.", active: "Active", suspended: "Suspended", openToDeals: "Open to new deals", closedToDeals: "Not open to new deals", notFound: "Lender not found (it may have been deleted)." },
       borrowers: { title: "Borrowers", subtitle: "Client directory and verification status." },
       revenue: { title: "Revenue", subtitle: "Billing metrics and payouts." },
       affiliates: { title: "Affiliates", subtitle: "Referral management and affiliate payouts." },

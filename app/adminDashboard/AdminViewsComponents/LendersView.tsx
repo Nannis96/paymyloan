@@ -5,6 +5,7 @@ import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, toList } from "@/app/lib/apiFetch";
 import type { AdminLender } from "@/app/types/api";
+import { LenderDetailDrawer } from "./LenderDetailDrawer";
 
 export function LendersView({ users }: { users?: unknown[] }) {
   const { t, lang } = useSite();
@@ -14,6 +15,7 @@ export function LendersView({ users }: { users?: unknown[] }) {
   const [lenders, setLenders] = useState<AdminLender[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchLenders() {
@@ -57,7 +59,7 @@ export function LendersView({ users }: { users?: unknown[] }) {
               <tr>
                 <th className="px-4 py-3">{d.tables.name}</th>
                 <th className="px-4 py-3">{d.tables.signedUp}</th>
-                <th className="px-4 py-3">{lang === "es" ? "Empresas" : "Companies"}</th>
+                <th className="px-4 py-3">{v.companies}</th>
                 <th className="px-4 py-3">{d.tables.deals}</th>
                 <th className="px-4 py-3">{d.tables.verified}</th>
               </tr>
@@ -67,10 +69,17 @@ export function LendersView({ users }: { users?: unknown[] }) {
                 // La API devuelve { id, user, lenderCompanies, borrowersCount, activeContractsCount }
                 const u = lenderItem.user;
                 const companiesCount = lenderItem.lenderCompanies?.length || 0;
-                const dealsCount = lenderItem.activeContractsCount || 0;
+                // La lista no trae activeContractsCount (solo el detalle): "—" en vez de un 0 falso.
+                const dealsCount = lenderItem.activeContractsCount ?? "—";
 
                 return (
-                  <tr key={lenderItem.id || i} className="transition-colors hover:bg-surface-2">
+                  <tr
+                    key={lenderItem.id || i}
+                    onClick={() => setSelectedId(lenderItem.id)}
+                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSelectedId(lenderItem.id)}
+                    tabIndex={0}
+                    className="cursor-pointer transition-colors hover:bg-surface-2 focus:bg-surface-2 focus:outline-none"
+                  >
                     <td className="px-4 py-3 font-bold text-ink">
                       {u?.name || "N/A"}
                       <span className="mt-0.5 block text-[10px] font-normal text-ink-3">{u?.email}</span>
@@ -94,6 +103,8 @@ export function LendersView({ users }: { users?: unknown[] }) {
           </table>
         </div>
       </div>
+
+      {selectedId && <LenderDetailDrawer key={selectedId} lenderId={selectedId} onClose={() => setSelectedId(null)} />}
     </div>
   );
 }
