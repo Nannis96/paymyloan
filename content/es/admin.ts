@@ -71,7 +71,7 @@ export const admin = {
     },
     views: {
       allDeals: { title: "Todos los Tratos", subtitle: "Listado completo de contratos activos, en mora y cerrados." },
-      lenders: { title: "Prestamistas", subtitle: "Directorio de inversores y sus entidades." },
+      lenders: { title: "Prestamistas", subtitle: "Directorio de inversores y sus entidades.", companies: "Empresas", detailTitle: "Ficha del prestamista", close: "Cerrar", borrowers: "Deudores", activeContracts: "Contratos activos", noCompanies: "Este prestamista aún no tiene empresas.", active: "Activa", suspended: "Suspendida", openToDeals: "Acepta nuevos tratos", closedToDeals: "No acepta nuevos tratos", notFound: "No se encontró el prestamista (puede haber sido eliminado)." },
       borrowers: { title: "Prestatarios", subtitle: "Directorio de clientes y su estado de verificacion." },
       revenue: { title: "Ingresos", subtitle: "Metricas de facturacion y pagos." },
       affiliates: { title: "Afiliados", subtitle: "Gestion de referidos y pagos a afiliados." },
