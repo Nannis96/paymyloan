@@ -1,18 +1,18 @@
 "use client";
 
 import { API_ROUTES } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { api, ApiError } from "@/app/lib/apiFetch";
+import type { SafeUser } from "@/app/types/api";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { CheckCircle2 } from "lucide-react";
 
-// URL base de la API
-
 function AddUserContent() {
   const { t } = useSite();
   const u = t.adminAddUser;
+  const ul = t.adminUsersList; // textos compartidos con la lista (2FA, email duplicado, correo)
   const router = useRouter();
 
   // Clases estandarizadas para los inputs adaptables a modo claro/oscuro
@@ -20,7 +20,8 @@ function AddUserContent() {
   const INPUT = "w-full rounded-lg border border-rule bg-surface-2 px-4 py-3 text-[15px] text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-accent";
 
   // Estados del formulario
-  const [role, setRole] = useState("BORROWER");
+  // El back solo acepta roles de staff aqui; LENDER/BORROWER nacen por auto-registro.
+  const [role, setRole] = useState("ADMIN");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -28,40 +29,31 @@ function AddUserContent() {
   // Estados de UI
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successData, setSuccessData] = useState<{ email: string; temporaryPassword?: string } | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [successData, setSuccessData] = useState<{ email: string; temporaryPassword?: string; emailSent?: boolean } | null>(null);
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+    setEmailError(null);
 
     try {
-      
-      const response = await apiFetch(API_ROUTES.users.base, {
+      const data = await api<SafeUser & { temporaryPassword?: string; emailSent?: boolean }>(API_ROUTES.users.base, {
         method: "POST",
         body: JSON.stringify({
           name,
           email,
-          phone: phone.trim() ? phone : undefined,
+          phone: phone.trim() ? phone.trim() : undefined,
           role,
-          isActive: true
+          isActive: true,
         }),
       });
-
-      const json = await response.json();
-
-      if (!response.ok) {
-        throw new Error(json.error?.message || u.errorFetch);
-      }
-
-      // El backend devuelve los datos del usuario creado, incluyendo la contrase a temporal si se genero
-      setSuccessData({
-        email: json.data.email,
-        temporaryPassword: json.data.temporaryPassword
-      });
-
+      setSuccessData({ email: data.email, temporaryPassword: data.temporaryPassword, emailSent: data.emailSent });
     } catch (err) {
-      setError(err instanceof Error ? err.message : u.errorNetwork);
+      if (err instanceof ApiError && err.code === "EMAIL_TAKEN") setEmailError(ul.errorEmailTaken);
+      else if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setError(ul.errorTwoFactor);
+      else setError(err instanceof Error ? err.message : u.errorNetwork);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +96,8 @@ function AddUserContent() {
               {successData.temporaryPassword && (
                 <div className="mb-6 w-full rounded-lg bg-surface-2 p-4 border border-rule">
                   <span className="block text-xs uppercase tracking-widest text-ink-3 mb-1">{u.successTempPw}</span>
-                  <span className="font-mono text-lg font-bold text-accent">{successData.temporaryPassword}</span>
+                  <span className="select-all font-mono text-lg font-bold text-accent">{successData.temporaryPassword}</span>
+                  <span className="mt-2 block text-xs text-ink-3">{successData.emailSent ? ul.tempPwEmailSent : ul.tempPwEmailFailed}</span>
                 </div>
               )}
               <div className="flex gap-4 w-full">
@@ -140,10 +133,9 @@ function AddUserContent() {
                   onChange={(e) => setRole(e.target.value)}
                   className={`${INPUT} cursor-pointer appearance-none`}
                 >
-                  <option value="BORROWER">{u.roles.borrower}</option>
-                  <option value="LENDER">{u.roles.lender}</option>
                   <option value="ADMIN">{u.roles.admin}</option>
-                  <option value="BOOKKEEPER">Bookkeeper</option>
+                  <option value="BOOKKEEPER">{u.roles.bookkeeper}</option>
+                  <option value="INSURANCE_COMPANY">{u.roles.insurance}</option>
                 </select>
               </div>
 
@@ -167,11 +159,13 @@ function AddUserContent() {
                   <input 
                      type="email" 
                      value={email}
-                     onChange={(e) => setEmail(e.target.value)}
+                     onChange={(e) => { setEmail(e.target.value); setEmailError(null); }}
                      placeholder={u.emailPh}
-                     className={INPUT}
+                     className={`${INPUT} ${emailError ? "border-red-500" : ""}`}
+                     aria-invalid={!!emailError}
                      required 
                    />
+                  {emailError && <span className="mt-1 block text-xs text-red-500">{emailError}</span>}
                 </div>
 
                 {/* TELEFONO */}
@@ -183,6 +177,9 @@ function AddUserContent() {
                      onChange={(e) => setPhone(e.target.value)}
                      placeholder={u.phonePh}
                      maxLength={10}
+                     inputMode="numeric"
+                     pattern="\d{10}"
+                     title={u.phoneHint}
                      className={INPUT}
                    />
                   <span className="text-[10px] text-ink-3 mt-1 block">{u.phoneHint}</span>
