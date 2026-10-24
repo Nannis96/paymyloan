@@ -4,16 +4,22 @@ import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, ApiError } from "@/app/lib/apiFetch";
-import type { AdminLender } from "@/app/types/api";
+import type { AdminLender, LenderCompany } from "@/app/types/api";
 
-// Ficha de un lender: GET /api/admin/lenders/:id (lectura, no pide 2FA).
-// Montar con key={lenderId} para que el estado arranque limpio al cambiar de lender.
-export function LenderDetailDrawer({ lenderId, onClose }: { lenderId: string; onClose: () => void }) {
+// Ficha de un lender: GET /api/admin/lenders/:id (lectura, no pide 2FA) + CRUD de
+// sus empresas (escrituras, piden 2FA). Montar con key={lenderId} para que el
+// estado arranque limpio al cambiar de lender. onChanged avisa a la lista.
+export function LenderDetailDrawer({ lenderId, onClose, onChanged }: { lenderId: string; onClose: () => void; onChanged: () => void }) {
   const { t, lang } = useSite();
   const v = t.dashboardAdmin.views.lenders;
 
   const [lender, setLender] = useState<AdminLender | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // null = sin formulario; "new" = alta; LenderCompany = edicion de esa empresa.
+  const [editing, setEditing] = useState<"new" | LenderCompany | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let vigente = true;
@@ -25,7 +31,36 @@ export function LenderDetailDrawer({ lenderId, onClose }: { lenderId: string; on
         else setError(err instanceof Error ? err.message : t.dashboardAdmin.errorNetwork);
       });
     return () => { vigente = false; };
-  }, [lenderId, v.notFound, t.dashboardAdmin.errorNetwork]);
+  }, [lenderId, reloadKey, v.notFound, t.dashboardAdmin.errorNetwork]);
+
+  function afterChange() {
+    setEditing(null);
+    setReloadKey((k) => k + 1);
+    onChanged();
+  }
+
+  async function deleteCompany(c: LenderCompany) {
+    if (!window.confirm(v.deleteCompanyConfirm.replace("{name}", c.companyName))) return;
+    setBusyId(c.id);
+    setActionError(null);
+    try {
+      await api(API_ROUTES.lenders.adminCompanyById(lenderId, c.id), { method: "DELETE" });
+      afterChange();
+    } catch (err) {
+      setActionError(companyErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  function companyErrorMessage(err: unknown) {
+    if (err instanceof ApiError) {
+      if (err.code === "TWO_FACTOR_REQUIRED") return t.adminUsersList.errorTwoFactor;
+      if (err.code === "LENDER_HAS_ACTIVE_CONTRACTS") return v.errorActiveContracts;
+      if (err.code === "LENDER_COMPANY_NOT_FOUND") return v.errorCompanyNotFound;
+    }
+    return err instanceof Error ? err.message : t.dashboardAdmin.errorNetwork;
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -98,8 +133,33 @@ export function LenderDetailDrawer({ lenderId, onClose }: { lenderId: string; on
               ))}
             </div>
 
-            <h3 className="mb-3 text-[13px] font-extrabold text-ink">{v.companies}</h3>
-            {lender.lenderCompanies.length === 0 ? (
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-[13px] font-extrabold text-ink">{v.companies}</h3>
+              {editing === null && (
+                <button
+                  type="button"
+                  onClick={() => { setActionError(null); setEditing("new"); }}
+                  className="rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-accent-ink transition-opacity hover:opacity-90"
+                >
+                  + {v.addCompany}
+                </button>
+              )}
+            </div>
+
+            {actionError && (
+              <div className="mb-3 rounded-lg bg-crit-soft p-3 text-[13px] font-medium text-crit">{actionError}</div>
+            )}
+
+            {editing !== null ? (
+              <CompanyForm
+                key={editing === "new" ? "new" : editing.id}
+                lenderId={lenderId}
+                company={editing === "new" ? null : editing}
+                onCancel={() => setEditing(null)}
+                onSaved={afterChange}
+                errorMessage={companyErrorMessage}
+              />
+            ) : lender.lenderCompanies.length === 0 ? (
               <p className="text-[13px] text-ink-3">{v.noCompanies}</p>
             ) : (
               <ul className="flex flex-col gap-3">
@@ -117,6 +177,23 @@ export function LenderDetailDrawer({ lenderId, onClose }: { lenderId: string; on
                     </div>
                     {c.contactPhone && <div className="font-mono">{c.contactPhone}</div>}
                     <div className="mt-1 text-ink-3">{c.isOpenToDeals ? v.openToDeals : v.closedToDeals}</div>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setActionError(null); setEditing(c); }}
+                        className="rounded-lg border border-rule px-3 py-1.5 text-xs font-bold text-ink-2 transition-colors hover:border-accent hover:text-accent"
+                      >
+                        {t.adminUsersList.edit}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteCompany(c)}
+                        disabled={busyId === c.id}
+                        className="rounded-lg border border-rule px-3 py-1.5 text-xs font-bold text-ink-2 transition-colors hover:border-crit hover:text-crit disabled:opacity-50"
+                      >
+                        {busyId === c.id ? "..." : t.adminUsersList.delete}
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -125,5 +202,156 @@ export function LenderDetailDrawer({ lenderId, onClose }: { lenderId: string; on
         )}
       </aside>
     </div>
+  );
+}
+
+const FIELDS = ["companyName", "ein", "contactPhone", "addressLine1", "addressLine2", "city", "state", "postalCode"] as const;
+type Field = (typeof FIELDS)[number];
+const OPTIONAL: Field[] = ["contactPhone", "addressLine2"];
+
+// Alta (POST) o edicion (PATCH, solo lo que cambio) de una empresa del lender.
+// El back no acepta null: un opcional vacio no se envia (no se puede borrar).
+function CompanyForm({
+  lenderId,
+  company,
+  onCancel,
+  onSaved,
+  errorMessage,
+}: {
+  lenderId: string;
+  company: LenderCompany | null;
+  onCancel: () => void;
+  onSaved: () => void;
+  errorMessage: (err: unknown) => string;
+}) {
+  const { t } = useSite();
+  const v = t.dashboardAdmin.views.lenders;
+  const f = v.form;
+
+  const [values, setValues] = useState<Record<Field, string>>(() =>
+    Object.fromEntries(FIELDS.map((k) => [k, company?.[k] ?? ""])) as Record<Field, string>
+  );
+  const [status, setStatus] = useState(company?.status ?? "ACTIVE");
+  const [isOpenToDeals, setIsOpenToDeals] = useState(company?.isOpenToDeals ?? true);
+  const [einError, setEinError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const body: Record<string, string | boolean> = {};
+    for (const k of FIELDS) {
+      const val = values[k].trim();
+      if (!val && OPTIONAL.includes(k)) continue;
+      if (!company || val !== (company[k] ?? "")) body[k] = k === "state" ? val.toUpperCase() : val;
+    }
+    if (company) {
+      if (status !== (company.status ?? "ACTIVE")) body.status = status;
+      if (isOpenToDeals !== (company.isOpenToDeals ?? true)) body.isOpenToDeals = isOpenToDeals;
+      if (Object.keys(body).length === 0) return onCancel();
+    }
+
+    setSaving(true);
+    setError(null);
+    setEinError(null);
+    try {
+      await api(
+        company ? API_ROUTES.lenders.adminCompanyById(lenderId, company.id) : API_ROUTES.lenders.adminCompanies(lenderId),
+        { method: company ? "PATCH" : "POST", body: JSON.stringify(body) }
+      );
+      onSaved();
+    } catch (err) {
+      if (err instanceof ApiError && err.code === "EIN_TAKEN") setEinError(v.errorEinTaken);
+      else setError(errorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const input = "w-full rounded-lg border border-rule bg-surface-2 px-3 py-2 text-[13px] text-ink outline-none focus:border-accent";
+  const label = "mb-1 block text-[11px] font-bold text-ink-3";
+  const set = (k: Field) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValues({ ...values, [k]: e.target.value });
+    if (k === "ein") setEinError(null);
+  };
+
+  return (
+    <form onSubmit={submit} className="flex flex-col gap-3 rounded-lg border border-rule p-4">
+      <h4 className="text-[14px] font-extrabold text-ink">{company ? v.editCompany : v.addCompany}</h4>
+      {error && <div className="rounded-lg bg-crit-soft p-3 text-[13px] font-medium text-crit">{error}</div>}
+
+      <div>
+        <label className={label}>{f.companyName}</label>
+        <input required maxLength={200} value={values.companyName} onChange={set("companyName")} className={input} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={label}>EIN</label>
+          <input
+            required
+            pattern="\d{2}-\d{7}"
+            title={f.einHint}
+            placeholder="12-3456789"
+            value={values.ein}
+            onChange={set("ein")}
+            aria-invalid={!!einError}
+            className={`${input} font-mono ${einError ? "border-red-500" : ""}`}
+          />
+          {einError && <span className="mt-1 block text-xs text-red-500">{einError}</span>}
+        </div>
+        <div>
+          <label className={label}>{f.contactPhone}</label>
+          <input type="tel" inputMode="numeric" pattern="\d{10}" maxLength={10} title={t.adminUsersList.phoneHint} value={values.contactPhone} onChange={set("contactPhone")} className={`${input} font-mono`} />
+        </div>
+      </div>
+      <div>
+        <label className={label}>{f.addressLine1}</label>
+        <input required maxLength={200} value={values.addressLine1} onChange={set("addressLine1")} className={input} />
+      </div>
+      <div>
+        <label className={label}>{f.addressLine2}</label>
+        <input maxLength={200} value={values.addressLine2} onChange={set("addressLine2")} className={input} />
+      </div>
+      <div className="grid grid-cols-[1fr_70px_100px] gap-3">
+        <div>
+          <label className={label}>{f.city}</label>
+          <input required maxLength={120} value={values.city} onChange={set("city")} className={input} />
+        </div>
+        <div>
+          <label className={label}>{f.state}</label>
+          <input required pattern="[A-Za-z]{2}" maxLength={2} title={f.stateHint} placeholder="TX" value={values.state} onChange={set("state")} className={`${input} uppercase`} />
+        </div>
+        <div>
+          <label className={label}>{f.postalCode}</label>
+          <input required maxLength={20} value={values.postalCode} onChange={set("postalCode")} className={input} />
+        </div>
+      </div>
+
+      {company && (
+        <div className="grid grid-cols-2 items-end gap-3">
+          <div>
+            <label className={label}>{t.adminUsersList.table.status}</label>
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className={`${input} cursor-pointer`}>
+              <option value="ACTIVE">{v.active}</option>
+              <option value="SUSPENDED">{v.suspended}</option>
+            </select>
+          </div>
+          <label className="flex cursor-pointer items-center gap-2 pb-2 text-[13px] text-ink">
+            <input type="checkbox" checked={isOpenToDeals} onChange={(e) => setIsOpenToDeals(e.target.checked)} />
+            {v.openToDeals}
+          </label>
+        </div>
+      )}
+      {company && <p className="text-[10px] text-ink-3">{f.optionalHint}</p>}
+
+      <div className="mt-1 flex gap-3">
+        <button type="button" onClick={onCancel} className="flex-1 rounded-lg border border-rule px-4 py-2.5 text-sm font-bold text-ink hover:bg-surface-2">
+          {t.adminUsersList.cancel}
+        </button>
+        <button type="submit" disabled={saving} className="flex-1 rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:opacity-50">
+          {saving ? "..." : t.adminUsersList.save}
+        </button>
+      </div>
+    </form>
   );
 }
