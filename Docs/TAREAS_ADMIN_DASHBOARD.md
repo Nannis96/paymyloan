@@ -10,7 +10,7 @@ Patrón de conexión: ver "Cómo conectar una API nueva" en [TAREAS_FRONT.md](TA
 |---|---|---|
 | Overview | ✅ conectada (revenue extra = `null` en back) | `GET /api/admin/overview` |
 | All deals | ✅ conectada (sin paginación, `pageSize=50`) | `GET /api/contracts` |
-| Lenders | 🟡 lista + ficha en drawer (`LenderDetailDrawer`) | `GET /api/admin/lenders[/:id]` |
+| Lenders | 🟡 lista + ficha en drawer (`LenderDetailDrawer`) con CRUD de empresas; falta búsqueda/paginación (AF-13) | `GET /api/admin/lenders[/:id]`, `POST\|PATCH\|DELETE /api/admin/lenders/:id/companies[/:companyId]` |
 | Borrowers | ✅ usa `UsersTable` (rol `BORROWER` + acciones de usuario) | `GET /api/users` |
 | Verifications | ✅ lista + aprobar/rechazar | `GET /api/admin/verifications`, `POST .../approve\|reject` |
 | Audit logs | ✅ conectada (`audit-logs/` y `AuditLogsView`, duplicadas) | `GET /api/audit-logs` |
@@ -19,7 +19,7 @@ Patrón de conexión: ver "Cómo conectar una API nueva" en [TAREAS_FRONT.md](TA
 | Settings (`SettingsView` en `PlaceholderViews.tsx`) | 🟡 solo "Configurar 2FA" (hecho por el otro front, ver revisión abajo) | `GET /api/auth/me`, `POST /api/auth/2fa/setup\|verify` |
 | Revenue, Affiliates, Promo codes, Catalog | ❌ placeholder | back no existe (ver back AB-05..AB-09) |
 
-Existen en el back y **no se usan** en el admin: `GET`/`DELETE /api/admin/lenders/:id`, CRUD de `companies`, detalle/schedule/balance/transactions de contrato, `PATCH /api/contracts/:id`, `POST /api/transactions/:id/reverse`, `2fa/disable`, `2fa/recovery-codes`, `logout-all`, `PATCH /api/auth/me`, notificaciones.
+Existen en el back y **no se usan** en el admin: `DELETE /api/admin/lenders/:id`, detalle/schedule/balance/transactions de contrato, `PATCH /api/contracts/:id`, `POST /api/transactions/:id/reverse`, `2fa/disable`, `2fa/recovery-codes`, `logout-all`, `PATCH /api/auth/me`, notificaciones.
 
 ## Revisión de cambios del otro front (2026-10-22)
 
@@ -52,7 +52,7 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 
 ## C. Lenders (back ya listo)
 - [x] **AF-10** Detalle de lender (drawer/página) → `GET /api/admin/lenders/:id` (empresas, conteo de deudores y contratos activos).
-- [ ] **AF-11** Empresas del lender: crear / editar (incluye `status`, `isOpenToDeals`) / borrar → `POST|PATCH|DELETE /api/admin/lenders/:id/companies[/:companyId]`; manejar `EIN_TAKEN`, `LENDER_HAS_ACTIVE_CONTRACTS`. dep: AF-10.
+- [x] **AF-11** Empresas del lender: crear / editar (incluye `status`, `isOpenToDeals`) / borrar → `POST|PATCH|DELETE /api/admin/lenders/:id/companies[/:companyId]`; manejar `EIN_TAKEN`, `LENDER_HAS_ACTIVE_CONTRACTS`. dep: AF-10.
 - [ ] **AF-12** Banner "activa 2FA para operar" cuando una escritura devuelve `403 TWO_FACTOR_REQUIRED`, con flujo `2fa/setup` → `2fa/verify` → mostrar recovery codes (una vez). Sin esto ninguna acción de B/C/D funciona para un Admin sin 2FA.
   - **Nota 2026-10-22:** el flujo setup → verify → recovery codes **ya existe** (`TwoFactorSetupModal`, ver revisión arriba) y un Admin puede activar 2FA desde Settings. Falta solo el banner: cuando `UsersTable` / `add-user` reciben `TWO_FACTOR_REQUIRED` (hoy solo muestran un mensaje, AF-05..08), abrir `TwoFactorSetupModal` y reintentar. De paso, migrar el modal a `api<T>()`.
 - [ ] **AF-13** Lenders: búsqueda y paginación (`?page&pageSize&search`; el back ya las soporta).

@@ -16,6 +16,7 @@ export function LendersView({ users }: { users?: unknown[] }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     async function fetchLenders() {
@@ -29,7 +30,7 @@ export function LendersView({ users }: { users?: unknown[] }) {
       }
     }
     fetchLenders();
-  }, [d.errorFetch]);
+  }, [d.errorFetch, reloadKey]);
 
   if (isLoading) {
     return (
@@ -104,7 +105,12 @@ export function LendersView({ users }: { users?: unknown[] }) {
         </div>
       </div>
 
-      {selectedId && <LenderDetailDrawer key={selectedId} lenderId={selectedId} onClose={() => setSelectedId(null)} />}
+      {selectedId && <LenderDetailDrawer
+          key={selectedId}
+          lenderId={selectedId}
+          onClose={() => setSelectedId(null)}
+          onChanged={() => setReloadKey((k) => k + 1)}
+        />}
     </div>
   );
 }
