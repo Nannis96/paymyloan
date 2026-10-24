@@ -5,6 +5,7 @@ import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, ApiError } from "@/app/lib/apiFetch";
 import type { AdminLender, LenderCompany } from "@/app/types/api";
+import { TwoFactorRequiredBanner } from "./TwoFactorRequiredBanner";
 
 // Ficha de un lender: GET /api/admin/lenders/:id (lectura, no pide 2FA) + CRUD de
 // sus empresas (escrituras, piden 2FA). Montar con key={lenderId} para que el
@@ -19,6 +20,7 @@ export function LenderDetailDrawer({ lenderId, onClose, onChanged }: { lenderId:
   const [editing, setEditing] = useState<"new" | LenderCompany | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [need2fa, setNeed2fa] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -53,9 +55,13 @@ export function LenderDetailDrawer({ lenderId, onClose, onChanged }: { lenderId:
     }
   }
 
-  function companyErrorMessage(err: unknown) {
+  // null = no hay texto que mostrar (TWO_FACTOR_REQUIRED se muestra como banner).
+  function companyErrorMessage(err: unknown): string | null {
     if (err instanceof ApiError) {
-      if (err.code === "TWO_FACTOR_REQUIRED") return t.adminUsersList.errorTwoFactor;
+      if (err.code === "TWO_FACTOR_REQUIRED") {
+        setNeed2fa(true);
+        return null;
+      }
       if (err.code === "LENDER_HAS_ACTIVE_CONTRACTS") return v.errorActiveContracts;
       if (err.code === "LENDER_COMPANY_NOT_FOUND") return v.errorCompanyNotFound;
     }
@@ -146,6 +152,8 @@ export function LenderDetailDrawer({ lenderId, onClose, onChanged }: { lenderId:
               )}
             </div>
 
+            {need2fa && <TwoFactorRequiredBanner onEnabled={() => setNeed2fa(false)} />}
+
             {actionError && (
               <div className="mb-3 rounded-lg bg-crit-soft p-3 text-[13px] font-medium text-crit">{actionError}</div>
             )}
@@ -222,7 +230,7 @@ function CompanyForm({
   company: LenderCompany | null;
   onCancel: () => void;
   onSaved: () => void;
-  errorMessage: (err: unknown) => string;
+  errorMessage: (err: unknown) => string | null;
 }) {
   const { t } = useSite();
   const v = t.dashboardAdmin.views.lenders;

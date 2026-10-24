@@ -6,6 +6,7 @@ import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, ApiError, toList } from "@/app/lib/apiFetch";
 import type { SafeUser, UserRole } from "@/app/types/api";
+import { TwoFactorRequiredBanner } from "./TwoFactorRequiredBanner";
 
 const ROLES: UserRole[] = ["ADMIN", "LENDER", "BORROWER", "BOOKKEEPER", "INSURANCE_COMPANY"];
 
@@ -19,6 +20,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [need2fa, setNeed2fa] = useState(false);
   // Se muestra una sola vez: al cerrar el modal se descarta.
   const [tempPw, setTempPw] = useState<{ name: string; password: string; emailSent: boolean } | null>(null);
   const [editing, setEditing] = useState<SafeUser | null>(null);
@@ -35,7 +37,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
       await api(API_ROUTES.users.byId(user.id), { method: "DELETE" });
       setUsers((prev) => prev.filter((x) => x.id !== user.id));
     } catch (err) {
-      if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setError(u.errorTwoFactor);
+      if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setNeed2fa(true);
       else setError(err instanceof Error ? err.message : u.errorNetwork);
     } finally {
       setBusyId(null);
@@ -69,7 +71,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
       setEditing(null);
     } catch (err) {
       if (err instanceof ApiError && err.code === "EMAIL_TAKEN") setEditError({ field: "email", message: u.errorEmailTaken });
-      else if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setEditError({ message: u.errorTwoFactor });
+      else if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setNeed2fa(true);
       else setEditError({ message: err instanceof Error ? err.message : u.errorNetwork });
     } finally {
       setSaving(false);
@@ -94,8 +96,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
       }
       setUsers((prev) => prev.map((x) => (x.id === user.id ? { ...x, isActive: updated.isActive } : x)));
     } catch (err) {
-      // ponytail: solo mensaje; el flujo para activar 2FA llega con AF-12.
-      if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setError(u.errorTwoFactor);
+      if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setNeed2fa(true);
       else setError(err instanceof Error ? err.message : u.errorNetwork);
     } finally {
       setBusyId(null);
@@ -134,6 +135,8 @@ export function UsersTable({ role }: { role?: UserRole }) {
           ))}
         </select>
       </div>
+
+      {need2fa && !editing && <TwoFactorRequiredBanner onEnabled={() => setNeed2fa(false)} />}
 
       {error && (
         <div className="mb-6 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm text-red-500">
@@ -222,6 +225,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
           <form onSubmit={saveEdit} className="w-full max-w-[440px] rounded-2xl border border-rule bg-surface p-6 shadow-2xl">
             <h2 className="mb-5 text-lg font-black text-ink">{u.editTitle}</h2>
+            {need2fa && <TwoFactorRequiredBanner onEnabled={() => setNeed2fa(false)} />}
             {editError && !editError.field && (
               <div className="mb-4 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm text-red-500">{editError.message}</div>
             )}
