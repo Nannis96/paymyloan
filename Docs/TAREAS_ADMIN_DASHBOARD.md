@@ -10,7 +10,7 @@ Patrón de conexión: ver "Cómo conectar una API nueva" en [TAREAS_FRONT.md](TA
 |---|---|---|
 | Overview | ✅ conectada (revenue extra = `null` en back) | `GET /api/admin/overview` |
 | All deals | ✅ conectada (sin paginación, `pageSize=50`) | `GET /api/contracts` |
-| Lenders | 🟡 lista + ficha en drawer (`LenderDetailDrawer`) con CRUD de empresas; falta búsqueda/paginación (AF-13) | `GET /api/admin/lenders[/:id]`, `POST\|PATCH\|DELETE /api/admin/lenders/:id/companies[/:companyId]` |
+| Lenders | ✅ lista con búsqueda + paginación (20 por página) + ficha en drawer (`LenderDetailDrawer`) con CRUD de empresas | `GET /api/admin/lenders?page&pageSize&search`, `GET /api/admin/lenders/:id`, `POST\|PATCH\|DELETE /api/admin/lenders/:id/companies[/:companyId]` |
 | Borrowers | ✅ usa `UsersTable` (rol `BORROWER` + acciones de usuario) | `GET /api/users` |
 | Verifications | ✅ lista + aprobar/rechazar | `GET /api/admin/verifications`, `POST .../approve\|reject` |
 | Audit logs | ✅ conectada (`audit-logs/` y `AuditLogsView`, duplicadas) | `GET /api/audit-logs` |
@@ -57,7 +57,7 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 - [x] **AF-12** Banner "activa 2FA para operar" cuando una escritura devuelve `403 TWO_FACTOR_REQUIRED`, con flujo `2fa/setup` → `2fa/verify` → mostrar recovery codes (una vez). Sin esto ninguna acción de B/C/D funciona para un Admin sin 2FA.
   - **Nota 2026-10-22:** el flujo setup → verify → recovery codes **ya existe** (`TwoFactorSetupModal`, ver revisión arriba) y un Admin puede activar 2FA desde Settings. Falta solo el banner: cuando `UsersTable` / `add-user` reciben `TWO_FACTOR_REQUIRED` (hoy solo muestran un mensaje, AF-05..08), abrir `TwoFactorSetupModal` y reintentar. De paso, migrar el modal a `api<T>()`.
   - **Hecho 2026-10-23:** `TwoFactorRequiredBanner` (aviso + botón "Activar 2FA" que abre `TwoFactorSetupModal`) en `UsersTable` (lista y modal de edición), `add-user` y la ficha del lender (`LenderDetailDrawer`). El back lee el 2FA de la BD en cada escritura: al activarlo basta con repetir la acción (sin reintento automático). El modal ahora usa `api<T>()` y `z-[200]` para quedar encima del drawer.
-- [ ] **AF-13** Lenders: búsqueda y paginación (`?page&pageSize&search`; el back ya las soporta).
+- [x] **AF-13** Lenders: búsqueda y paginación (`?page&pageSize&search`; el back ya las soporta).
 
 ## D. Contratos / pagos (back ya listo)
 - [ ] **AF-14** All deals: paginación + filtro por `status` (hoy `pageSize=50` fijo). Revisar qué filtros acepta `GET /api/contracts` en `API_REFERENCE.md`.

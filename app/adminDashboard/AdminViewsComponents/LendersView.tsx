@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
-import { api, toList } from "@/app/lib/apiFetch";
-import type { AdminLender } from "@/app/types/api";
+import { api } from "@/app/lib/apiFetch";
+import type { AdminLender, Paginated } from "@/app/types/api";
 import { LenderDetailDrawer } from "./LenderDetailDrawer";
 
-export function LendersView({ users }: { users?: unknown[] }) {
+const PAGE_SIZE = 20;
+
+export function LendersView() {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
   const v = d.views.lenders;
@@ -17,41 +19,56 @@ export function LendersView({ users }: { users?: unknown[] }) {
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  // Espera 300 ms tras la ultima tecla antes de buscar, y vuelve a la pagina 1.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setSearch(searchInput.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(id);
+  }, [searchInput]);
 
   useEffect(() => {
-    async function fetchLenders() {
-      try {
-        // Obtenemos los prestamistas con su informacion enriquecida
-        setLenders(toList<AdminLender>(await api<unknown>(API_ROUTES.lenders.adminBase)));
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Error de red");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchLenders();
-  }, [d.errorFetch, reloadKey]);
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-[13px] text-ink-3">{d.loading || "Cargando..."}</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-[13px] font-bold text-crit">{error}</div>
-      </div>
-    );
-  }
+    let vigente = true;
+    const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
+    if (search) params.set("search", search);
+    api<Paginated<AdminLender>>(`${API_ROUTES.lenders.adminBase}?${params}`)
+      .then((data) => {
+        if (!vigente) return;
+        setLenders(data.items ?? []);
+        setTotalPages(Math.max(1, data.totalPages ?? 1));
+        setTotal(data.total ?? 0);
+        setError(null);
+      })
+      .catch((err) => vigente && setError(err instanceof Error ? err.message : d.errorNetwork))
+      .finally(() => vigente && setIsLoading(false));
+    return () => { vigente = false; };
+  }, [page, search, reloadKey, d.errorNetwork]);
 
   return (
     <div className="animate-in fade-in duration-300">
       <h1 className="mb-1 text-[22px] font-extrabold text-ink">{v.title}</h1>
       <p className="mb-6 text-[13px] text-ink-3">{v.subtitle}</p>
+
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <input
+          type="search"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder={v.searchPlaceholder}
+          aria-label={v.searchPlaceholder}
+          className="w-full rounded-lg border border-rule bg-surface px-3 py-2 text-[13px] text-ink outline-none focus:border-accent sm:max-w-[320px]"
+        />
+        <span className="text-[12px] text-ink-3">{t.auditLogs.totalRecords} <strong className="text-ink">{total}</strong></span>
+      </div>
+
+      {error && <div className="mb-4 rounded-lg bg-crit-soft p-3 text-[13px] font-medium text-crit">{error}</div>}
       
       <div className="overflow-hidden rounded-[10px] border border-rule bg-surface shadow-sm">
         <div className="overflow-x-auto">
@@ -66,7 +83,9 @@ export function LendersView({ users }: { users?: unknown[] }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-rule text-[12px] text-ink-2">
-              {lenders.length > 0 ? lenders.map((lenderItem, i) => {
+              {isLoading ? (
+                <tr><td colSpan={5} className="p-6 text-center text-ink-3">{d.loading}</td></tr>
+              ) : lenders.length > 0 ? lenders.map((lenderItem, i) => {
                 // La API devuelve { id, user, lenderCompanies, borrowersCount, activeContractsCount }
                 const u = lenderItem.user;
                 const companiesCount = lenderItem.lenderCompanies?.length || 0;
@@ -103,6 +122,32 @@ export function LendersView({ users }: { users?: unknown[] }) {
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-rule bg-surface-2 px-4 py-3">
+            <span className="text-[12px] text-ink-3">
+              {t.auditLogs.page} <strong className="text-ink">{page}</strong> {t.auditLogs.of} <strong className="text-ink">{totalPages}</strong>
+            </span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={page <= 1 || isLoading}
+                onClick={() => setPage((p) => p - 1)}
+                className="rounded-[4px] border border-rule bg-surface px-3 py-1.5 text-xs font-bold text-ink transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {t.auditLogs.prev}
+              </button>
+              <button
+                type="button"
+                disabled={page >= totalPages || isLoading}
+                onClick={() => setPage((p) => p + 1)}
+                className="rounded-[4px] border border-rule bg-surface px-3 py-1.5 text-xs font-bold text-ink transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {t.auditLogs.next}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {selectedId && <LenderDetailDrawer
