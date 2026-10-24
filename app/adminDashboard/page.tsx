@@ -23,8 +23,8 @@ import {
   RevenueView,
   AffiliatesView,
   PromoCodesView,
-  SettingsView
 } from "./AdminViewsComponents/PlaceholderViews";
+import { SettingsView } from "./AdminViewsComponents/SettingsView";
 export default function AdminDashboardPage() {
   return (
     <SiteShell isMinimal={true}>

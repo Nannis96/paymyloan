@@ -81,7 +81,7 @@ export const admin: typeof Es = {
       promoCodes: { title: "Promo Codes", subtitle: "Discount and coupon management." },
       catalog: { title: "Catalog", subtitle: "Manage products, subscriptions, and coupons." },
       auditLogs: { title: "Audit Logs", subtitle: "Complete history of system actions and events." },
-      settings: { title: "Settings", subtitle: "Global platform settings." },
+      settings: { title: "Settings", subtitle: "Your profile and account security.", profileTitle: "My profile", saved: "Changes saved.", currentPassword: "Current password", wrongPassword: "The password is incorrect.", emailChangeWarning: "Changing your email signs you out of every session; you'll need to sign in again.", securityTitle: "Account security", twoFactor: "Two-factor authentication (2FA)", enabled: "Enabled", disabled: "Disabled", disable2fa: "Disable 2FA", regenerateCodes: "Regenerate recovery codes", disableHelp: "To disable 2FA, confirm your password and a code from your authenticator app. Your recovery codes are deleted too.", regenHelp: "Your previous codes will stop working. Confirm your password and a code from your authenticator app.", password: "Password", code: "6-digit code", wrongPasswordOrCode: "The password or code is incorrect.", newCodesHelp: "Your new recovery codes. Save them now: they won't be shown again.", savedCodes: "I saved them", logoutAll: "Sign out everywhere", logoutAllHelp: "Signs you out on all your devices, including this one.", logoutAllConfirm: "Sign out on all your devices? You'll need to sign in again." },
       placeholder: { subtitle: "This view will be available soon." }
     },
     loading: "Loading panel...",
