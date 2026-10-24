@@ -77,7 +77,7 @@ export const admin: typeof Es = {
       borrowers: { title: "Borrowers", subtitle: "Client directory and verification status." },
       revenue: { title: "Revenue", subtitle: "Billing metrics and payouts." },
       affiliates: { title: "Affiliates", subtitle: "Referral management and affiliate payouts." },
-      verifications: { title: "Verifications", subtitle: "Pending identity and entity requests." },
+      verifications: { title: "Verifications", subtitle: "Pending identity and entity requests.", statuses: { PENDING: "Pending", APPROVED: "Approved", REJECTED: "Rejected" }, table: { entity: "Entity", type: "Type", role: "Role", submittedBy: "Submitted by", date: "Date", actions: "Actions" }, approve: "Approve", reject: "Reject", approveConfirm: "Approve the verification for {name}?", rejectPrompt: "Reason for rejecting {name} (the applicant will see it):", reasonLabel: "Reason:", alreadyReviewed: "Another admin already reviewed this request. The list was refreshed.", empty: "No requests in this status." },
       promoCodes: { title: "Promo Codes", subtitle: "Discount and coupon management." },
       catalog: { title: "Catalog", subtitle: "Manage products, subscriptions, and coupons." },
       auditLogs: { title: "Audit Logs", subtitle: "Complete history of system actions and events." },

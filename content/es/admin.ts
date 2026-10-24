@@ -75,7 +75,7 @@ export const admin = {
       borrowers: { title: "Prestatarios", subtitle: "Directorio de clientes y su estado de verificacion." },
       revenue: { title: "Ingresos", subtitle: "Metricas de facturacion y pagos." },
       affiliates: { title: "Afiliados", subtitle: "Gestion de referidos y pagos a afiliados." },
-      verifications: { title: "Verificaciones", subtitle: "Solicitudes de identidad y entidades pendientes." },
+      verifications: { title: "Verificaciones", subtitle: "Solicitudes de identidad y entidades pendientes.", statuses: { PENDING: "Pendientes", APPROVED: "Aprobadas", REJECTED: "Rechazadas" }, table: { entity: "Entidad", type: "Tipo", role: "Rol", submittedBy: "Solicitante", date: "Fecha", actions: "Acciones" }, approve: "Aprobar", reject: "Rechazar", approveConfirm: "¿Aprobar la verificación de {name}?", rejectPrompt: "Motivo del rechazo de {name} (lo verá el solicitante):", reasonLabel: "Motivo:", alreadyReviewed: "Otro administrador ya revisó esta solicitud. Se actualizó la lista.", empty: "No hay solicitudes en este estado." },
       promoCodes: { title: "Codigos Promo", subtitle: "Administracion de descuentos y cupones." },
       catalog: { title: "Catálogo", subtitle: "Gestión de productos, suscripciones y cupones." },
       auditLogs: { title: "Auditoría", subtitle: "Historial completo de acciones y eventos del sistema." },

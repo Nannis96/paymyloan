@@ -68,7 +68,8 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 ## E. Auditoría / verificaciones
 - [x] **AF-18** Audit logs: filtros `action`, `entityType` y rango de fechas en la UI (el back ya filtra `action`/`entityType`/paginación).
   - **Hecho 2026-10-23:** filtro de `action` (texto con sugerencias, igualdad exacta como el back) y select de `entityType`. Además se corrigió la tabla: esperaba `actorRole`/`actorName`/`description`, que el back **no** manda (devuelve el `AuditLog` crudo), así que actor y descripción salían vacíos. Ahora muestra sistema/usuario (id corto), entidad + id y `metadata`. Se quitó el filtro de rol (mandaba `actorRole`, que el back ignora). **Rango de fechas no se hizo**: el back no acepta `from`/`to` y filtrar solo la página cargada engaña → ver AF-30.
-- [ ] **AF-19** Verifications: mostrar motivo al rechazar (revisar si el body de `reject` acepta `reason`) y refrescar el KPI de Overview.
+- [x] **AF-19** Verifications: mostrar motivo al rechazar (revisar si el body de `reject` acepta `reason`) y refrescar el KPI de Overview.
+  - **Hecho 2026-10-23:** `reject` exige `{ reason }` (antes iba fijo "Rechazado por el administrador"): ahora se pide con `prompt` y se muestra en las rechazadas (`rejectionReason`). Errores sin `alert`: banner de 2FA (AF-12) y aviso si otro Admin ya la revisó (`VERIFICATION_NOT_PENDING`, recarga la lista). Textos a `content/{es,en}/admin.ts`. El KPI de Overview no necesitó cambio: Overview se vuelve a montar al cambiar de pestaña y pide `/admin/overview` de nuevo. Ojo: el badge "2" de Verificaciones en el sidebar de `layout.tsx` está escrito a mano (mock previo).
 
 ## F. Settings / perfil del admin
 - [ ] **AF-20** `SettingsView`: editar perfil propio → `PATCH /api/auth/me` (email exige `currentPassword`).
