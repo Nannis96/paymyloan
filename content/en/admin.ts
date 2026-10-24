@@ -77,11 +77,11 @@ export const admin: typeof Es = {
       borrowers: { title: "Borrowers", subtitle: "Client directory and verification status." },
       revenue: { title: "Revenue", subtitle: "Billing metrics and payouts." },
       affiliates: { title: "Affiliates", subtitle: "Referral management and affiliate payouts." },
-      verifications: { title: "Verifications", subtitle: "Pending identity and entity requests." },
+      verifications: { title: "Verifications", subtitle: "Pending identity and entity requests.", statuses: { PENDING: "Pending", APPROVED: "Approved", REJECTED: "Rejected" }, table: { entity: "Entity", type: "Type", role: "Role", submittedBy: "Submitted by", date: "Date", actions: "Actions" }, approve: "Approve", reject: "Reject", approveConfirm: "Approve the verification for {name}?", rejectPrompt: "Reason for rejecting {name} (the applicant will see it):", reasonLabel: "Reason:", alreadyReviewed: "Another admin already reviewed this request. The list was refreshed.", empty: "No requests in this status." },
       promoCodes: { title: "Promo Codes", subtitle: "Discount and coupon management." },
       catalog: { title: "Catalog", subtitle: "Manage products, subscriptions, and coupons." },
       auditLogs: { title: "Audit Logs", subtitle: "Complete history of system actions and events." },
-      settings: { title: "Settings", subtitle: "Global platform settings." },
+      settings: { title: "Settings", subtitle: "Your profile and account security.", profileTitle: "My profile", saved: "Changes saved.", currentPassword: "Current password", wrongPassword: "The password is incorrect.", emailChangeWarning: "Changing your email signs you out of every session; you'll need to sign in again.", securityTitle: "Account security", twoFactor: "Two-factor authentication (2FA)", enabled: "Enabled", disabled: "Disabled", disable2fa: "Disable 2FA", regenerateCodes: "Regenerate recovery codes", disableHelp: "To disable 2FA, confirm your password and a code from your authenticator app. Your recovery codes are deleted too.", regenHelp: "Your previous codes will stop working. Confirm your password and a code from your authenticator app.", password: "Password", code: "6-digit code", wrongPasswordOrCode: "The password or code is incorrect.", newCodesHelp: "Your new recovery codes. Save them now: they won't be shown again.", savedCodes: "I saved them", logoutAll: "Sign out everywhere", logoutAllHelp: "Signs you out on all your devices, including this one.", logoutAllConfirm: "Sign out on all your devices? You'll need to sign in again." },
       placeholder: { subtitle: "This view will be available soon." }
     },
     loading: "Loading panel...",
@@ -94,7 +94,7 @@ export const admin: typeof Es = {
 
   adminAddUser: { title: "Create User", subtitle: "Register an admin, bookkeeper, or insurance company. Lenders and borrowers sign up on their own.", roleLabel: "Platform Role", roles: { admin: "Administrator", bookkeeper: "Bookkeeper", insurance: "Insurance company" }, nameLabel: "Full Name", namePh: "E.g. Jane Doe", emailLabel: "Email Address", emailPh: "email@example.com", phoneLabel: "Phone Number", phonePh: "E.g. 555 123 4567", submit: "Register account", back: "Back to dashboard", submitting: "Registering...", phoneHint: "Must be exactly 10 digits (optional).", errorFetch: "Failed to create user.", errorNetwork: "Unknown network error", successTitle: "User created successfully!", successDesc1: "An account has been registered for", successTempPw: "Temporary password generated:", successCreateAnother: "Create another", successViewList: "View list" },
 
-  auditLogs: { searchPlaceholder: "Search by action or description...", allRoles: "All Roles", system: "System / Webhooks", admins: "Administrators", lenders: "Lenders", borrowers: "Borrowers", totalRecords: "Total records:", dateHour: "Date / Time", actor: "Actor", action: "Action", description: "Event Description", noRecords: "No audit records found.", page: "Page", of: "of", prev: "Previous", next: "Next" },
+  auditLogs: { searchPlaceholder: "Exact action, e.g. CONTRACT_CREATED", allEntities: "All entities", system: "System", totalRecords: "Total records:", dateHour: "Date / Time", actor: "Actor", action: "Action", entity: "Entity", metadata: "Details", filtersNote: "Filters by exact action and entity. Date range and actor role aren't filterable in the back yet.", noRecords: "No audit records found.", page: "Page", of: "of", prev: "Previous", next: "Next" },
 
   catalog: {
     title: "Product catalog",

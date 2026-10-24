@@ -16,10 +16,10 @@ Patrón de conexión: ver "Cómo conectar una API nueva" en [TAREAS_FRONT.md](TA
 | Audit logs | ✅ conectada (`audit-logs/` y `AuditLogsView`, duplicadas) | `GET /api/audit-logs` |
 | Users (`users/page`) | ✅ `UsersTable` con filtro de rol: lista + activar/desactivar + editar + eliminar | `GET`/`PATCH`/`DELETE /api/users[/:id]`, `POST /api/admin/users/:id/activate\|deactivate` |
 | Add user | ✅ crea (solo ADMIN/BOOKKEEPER/INSURANCE_COMPANY) + contraseña temporal + `EMAIL_TAKEN` | `POST /api/users` |
-| Settings (`SettingsView` en `PlaceholderViews.tsx`) | 🟡 solo "Configurar 2FA" (hecho por el otro front, ver revisión abajo) | `GET /api/auth/me`, `POST /api/auth/2fa/setup\|verify` |
+| Settings (`SettingsView.tsx`) | ✅ perfil propio + 2FA (activar/desactivar/regenerar códigos) + `logout-all`. Ajustes de plataforma → AF-27 | `GET`/`PATCH /api/auth/me`, `POST /api/auth/2fa/setup\|verify\|disable\|recovery-codes`, `POST /api/auth/logout-all` |
 | Revenue, Affiliates, Promo codes, Catalog | ❌ placeholder | back no existe (ver back AB-05..AB-09) |
 
-Existen en el back y **no se usan** en el admin: `DELETE /api/admin/lenders/:id`, detalle/schedule/balance/transactions de contrato, `PATCH /api/contracts/:id`, `POST /api/transactions/:id/reverse`, `2fa/disable`, `2fa/recovery-codes`, `logout-all`, `PATCH /api/auth/me`, notificaciones.
+Existen en el back y **no se usan** en el admin: `DELETE /api/admin/lenders/:id`, detalle/schedule/balance/transactions de contrato, `PATCH /api/contracts/:id`, `POST /api/transactions/:id/reverse`, notificaciones (el Admin no recibe ninguna, ver AF-22).
 
 ## Revisión de cambios del otro front (2026-10-22)
 
@@ -28,14 +28,13 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 - **Dashboard de admin: casi sin cambios.** Su último trabajo (contratos, draws, payoff, extension-request, missed-payment, SubmitOfferModal) es todo de `lenderDashboard/` y `borrowerDashboard/`. AF-01..09 siguen intactos (`git diff 8e444e7 fix-brenda -- app/adminDashboard` solo muestra lo de abajo).
 - **Única excepción: 2FA en Settings del admin** — commit `8be4dd5` (2026-10-16, "lender & admin : qr code 2fa"):
   - Componente compartido nuevo `app/components/dashboards/settings/TwoFactorSetupModal.tsx`: `2fa/setup` → QR (`qrcode.react`, dependencia nueva) + secreto manual → `2fa/verify` con código de 6 dígitos → muestra recovery codes una vez, con botón para descargarlos en `.txt`. Props `isOpen/onClose/onSuccess`.
-  - Lo usan `SettingsView` del admin (`AdminViewsComponents/PlaceholderViews.tsx`) y `lenderViewsComponents/security/AccountSecurityView.tsx` del lender. Esto resuelve la decisión ⛔ D2 de TAREAS_FRONT (componente compartido).
+  - Lo usan `SettingsView` del admin (entonces en `PlaceholderViews.tsx`, hoy `AdminViewsComponents/SettingsView.tsx`) y `lenderViewsComponents/security/AccountSecurityView.tsx` del lender. Esto resuelve la decisión ⛔ D2 de TAREAS_FRONT (componente compartido).
   - El admin solo puede **activar** 2FA (el botón se oculta si ya está activo). No hay desactivar ni regenerar recovery codes en ningún dashboard. `logout-all` existe solo en el lender.
 - **Login con 2FA ya existe** desde 2026-09-16 (`a2eeeb7`, `app/login/page.tsx` → `API_ROUTES.auth.login2fa`).
 - **Deuda técnica de ese código** (no rompe nada, a limpiar cuando se toque AF-12/AF-21):
-  - ~~`TwoFactorSetupModal`~~ (migrado a `api<T>()` en AF-12) y `SettingsView` usan `fetch` crudo con `BASE_URL` y token a mano en vez de `api<T>()`, así que un token vencido no se renueva (con `apiFetch` sí). Mismo patrón que se quitó en AF-01.
+  - ~~`TwoFactorSetupModal` (AF-12) y `SettingsView` (AF-20/21) usaban `fetch` crudo~~ — ya migrados a `api<T>()`. Era: con `BASE_URL` y token a mano en vez de `api<T>()`, así que un token vencido no se renueva (con `apiFetch` sí). Mismo patrón que se quitó en AF-01.
   - `TwoFactorSetupModal` tiene 2 errores de lint previos en su `useEffect` (setState síncrono y `fetchSetupData` usado antes de declararse). No rompe en runtime; arreglarlo cambia cómo abre el modal, coordinar con el otro front.
-  - `SettingsView` tiene `useState<any>` y los textos están escritos dentro del componente (`isEs ? ... : ...`) en vez de `content/{es,en}/admin.ts`.
-  - `SettingsView` sigue viviendo en `PlaceholderViews.tsx` aunque ya no es placeholder.
+  - ~~`SettingsView` con `useState<any>`, textos dentro del componente y viviendo en `PlaceholderViews.tsx`~~ → resuelto en AF-20/21.
   - Solo se llega a Settings desde las pestañas de `adminDashboard/page.tsx`. El link del sidebar de `layout.tsx` apunta a `/adminDashboard/settings`, que no tiene ruta (404). Pasa igual con deals/lenders/borrowers/verifications/revenue/etc.: es previo a esta revisión.
 
 ## A. Limpieza (sin back)
@@ -66,14 +65,18 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 - [ ] **AF-17** Editar contrato → `PATCH /api/contracts/:id` (el back ya permite Admin). dep: AF-15. ⛔ confirmar qué campos debe poder editar el Admin.
 
 ## E. Auditoría / verificaciones
-- [ ] **AF-18** Audit logs: filtros `action`, `entityType` y rango de fechas en la UI (el back ya filtra `action`/`entityType`/paginación).
-- [ ] **AF-19** Verifications: mostrar motivo al rechazar (revisar si el body de `reject` acepta `reason`) y refrescar el KPI de Overview.
+- [x] **AF-18** Audit logs: filtros `action`, `entityType` y rango de fechas en la UI (el back ya filtra `action`/`entityType`/paginación).
+  - **Hecho 2026-10-23:** filtro de `action` (texto con sugerencias, igualdad exacta como el back) y select de `entityType`. Además se corrigió la tabla: esperaba `actorRole`/`actorName`/`description`, que el back **no** manda (devuelve el `AuditLog` crudo), así que actor y descripción salían vacíos. Ahora muestra sistema/usuario (id corto), entidad + id y `metadata`. Se quitó el filtro de rol (mandaba `actorRole`, que el back ignora). **Rango de fechas no se hizo**: el back no acepta `from`/`to` y filtrar solo la página cargada engaña → ver AF-30.
+- [x] **AF-19** Verifications: mostrar motivo al rechazar (revisar si el body de `reject` acepta `reason`) y refrescar el KPI de Overview.
+  - **Hecho 2026-10-23:** `reject` exige `{ reason }` (antes iba fijo "Rechazado por el administrador"): ahora se pide con `prompt` y se muestra en las rechazadas (`rejectionReason`). Errores sin `alert`: banner de 2FA (AF-12) y aviso si otro Admin ya la revisó (`VERIFICATION_NOT_PENDING`, recarga la lista). Textos a `content/{es,en}/admin.ts`. El KPI de Overview no necesitó cambio: Overview se vuelve a montar al cambiar de pestaña y pide `/admin/overview` de nuevo. Ojo: el badge "2" de Verificaciones en el sidebar de `layout.tsx` está escrito a mano (mock previo).
 
 ## F. Settings / perfil del admin
-- [ ] **AF-20** `SettingsView`: editar perfil propio → `PATCH /api/auth/me` (email exige `currentPassword`).
-- [ ] **AF-21** `SettingsView`: seguridad → activar/desactivar 2FA, regenerar recovery codes, `logout-all`. Reusa AF-12 (⛔ D2 de TAREAS_FRONT: componente compartido).
+- [x] **AF-20** `SettingsView`: editar perfil propio → `PATCH /api/auth/me` (email exige `currentPassword`).
+- [x] **AF-21** `SettingsView`: seguridad → activar/desactivar 2FA, regenerar recovery codes, `logout-all`. Reusa AF-12 (⛔ D2 de TAREAS_FRONT: componente compartido).
   - **Nota 2026-10-22:** **activar 2FA ya está** (otro front, `8be4dd5`) y D2 quedó resuelto con `TwoFactorSetupModal`. Falta: desactivar (`2fa/disable`), regenerar recovery codes (`2fa/recovery-codes`) y `logout-all` (copiar de `AccountSecurityView` del lender). Antes de seguir, coordinar con el otro front: lo que se agregue va en el componente compartido para que también lo tenga el lender.
+  - **Hecho 2026-10-23 (AF-20 + AF-21):** `SettingsView` se movió a su propio archivo (`AdminViewsComponents/SettingsView.tsx`, ya no en `PlaceholderViews.tsx`) y usa `api<T>()`. Perfil: nombre/teléfono/correo con `PATCH /api/auth/me`; al cambiar correo pide `currentPassword` y, como el back revoca las sesiones, manda al login (`EMAIL_TAKEN` / `INVALID_CREDENTIALS` por campo). Seguridad: activar (modal compartido), desactivar (`2fa/disable`) y regenerar códigos (`2fa/recovery-codes`) con contraseña + código, y `logout-all`. Desactivar/regenerar quedaron solo en el admin (no en el componente compartido): pasarlos a `app/components/dashboards/settings/` si el lender los necesita.
 - [ ] **AF-22** Campana de notificaciones en el topbar → `GET /api/notifications`, `unread-count`, `read`, `read-all`. ⛔ confirmar si el Admin recibe notificaciones (hoy son de lender/borrower).
+  - **Revisado 2026-10-23 — no se hizo, bloqueada por back.** Ningún `type` de notificación tiene como destinatario al Admin (tabla en `API_REFERENCE.md` §Notificaciones: todas van a Lender, Borrower o la contraparte de un mensaje), así que la campana estaría siempre vacía. Primero el back debe definir notificaciones de Admin (p. ej. verificación nueva enviada, empresa suspendida, contrato en mora). Los endpoints no piden rol, así que cuando existan basta con copiar la campana del lender/borrower al topbar del admin.
 
 ## G. Bloqueadas por back (placeholders)
 - [ ] **AF-23** Revenue → `BACK: AB-05`.
@@ -83,3 +86,4 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 - [ ] **AF-27** Settings de plataforma (fees, flags) → `BACK: AB-09`.
 - [ ] **AF-28** Overview: acciones "Send lender alert" / "Clear all" → `BACK: AB-10`.
 - [ ] **AF-29** Borrowers: columnas `entityName`, deals, verificación → `BACK: AB-03`, `AB-02`.
+- [ ] **AF-30** Audit logs: rango de fechas, filtro por rol del actor y nombre del actor en la tabla → `BACK:` falta `from`/`to` y `actorRole` en `listAuditLogsQuerySchema`, e incluir `actorUser { name, role }` en `listAuditLogs` (hoy solo viene `actorUserId`).
