@@ -66,7 +66,8 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 - [ ] **AF-17** Editar contrato → `PATCH /api/contracts/:id` (el back ya permite Admin). dep: AF-15. ⛔ confirmar qué campos debe poder editar el Admin.
 
 ## E. Auditoría / verificaciones
-- [ ] **AF-18** Audit logs: filtros `action`, `entityType` y rango de fechas en la UI (el back ya filtra `action`/`entityType`/paginación).
+- [x] **AF-18** Audit logs: filtros `action`, `entityType` y rango de fechas en la UI (el back ya filtra `action`/`entityType`/paginación).
+  - **Hecho 2026-10-23:** filtro de `action` (texto con sugerencias, igualdad exacta como el back) y select de `entityType`. Además se corrigió la tabla: esperaba `actorRole`/`actorName`/`description`, que el back **no** manda (devuelve el `AuditLog` crudo), así que actor y descripción salían vacíos. Ahora muestra sistema/usuario (id corto), entidad + id y `metadata`. Se quitó el filtro de rol (mandaba `actorRole`, que el back ignora). **Rango de fechas no se hizo**: el back no acepta `from`/`to` y filtrar solo la página cargada engaña → ver AF-30.
 - [ ] **AF-19** Verifications: mostrar motivo al rechazar (revisar si el body de `reject` acepta `reason`) y refrescar el KPI de Overview.
 
 ## F. Settings / perfil del admin
@@ -83,3 +84,4 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 - [ ] **AF-27** Settings de plataforma (fees, flags) → `BACK: AB-09`.
 - [ ] **AF-28** Overview: acciones "Send lender alert" / "Clear all" → `BACK: AB-10`.
 - [ ] **AF-29** Borrowers: columnas `entityName`, deals, verificación → `BACK: AB-03`, `AB-02`.
+- [ ] **AF-30** Audit logs: rango de fechas, filtro por rol del actor y nombre del actor en la tabla → `BACK:` falta `from`/`to` y `actorRole` en `listAuditLogsQuerySchema`, e incluir `actorUser { name, role }` en `listAuditLogs` (hoy solo viene `actorUserId`).
