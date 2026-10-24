@@ -32,7 +32,8 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
   - El admin solo puede **activar** 2FA (el botón se oculta si ya está activo). No hay desactivar ni regenerar recovery codes en ningún dashboard. `logout-all` existe solo en el lender.
 - **Login con 2FA ya existe** desde 2026-09-16 (`a2eeeb7`, `app/login/page.tsx` → `API_ROUTES.auth.login2fa`).
 - **Deuda técnica de ese código** (no rompe nada, a limpiar cuando se toque AF-12/AF-21):
-  - `TwoFactorSetupModal` y `SettingsView` usan `fetch` crudo con `BASE_URL` y token a mano en vez de `api<T>()`, así que un token vencido no se renueva (con `apiFetch` sí). Mismo patrón que se quitó en AF-01.
+  - ~~`TwoFactorSetupModal`~~ (migrado a `api<T>()` en AF-12) y `SettingsView` usan `fetch` crudo con `BASE_URL` y token a mano en vez de `api<T>()`, así que un token vencido no se renueva (con `apiFetch` sí). Mismo patrón que se quitó en AF-01.
+  - `TwoFactorSetupModal` tiene 2 errores de lint previos en su `useEffect` (setState síncrono y `fetchSetupData` usado antes de declararse). No rompe en runtime; arreglarlo cambia cómo abre el modal, coordinar con el otro front.
   - `SettingsView` tiene `useState<any>` y los textos están escritos dentro del componente (`isEs ? ... : ...`) en vez de `content/{es,en}/admin.ts`.
   - `SettingsView` sigue viviendo en `PlaceholderViews.tsx` aunque ya no es placeholder.
   - Solo se llega a Settings desde las pestañas de `adminDashboard/page.tsx`. El link del sidebar de `layout.tsx` apunta a `/adminDashboard/settings`, que no tiene ruta (404). Pasa igual con deals/lenders/borrowers/verifications/revenue/etc.: es previo a esta revisión.
@@ -53,8 +54,9 @@ Revisado el historial de `andresgaraagr` (rama `anesFrontend`, ya mergeada en `d
 ## C. Lenders (back ya listo)
 - [x] **AF-10** Detalle de lender (drawer/página) → `GET /api/admin/lenders/:id` (empresas, conteo de deudores y contratos activos).
 - [x] **AF-11** Empresas del lender: crear / editar (incluye `status`, `isOpenToDeals`) / borrar → `POST|PATCH|DELETE /api/admin/lenders/:id/companies[/:companyId]`; manejar `EIN_TAKEN`, `LENDER_HAS_ACTIVE_CONTRACTS`. dep: AF-10.
-- [ ] **AF-12** Banner "activa 2FA para operar" cuando una escritura devuelve `403 TWO_FACTOR_REQUIRED`, con flujo `2fa/setup` → `2fa/verify` → mostrar recovery codes (una vez). Sin esto ninguna acción de B/C/D funciona para un Admin sin 2FA.
+- [x] **AF-12** Banner "activa 2FA para operar" cuando una escritura devuelve `403 TWO_FACTOR_REQUIRED`, con flujo `2fa/setup` → `2fa/verify` → mostrar recovery codes (una vez). Sin esto ninguna acción de B/C/D funciona para un Admin sin 2FA.
   - **Nota 2026-10-22:** el flujo setup → verify → recovery codes **ya existe** (`TwoFactorSetupModal`, ver revisión arriba) y un Admin puede activar 2FA desde Settings. Falta solo el banner: cuando `UsersTable` / `add-user` reciben `TWO_FACTOR_REQUIRED` (hoy solo muestran un mensaje, AF-05..08), abrir `TwoFactorSetupModal` y reintentar. De paso, migrar el modal a `api<T>()`.
+  - **Hecho 2026-10-23:** `TwoFactorRequiredBanner` (aviso + botón "Activar 2FA" que abre `TwoFactorSetupModal`) en `UsersTable` (lista y modal de edición), `add-user` y la ficha del lender (`LenderDetailDrawer`). El back lee el 2FA de la BD en cada escritura: al activarlo basta con repetir la acción (sin reintento automático). El modal ahora usa `api<T>()` y `z-[200]` para quedar encima del drawer.
 - [ ] **AF-13** Lenders: búsqueda y paginación (`?page&pageSize&search`; el back ya las soporta).
 
 ## D. Contratos / pagos (back ya listo)
