@@ -37,6 +37,8 @@ export interface SafeUser {
   email: string;
   phone: string | null;
   role: UserRole;
+  /** Solo en GET /api/users: roles activos; un usuario dual trae LENDER y BORROWER. */
+  roles?: UserRole[];
   isActive: boolean;
   isTwoFactorEnabled: boolean;
   mustChangePassword: boolean;

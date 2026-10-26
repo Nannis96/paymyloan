@@ -119,7 +119,8 @@ export function UsersTable({ role }: { role?: UserRole }) {
     fetchUsers();
   }, [u.errorAuth, u.errorNetwork]);
 
-  const visible = roleFilter ? users.filter((x) => x.role === roleFilter) : users;
+  // `roles` incluye el rol adquirido de un usuario dual (lender que tambien es borrower o al reves).
+  const visible = roleFilter ? users.filter((x) => (x.roles ?? [x.role]).includes(roleFilter)) : users;
 
   return (
     <div>
@@ -184,7 +185,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
                   <td className="px-5 py-4 font-mono">{user.phone || u.na}</td>
                   <td className="px-5 py-4">
                     <span className="inline-flex rounded-[4px] border border-rule bg-surface-2 px-2.5 py-1 text-xs font-bold text-ink">
-                      {u.roles[user.role]}
+                      {(user.roles ?? [user.role]).map((r) => u.roles[r]).join(" + ")}
                     </span>
                   </td>
                   <td className="px-5 py-4">
