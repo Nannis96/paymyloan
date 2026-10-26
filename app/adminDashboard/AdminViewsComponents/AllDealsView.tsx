@@ -7,6 +7,10 @@ import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, toList } from "@/app/lib/apiFetch";
 import type { Contract } from "@/app/types/api";
 
+// nextPaymentDueDate es el pago pendiente mas viejo: mismo criterio que daysPastDue de /admin/overview.
+const daysPastDue = (due: string | null) =>
+  due ? Math.max(0, Math.floor((Date.now() - new Date(due).getTime()) / 86_400_000)) : 0;
+
 export function AllDealsView() {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
@@ -68,7 +72,7 @@ export function AllDealsView() {
                   <td className="px-4 py-3">{formatShortCurrency(Number(deal.currentTerms?.principalAmount) || 0)}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-block rounded-lg px-2 py-0.5 text-[10px] font-bold ${deal.status === 'ACTIVE' ? 'bg-success-soft text-success' : deal.status === 'DELINQUENT' ? 'bg-crit-soft text-crit' : 'bg-surface-2 border border-rule-strong text-ink-3'}`}>
-                      {deal.status === 'ACTIVE' ? d.tables.pillActive : deal.status === 'DELINQUENT' ? d.tables.pillLate.replace("{n}", "15") : deal.status}
+                      {deal.status === 'ACTIVE' ? d.tables.pillActive : deal.status === 'DELINQUENT' ? d.tables.pillLate.replace("{n}", String(daysPastDue(deal.nextPaymentDueDate))) : deal.status}
                     </span>
                   </td>
                   <td className={`px-4 py-3 ${deal.status === 'DELINQUENT' ? 'font-bold text-crit' : ''}`}>

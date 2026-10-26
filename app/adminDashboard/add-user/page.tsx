@@ -3,10 +3,11 @@
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, ApiError } from "@/app/lib/apiFetch";
 import type { SafeUser } from "@/app/types/api";
+import { TwoFactorRequiredBanner } from "../AdminViewsComponents/TwoFactorRequiredBanner";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import { CheckCircle2 } from "lucide-react";
 
 function AddUserContent() {
@@ -30,6 +31,7 @@ function AddUserContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [need2fa, setNeed2fa] = useState(false);
   const [successData, setSuccessData] = useState<{ email: string; temporaryPassword?: string; emailSent?: boolean } | null>(null);
 
   const handleAddUser = async (e: React.FormEvent) => {
@@ -52,7 +54,7 @@ function AddUserContent() {
       setSuccessData({ email: data.email, temporaryPassword: data.temporaryPassword, emailSent: data.emailSent });
     } catch (err) {
       if (err instanceof ApiError && err.code === "EMAIL_TAKEN") setEmailError(ul.errorEmailTaken);
-      else if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setError(ul.errorTwoFactor);
+      else if (err instanceof ApiError && err.code === "TWO_FACTOR_REQUIRED") setNeed2fa(true);
       else setError(err instanceof Error ? err.message : u.errorNetwork);
     } finally {
       setIsSubmitting(false);
@@ -60,12 +62,12 @@ function AddUserContent() {
   };
 
   return (
-    <div className="min-h-screen bg-bg p-6 lg:p-14">
+    <div className="animate-in fade-in duration-300">
       <div className="mx-auto max-w-[600px]">
         
         {/* Boton de retroceso */}
         <Link 
-           href="/admin/users" 
+           href="/adminDashboard/users" 
            className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {u.back}
@@ -80,6 +82,8 @@ function AddUserContent() {
         {/* Cascaron del Formulario */}
         <div className="rounded-2xl border border-rule bg-surface p-6 shadow-xl sm:p-10">
           
+          {need2fa && <TwoFactorRequiredBanner onEnabled={() => setNeed2fa(false)} />}
+
           {error && (
             <div className="mb-6 rounded-lg border border-red-900/50 bg-red-900/20 px-4 py-3 text-sm text-red-500">
               {error}
@@ -115,7 +119,7 @@ function AddUserContent() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => router.push("/admin/users")}
+                  onClick={() => router.push("/adminDashboard/users")}
                   className="flex-1 rounded-lg bg-accent px-4 py-3 text-sm font-bold text-accent-ink hover:opacity-90"
                 >
                   {u.successViewList}
@@ -202,10 +206,4 @@ function AddUserContent() {
   );
 }
 
-export default function AddUserPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <AddUserContent />
-    </SiteShell>
-  );
-}
+export default AddUserContent;
