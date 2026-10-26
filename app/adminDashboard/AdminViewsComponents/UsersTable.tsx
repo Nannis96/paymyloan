@@ -10,13 +10,14 @@ import { TwoFactorRequiredBanner } from "./TwoFactorRequiredBanner";
 
 const ROLES: UserRole[] = ["ADMIN", "LENDER", "BORROWER", "BOOKKEEPER", "INSURANCE_COMPANY"];
 
-// Tabla de usuarios compartida: /adminDashboard/users (todos) y Borrowers (rol fijo inicial).
+// Tabla de usuarios compartida: /adminDashboard/users (todos, con filtro) y Borrowers (rol fijo, sin filtro).
 export function UsersTable({ role }: { role?: UserRole }) {
   const { t, lang } = useSite();
   const u = t.adminUsersList;
 
   const [users, setUsers] = useState<SafeUser[]>([]);
-  const [roleFilter, setRoleFilter] = useState<UserRole | "">(role ?? "");
+  const [selectedRole, setRoleFilter] = useState<UserRole | "">("");
+  const roleFilter = role ?? selectedRole;
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -122,7 +123,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-3">
+      {!role && <div className="mb-4 flex items-center gap-3">
         <label className="text-xs font-bold text-ink-3">{u.table.role}</label>
         <select
           value={roleFilter}
@@ -134,7 +135,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
             <option key={r} value={r}>{u.roles[r]}</option>
           ))}
         </select>
-      </div>
+      </div>}
 
       {need2fa && !editing && <TwoFactorRequiredBanner onEnabled={() => setNeed2fa(false)} />}
 
