@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { formatCurrency, formatShortCurrency } from "./utils";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api } from "@/app/lib/apiFetch";
 import type { AdminOverview } from "@/app/types/api";
 
-export function OverviewView({ contracts, users, setActiveTab }: { contracts?: unknown[], users?: unknown[], setActiveTab: (t: string) => void }) {
+export function OverviewView() {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
 
@@ -192,7 +193,7 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: u
         <div className="overflow-hidden rounded-[10px] border border-rule bg-surface shadow-sm">
           <div className="flex items-center justify-between border-b border-rule p-4">
             <h3 className="text-[13px] font-bold text-ink">{d.tables.activeDeals}</h3>
-            <span onClick={() => setActiveTab("allDeals")} className="cursor-pointer text-[12px] font-semibold text-accent hover:underline">{d.tables.viewAll}</span>
+            <Link href="/adminDashboard/deals" className="text-[12px] font-semibold text-accent hover:underline">{d.tables.viewAll}</Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -254,7 +255,7 @@ export function OverviewView({ contracts, users, setActiveTab }: { contracts?: u
       <div className="overflow-hidden rounded-[10px] border border-rule bg-surface shadow-sm">
         <div className="flex items-center justify-between border-b border-rule p-4">
           <h3 className="text-[13px] font-bold text-ink">{d.tables.recentSignups}</h3>
-          <span onClick={() => setActiveTab("lenders")} className="cursor-pointer text-[12px] font-semibold text-accent hover:underline">{d.tables.viewAllUsers}</span>
+          <Link href="/adminDashboard/lenders" className="text-[12px] font-semibold text-accent hover:underline">{d.tables.viewAllUsers}</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">

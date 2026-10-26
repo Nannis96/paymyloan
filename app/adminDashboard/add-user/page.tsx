@@ -7,7 +7,7 @@ import { TwoFactorRequiredBanner } from "../AdminViewsComponents/TwoFactorRequir
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { useSite } from "@/app/components/layout/SiteShell";
 import { CheckCircle2 } from "lucide-react";
 
 function AddUserContent() {
@@ -62,12 +62,12 @@ function AddUserContent() {
   };
 
   return (
-    <div className="min-h-screen bg-bg p-6 lg:p-14">
+    <div className="animate-in fade-in duration-300">
       <div className="mx-auto max-w-[600px]">
         
         {/* Boton de retroceso */}
         <Link 
-           href="/admin/users" 
+           href="/adminDashboard/users" 
            className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
           <span>&larr;</span> {u.back}
@@ -119,7 +119,7 @@ function AddUserContent() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => router.push("/admin/users")}
+                  onClick={() => router.push("/adminDashboard/users")}
                   className="flex-1 rounded-lg bg-accent px-4 py-3 text-sm font-bold text-accent-ink hover:opacity-90"
                 >
                   {u.successViewList}
@@ -206,10 +206,4 @@ function AddUserContent() {
   );
 }
 
-export default function AddUserPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <AddUserContent />
-    </SiteShell>
-  );
-}
+export default AddUserContent;
