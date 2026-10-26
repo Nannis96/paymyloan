@@ -1,299 +1,285 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useSite } from "@/app/components/layout/SiteShell";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Building2, Plus, CheckCircle2, ChevronDown } from 'lucide-react';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+interface EntityOption {
+  id: string;
+  name: string;
+  isPrimary?: boolean;
+  status?: string;
+}
+
+// Entidades de ejemplo alineadas con el módulo de Entities
+const DEFAULT_ENTITIES: EntityOption[] = [
+  { id: 'ent-1', name: 'Apex Capital Lending LLC', isPrimary: true, status: 'VERIFIED' },
+  { id: 'ent-2', name: 'Lone Star Funding Group', isPrimary: false, status: 'VERIFIED' },
+  { id: 'ent-3', name: 'Metroplex Investments Inc.', isPrimary: false, status: 'PENDING' },
+];
 
 export default function PreferencesView() {
-  const { lang } = useSite();
-  const isEs = lang === "es";
+  // Estado para la entidad seleccionada
+  const [entities, setEntities] = useState<EntityOption[]>(DEFAULT_ENTITIES);
+  const [selectedEntityId, setSelectedEntityId] = useState<string>(DEFAULT_ENTITIES[0].id);
 
-  // Estados interactivos simulados para las preferencias
-  const [ltv, setLtv] = useState(75);
-  const [selectedStates, setSelectedStates] = useState<string[]>(["TN", "MS", "AR"]);
-  const [notifs, setNotifs] = useState({ matches: true, trusted: true, closing: true });
-  
-  const availableStates = ["TN", "MS", "AR", "AL", "GA", "TX", "FL", "MO", "KY", "OH", "IN", "IL"];
+  // Estados de criterios de préstamo
+  const [maxLtv, setMaxLtv] = useState<number>(75);
+  const [minAmount, setMinAmount] = useState<string>('50,000');
+  const [maxAmount, setMaxAmount] = useState<string>('500,000');
+  const [rateRange, setRateRange] = useState<string>('10% - 12%');
+  const [loanTerms, setLoanTerms] = useState<string>('6 months only');
+  const [experience, setExperience] = useState<string>('No minimum - first deals welcome');
+  const [selectedStates, setSelectedStates] = useState<string[]>([
+    'TN', 'MS', 'AR', 'AL', 'GA', 'TX', 'FL', 'MO', 'KY', 'OH', 'IN', 'IL'
+  ]);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Estados conectados a la API para Prestatarios
-  const [borrowers, setBorrowers] = useState<any[]>([]);
-  const [isLoadingBorrowers, setIsLoadingBorrowers] = useState(true);
+  const activeEntity = entities.find((e) => e.id === selectedEntityId) || entities[0];
 
-  useEffect(() => {
-    async function fetchBorrowers() {
-      try {
-        const token = localStorage.getItem("accessToken") || "";
-        const res = await fetch(`${BASE_URL}/api/lenders/me/borrowers`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const json = await res.json();
-        
-        if (json.success && json.data?.items) {
-          setBorrowers(json.data.items);
-        }
-      } catch (err) {
-        console.error("Error fetching borrowers:", err);
-      } finally {
-        setIsLoadingBorrowers(false);
-      }
-    }
-    fetchBorrowers();
-  }, []);
-
-  const toggleState = (st: string) => {
-    if (selectedStates.includes(st)) {
-      setSelectedStates(selectedStates.filter((s) => s !== st));
-    } else {
-      setSelectedStates([...selectedStates, st]);
-    }
+  const handleStateToggle = (st: string) => {
+    setSelectedStates((prev) =>
+      prev.includes(st) ? prev.filter((s) => s !== st) : [...prev, st]
+    );
   };
 
-  const removeBorrower = async (id: string) => {
-    if (!confirm(isEs ? "¿Seguro que deseas desvincular a este prestatario?" : "Are you sure you want to remove this borrower?")) return;
-    
+  const handleSave = async () => {
+    setIsSaving(true);
     try {
-      const token = localStorage.getItem("accessToken") || "";
-      const res = await fetch(`${BASE_URL}/api/lenders/me/borrowers/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      const json = await res.json();
-      if (json.success) {
-        setBorrowers(borrowers.filter(b => b.id !== id));
-      } else {
-        alert(json.error?.message || (isEs ? "Error al desvincular prestatario" : "Error removing borrower"));
-      }
-    } catch (err) {
-      console.error(err);
-      alert(isEs ? "Error de red" : "Network error");
+      // Payload asociado a la entidad elegida
+      const payload = {
+        lenderCompanyId: selectedEntityId,
+        maxLtv,
+        minAmount: Number(minAmount.replace(/[^0-9]/g, '')),
+        maxAmount: Number(maxAmount.replace(/[^0-9]/g, '')),
+        rateRange,
+        loanTerms,
+        borrowerExperience: experience,
+        states: selectedStates,
+      };
+
+      console.log('Saving preferences for entity:', payload);
+      // await apiFetch('/api/lenders/me/preferences', { method: 'POST', body: JSON.stringify(payload) });
+    } finally {
+      setIsSaving(false);
     }
   };
-
-  const getInitials = (name: string) => {
-    if (!name) return "??";
-    return name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
-  };
-
-  const inputClass = "w-full rounded-[6px] border border-[#e6ebf1] bg-white px-[12px] py-[9px] font-sans text-[14px] text-[#0a2540] outline-none transition-colors focus:border-[#635bff] focus:shadow-[0_0_0_3px_rgba(99,91,255,0.1)]";
-  const labelClass = "mb-[5px] block text-[12px] font-[600] text-[#425466]";
-  const hintClass = "mt-[4px] text-[11px] text-[#aab7c4]";
 
   return (
-    <div className="animate-in fade-in duration-300 max-w-[720px] flex flex-col min-h-full relative pb-[80px]">
-      
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Encabezado */}
-      <div className="mb-[4px] text-[22px] font-[800] tracking-[-0.3px] text-[#0a2540]">
-        {isEs ? "Preferencias de prestamo" : "Lending preferences"}
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          Lending preferences
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Set your default deal criteria. Trusted borrowers can get custom terms beyond your defaults.
+        </p>
       </div>
-      <div className="mb-[28px] text-[13px] text-[#8898aa]">
-        {isEs 
-          ? "Configura tus criterios predeterminados. Prestatarios de confianza pueden obtener terminos personalizados." 
-          : "Set your default deal criteria. Trusted borrowers can get custom terms beyond your defaults."}
-      </div>
 
-      {/* Criterios Predeterminados */}
-      <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
-        <div className="border-b border-[#e6ebf1] p-[18px_24px]">
-          <div className="text-[14px] font-[700] text-[#0a2540]">
-            {isEs ? "Criterios predeterminados de tratos" : "Default deal criteria"}
-          </div>
-          <div className="mt-[2px] text-[12px] text-[#8898aa]">
-            {isEs ? "Aplicado a todos los prestatarios nuevos con los que no has trabajado." : "Applied to all new borrowers you haven't worked with before."}
-          </div>
-        </div>
-        
-        <div className="p-[20px_24px]">
-          <div className="mb-[16px]">
-            <label className={labelClass}>Max LTV (loan-to-value)</label>
-            <div className="flex items-center gap-[12px]">
-              <input 
-                type="range" 
-                min="50" max="90" step="5" 
-                value={ltv} 
-                onChange={(e) => setLtv(Number(e.target.value))}
-                className="h-[4px] w-full cursor-pointer appearance-none rounded-[2px] bg-[#e6ebf1] accent-[#635bff]"
-              />
-              <span className="min-w-[40px] text-right text-[14px] font-[700] text-[#635bff]">{ltv}%</span>
-            </div>
-            <div className={hintClass}>
-              {isEs ? "Prestatarios por encima de este umbral veran una advertencia y deberan cubrir la diferencia al cierre." : "Borrowers over this threshold will see a warning and cannot submit without bringing the difference to closing."}
-            </div>
-          </div>
+      {/* --- BLOQUE AJUSTADO: SELECT ENTITY (Recuadros marcados en rojo) --- */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
+        <label className="text-sm font-semibold text-slate-900 dark:text-slate-100 min-w-[100px]">
+          Select Entity
+        </label>
 
-          <div className="mb-[16px] grid grid-cols-2 gap-[16px]">
-            <div>
-              <label className={labelClass}>{isEs ? "Monto minimo de prestamo" : "Minimum loan amount"}</label>
-              <input type="text" placeholder="$50,000" className={inputClass} />
+        <div className="flex flex-wrap items-center gap-3 flex-1">
+          {/* Recuadro 1: Dropdown de Entidades */}
+          <div className="relative min-w-[260px] flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <Building2 className="w-4 h-4" />
             </div>
-            <div>
-              <label className={labelClass}>{isEs ? "Monto maximo de prestamo" : "Maximum loan amount"}</label>
-              <input type="text" placeholder="$500,000" className={inputClass} />
-            </div>
-          </div>
-
-          <div className="mb-[16px] grid grid-cols-2 gap-[16px]">
-            <div>
-              <label className={labelClass}>{isEs ? "Rango de tasa preferida" : "Preferred interest rate range"}</label>
-              <select className={`${inputClass} cursor-pointer`}>
-                <option>10% - 12%</option>
-                <option>12% - 14%</option>
-                <option>14% - 16%</option>
-                <option>{isEs ? "Flexible - yo decido por trato" : "Flexible - I'll set per deal"}</option>
-              </select>
-            </div>
-            <div>
-              <label className={labelClass}>{isEs ? "Plazos preferidos" : "Preferred loan terms"}</label>
-              <select className={`${inputClass} cursor-pointer`}>
-                <option>{isEs ? "Solo 6 meses" : "6 months only"}</option>
-                <option>{isEs ? "6 - 12 meses" : "6 - 12 months"}</option>
-                <option>{isEs ? "Hasta 18 meses" : "Up to 18 months"}</option>
-                <option>{isEs ? "Cualquier plazo" : "Any term"}</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="mb-[16px]">
-            <label className={labelClass}>{isEs ? "Experiencia minima del prestatario" : "Minimum borrower experience"}</label>
-            <select className={`${inputClass} cursor-pointer`}>
-              <option>{isEs ? "Sin minimo - primeros tratos bienvenidos" : "No minimum - first deals welcome"}</option>
-              <option>{isEs ? "1+ tratos cerrados" : "1+ deals closed"}</option>
-              <option>{isEs ? "3+ tratos cerrados" : "3+ deals closed"}</option>
-              <option>{isEs ? "10+ tratos cerrados" : "10+ deals closed"}</option>
+            <select
+              value={selectedEntityId}
+              onChange={(e) => setSelectedEntityId(e.target.value)}
+              className="w-full pl-9 pr-10 py-2.5 text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 appearance-none shadow-xs transition-all"
+            >
+              {entities.map((ent) => (
+                <option key={ent.id} value={ent.id}>
+                  {ent.name} {ent.isPrimary ? '(Primary)' : ''}
+                </option>
+              ))}
             </select>
-            <div className={hintClass}>
-              {isEs ? "Tratos de prestatarios por debajo de este umbral no apareceran en tu feed." : "Deals from borrowers below this threshold won't appear in your feed."}
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+              <ChevronDown className="w-4 h-4" />
+            </div>
+          </div>
+
+          {/* Recuadro 2: Acción rápida (Gestionar / Añadir Entidad) */}
+          <Link
+            href="/lenderDashboard/entities"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg shadow-xs transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Manage Entities</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Tarjeta de Criterios Predeterminados */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 space-y-6 shadow-xs">
+        <div>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+            Default deal criteria
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Applied to all new borrowers you haven't worked with before under{' '}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">
+              {activeEntity.name}
+            </span>.
+          </p>
+        </div>
+
+        {/* Max LTV Slider */}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center text-sm font-medium">
+            <span className="text-slate-700 dark:text-slate-300">Max LTV (loan-to-value)</span>
+            <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-base">{maxLtv}%</span>
+          </div>
+          <input
+            type="range"
+            min={50}
+            max={90}
+            step={1}
+            value={maxLtv}
+            onChange={(e) => setMaxLtv(Number(e.target.value))}
+            className="w-full accent-indigo-600 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
+          />
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            Borrowers over this threshold will see a warning and cannot submit without bringing the difference to closing.
+          </p>
+        </div>
+
+        {/* Min & Max Loan Amounts */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Minimum loan amount
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+              <input
+                type="text"
+                value={minAmount}
+                onChange={(e) => setMinAmount(e.target.value)}
+                className="w-full pl-7 pr-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              />
             </div>
           </div>
 
           <div>
-            <label className={labelClass}>{isEs ? "Estados en los que presto" : "States I lend in"}</label>
-            <div className="mt-[6px] grid grid-cols-6 gap-[6px] sm:grid-cols-8 md:grid-cols-12">
-              {availableStates.map(st => (
-                <div 
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Maximum loan amount
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+              <input
+                type="text"
+                value={maxAmount}
+                onChange={(e) => setMaxAmount(e.target.value)}
+                className="w-full pl-7 pr-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Rate Range & Terms */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Preferred interest rate range
+            </label>
+            <select
+              value={rateRange}
+              onChange={(e) => setRateRange(e.target.value)}
+              className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            >
+              <option value="8% - 10%">8% - 10%</option>
+              <option value="10% - 12%">10% - 12%</option>
+              <option value="12% - 14%">12% - 14%</option>
+              <option value="14%+">14%+</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Preferred loan terms
+            </label>
+            <select
+              value={loanTerms}
+              onChange={(e) => setLoanTerms(e.target.value)}
+              className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            >
+              <option value="6 months only">6 months only</option>
+              <option value="12 months">12 months</option>
+              <option value="18 - 24 months">18 - 24 months</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Minimum borrower experience */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            Minimum borrower experience
+          </label>
+          <select
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+            className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="No minimum - first deals welcome">No minimum - first deals welcome</option>
+            <option value="1-3 completed flips">1-3 completed flips</option>
+            <option value="4+ completed projects">4+ completed projects</option>
+          </select>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            Deals from borrowers below this threshold won't appear in your feed.
+          </p>
+        </div>
+
+        {/* States multi-select */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+            States I lend in
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {['TN', 'MS', 'AR', 'AL', 'GA', 'TX', 'FL', 'MO', 'KY', 'OH', 'IN', 'IL'].map((st) => {
+              const active = selectedStates.includes(st);
+              return (
+                <button
+                  type="button"
                   key={st}
-                  onClick={() => toggleState(st)}
-                  className={`cursor-pointer rounded-[5px] border-[1.5px] p-[5px] text-center text-[11px] font-[600] transition-all hover:border-[#635bff] hover:text-[#635bff] ${selectedStates.includes(st) ? "border-[#635bff] bg-[#f0efff] text-[#635bff]" : "border-[#e6ebf1] text-[#425466]"}`}
+                  onClick={() => handleStateToggle(st)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                    active
+                      ? 'bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                  }`}
                 >
                   {st}
-                </div>
-              ))}
-            </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Notificaciones */}
-      <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
-        <div className="border-b border-[#e6ebf1] p-[18px_24px]">
-          <div className="text-[14px] font-[700] text-[#0a2540]">
-            {isEs ? "Notificaciones de tratos" : "Deal notifications"}
-          </div>
-          <div className="mt-[2px] text-[12px] text-[#8898aa]">
-            {isEs ? "Cuando alertarte sobre nuevos tratos en la plataforma." : "When to alert you about new deals on the platform."}
-          </div>
-        </div>
-        <div className="p-[8px_24px_20px]">
-          
-          <div className="flex items-center justify-between border-b border-[#f0f4f8] py-[12px]">
-            <div>
-              <div className="text-[13px] font-[600] text-[#0a2540]">{isEs ? "Nuevo trato coincide con criterios" : "New deal matches my criteria"}</div>
-              <div className="mt-[2px] text-[11px] text-[#8898aa]">{isEs ? "Recibe una alerta cuando un trato encaja en tus preferencias." : "Get notified when a deal hits the platform that fits your preferences."}</div>
-            </div>
-            <div onClick={() => setNotifs({...notifs, matches: !notifs.matches})} className={`relative h-[20px] w-[36px] shrink-0 cursor-pointer rounded-[10px] transition-colors ${notifs.matches ? 'bg-[#635bff]' : 'bg-[#e6ebf1]'}`}>
-              <div className={`absolute top-[3px] h-[14px] w-[14px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.15)] transition-all ${notifs.matches ? 'left-[19px]' : 'left-[3px]'}`} />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between border-b border-[#f0f4f8] py-[12px]">
-            <div>
-              <div className="text-[13px] font-[600] text-[#0a2540]">{isEs ? "Prestatario de confianza publica" : "Trusted borrower posts a deal"}</div>
-              <div className="mt-[2px] text-[11px] text-[#8898aa]">{isEs ? "Notificarme siempre que alguien en mi lista publique." : "Always notify me when someone on my trusted list posts."}</div>
-            </div>
-            <div onClick={() => setNotifs({...notifs, trusted: !notifs.trusted})} className={`relative h-[20px] w-[36px] shrink-0 cursor-pointer rounded-[10px] transition-colors ${notifs.trusted ? 'bg-[#635bff]' : 'bg-[#e6ebf1]'}`}>
-              <div className={`absolute top-[3px] h-[14px] w-[14px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.15)] transition-all ${notifs.trusted ? 'left-[19px]' : 'left-[3px]'}`} />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between py-[12px]">
-            <div>
-              <div className="text-[13px] font-[600] text-[#0a2540]">{isEs ? "Trato con oferta esta cerrando" : "Deal I offered on is closing"}</div>
-              <div className="mt-[2px] text-[11px] text-[#8898aa]">{isEs ? "Recordatorio cuando un trato en el que oferte se acerca al cierre." : "Get reminded when a deal I made an offer on is approaching close."}</div>
-            </div>
-            <div onClick={() => setNotifs({...notifs, closing: !notifs.closing})} className={`relative h-[20px] w-[36px] shrink-0 cursor-pointer rounded-[10px] transition-colors ${notifs.closing ? 'bg-[#635bff]' : 'bg-[#e6ebf1]'}`}>
-              <div className={`absolute top-[3px] h-[14px] w-[14px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.15)] transition-all ${notifs.closing ? 'left-[19px]' : 'left-[3px]'}`} />
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Prestatarios de Confianza */}
-      <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
-        <div className="border-b border-[#e6ebf1] p-[18px_24px]">
-          <div className="text-[14px] font-[700] text-[#0a2540]">
-            {isEs ? "Prestatarios de confianza" : "Trusted borrowers"}
-          </div>
-          <div className="mt-[2px] text-[12px] text-[#8898aa]">
-            {isEs ? "Estos prestatarios obtienen flexibilidad basada en tu relacion. Sobrescribe tus valores predeterminados." : "These borrowers get custom LTV and term flexibility based on your relationship. Overrides your default criteria."}
-          </div>
-        </div>
-        <div className="p-[20px_24px]">
-          
-          {isLoadingBorrowers ? (
-            <div className="py-4 text-center text-sm text-[#8898aa]">Cargando prestatarios...</div>
-          ) : borrowers.length === 0 ? (
-            <div className="py-4 text-center text-sm text-[#8898aa]">
-              {isEs ? "No tienes prestatarios vinculados aún." : "No linked borrowers yet."}
-            </div>
-          ) : (
-            <div className="mt-[4px]">
-              {borrowers.map((b) => (
-                <div key={b.id} className="flex items-center gap-[10px] border-b border-[#f0f4f8] py-[10px] last:border-0">
-                  <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-[#635bff] text-[11px] font-[700] text-white">
-                    {getInitials(b.user?.name)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-[13px] font-[600] text-[#0a2540]">{b.user?.name || "Prestatario"}</div>
-                    <div className="text-[11px] text-[#8898aa]">
-                      {b.user?.email || "Sin correo"} • {isEs ? "Vinculado a tus empresas" : "Linked to your companies"}
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => removeBorrower(b.id)}
-                    title={isEs ? "Desvincular" : "Remove"}
-                    className="cursor-pointer border-none bg-transparent px-[6px] py-[2px] text-[16px] font-bold text-[#aab7c4] hover:text-[#dc2626]"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <button 
-            onClick={() => alert(isEs ? "Buscar y agregar prestatario verificado (Próximamente)" : "Search and add a verified borrower (Coming soon)")}
-            className="mt-[12px] flex w-full cursor-pointer items-center justify-center gap-[6px] rounded-[6px] border-[1.5px] border-dashed border-[#c7c4ff] bg-white p-[8px_14px] font-sans text-[13px] font-[600] text-[#635bff] transition-colors hover:bg-[#f0efff]"
-          >
-            + {isEs ? "Agregar prestatario de confianza" : "Add trusted borrower"}
-          </button>
-        </div>
-      </div>
-
-      {/* Barra de Guardado (Sticky Bottom) */}
-      <div className="fixed bottom-0 left-[200px] right-0 z-20 flex justify-end gap-[10px] border-t border-[#e6ebf1] bg-white p-[16px_32px]">
-        <button className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white p-[9px_18px] font-sans text-[13px] font-[600] text-[#425466] hover:bg-[#f6f9fc]">
-          {isEs ? "Cancelar" : "Cancel"}
-        </button>
-        <button 
-          onClick={() => alert(isEs ? "Preferencias guardadas (Simulado)" : "Preferences saved (Mocked)")}
-          className="cursor-pointer rounded-[6px] border-none bg-[#635bff] p-[9px_24px] font-sans text-[13px] font-[700] text-white hover:bg-[#524ddb]"
+      {/* Botones inferiores */}
+      <div className="flex justify-end items-center gap-3 pt-2">
+        <button
+          type="button"
+          className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
         >
-          {isEs ? "Guardar preferencias" : "Save preferences"}
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all disabled:opacity-50"
+        >
+          {isSaving ? 'Saving...' : 'Save preferences'}
         </button>
       </div>
-
     </div>
   );
 }
