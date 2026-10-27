@@ -91,67 +91,87 @@ export default function BorrowerDealsListView() {
     return new Date(dateStr).toLocaleDateString(isEs ? "es-MX" : "en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
   };
 
-  const renderProgressBar = (type: "request" | "contract", status: string) => {
+  const renderProgressBar = (type: "request" | "contract", status: string, quotesCount: number = 0) => {
     let step = 1;
+    const isAborted = status === "WITHDRAWN" || status === "CANCELLED";
+
     if (type === "request") {
-      if (status === "PUBLISHED") step = 2;
-      if (status === "MATCHED") step = 3;
+      if (status === "DRAFT") step = 1;
+      if (status === "PUBLISHED") step = quotesCount > 0 ? 3 : 2;
+      if (status === "WITHDRAWN") step = quotesCount > 0 ? 3 : 2;
+      if (status === "MATCHED") step = 4;
     } else {
-      if (status === "DRAFT") step = 3;
-      if (status === "PENDING_ACCEPTANCE") step = 4;
+      if (status === "DRAFT" || status === "PENDING_ACCEPTANCE") step = 4;
+      if (status === "CANCELLED") step = 4; 
       if (status === "ACTIVE" || status === "DELINQUENT") step = 5;
       if (status === "PAID_OFF") step = 6;
     }
+
     const Circle = ({ sNum, label }: { sNum: number; label: string }) => {
-      const isPast = step > sNum;
-      const isActive = step === sNum;
+      const isPast = step > sNum && !isAborted;
+      const isActive = step === sNum && !isAborted;
+      const isError = isAborted && step === sNum;
+
+      if (isError) {
+        return (
+          <div className="flex flex-col items-center gap-[3px] relative z-10 shrink-0">
+            <div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-crit bg-crit text-[9px] font-[700] text-white">X</div>
+            <div className="absolute top-[24px] whitespace-nowrap text-[10px] font-[700] text-crit">{isEs ? "Retirado" : "Withdrawn"}</div>
+          </div>
+        );
+      }
+      
       if (isPast) {
         return (
-          <div className="flex flex-col items-center gap-[3px]">
+          <div className="flex flex-col items-center gap-[3px] relative z-10 shrink-0">
             <div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-success bg-success text-[9px] font-[700] text-white">✓</div>
-            <div className="whitespace-nowrap text-[9px] text-success">{label}</div>
+            <div className="absolute top-[24px] whitespace-nowrap text-[10px] text-success">{label}</div>
           </div>
         );
       }
       if (isActive) {
         return (
-          <div className="flex flex-col items-center gap-[3px]">
+          <div className="flex flex-col items-center gap-[3px] relative z-10 shrink-0">
             <div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-accent bg-accent text-[9px] font-[700] text-white shadow-[0_0_0_3px_rgba(99,91,255,0.15)]">{sNum}</div>
-            <div className="whitespace-nowrap text-[9px] font-[700] text-accent">{label}</div>
+            <div className="absolute top-[24px] whitespace-nowrap text-[10px] font-[700] text-accent">{label}</div>
           </div>
         );
       }
       return (
-        <div className="flex flex-col items-center gap-[3px]">
+        <div className="flex flex-col items-center gap-[3px] relative z-10 shrink-0">
           <div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-[2px] border-rule bg-surface text-[9px] font-[700] text-ink-3">{sNum}</div>
-          <div className="whitespace-nowrap text-[9px] text-ink-3">{label}</div>
+          <div className="absolute top-[24px] whitespace-nowrap text-[10px] text-ink-3">{label}</div>
         </div>
       );
     };
+
     const Line = ({ sNum }: { sNum: number }) => (
-      <div className={`h-[2px] min-w-[12px] flex-1 ${step > sNum ? "bg-success" : "bg-rule"}`}></div>
+      <div className={`h-[2px] flex-1 mx-2 ${step > sNum && !isAborted ? "bg-success" : "bg-rule"}`}></div>
     );
+
     return (
-      <div className="flex items-center gap-0">
-        <Circle sNum={1} label="Posted" />
+      <div className="flex w-full items-center justify-between pb-[24px] pt-[8px] px-[12px] mt-[12px]">
+        <Circle sNum={1} label={isEs ? "Borrador" : "Draft"} />
         <Line sNum={1} />
-        <Circle sNum={2} label="Offer" />
+        <Circle sNum={2} label={isEs ? "Publicado" : "Listed"} />
         <Line sNum={2} />
-        <Circle sNum={3} label="Accepted" />
+        <Circle sNum={3} label={isEs ? "Ofertas" : "Offers"} />
         <Line sNum={3} />
-        <Circle sNum={4} label="Closing" />
+        <Circle sNum={4} label={isEs ? "Aceptado" : "Accepted"} />
         <Line sNum={4} />
-        <Circle sNum={5} label="Funded" />
+        <Circle sNum={5} label={isEs ? "Fondeado" : "Funded"} />
+        <Line sNum={5} />
+        <Circle sNum={6} label={isEs ? "Cerrado" : "Paid/Closed"} />
       </div>
     );
   };
 
   return (
-    <div className="animate-in fade-in duration-300 max-w-[820px]">
+    <div className="animate-in fade-in duration-300 w-full">
         <CreateDealBanner />
 
       <div className="mb-[24px]">
-        <h1 className="text-[28px] font-[900] text-ink">{isEs ? "Todos mis tratos" : "All my deals"}</h1>
+        <h1 className="text-[28px] font-[900] text-ink">{isEs ? "Analizador de Tratos" : "Deal analyser"}</h1>
         <p className="mt-[4px] text-[14px] text-ink-3">{isEs ? "Solicitudes en busqueda de fondeo y contratos en curso." : "Requests seeking funding and active contracts."}</p>
       </div>
 
@@ -183,7 +203,7 @@ export default function BorrowerDealsListView() {
                   <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">LTV</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{req.property?.afterRepairValue ? Math.round((req.totalLoanAmountRequested / req.property.afterRepairValue) * 100) : 0}%</div></div>
                 </div>
 
-                {renderProgressBar("request", req.status)}
+                {renderProgressBar("request", req.status, req.quotesCount || req._count?.quotes || req.quotes?.length || 0)}
 
                 <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
                   <Link href={`/borrowerDashboard/deals/${req.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">

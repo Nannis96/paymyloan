@@ -1,6 +1,49 @@
 import type { borrower as Es } from "../es/borrower";
 
 export const borrower: typeof Es = {
+  dashboardBorrower: {
+    title: "Borrower Dashboard",
+    subtitle: "Overview of your loans and deals.",
+    metrics: { totalOwed: "Total Owed", nextDue: "Next Due", properties: "Properties", pmlRating: "PML Rating" },
+    tabs: { needsFunding: "Needs Funding", approved: "Approved", funded: "Funded", completed: "Completed", paidOff: "Paid Off" },
+    summaryCards: {
+      entity: {
+        title: "Entity Summary",
+        name: "Entity Name",
+        type: "Entity Type",
+        ein: "EIN",
+        state: "State of Formation",
+        unverified: "Unverified entity"
+      },
+      businessScore: {
+        title: "Business Score",
+        deals: "Deals closed",
+        onTime: "On-time payments",
+        volume: "Total borrowed"
+      },
+      creditScore: {
+        title: "Credit Score",
+        score: "Score",
+        status: "Status",
+        pending: "Pending"
+      }
+    },
+    widgets: {
+      education: {
+        title: "Education and Training",
+        sub: "Learn best practices and strategies."
+      },
+      refi: {
+        title: "Ready to refinance?",
+        sub: "Get a quote in minutes."
+      },
+      insurance: {
+        title: "Need insurance?",
+        sub: "Get an instant quote."
+      }
+    }
+  },
+
   feeAgreement: {
     docType: "Borrower Fee Agreement",
     title: "Borrower Fee Agreement",
