@@ -160,6 +160,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               <span className="ml-auto rounded-[10px] bg-[#635bff] px-[7px] py-[1px] text-[10px] font-[700] text-white">{offersCount}</span>
             )}
           </Link>
+          <Link 
+            href="/lenderDashboard/contacts" 
+            className={`${navItemBase} ${pathname.includes("contacts") ? navItemActive : ""}`}
+          >
+            {sb.contacts || (lang === "es" ? "Contactos" : "Contacts")}
+          </Link>
           <Link href="/lenderDashboard/messages" className={`${navItemBase} ${pathname.includes("messages") ? navItemActive : ""}`}>
             {t.messaging?.title || "Mensajes"}
             {unreadMsgs > 0 && (
@@ -185,7 +191,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <Link href="/lenderDashboard/entities" className={`${navItemBase} ${pathname.includes("entities") ? navItemActive : ""}`}>
             {sb.entities}
           </Link>
-
+            <Link 
+            href="/affiliate-dashboard" 
+            className={`${navItemBase} ${pathname.includes("affiliate") ? navItemActive : ""}`}
+          >
+            {sb.affiliates || (lang === "es" ? "Afiliados" : "Affiliates")}
+          </Link>
           {/* BOTON DE LOGOUT */}
           <div className="mt-4 md:mt-auto border-t border-[#e6ebf1] pt-4 md:pt-5 px-4 md:px-[20px]">
             <LogoutButton
