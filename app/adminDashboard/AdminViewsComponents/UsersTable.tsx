@@ -18,6 +18,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
   const [users, setUsers] = useState<SafeUser[]>([]);
   const [selectedRole, setRoleFilter] = useState<UserRole | "">("");
   const roleFilter = role ?? selectedRole;
+  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -120,10 +121,23 @@ export function UsersTable({ role }: { role?: UserRole }) {
   }, [u.errorAuth, u.errorNetwork]);
 
   // `roles` incluye el rol adquirido de un usuario dual (lender que tambien es borrower o al reves).
-  const visible = roleFilter ? users.filter((x) => (x.roles ?? [x.role]).includes(roleFilter)) : users;
+  const q = search.trim().toLowerCase();
+  const visible = users.filter(
+    (x) =>
+      (!roleFilter || (x.roles ?? [x.role]).includes(roleFilter)) &&
+      (!q || [x.name, x.email, x.phone].some((f) => f?.toLowerCase().includes(q)))
+  );
 
   return (
     <div>
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder={u.searchPlaceholder}
+        aria-label={u.searchPlaceholder}
+        className="mb-4 w-full rounded-lg border border-rule bg-surface px-3 py-2 text-[13px] text-ink outline-none focus:border-accent sm:max-w-[320px]"
+      />
       {!role && <div className="mb-4 flex items-center gap-3">
         <label className="text-xs font-bold text-ink-3">{u.table.role}</label>
         <select
