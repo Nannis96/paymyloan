@@ -10,13 +10,15 @@ import { TwoFactorRequiredBanner } from "./TwoFactorRequiredBanner";
 
 const ROLES: UserRole[] = ["ADMIN", "LENDER", "BORROWER", "BOOKKEEPER", "INSURANCE_COMPANY"];
 
-// Tabla de usuarios compartida: /adminDashboard/users (todos) y Borrowers (rol fijo inicial).
+// Tabla de usuarios compartida: /adminDashboard/users (todos, con filtro) y Borrowers (rol fijo, sin filtro).
 export function UsersTable({ role }: { role?: UserRole }) {
   const { t, lang } = useSite();
   const u = t.adminUsersList;
 
   const [users, setUsers] = useState<SafeUser[]>([]);
-  const [roleFilter, setRoleFilter] = useState<UserRole | "">(role ?? "");
+  const [selectedRole, setRoleFilter] = useState<UserRole | "">("");
+  const roleFilter = role ?? selectedRole;
+  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -118,11 +120,25 @@ export function UsersTable({ role }: { role?: UserRole }) {
     fetchUsers();
   }, [u.errorAuth, u.errorNetwork]);
 
-  const visible = roleFilter ? users.filter((x) => x.role === roleFilter) : users;
+  // `roles` incluye el rol adquirido de un usuario dual (lender que tambien es borrower o al reves).
+  const q = search.trim().toLowerCase();
+  const visible = users.filter(
+    (x) =>
+      (!roleFilter || (x.roles ?? [x.role]).includes(roleFilter)) &&
+      (!q || [x.name, x.email, x.phone].some((f) => f?.toLowerCase().includes(q)))
+  );
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-3">
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder={u.searchPlaceholder}
+        aria-label={u.searchPlaceholder}
+        className="mb-4 w-full rounded-lg border border-rule bg-surface px-3 py-2 text-[13px] text-ink outline-none focus:border-accent sm:max-w-[320px]"
+      />
+      {!role && <div className="mb-4 flex items-center gap-3">
         <label className="text-xs font-bold text-ink-3">{u.table.role}</label>
         <select
           value={roleFilter}
@@ -134,7 +150,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
             <option key={r} value={r}>{u.roles[r]}</option>
           ))}
         </select>
-      </div>
+      </div>}
 
       {need2fa && !editing && <TwoFactorRequiredBanner onEnabled={() => setNeed2fa(false)} />}
 
@@ -183,7 +199,7 @@ export function UsersTable({ role }: { role?: UserRole }) {
                   <td className="px-5 py-4 font-mono">{user.phone || u.na}</td>
                   <td className="px-5 py-4">
                     <span className="inline-flex rounded-[4px] border border-rule bg-surface-2 px-2.5 py-1 text-xs font-bold text-ink">
-                      {u.roles[user.role]}
+                      {(user.roles ?? [user.role]).map((r) => u.roles[r]).join(" + ")}
                     </span>
                   </td>
                   <td className="px-5 py-4">
