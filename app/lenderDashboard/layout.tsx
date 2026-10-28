@@ -191,7 +191,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <Link href="/lenderDashboard/entities" className={`${navItemBase} ${pathname.includes("entities") ? navItemActive : ""}`}>
             {sb.entities}
           </Link>
-          <Link 
+            <Link 
             href="/affiliate-dashboard" 
             className={`${navItemBase} ${pathname.includes("affiliate") ? navItemActive : ""}`}
           >

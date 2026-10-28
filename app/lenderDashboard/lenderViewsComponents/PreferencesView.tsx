@@ -1,29 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Building2, Plus, CheckCircle2, ChevronDown } from 'lucide-react';
+import { Building2, Plus, ChevronDown } from 'lucide-react';
 
 interface EntityOption {
   id: string;
   name: string;
   isPrimary?: boolean;
-  status?: string;
 }
 
-// Entidades de ejemplo alineadas con el módulo de Entities
 const DEFAULT_ENTITIES: EntityOption[] = [
-  { id: 'ent-1', name: 'Apex Capital Lending LLC', isPrimary: true, status: 'VERIFIED' },
-  { id: 'ent-2', name: 'Lone Star Funding Group', isPrimary: false, status: 'VERIFIED' },
-  { id: 'ent-3', name: 'Metroplex Investments Inc.', isPrimary: false, status: 'PENDING' },
+  { id: 'ent-1', name: 'Apex Capital Lending LLC', isPrimary: true },
+  { id: 'ent-2', name: 'Lone Star Funding Group', isPrimary: false },
+  { id: 'ent-3', name: 'Metroplex Investments Inc.', isPrimary: false },
 ];
 
 export default function PreferencesView() {
-  // Estado para la entidad seleccionada
-  const [entities, setEntities] = useState<EntityOption[]>(DEFAULT_ENTITIES);
+  const [entities] = useState<EntityOption[]>(DEFAULT_ENTITIES);
   const [selectedEntityId, setSelectedEntityId] = useState<string>(DEFAULT_ENTITIES[0].id);
 
-  // Estados de criterios de préstamo
   const [maxLtv, setMaxLtv] = useState<number>(75);
   const [minAmount, setMinAmount] = useState<string>('50,000');
   const [maxAmount, setMaxAmount] = useState<string>('500,000');
@@ -46,7 +42,6 @@ export default function PreferencesView() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Payload asociado a la entidad elegida
       const payload = {
         lenderCompanyId: selectedEntityId,
         maxLtv,
@@ -57,9 +52,7 @@ export default function PreferencesView() {
         borrowerExperience: experience,
         states: selectedStates,
       };
-
-      console.log('Saving preferences for entity:', payload);
-      // await apiFetch('/api/lenders/me/preferences', { method: 'POST', body: JSON.stringify(payload) });
+      console.log('Saving preferences:', payload);
     } finally {
       setIsSaving(false);
     }
@@ -69,30 +62,30 @@ export default function PreferencesView() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Encabezado */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl font-bold text-[#0a2540] tracking-tight">
           Lending preferences
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-sm text-[#425466] mt-1">
           Set your default deal criteria. Trusted borrowers can get custom terms beyond your defaults.
         </p>
       </div>
 
-      {/* --- BLOQUE AJUSTADO: SELECT ENTITY (Recuadros marcados en rojo) --- */}
+      {/* Select Entity */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
-        <label className="text-sm font-semibold text-slate-900 dark:text-slate-100 min-w-[100px]">
+        <label className="text-sm font-semibold text-[#0a2540] min-w-[100px]">
           Select Entity
         </label>
 
         <div className="flex flex-wrap items-center gap-3 flex-1">
-          {/* Recuadro 1: Dropdown de Entidades */}
+          {/* Dropdown de Entidades */}
           <div className="relative min-w-[260px] flex-1 max-w-md">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#aab7c4]">
               <Building2 className="w-4 h-4" />
             </div>
             <select
               value={selectedEntityId}
               onChange={(e) => setSelectedEntityId(e.target.value)}
-              className="w-full pl-9 pr-10 py-2.5 text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 appearance-none shadow-xs transition-all"
+              className="w-full pl-9 pr-10 py-2.5 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] font-medium focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff] appearance-none shadow-xs transition-all cursor-pointer"
             >
               {entities.map((ent) => (
                 <option key={ent.id} value={ent.id}>
@@ -100,15 +93,15 @@ export default function PreferencesView() {
                 </option>
               ))}
             </select>
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#aab7c4]">
               <ChevronDown className="w-4 h-4" />
             </div>
           </div>
 
-          {/* Recuadro 2: Acción rápida (Gestionar / Añadir Entidad) */}
+          {/* Botón Administrar Entidades */}
           <Link
             href="/lenderDashboard/entities"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg shadow-xs transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-medium text-[#425466] bg-white border border-[#e6ebf1] hover:border-[#635bff] hover:text-[#635bff] rounded-lg shadow-xs transition-all no-underline"
           >
             <Plus className="w-4 h-4" />
             <span>Manage Entities</span>
@@ -117,24 +110,22 @@ export default function PreferencesView() {
       </div>
 
       {/* Tarjeta de Criterios Predeterminados */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 space-y-6 shadow-xs">
+      <div className="bg-white rounded-xl border border-[#e6ebf1] p-6 sm:p-8 space-y-6 shadow-xs">
         <div>
-          <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-base font-semibold text-[#0a2540]">
             Default deal criteria
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-[#425466] mt-0.5">
             Applied to all new borrowers you haven't worked with before under{' '}
-            <span className="font-semibold text-slate-700 dark:text-slate-300">
-              {activeEntity.name}
-            </span>.
+            <span className="font-semibold text-[#0a2540]">{activeEntity.name}</span>.
           </p>
         </div>
 
         {/* Max LTV Slider */}
         <div className="space-y-2">
           <div className="flex justify-between items-center text-sm font-medium">
-            <span className="text-slate-700 dark:text-slate-300">Max LTV (loan-to-value)</span>
-            <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-base">{maxLtv}%</span>
+            <span className="text-[#425466]">Max LTV (loan-to-value)</span>
+            <span className="text-[#635bff] font-bold text-base">{maxLtv}%</span>
           </div>
           <input
             type="range"
@@ -143,41 +134,41 @@ export default function PreferencesView() {
             step={1}
             value={maxLtv}
             onChange={(e) => setMaxLtv(Number(e.target.value))}
-            className="w-full accent-indigo-600 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
+            className="w-full accent-[#635bff] h-2 bg-[#f0efff] rounded-lg cursor-pointer"
           />
-          <p className="text-xs text-slate-400 dark:text-slate-500">
+          <p className="text-xs text-[#aab7c4]">
             Borrowers over this threshold will see a warning and cannot submit without bringing the difference to closing.
           </p>
         </div>
 
-        {/* Min & Max Loan Amounts */}
+        {/* Min & Max Amounts */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-[#425466] mb-1.5">
               Minimum loan amount
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#aab7c4] text-sm">$</span>
               <input
                 type="text"
                 value={minAmount}
                 onChange={(e) => setMinAmount(e.target.value)}
-                className="w-full pl-7 pr-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full pl-7 pr-3 py-2 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-[#425466] mb-1.5">
               Maximum loan amount
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#aab7c4] text-sm">$</span>
               <input
                 type="text"
                 value={maxAmount}
                 onChange={(e) => setMaxAmount(e.target.value)}
-                className="w-full pl-7 pr-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full pl-7 pr-3 py-2 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff]"
               />
             </div>
           </div>
@@ -186,13 +177,13 @@ export default function PreferencesView() {
         {/* Rate Range & Terms */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-[#425466] mb-1.5">
               Preferred interest rate range
             </label>
             <select
               value={rateRange}
               onChange={(e) => setRateRange(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full px-3 py-2 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff]"
             >
               <option value="8% - 10%">8% - 10%</option>
               <option value="10% - 12%">10% - 12%</option>
@@ -202,13 +193,13 @@ export default function PreferencesView() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-[#425466] mb-1.5">
               Preferred loan terms
             </label>
             <select
               value={loanTerms}
               onChange={(e) => setLoanTerms(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full px-3 py-2 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff]"
             >
               <option value="6 months only">6 months only</option>
               <option value="12 months">12 months</option>
@@ -217,28 +208,28 @@ export default function PreferencesView() {
           </div>
         </div>
 
-        {/* Minimum borrower experience */}
+        {/* Experience */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          <label className="block text-xs font-semibold text-[#425466] mb-1.5">
             Minimum borrower experience
           </label>
           <select
             value={experience}
             onChange={(e) => setExperience(e.target.value)}
-            className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full px-3 py-2 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff]"
           >
             <option value="No minimum - first deals welcome">No minimum - first deals welcome</option>
             <option value="1-3 completed flips">1-3 completed flips</option>
             <option value="4+ completed projects">4+ completed projects</option>
           </select>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+          <p className="text-xs text-[#aab7c4] mt-1">
             Deals from borrowers below this threshold won't appear in your feed.
           </p>
         </div>
 
-        {/* States multi-select */}
+        {/* States Multi-select */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+          <label className="block text-xs font-semibold text-[#425466] mb-2">
             States I lend in
           </label>
           <div className="flex flex-wrap gap-2">
@@ -251,8 +242,8 @@ export default function PreferencesView() {
                   onClick={() => handleStateToggle(st)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                     active
-                      ? 'bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800'
-                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                      ? 'bg-[#f0efff] text-[#635bff] border-[#635bff]'
+                      : 'bg-white text-[#425466] border-[#e6ebf1] hover:border-[#aab7c4]'
                   }`}
                 >
                   {st}
@@ -263,11 +254,11 @@ export default function PreferencesView() {
         </div>
       </div>
 
-      {/* Botones inferiores */}
+      {/* Botones de acción */}
       <div className="flex justify-end items-center gap-3 pt-2">
         <button
           type="button"
-          className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+          className="px-4 py-2 text-sm font-medium text-[#425466] hover:text-[#0a2540] transition-colors"
         >
           Cancel
         </button>
@@ -275,7 +266,7 @@ export default function PreferencesView() {
           type="button"
           onClick={handleSave}
           disabled={isSaving}
-          className="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all disabled:opacity-50"
+          className="px-5 py-2 text-sm font-semibold text-white bg-[#635bff] hover:bg-[#5349e0] rounded-lg shadow-sm transition-all disabled:opacity-50"
         >
           {isSaving ? 'Saving...' : 'Save preferences'}
         </button>

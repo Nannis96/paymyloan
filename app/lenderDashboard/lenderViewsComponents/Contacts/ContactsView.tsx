@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { 
-  Users, 
-  Search, 
-  Plus, 
-  Mail, 
-  Phone, 
-  Building, 
-  Filter,
-  MoreVertical
-} from 'lucide-react';
+import { Search, Plus, Mail, Phone, Building, MoreVertical } from 'lucide-react';
 
 export type ContactCategory = 'ALL' | 'BORROWER' | 'TITLE' | 'INSURANCE' | 'BOOKKEEPER' | 'VENDOR';
 
@@ -73,7 +64,7 @@ const INITIAL_CONTACTS: Contact[] = [
 ];
 
 export default function ContactsView() {
-  const [contacts, setContacts] = useState<Contact[]>(INITIAL_CONTACTS);
+  const [contacts] = useState<Contact[]>(INITIAL_CONTACTS);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ContactCategory>('ALL');
 
@@ -89,15 +80,35 @@ export default function ContactsView() {
   const getCategoryBadge = (category: ContactCategory) => {
     switch (category) {
       case 'BORROWER':
-        return <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">Borrower</span>;
+        return (
+          <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#f0efff] text-[#635bff] border border-[#d6d3ff]">
+            Borrower
+          </span>
+        );
       case 'TITLE':
-        return <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">Title Co.</span>;
+        return (
+          <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#e6fcf5] text-[#0ca678] border border-[#b2f2bb]">
+            Title Co.
+          </span>
+        );
       case 'INSURANCE':
-        return <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">Insurance</span>;
+        return (
+          <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#e7f5ff] text-[#1c7ed6] border border-[#a5d8ff]">
+            Insurance
+          </span>
+        );
       case 'BOOKKEEPER':
-        return <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">Bookkeeper</span>;
+        return (
+          <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#fff8e1] text-[#b45309] border border-[#fcd34d]">
+            Bookkeeper
+          </span>
+        );
       case 'VENDOR':
-        return <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">Vendor</span>;
+        return (
+          <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#f1f3f5] text-[#495057] border border-[#dee2e6]">
+            Vendor
+          </span>
+        );
       default:
         return null;
     }
@@ -112,71 +123,67 @@ export default function ContactsView() {
         c.phone.includes(searchTerm);
 
       const matchesCat = selectedCategory === 'ALL' || c.category === selectedCategory;
-
       return matchesSearch && matchesCat;
     });
   }, [contacts, searchTerm, selectedCategory]);
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-[#0a2540] tracking-tight">
             Contacts & Directory
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-[#425466] mt-1">
             Manage your network of Title companies, Insurance agents, Borrowers, Bookkeepers, and Vendors.
           </p>
         </div>
 
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Contact</span>
-        </button>
+       
       </div>
 
       {/* Barra de Filtros y Búsqueda */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-3.5 rounded-xl border border-[#e6ebf1] shadow-xs">
         {/* Pestañas de categoría */}
         <div className="flex flex-wrap items-center gap-1.5">
-          {categories.map((cat) => (
-            <button
-              key={cat.value}
-              type="button"
-              onClick={() => setSelectedCategory(cat.value)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                selectedCategory === cat.value
-                  ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat.value;
+            return (
+              <button
+                key={cat.value}
+                type="button"
+                onClick={() => setSelectedCategory(cat.value)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                  isActive
+                    ? 'bg-[#f0efff] text-[#635bff] font-semibold border border-[#d6d3ff]'
+                    : 'text-[#425466] hover:bg-[#f6f9fc] hover:text-[#0a2540] border border-transparent'
+                }`}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Buscador */}
         <div className="relative min-w-[240px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#aab7c4] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search contacts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full pl-9 pr-3 py-1.5 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] placeholder-[#aab7c4] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff]"
           />
         </div>
       </div>
 
       {/* Tabla de Contactos */}
-      <div className="overflow-x-auto bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div className="overflow-x-auto bg-white rounded-xl border border-[#e6ebf1] shadow-xs">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/70 dark:bg-slate-800/40">
+            <tr className="border-b border-[#e6ebf1] text-[11px] font-bold uppercase tracking-wider text-[#aab7c4] bg-[#fafbfd]">
               <th className="py-3.5 px-4">Contact / Company</th>
               <th className="py-3.5 px-4">Type</th>
               <th className="py-3.5 px-4">Email</th>
@@ -185,14 +192,14 @@ export default function ContactsView() {
               <th className="py-3.5 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+          <tbody className="divide-y divide-[#f0f3f7] text-sm">
             {filteredContacts.map((contact) => (
-              <tr key={contact.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+              <tr key={contact.id} className="hover:bg-[#f8fafc] transition-colors">
                 <td className="py-4 px-4 min-w-[200px]">
-                  <div className="font-semibold text-slate-900 dark:text-white">{contact.name}</div>
+                  <div className="font-semibold text-[#0a2540]">{contact.name}</div>
                   {contact.company && (
-                    <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                      <Building className="w-3 h-3 text-slate-400" />
+                    <div className="text-xs text-[#425466] flex items-center gap-1.5 mt-0.5">
+                      <Building className="w-3.5 h-3.5 text-[#aab7c4]" />
                       {contact.company}
                     </div>
                   )}
@@ -200,25 +207,25 @@ export default function ContactsView() {
                 <td className="py-4 px-4 whitespace-nowrap">
                   {getCategoryBadge(contact.category)}
                 </td>
-                <td className="py-4 px-4 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                  <a href={`mailto:${contact.email}`} className="inline-flex items-center gap-1.5 hover:text-indigo-600">
-                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                <td className="py-4 px-4 text-[#425466] whitespace-nowrap">
+                  <a href={`mailto:${contact.email}`} className="inline-flex items-center gap-1.5 hover:text-[#635bff] no-underline">
+                    <Mail className="w-3.5 h-3.5 text-[#aab7c4]" />
                     {contact.email}
                   </a>
                 </td>
-                <td className="py-4 px-4 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                  <a href={`tel:${contact.phone}`} className="inline-flex items-center gap-1.5 hover:text-indigo-600">
-                    <Phone className="w-3.5 h-3.5 text-slate-400" />
+                <td className="py-4 px-4 text-[#425466] whitespace-nowrap">
+                  <a href={`tel:${contact.phone}`} className="inline-flex items-center gap-1.5 hover:text-[#635bff] no-underline">
+                    <Phone className="w-3.5 h-3.5 text-[#aab7c4]" />
                     {contact.phone}
                   </a>
                 </td>
-                <td className="py-4 px-4 text-center text-slate-700 dark:text-slate-300 font-medium">
+                <td className="py-4 px-4 text-center text-[#0a2540] font-bold">
                   {contact.associatedDeals ?? 0}
                 </td>
                 <td className="py-4 px-4 text-right whitespace-nowrap">
                   <button
                     type="button"
-                    className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="p-1.5 text-[#aab7c4] hover:text-[#0a2540] rounded-lg hover:bg-[#f6f9fc] transition-colors"
                   >
                     <MoreVertical className="w-4 h-4" />
                   </button>
