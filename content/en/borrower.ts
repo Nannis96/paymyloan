@@ -1,6 +1,79 @@
 import type { borrower as Es } from "../es/borrower";
 
 export const borrower: typeof Es = {
+  dashboardBorrower: {
+    title: "Borrower Dashboard",
+    subtitle: "Overview of your loans and deals.",
+    metrics: { totalOwed: "Total Owed", nextDue: "Next Due", properties: "Properties", pmlRating: "PML Rating" },
+    tabs: { needsFunding: "Needs Funding", approved: "Approved", funded: "Funded", completed: "Completed", paidOff: "Paid Off" },
+    summaryCards: {
+      entity: {
+        title: "Entity Summary",
+        name: "Entity Name",
+        type: "Entity Type",
+        ein: "EIN",
+        state: "State of Formation",
+        unverified: "Unverified entity"
+      },
+      businessScore: {
+        title: "Business Score",
+        deals: "Deals closed",
+        onTime: "On-time payments",
+        volume: "Total borrowed"
+      },
+      creditScore: {
+        title: "Credit Score",
+        score: "Score",
+        status: "Status",
+        pending: "Pending"
+      }
+    },
+    widgets: {
+      education: {
+        title: "Education and Training",
+        sub: "Learn best practices and strategies."
+      },
+      refi: {
+        title: "Ready to refinance?",
+        sub: "Get a quote in minutes."
+      },
+      insurance: {
+        title: "Need insurance?",
+        sub: "Get an instant quote."
+      }
+    },
+    trackerTitle: "Upcoming Closings",
+    trackerEmpty: "No upcoming closings tracked.",
+    needFunding: "Need Funding",
+    loanApproved: "Loan Approved by Lender",
+    currentLoans: "Current Loans",
+    completedLoans: "Completed Loans",
+    emptyTable: "Live loan table will be rendered here.",
+    emptyDocs: "Generated commitment letters and payoff statements will appear here.",
+    tableHeaders: { property: "Property", amount: "Amount / Balance", rehabDrawn: "Rehab Drawn", lender: "Lender", rate: "Rate", status: "Status", date: "Date / Next Pmt", action: "Action", history: "History" },
+    actions: {
+      pitchDeck: "Generate Pitch Deck",
+      payoff: "Request Payoff",
+      payments: "Manage Payments",
+      viewContracts: "Contracts",
+      drawRequest: "Request Draw",
+      extensionRequest: "Request Extension",
+      resolveLate: "Resolve Late Payment",
+      rateLender: "Rate Lender"
+    },
+    loading: "Loading dashboard...",
+    errorAuth: "Invalid or expired session.",
+    errorFetch: "Error loading dashboard information",
+    errorNetwork: "Unknown network error",
+    lenderFallback: "Lending Company",
+    emptyNeedFunding: "No pending requests",
+    emptyApproved: "No loans pending acceptance",
+    emptyActive: "No active loans",
+    emptyCompleted: "No completed loans",
+    reviewCommitment: "REVIEW COMMITMENT",
+    paidOff: "Paid off:"
+  },
+
   feeAgreement: {
     docType: "Borrower Fee Agreement",
     title: "Borrower Fee Agreement",

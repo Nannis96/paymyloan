@@ -1,4 +1,77 @@
 export const borrower = {
+  dashboardBorrower: {
+    title: "Panel de Prestatario",
+    subtitle: "Resumen de tus préstamos y tratos.",
+    metrics: { totalOwed: "Total Adeudado", nextDue: "Próximo Vencimiento", properties: "Propiedades", pmlRating: "Calificación PML" },
+    tabs: { needsFunding: "Necesitan Fondeo", approved: "Aprobados", funded: "Fondeados", completed: "Completados", paidOff: "Liquidados" },
+    summaryCards: {
+      entity: {
+        title: "Resumen de Entidad",
+        name: "Nombre de la Entidad",
+        type: "Tipo de Entidad",
+        ein: "EIN / RFC",
+        state: "Estado de Formación",
+        unverified: "Entidad no verificada"
+      },
+      businessScore: {
+        title: "Puntaje de Negocio",
+        deals: "Tratos cerrados",
+        onTime: "Pagos a tiempo",
+        volume: "Total pedido"
+      },
+      creditScore: {
+        title: "Puntaje de Crédito",
+        score: "Puntaje",
+        status: "Estado",
+        pending: "Pendiente"
+      }
+    },
+    widgets: {
+      education: {
+        title: "Educación y Capacitación",
+        sub: "Aprende mejores prácticas y estrategias."
+      },
+      refi: {
+        title: "¿Listo para refinanciar?",
+        sub: "Obtén una cotización en minutos."
+      },
+      insurance: {
+        title: "¿Necesitas seguro?",
+        sub: "Obtén una cotización al instante."
+      }
+    },
+    trackerTitle: "Próximos Cierres",
+    trackerEmpty: "No hay cierres próximos rastreados.",
+    needFunding: "Necesitan Fondeo (Need Funding)",
+    loanApproved: "Aprobados por Prestamista",
+    currentLoans: "Préstamos Actuales (Current Loans)",
+    completedLoans: "Completados",
+    emptyTable: "La tabla de préstamos en vivo se renderizará aquí.",
+    emptyDocs: "Las cartas de compromiso y estados de liquidación generados aparecerán aquí.",
+    tableHeaders: { property: "Propiedad", amount: "Monto / Saldo", rehabDrawn: "Rehab Retirado", lender: "Prestamista", rate: "Tasa", status: "Estado", date: "Fecha / Próx Pago", action: "Acción", history: "Historial" },
+    actions: {
+      pitchDeck: "Generar Pitch Deck",
+      payoff: "Solicitar Liquidación",
+      payments: "Gestionar Pagos",
+      viewContracts: "Contratos",
+      drawRequest: "Solicitar Retiro (Draw)",
+      extensionRequest: "Solicitar Extensión",
+      resolveLate: "Resolver Atraso",
+      rateLender: "Calificar Prestamista"
+    },
+    loading: "Cargando dashboard...",
+    errorAuth: "Sesión no válida o no iniciada.",
+    errorFetch: "Error al cargar la información del dashboard",
+    errorNetwork: "Error de red desconocido",
+    lenderFallback: "Empresa Prestamista",
+    emptyNeedFunding: "Sin solicitudes pendientes",
+    emptyApproved: "Sin préstamos por aceptar",
+    emptyActive: "Sin préstamos activos",
+    emptyCompleted: "Sin préstamos completados",
+    reviewCommitment: "REVISAR COMPROMISO",
+    paidOff: "Liquidado:"
+  },
+
   feeAgreement: {
     docType: "Acuerdo de Tarifas del Prestatario",
     title: "Acuerdo de Tarifas del Prestatario",

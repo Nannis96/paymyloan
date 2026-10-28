@@ -6,6 +6,7 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import { CreditCard, CalendarClock, Building } from "lucide-react";
 import AddAccountModal from "@/app/components/borrower/AddAccountModal";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { apiFetch } from "@/app/lib/apiFetch";
 
 function ManagePaymentsContent() {
   const { t, lang } = useSite();
@@ -26,27 +27,20 @@ function ManagePaymentsContent() {
   useEffect(() => {
     async function fetchUpcomingPayments() {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
-
-        const headers = { Authorization: `Bearer ${token}` };
-        
-        // 1. Obtener contratos activos
-        const resContracts = await fetch(API_ROUTES.contracts.base, { headers });
+        // 1. Obtener contratos activos con apiFetch
+        const resContracts = await apiFetch(API_ROUTES.contracts.base);
         if (!resContracts.ok) return;
         
         const jsonContracts = await resContracts.json();
         if (!jsonContracts.success) return;
-
         const activeContracts = jsonContracts.data.items.filter((c: any) => 
           c.status === "ACTIVE" || c.status === "DELINQUENT"
         );
 
         let upcoming: any[] = [];
-
         // 2. Obtener schedule por cada contrato
         for (const contract of activeContracts) {
-          const resSched = await fetch(API_ROUTES.contracts.schedule(contract.id), { headers });
+          const resSched = await apiFetch(API_ROUTES.contracts.schedule(contract.id));
           if (resSched.ok) {
             const jsonSched = await resSched.json();
             if (jsonSched.success) {
@@ -201,9 +195,5 @@ function ManagePaymentsContent() {
 }
 
 export default function ManagePaymentsPage() {
-  return (
-    <SiteShell isDashboard={true}>
-      <ManagePaymentsContent />
-    </SiteShell>
-  );
+  return <ManagePaymentsContent />;
 }

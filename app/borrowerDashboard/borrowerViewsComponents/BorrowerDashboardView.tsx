@@ -18,6 +18,7 @@ export default function BorrowerDashboardView() {
   const [isLoading, setIsLoading] = useState(true);
   const [score, setScore] = useState<number | null>(null);
   const [isVerified, setIsVerified] = useState(false);
+  const [entityData, setEntityData] = useState<any>(null); 
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -46,8 +47,11 @@ export default function BorrowerDashboardView() {
               }
               if (resVerif.ok) {
                 const jsonVerif = await resVerif.json();
-                if (jsonVerif.success && jsonVerif.data?.status === "APPROVED") {
-                  setIsVerified(true);
+                if (jsonVerif.success && jsonVerif.data) {
+                  setEntityData(jsonVerif.data); // Guardamos la entidad
+                  if (jsonVerif.data.status === "APPROVED") {
+                    setIsVerified(true);
+                  }
                 }
               }
             } catch (e) {
@@ -63,11 +67,61 @@ export default function BorrowerDashboardView() {
           if (jsonLR.success) setLoanRequests(toList(jsonLR.data));
         }
 
-        // 3. Fetch contracts
+        // 3. Fetch contracts, schedules and transactions
         const resContracts = await apiFetch(API_ROUTES.contracts.base);
         if (resContracts.ok) {
           const jsonContracts = await resContracts.json();
-          if (jsonContracts.success) setContracts(toList(jsonContracts.data));
+          if (jsonContracts.success) {
+            const fetchedContracts = toList<any>(jsonContracts.data);
+            setContracts(fetchedContracts);
+
+            // Filtrar contratos activos para buscar sus pagos
+            const activeContracts = fetchedContracts.filter(
+              (c: any) => c.status === "ACTIVE" || c.status === "DELINQUENT"
+            );
+            
+            let allUpcoming: any[] = [];
+            let allRecent: any[] = [];
+
+            // Obtener cronograma y transacciones por cada contrato activo
+            for (const contract of activeContracts) {
+              // Proximos pagos (Schedule)
+              const resSched = await apiFetch(API_ROUTES.contracts.schedule(contract.id));
+              if (resSched.ok) {
+                const jsonSched = await resSched.json();
+                if (jsonSched.success) {
+                  const schedule = jsonSched.data || [];
+                  const pending = schedule.filter((p: any) => p.status === "PENDING" || p.status === "PARTIALLY_PAID");
+                  pending.forEach((p: any) => allUpcoming.push({ ...p, contract }));
+                }
+              }
+
+              // Pagos recientes (Transactions)
+              const resTrans = await apiFetch(API_ROUTES.contracts.transactions(contract.id));
+              if (resTrans.ok) {
+                const jsonTrans = await resTrans.json();
+                if (jsonTrans.success) {
+                  const transactions = jsonTrans.data.items || [];
+                  transactions.forEach((t: any) => {
+                    allRecent.push({
+                      ...t,
+                      contract,
+                      dueDate: t.occurredAt || t.createdAt, // Usamos la fecha en la que ocurrio
+                      totalDue: t.amount // Adaptamos la propiedad para que la UI la lea correctamente
+                    });
+                  });
+                }
+              }
+            }
+
+            // Ordenar los resultados por fecha
+            allUpcoming.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+            allRecent.sort((a, b) => new Date(b.occurredAt || b.createdAt).getTime() - new Date(a.occurredAt || a.createdAt).getTime());
+
+            // Mostrar solo los 3 mas relevantes en el dashboard
+            setUpcomingPayments(allUpcoming.slice(0, 3));
+            setRecentPayments(allRecent.slice(0, 3));
+          }
         }
 
       } catch (error) {
@@ -196,7 +250,13 @@ export default function BorrowerDashboardView() {
             <div className="mt-[2px] text-[11px] text-white/60">{isEs ? "Préstamos activos" : "Active loans"}</div>
           </div>
         </div>
-        <div className="ml-auto flex flex-col gap-[6px]">
+        <div className="ml-auto flex flex-col items-end gap-[6px]">
+          {/* Mostramos la fecha de creacion usando la funcion formatDate existente */}
+          {user?.createdAt && (
+            <div className="text-[13px] font-[600] text-ink-3 mb-1">
+              {isEs ? "Miembro desde" : "Member since"} {formatDate(user.createdAt)}
+            </div>
+          )}
           {isVerified ? (
             <div className="inline-flex items-center gap-[5px] rounded-[10px] bg-success/20 px-[10px] py-[4px] text-[11px] font-[700] text-green-400">
               {isEs ? "Negocio verificado" : "Business verified"}
@@ -209,89 +269,63 @@ export default function BorrowerDashboardView() {
         </div>
       </div>
 
-      {/* Primary CTA banner */}
-      <div className="mb-[20px] flex flex-wrap items-center justify-between gap-[20px] rounded-[10px] border-[1.5px] border-rule-strong bg-accent-soft p-[24px_28px]">
-        <div>
-          <div className="mb-[4px] text-[15px] font-[800] text-ink">{isEs ? "¿Listo para encontrar prestamista?" : "Ready to find a lender?"}</div>
-          <div className="leading-[1.6] text-[13px] text-ink-2">
-            {isEs ? "Ingresa una dirección. Obtenemos los comparables, calculamos el ARV y armamos tu trato — listo para presentar en minutos." : "Enter a property address. We pull the comps, calculate ARV, and format your deal — ready to pitch to lenders in minutes."}
-          </div>
-        </div>
-        <Link href="/submit-deal" className="shrink-0 whitespace-nowrap rounded-[6px] bg-accent px-[24px] py-[12px] text-[13px] font-[800] text-white no-underline transition-colors hover:opacity-90">
-          {isEs ? "Analizar y Publicar" : "Analyze & Post a Deal"}
-        </Link>
-      </div>
-
-      {/* My Deals Section */}
-      <div className="mb-[12px] flex items-center justify-between">
-        <div className="text-[14px] font-[800] text-ink">{isEs ? "Mis tratos" : "My deals"}</div>
-        <Link href="/borrowerDashboard/deals" className="cursor-pointer border-none bg-transparent font-sans text-[12px] font-[600] text-accent hover:underline no-underline">
-          {isEs ? "Ver todos" : "View all"}
-        </Link>
-      </div>
-
-      {loanRequests.length === 0 && contracts.length === 0 && (
-        <div className="mb-[24px] rounded-[10px] border border-rule bg-surface p-[24px] text-center text-[13px] text-ink-3">
-          {isEs ? "No tienes tratos activos todavía." : "You have no active deals yet."}
-        </div>
-      )}
-
-      {/* Map Loan Requests (Limitado a los 3 mas recientes) */}
-      {loanRequests.slice(0, 3).map((req) => (
-        <div key={req.id} className="mb-[10px] cursor-pointer rounded-[10px] border border-rule bg-surface p-[16px_20px] transition-shadow hover:shadow-md dark:hover:shadow-none dark:hover:border-ink-3">
-          <div className="mb-[10px] flex items-start justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          {/* Primary CTA banner */}
+          <div className="mb-[24px] flex flex-wrap items-center justify-between gap-[20px] rounded-[10px] border-[1.5px] border-rule-strong bg-accent-soft p-[24px_28px]">
             <div>
-              <div className="text-[14px] font-[700] text-ink">{req.property?.addressLine1}, {req.property?.city} {req.property?.state}</div>
-              <div className="mt-[2px] text-[12px] text-ink-3">{req.projectType} • {formatCurrencyCompact(req.totalLoanAmountRequested)} requested • {req.status}</div>
+              <div className="mb-[4px] text-[15px] font-[800] text-ink">{isEs ? " Listo para encontrar prestamista?" : "Ready to find a lender?"}</div>
+              <div className="leading-[1.6] text-[13px] text-ink-2">
+                {isEs ? "Ingresa una direcci n. Obtenemos los comparables, calculamos el ARV y armamos tu trato   listo para presentar en minutos." : "Enter a property address. We pull the comps, calculate ARV, and format your deal   ready to pitch to lenders in minutes."}
+              </div>
             </div>
-            <span className="rounded-[10px] bg-amber-soft px-[10px] py-[3px] text-[11px] font-[700] text-amber">{req.status}</span>
-          </div>
-          <div className="mb-[12px] flex flex-wrap gap-[20px]">
-            <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">Loan</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{formatCurrency(req.totalLoanAmountRequested)}</div></div>
-            <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">ARV</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{formatCurrency(req.property?.afterRepairValue)}</div></div>
-            <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">LTV</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{req.property?.afterRepairValue ? Math.round((req.totalLoanAmountRequested / req.property.afterRepairValue) * 100) : 0}%</div></div>
-          </div>
-          {renderProgressBar("request", req.status)}
-          <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
-            <Link href={`/borrowerDashboard/deals/${req.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
-              {isEs ? "Ver detalles" : "View details"}
+            <Link href="/submit-deal" className="shrink-0 whitespace-nowrap rounded-[6px] bg-accent px-[24px] py-[12px] text-[13px] font-[800] text-white no-underline transition-colors hover:opacity-90">
+              {isEs ? "Analizar y Publicar" : "Analyze & Post a Deal"}
             </Link>
           </div>
-        </div>
-      ))}
 
-      {/* Map Contracts (Limitado a los 3 mas recientes) */}
-      {contracts.slice(0, 3).map((contract) => (
-        <div key={contract.id} className="mb-[10px] cursor-pointer rounded-[10px] border border-rule bg-surface p-[16px_20px] transition-shadow hover:shadow-md dark:hover:shadow-none dark:hover:border-ink-3">
-          <div className="mb-[10px] flex items-start justify-between">
-            <div>
-              <div className="text-[14px] font-[700] text-ink">{contract.property?.addressLine1}, {contract.property?.city} {contract.property?.state}</div>
-              <div className="mt-[2px] text-[12px] text-ink-3">{contract.contractNumber} • {formatCurrencyCompact(contract.currentTerms?.principalAmount)} • Funded</div>
+          {/* Seccion de Resumen (Entidad, Business, Credit) */}
+          <div className="mb-[24px] grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Tarjeta Entidad */}
+            <div className="rounded-[10px] border border-rule bg-surface p-[20px] shadow-sm">
+              <div className="text-[13px] font-[800] text-ink mb-3">{t.dashboardBorrower.summaryCards?.entity.title}</div>
+              {entityData ? (
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.entity.name}</span><span className="font-semibold text-ink">{entityData.entityName}</span></div>
+                  <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.entity.type}</span><span className="font-semibold text-ink">{entityData.entityType}</span></div>
+                  <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.entity.ein}</span><span className="font-semibold text-ink">{entityData.ein || "N/D"}</span></div>
+                  <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.entity.state}</span><span className="font-semibold text-ink">{entityData.stateOfFormation || "N/D"}</span></div>
+                </div>
+              ) : (
+                <div className="text-[12px] text-ink-3 italic">{t.dashboardBorrower.summaryCards?.entity.unverified}</div>
+              )}
             </div>
-            <span className={`rounded-[10px] px-[10px] py-[3px] text-[11px] font-[700] ${contract.status === "ACTIVE" ? "bg-info-soft text-info" : contract.status === "DELINQUENT" ? "bg-crit-soft text-crit" : "bg-success-soft text-success"}`}>
-              {contract.status}
-            </span>
+
+            {/* Tarjeta Business Score */}
+            <div className="rounded-[10px] border border-rule bg-surface p-[20px] shadow-sm">
+              <div className="text-[13px] font-[800] text-ink mb-3">{t.dashboardBorrower.summaryCards?.businessScore.title}</div>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between text-[12px]"><span className="text-ink-3">Score</span><span className="font-bold text-accent">{score !== null ? score : "--"}</span></div>
+                <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.businessScore.deals}</span><span className="font-semibold text-ink">{closedContracts.length}</span></div>
+                <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.businessScore.onTime}</span><span className="font-semibold text-ink">100%</span></div>
+                <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.businessScore.volume}</span><span className="font-semibold text-ink">{formatCurrencyCompact(totalBorrowed)}</span></div>
+              </div>
+            </div>
+
+            {/* Tarjeta Credit Score (Placeholder por limitacion de API) */}
+            <div className="rounded-[10px] border border-rule bg-surface p-[20px] shadow-sm flex flex-col">
+              <div className="text-[13px] font-[800] text-ink mb-3">{t.dashboardBorrower.summaryCards?.creditScore.title}</div>
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.creditScore.score}</span><span className="font-bold text-ink-3">---</span></div>
+                <div className="flex justify-between text-[12px]"><span className="text-ink-3">{t.dashboardBorrower.summaryCards?.creditScore.status}</span><span className="font-semibold text-amber">{t.dashboardBorrower.summaryCards?.creditScore.pending}</span></div>
+              </div>
+              <div className="mt-auto pt-3 border-t border-rule">
+                <button className="text-[11px] font-[600] text-accent hover:underline cursor-pointer w-full text-left">
+                  {isEs ? "Vincular reporte" : "Link report"} &rarr;
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="mb-[12px] flex flex-wrap gap-[20px]">
-            <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">Loan</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{formatCurrency(contract.currentTerms?.principalAmount)}</div></div>
-            <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">Rate</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{contract.currentTerms?.interestRate}%</div></div>
-            <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">Monthly</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{formatCurrency(contract.currentTerms?.calculatedMonthlyPayment)}</div></div>
-            <div><div className="text-[10px] font-[700] uppercase tracking-[0.4px] text-ink-3">Matures</div><div className="mt-[1px] text-[13px] font-[700] text-ink">{formatDate(contract.currentTerms?.maturityDate)}</div></div>
-          </div>
-          {renderProgressBar("contract", contract.status)}
-          <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
-            {contract.status === "PAID_OFF" ? (
-              <Link href={`/borrowerDashboard/leave-a-review?contractId=${contract.id}`} className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
-                {t.dashboardBorrower.actions.rateLender}
-              </Link>
-            ) : (
-              <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
-                {isEs ? "Ver contrato" : "View contract"}
-              </Link>
-            )}
-          </div>
-        </div>
-      ))}
 
       {/* Payments section */}
       <div className="mb-[12px] mt-[24px] flex items-center justify-between">
@@ -354,8 +388,41 @@ export default function BorrowerDashboardView() {
               <div className="shrink-0 rounded-[8px] bg-success-soft px-[10px] py-[3px] text-[11px] font-[700] text-success">{isEs ? "Pagado" : "Paid"}</div>
             </div>
           ))
-        )}
+          )}
+        </div>
       </div>
+
+      {/* Lateral Derecho (Sidebar Widgets) */}
+      <div className="lg:col-span-1 space-y-4">
+        {/* Widget 1: Education and Training */}
+        <div className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-accent hover:shadow-md dark:hover:border-ink-3">
+          <div className="mb-[10px] flex h-[44px] w-[44px] items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div className="text-[14px] font-[800] text-ink">{t.dashboardBorrower.widgets?.education.title || "Educacion y Capacitacion"}</div>
+          <div className="mt-[4px] text-[12px] leading-[1.5] text-ink-2">{t.dashboardBorrower.widgets?.education.sub || "Aprende mejores practicas y estrategias."}</div>
+        </div>
+
+        {/* Widget 2: Refi */}
+        <div className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-success hover:shadow-md dark:hover:border-ink-3">
+          <div className="mb-[10px] flex h-[44px] w-[44px] items-center justify-center rounded-[10px] bg-success-soft text-success">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div className="text-[14px] font-[800] text-ink">{t.dashboardBorrower.widgets?.refi.title || " Listo para refinanciar?"}</div>
+          <div className="mt-[4px] text-[12px] leading-[1.5] text-ink-2">{t.dashboardBorrower.widgets?.refi.sub || "Obten una cotizacion en minutos."}</div>
+        </div>
+
+        {/* Widget 3: Insurance */}
+        <div className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-amber hover:shadow-md dark:hover:border-ink-3">
+          <div className="mb-[10px] flex h-[44px] w-[44px] items-center justify-center rounded-[10px] bg-amber-soft text-amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div className="text-[14px] font-[800] text-ink">{t.dashboardBorrower.widgets?.insurance.title || " Necesitas seguro?"}</div>
+          <div className="mt-[4px] text-[12px] leading-[1.5] text-ink-2">{t.dashboardBorrower.widgets?.insurance.sub || "Obten una cotizacion al instante."}</div>
+        </div>
+      </div>
+      
+    </div>
     </div>
   );
 }

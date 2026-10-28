@@ -38,20 +38,28 @@ export default function BorrowerOnboardingView() {
   const submitProfile = async () => {
     setIsSubmitting(true);
     try {
-      // De acuerdo con Docs/API_REFERENCE.md usamos PATCH /api/borrowers/me
-      
-      // Nota: API_REFERENCE dice que PATCH recibe direccion, enviamos lo soportado
-      // En un caso real el backend deberia actualizar estos campos en la Entidad
-      await apiFetch(API_ROUTES.borrowers.me, {
-        method: "PATCH",
+      let mappedType = "OTHER";
+      const et = formData.entityType.toLowerCase();
+      if (et.includes("llc")) mappedType = "LLC";
+      else if (et.includes("corpor")) mappedType = "CORPORATION";
+      else if (et.includes("trust") || et.includes("fideicomiso")) mappedType = "TRUST";
+      else if (et.includes("personal") || et.includes("individu")) mappedType = "INDIVIDUAL";
+
+      // Usamos POST /api/borrowers/me/verification de acuerdo con API_REFERENCE.md
+      const res = await apiFetch("/api/borrowers/me/verification", {
+        method: "POST",
         body: JSON.stringify({
-          // Payload adaptado
-          ...formData
+          entityName: formData.entityName || "Nombre no especificado",
+          entityType: mappedType,
+          ein: formData.ein || "00-0000000",
+          stateOfFormation: formData.states.substring(0, 2).toUpperCase() || "XX"
         }),
       });
+      
+      if (!res.ok && res.status !== 409) {
+        console.warn("La verificacion devolvio error, pero continuamos el flujo.");
+      }
 
-      // Simulación adicional de carga para la UI
-      await new Promise(resolve => setTimeout(resolve, 800));
       router.push("/borrowerDashboard/submit-deal"); // Redirige a crear su primer trato
     } catch (error) {
       console.error(error);

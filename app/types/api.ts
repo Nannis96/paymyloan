@@ -37,6 +37,8 @@ export interface SafeUser {
   email: string;
   phone: string | null;
   role: UserRole;
+  /** Solo en GET /api/users: roles activos; un usuario dual trae LENDER y BORROWER. */
+  roles?: UserRole[];
   isActive: boolean;
   isTwoFactorEnabled: boolean;
   mustChangePassword: boolean;
@@ -212,4 +214,94 @@ export interface Review {
   rating: number; // 1-5
   comment: string | null;
   createdAt: ISODate;
+}
+
+// ── Admin ────────────────────────────────────────────────────────────────
+export type VerificationStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface LenderCompany extends LenderCompanySummary {
+  ein: string;
+  contactPhone: string | null;
+  addressLine1: string;
+  addressLine2: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
+/** Fila de GET /admin/lenders (el detalle suma los dos contadores). */
+export interface AdminLender {
+  id: string;
+  user: SafeUser;
+  lenderCompanies: LenderCompany[];
+  borrowersCount?: number;
+  activeContractsCount?: number;
+}
+
+/** Fila de GET /admin/verifications. */
+export interface VerificationRequest {
+  id: string;
+  status: VerificationStatus;
+  entityName: string;
+  entityType: "LLC" | "CORPORATION" | "LP" | "TRUST" | "INDIVIDUAL" | "OTHER";
+  ein: string;
+  stateOfFormation: string;
+  signatoryName: string | null;
+  signatoryTitle: string | null;
+  rejectionReason: string | null;
+  reviewedAt: ISODate | null;
+  createdAt: ISODate;
+  lenderCompany?: LenderCompanySummary | null;
+  borrowerProfile?: { id: string } | null;
+  submittedByUser?: { name: string; email?: string };
+  /** El back lo usa en la vista; no figura en el schema de Prisma. */
+  subject?: "LENDER" | "BORROWER";
+}
+
+export interface AdminOverview {
+  kpis: {
+    activeDeals: { count: number; addedLast7d: number };
+    totalFunded: Money;
+    lateContracts: number;
+    pendingVerifications: number;
+  };
+  revenue: {
+    /** "YYYY-MM" */
+    month: string;
+    closingFees: Money;
+    /** null = el back aun no tiene fuente (AD-006/AD-007). */
+    subscriptions: Money | null;
+    interestShare: Money | null;
+    affiliatePayouts: Money | null;
+    net: Money | null;
+    last6Months: { month: string; total: Money }[];
+  };
+  activeDeals: {
+    contractId: string;
+    contractNumber: string;
+    property: Pick<Property, "addressLine1" | "city" | "state">;
+    principalAmount: Money | null;
+    status: ContractStatus;
+    daysPastDue: number | null;
+    nextPaymentDueDate: ISODate | null;
+  }[];
+  needsAttention: {
+    type: string;
+    severity: "red" | "yellow" | string;
+    title: string;
+    detail: string;
+    entityType: string;
+    entityId: string | null;
+    occurredAt: ISODate;
+  }[];
+  recentSignups: {
+    userId: string;
+    name: string;
+    entityName: string | null;
+    role: UserRole;
+    isActive: boolean;
+    createdAt: ISODate;
+    verification: VerificationStatus | null;
+    dealsCount: number;
+  }[];
 }
