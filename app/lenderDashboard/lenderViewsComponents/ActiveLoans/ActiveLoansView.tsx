@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search, ChevronRight, FileText, Calendar, DollarSign, Percent, User, ArrowUpRight } from 'lucide-react';
+import { Search, ChevronRight } from 'lucide-react';
 
 export interface LoanItem {
   id: string;
@@ -10,9 +10,9 @@ export interface LoanItem {
   propertyAddress: string;
   cityState: string;
   amount: number;
-  interestRate: number; // Ej. 10.5 para 10.5%
-  startDate: string;     // ISO string o formato YYYY-MM-DD
-  maturityDate: string;  // ISO string o formato YYYY-MM-DD
+  interestRate: number;
+  startDate: string;
+  maturityDate: string;
   borrowerName: string;
   status: 'ACTIVE' | 'PENDING' | 'DELINQUENT' | 'PAID_OFF' | 'CLOSED';
 }
@@ -22,7 +22,6 @@ interface ActiveLoansViewProps {
   lang?: 'en' | 'es';
 }
 
-// Datos de demostración alineados a la vista actual
 const DEFAULT_ACTIVE_LOANS: LoanItem[] = [
   {
     id: '1',
@@ -115,7 +114,6 @@ const DEFAULT_PAST_LOANS: LoanItem[] = [
 
 export default function ActiveLoansView({
   loans = DEFAULT_ACTIVE_LOANS,
-  lang = 'en',
 }: ActiveLoansViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING'>('ALL');
@@ -133,31 +131,31 @@ export default function ActiveLoansView({
     switch (status) {
       case 'ACTIVE':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#e6fcf5] text-[#0ca678] border border-[#b2f2bb]">
             Active
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#fff8e1] text-[#b45309] border border-[#fcd34d]">
             Pending
           </span>
         );
       case 'DELINQUENT':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#fff5f5] text-[#e03131] border border-[#ffc9c9]">
             Delinquent
           </span>
         );
       case 'PAID_OFF':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#e7f5ff] text-[#1c7ed6] border border-[#a5d8ff]">
             Paid Off
           </span>
         );
       case 'CLOSED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#f1f3f5] text-[#495057] border border-[#dee2e6]">
             Closed
           </span>
         );
@@ -174,27 +172,25 @@ export default function ActiveLoansView({
         loan.refNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         loan.borrowerName.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus =
-        statusFilter === 'ALL' || loan.status === statusFilter;
-
+      const matchesStatus = statusFilter === 'ALL' || loan.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
   }, [loans, searchTerm, statusFilter]);
 
-  const renderLoansTable = (items: LoanItem[], isPast = false) => {
+  const renderLoansTable = (items: LoanItem[]) => {
     if (items.length === 0) {
       return (
-        <div className="py-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+        <div className="py-12 text-center text-[#aab7c4] bg-white rounded-xl border border-[#e6ebf1]">
           No loans found matching your criteria.
         </div>
       );
     }
 
     return (
-      <div className="overflow-x-auto bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="overflow-x-auto bg-white rounded-xl border border-[#e6ebf1] shadow-xs">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/70 dark:bg-slate-800/40">
+            <tr className="border-b border-[#e6ebf1] text-[11px] font-bold uppercase tracking-wider text-[#aab7c4] bg-[#fafbfd]">
               <th className="py-3.5 px-4">Loan / Property</th>
               <th className="py-3.5 px-4">Amount</th>
               <th className="py-3.5 px-4">Rate</th>
@@ -205,59 +201,41 @@ export default function ActiveLoansView({
               <th className="py-3.5 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+          <tbody className="divide-y divide-[#f0f3f7] text-sm">
             {items.map((loan) => (
-              <tr
-                key={loan.id}
-                className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
-              >
-                {/* Property & REF */}
+              <tr key={loan.id} className="hover:bg-[#f8fafc] transition-colors">
                 <td className="py-4 px-4 min-w-[220px]">
-                  <div className="font-semibold text-slate-900 dark:text-white">
+                  <div className="font-semibold text-[#0a2540]">
                     {loan.propertyAddress}, {loan.cityState}
                   </div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 font-mono mt-0.5">
+                  <div className="text-xs text-[#aab7c4] font-mono mt-0.5">
                     REF: {loan.refNumber}
                   </div>
                 </td>
-
-                {/* Amount */}
-                <td className="py-4 px-4 font-semibold text-slate-900 dark:text-slate-100 whitespace-nowrap">
+                <td className="py-4 px-4 font-bold text-[#0a2540] whitespace-nowrap">
                   {formatCurrency(loan.amount)}
                 </td>
-
-                {/* Rate */}
-                <td className="py-4 px-4 text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                <td className="py-4 px-4 text-[#425466] font-medium whitespace-nowrap">
                   {loan.interestRate.toFixed(2)}%
                 </td>
-
-                {/* Start Date */}
-                <td className="py-4 px-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                <td className="py-4 px-4 text-[#425466] whitespace-nowrap">
                   {formatDate(loan.startDate)}
                 </td>
-
-                {/* Maturity */}
-                <td className="py-4 px-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                <td className="py-4 px-4 text-[#425466] whitespace-nowrap">
                   {formatDate(loan.maturityDate)}
                 </td>
-
-                {/* Borrower */}
-                <td className="py-4 px-4 text-slate-700 dark:text-slate-300 min-w-[160px]">
-                  <div className="truncate max-w-[180px]" title={loan.borrowerName}>
+                <td className="py-4 px-4 text-[#425466] min-w-[160px]">
+                  <div className="truncate max-w-[180px] font-medium" title={loan.borrowerName}>
                     {loan.borrowerName}
                   </div>
                 </td>
-
-                {/* Status */}
                 <td className="py-4 px-4 text-center whitespace-nowrap">
                   {getStatusBadge(loan.status)}
                 </td>
-
-                {/* Action: View details */}
                 <td className="py-4 px-4 text-right whitespace-nowrap">
                   <Link
                     href={`/lenderDashboard/active-loans/${loan.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 bg-white dark:bg-slate-800 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 transition-all shadow-xs"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#e6ebf1] hover:border-[#635bff] text-[#425466] hover:text-[#635bff] bg-white hover:bg-[#f0efff] transition-all no-underline shadow-xs"
                   >
                     View details
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -272,29 +250,28 @@ export default function ActiveLoansView({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Encabezado: Título, Filtro de Estado y Buscador */}
+    <div className="max-w-7xl mx-auto space-y-8">
+      {/* Encabezado y Barra de Filtros */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-[#0a2540] tracking-tight">
             Active loans
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-[#425466] mt-1">
             Manage your performing loans, track maturities, and borrower payments.
           </p>
         </div>
 
-        {/* Search loans & Status Filter */}
+        {/* Buscador & Selector de Estado */}
         <div className="flex items-center gap-3">
-          {/* Status selector */}
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-slate-400 dark:text-slate-500 hidden sm:inline">
+            <span className="text-xs font-medium text-[#aab7c4] hidden sm:inline">
               Status:
             </span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="text-xs font-medium bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="text-xs font-medium bg-white border border-[#e6ebf1] rounded-lg px-2.5 py-2 text-[#0a2540] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff] cursor-pointer"
             >
               <option value="ALL">All Status</option>
               <option value="ACTIVE">Active</option>
@@ -302,39 +279,31 @@ export default function ActiveLoansView({
             </select>
           </div>
 
-          {/* Search loans input */}
           <div className="relative min-w-[240px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#aab7c4] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search loans..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] placeholder-[#aab7c4] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff] transition-all"
             />
           </div>
         </div>
       </div>
 
       {/* Tabla de préstamos activos */}
-      <div>
-        {renderLoansTable(filteredActiveLoans)}
-      </div>
+      <div>{renderLoansTable(filteredActiveLoans)}</div>
 
       {/* Sección Past Loans */}
-      <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Past Loans
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Completed, paid off, or closed loan records.
-            </p>
-          </div>
+      <div className="pt-4 border-t border-[#e6ebf1] space-y-4">
+        <div>
+          <h2 className="text-xl font-bold text-[#0a2540]">Past Loans</h2>
+          <p className="text-xs text-[#425466] mt-0.5">
+            Completed, paid off, or closed loan records.
+          </p>
         </div>
-
-        {renderLoansTable(DEFAULT_PAST_LOANS, true)}
+        {renderLoansTable(DEFAULT_PAST_LOANS)}
       </div>
     </div>
   );
