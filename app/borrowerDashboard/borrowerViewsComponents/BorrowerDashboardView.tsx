@@ -274,12 +274,12 @@ export default function BorrowerDashboardView() {
           {/* Primary CTA banner */}
           <div className="mb-[24px] flex flex-wrap items-center justify-between gap-[20px] rounded-[10px] border-[1.5px] border-rule-strong bg-accent-soft p-[24px_28px]">
             <div>
-              <div className="mb-[4px] text-[15px] font-[800] text-ink">{isEs ? " Listo para encontrar prestamista?" : "Ready to find a lender?"}</div>
+              <div className="mb-[4px] text-[15px] font-[800] text-ink">{isEs ? "¿Listo para encontrar prestamista?" : "Ready to find a lender?"}</div>
               <div className="leading-[1.6] text-[13px] text-ink-2">
-                {isEs ? "Ingresa una direcci n. Obtenemos los comparables, calculamos el ARV y armamos tu trato   listo para presentar en minutos." : "Enter a property address. We pull the comps, calculate ARV, and format your deal   ready to pitch to lenders in minutes."}
+                {isEs ? "Ingresa una dirección. Obtenemos los comparables, calculamos el ARV y armamos tu trato — listo para presentar en minutos." : "Enter a property address. We pull the comps, calculate ARV, and format your deal — ready to pitch to lenders in minutes."}
               </div>
             </div>
-            <Link href="/submit-deal" className="shrink-0 whitespace-nowrap rounded-[6px] bg-accent px-[24px] py-[12px] text-[13px] font-[800] text-white no-underline transition-colors hover:opacity-90">
+            <Link href="/borrowerDashboard/submit-deal" className="shrink-0 whitespace-nowrap rounded-[6px] bg-accent px-[24px] py-[12px] text-[13px] font-[800] text-white no-underline transition-colors hover:opacity-90">
               {isEs ? "Analizar y Publicar" : "Analyze & Post a Deal"}
             </Link>
           </div>
@@ -394,35 +394,34 @@ export default function BorrowerDashboardView() {
 
       {/* Lateral Derecho (Sidebar Widgets) */}
       <div className="lg:col-span-1 space-y-4">
-        {/* Widget 1: Education and Training */}
-        <div className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-accent hover:shadow-md dark:hover:border-ink-3">
+        {/* Widget 1: Education and Training -> Redirige a FAQ */}
+        <Link href="/borrowerDashboard/faq" className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-accent hover:shadow-md dark:hover:border-ink-3 no-underline">
           <div className="mb-[10px] flex h-[44px] w-[44px] items-center justify-center rounded-[10px] bg-accent-soft text-accent">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
           </div>
           <div className="text-[14px] font-[800] text-ink">{t.dashboardBorrower.widgets?.education.title || "Educacion y Capacitacion"}</div>
           <div className="mt-[4px] text-[12px] leading-[1.5] text-ink-2">{t.dashboardBorrower.widgets?.education.sub || "Aprende mejores practicas y estrategias."}</div>
-        </div>
+      </Link>
 
-        {/* Widget 2: Refi */}
-        <div className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-success hover:shadow-md dark:hover:border-ink-3">
-          <div className="mb-[10px] flex h-[44px] w-[44px] items-center justify-center rounded-[10px] bg-success-soft text-success">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      {/* Widget 2: Refi -> Redirige a Submit Deal */}
+      <Link href="/borrowerDashboard/submit-deal" className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-success hover:shadow-md dark:hover:border-ink-3 no-underline">
+        <div className="mb-[10px] flex h-[44px] w-[44px] items-center justify-center rounded-[10px] bg-success-soft text-success">            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
           <div className="text-[14px] font-[800] text-ink">{t.dashboardBorrower.widgets?.refi.title || " Listo para refinanciar?"}</div>
           <div className="mt-[4px] text-[12px] leading-[1.5] text-ink-2">{t.dashboardBorrower.widgets?.refi.sub || "Obten una cotizacion en minutos."}</div>
-        </div>
+        </Link>
 
-        {/* Widget 3: Insurance */}
-        <div className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-amber hover:shadow-md dark:hover:border-ink-3">
+        {/* Widget 3: Insurance -> Abre correo hacia soporte */}
+        <a href="mailto:soporte@paymyloan.ai?subject=Cotización%20de%20Seguro" className="flex cursor-pointer flex-col justify-center rounded-[10px] border border-rule bg-surface p-[20px] transition-all hover:border-amber hover:shadow-md dark:hover:border-ink-3 no-underline">
           <div className="mb-[10px] flex h-[44px] w-[44px] items-center justify-center rounded-[10px] bg-amber-soft text-amber">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div className="text-[14px] font-[800] text-ink">{t.dashboardBorrower.widgets?.insurance.title || " Necesitas seguro?"}</div>
           <div className="mt-[4px] text-[12px] leading-[1.5] text-ink-2">{t.dashboardBorrower.widgets?.insurance.sub || "Obten una cotizacion al instante."}</div>
-        </div>
+        </a>
       </div>
-      
+            
     </div>
-    </div>
-  );
+  </div>
+);
 }

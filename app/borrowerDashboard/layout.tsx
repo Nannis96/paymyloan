@@ -39,6 +39,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const sb = {
     dashboard: "Dashboard",
     deals: isEs ? "Tratos" : "Deals",
+    contracts: isEs ? "Contratos" : "Contracts",
     notifications: isEs ? "Notificaciones" : "Notifications",
     messages: isEs ? "Mensajes" : "Messages",
     contacts: isEs ? "Contactos" : "Contacts",
@@ -99,6 +100,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {sb.deals}
             {openDeals > 0 && <span className="ml-auto rounded-[10px] bg-accent px-[7px] py-[1px] text-[10px] font-[700] text-accent-ink">{openDeals}</span>}
           </Link>
+          <Link href="/borrowerDashboard/contracts" className={`${navItemBase} ${pathname.includes("/contracts") ? navItemActive : ""}`}>
+            <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/contracts") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            {sb.contracts}
+          </Link>
           <Link href="/borrowerDashboard/notifications" className={`${navItemBase} ${pathname.includes("/notifications") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/notifications") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" strokeWidth="1.4"/><path d="M8 16a2 2 0 004 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
             {sb.notifications}
@@ -132,7 +137,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {sb.inviteLender}
           </Link>
 
-          <Link href="/submit-deal" className="mx-[14px] mt-[12px] block rounded-[7px] bg-accent p-[10px] text-center font-sans text-[13px] font-[700] text-accent-ink no-underline transition-colors hover:bg-blue-700">
+          <Link href="/borrowerDashboard/submit-deal" className="mx-[14px] mt-[12px] block rounded-[7px] bg-accent p-[10px] text-center font-sans text-[13px] font-[700] text-accent-ink no-underline transition-colors hover:bg-blue-700">
             {sb.postDeal}
           </Link>
           
@@ -147,10 +152,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
           {/* Enlaces inferiores empujados hacia abajo con mt-auto */}
           <div className="mt-auto flex flex-col gap-1 pt-8 pb-4">
-            <Link href="/borrowerDashboard/support" className="block px-[18px] py-[8px] text-[13px] font-[500] text-ink-2 no-underline transition-colors hover:bg-surface-2 hover:text-ink">
+            <Link href="/borrowerDashboard/support" className={`${navItemBase} ${pathname.includes("/support") ? navItemActive : ""}`}>
               {sb.support}
             </Link>
-            <Link href="/borrowerDashboard/faq" className="block px-[18px] py-[8px] text-[13px] font-[500] text-ink-2 no-underline transition-colors hover:bg-surface-2 hover:text-ink">
+            <Link href="/borrowerDashboard/faq" className={`${navItemBase} ${pathname.includes("/faq") ? navItemActive : ""}`}>
               {sb.faqHelp}
             </Link>
           </div>

@@ -322,4 +322,45 @@ export const borrower = {
   rateLender: { title: "Calificar al Prestamista", subtitle: "Tu préstamo ha finalizado. ¿Cómo fue tu experiencia con", ratingLabel: "Calificación", reviewLabel: "Reseña pública (opcional)", reviewPh: "Escribe sobre tu experiencia trabajando con este prestamista...", submit: "Enviar Calificación", success: "¡Gracias! Tu calificación ha sido publicada en el perfil del prestamista.", close: "Cerrar" },
 
   leaveReview: { pageTitle: "Dejar una reseña", pageSub: "Las reseñas se desbloquean después de que un trato se cierra. Son públicas, están vinculadas a tu cuenta y no pueden ser anónimas. PML puede marcar o eliminar reseñas que violen nuestros términos.", closedBadge: "Cerrado", rateTitle: "Califica a tu prestamista", rateSub: "Tu reseña honesta ayuda a otros prestatarios a tomar decisiones informadas.", tapToRate: "Toca para calificar", labels: ["", "Malo", "Por debajo del promedio", "Bueno", "Genial", "Excepcional"], writeReview: "Escribe tu reseña", reviewPh: "¿Cómo fue la experiencia trabajando con este prestamista? Comunicación, velocidad, equidad...", tagsTitle: "¿Qué destacó? (opcional)", tags: ["Fondeo rápido", "Comunicación clara", "Términos justos", "Flexible", "Profesional", "Trabajaría con él de nuevo"], importantNote: "Importante: No incluyas números de teléfono, correos electrónicos ni información de contacto fuera de la plataforma en tu reseña. Las reseñas son públicas y están vinculadas a tu nombre real.", submitBtn: "Enviar reseña", skipBtn: "Omitir por ahora", submittedTitle: "Reseña enviada", submittedSub: "Gracias. Tu reseña ahora está visible en el perfil de {name}. {name} también tendrá la oportunidad de calificarte a ti como prestatario.", backBtn: "Volver al panel" },
+
+  faq: {
+    title: "Preguntas Frecuentes",
+    subtitle: "Encuentra respuestas rápidas sobre cómo funciona el marketplace, los contratos y las reglas de la plataforma.",
+    back: "Volver al dashboard",
+    sections: [
+      {
+        title: "1. Sobre el Marketplace y Privacidad",
+        items: [
+          { q: "¿Qué tipos de proyectos se pueden financiar?", a: "La plataforma soporta principalmente proyectos inmobiliarios, incluyendo Fix and Flip, Slow Flip, Rentas, Comercial y Nueva Construcción." },
+          { q: "¿Mi información personal y la dirección de la propiedad son públicas?", a: "No de forma predeterminada. La plataforma utiliza un sistema de 'Identidad Oculta' (Shielded Identity) en el Marketplace. Los prestamistas solo ven métricas financieras (ARV, monto solicitado, LTV), y deben solicitar formalmente acceso a los documentos para ver el nombre de tu LLC y la dirección exacta." },
+          { q: "¿Qué es el LTV (Loan-to-Value)?", a: "Es la relación entre el monto del préstamo solicitado y el valor de la propiedad una vez reparada (ARV). La plataforma calcula esto automáticamente y alerta si el LTV supera los umbrales de riesgo (por ejemplo, >75%)." }
+        ]
+      },
+      {
+        title: "2. Ofertas (Quotes) y Negociación",
+        items: [
+          { q: "¿Cómo funcionan las ofertas de los prestamistas?", a: "Los prestamistas envían cotizaciones formales (Quotes) que incluyen el monto principal, la tasa de interés anual, el plazo de amortización (ej. 6, 9, 12 meses) y los puntos de cierre." },
+          { q: "¿Cómo se estructuran los desembolsos?", a: "Las ofertas pueden estructurarse para desembolsar el 100% del capital al cierre (Full) o mediante ministraciones basadas en avances de obra (Draws)." },
+          { q: "¿Puedo negociar una oferta recibida?", a: "Sí, el sistema permite enviar contraofertas. Puedes ajustar el monto, la tasa de interés, el plazo en meses, los puntos y añadir notas antes de reenviarla al prestamista." }
+        ]
+      },
+      {
+        title: "3. Contratos y Pagos",
+        items: [
+          { q: "¿Cómo se calculan los pagos mensuales?", a: "La mayoría de los préstamos tipo puente se estructuran como 'Solo Interés' (Interest Only), donde pagas únicamente el interés devengado mensual basado en un año comercial de 360 días (Per diem). También se soportan préstamos amortizados o estructurados como 'Balloon'." },
+          { q: "¿Qué sucede en caso de atraso?", a: "El sistema cambia el estado del contrato a 'Delinquent' (En mora) o 'Late'. Los contratos incluyen penalizaciones por pago tardío (Late Fees), que pueden configurarse como un monto fijo o un porcentaje." },
+          { q: "¿Qué es la Carta de Compromiso (Commitment Letter)?", a: "Es un documento oficial autogenerado por la plataforma una vez que se acepta una oferta, el cual desglosa el monto, tasas, fechas de vencimiento, tarifas de la plataforma y contiene las firmas electrónicas de ambas partes." },
+          { q: "¿Cómo funciona la liquidación (Payoff)?", a: "El panel incluye una 'Calculadora de liquidación' donde puedes seleccionar una fecha de corte futura para calcular el capital restante más los intereses devengados hasta ese día exacto." }
+        ]
+      },
+      {
+        title: "4. Reglas de la Plataforma y Confianza",
+        items: [
+          { q: "¿Puedo comunicarme por fuera de la plataforma con un prestamista?", a: "No está permitido compartir información de contacto directo. El sistema de mensajería interna detecta y bloquea automáticamente los mensajes que intentan enviar números de teléfono o correos electrónicos." },
+          { q: "¿Cómo sé si un prestamista es confiable?", a: "Los prestamistas pasan por niveles de verificación: 'Business Verified' (entidad legal y EIN verificados) y 'Fully Verified' (incluye SSN encriptado e identificación oficial del firmante)." },
+          { q: "¿Qué es el PML Score?", a: "Es un sistema de calificación donde los prestatarios y prestamistas se evalúan mutuamente tras un trato (de 1 a 5 estrellas). El promedio se traduce en una letra de calificación (ej. A+, B, C) visible en sus perfiles." }
+        ]
+      }
+    ]
+  }
 };

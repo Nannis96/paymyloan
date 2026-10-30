@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
 
 function PreQualificationContent() {
   const { t, lang } = useSite();
@@ -29,6 +30,7 @@ function PreQualificationContent() {
   const [credit, setCredit] = useState("");
   const [entity, setEntity] = useState("");
   const [bankruptcy, setBankruptcy] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const nextStep = async () => {
     if (step < 4) {
@@ -42,8 +44,9 @@ function PreQualificationContent() {
         else if (entity.includes("Corpor")) mappedType = "CORPORATION";
         else if (entity.includes("Trust") || entity.includes("Fideicomiso")) mappedType = "TRUST";
 
-        // Usamos apiFetch para manejar automaticamente los headers y la sesion
-        const res = await apiFetch("/api/borrowers/me/verification", {
+        // Derivamos la URL absoluta del backend para evitar el error 404 (HTML) del enrutador frontend
+        const backendUrl = API_ROUTES.auth.me.replace('/auth/me', '/borrowers/me/verification');
+        const res = await apiFetch(backendUrl, {
           method: "POST",
           body: JSON.stringify({
             entityName: "Pre-qualification Entity", 
@@ -53,10 +56,9 @@ function PreQualificationContent() {
           })
         });
 
-        // 409 es si la solicitud ya estaba PENDING o APPROVED[cite: 2]
+        // 409 es si la solicitud ya estaba PENDING o APPROVED
         if (res.ok || res.status === 409) {
-          alert(lang === "es" ? "Pre-calificacion enviada con exito." : "Pre-qualification submitted successfully!");
-          router.push("/borrowerDashboard");
+          setShowSuccessModal(true);
         } else {
           // Prevenimos el error "Unexpected token '<'" verificando que sea JSON
           const text = await res.text();
@@ -399,9 +401,34 @@ function PreQualificationContent() {
               {isSubmitting ? pq.buttons.submitting : (step === 4 ? pq.buttons.submit : pq.buttons.next)}
             </button>
           </div>
-
         </div>
       </div>
+
+      {/* Modal de Exito */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in duration-200 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-[12px] bg-surface p-6 shadow-lg animate-in zoom-in-95 border border-rule text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-success-soft text-success">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h3 className="mb-2 text-[18px] font-[800] text-ink">
+              {lang === "es" ? " Pre-calificacion enviada!" : "Pre-qualification submitted!"}
+            </h3>
+            <p className="mb-6 text-[13px] leading-relaxed text-ink-2">
+              {lang === "es" ? "Tu trato ahora sera visible para los prestamistas con una insignia de verificado. Puedes continuar desde tu panel." : "Your deal will now be visible to lenders with a verified badge. You can continue from your dashboard."}
+            </p>
+            <button
+              onClick={() => router.push("/borrowerDashboard")}
+              className="w-full rounded-[8px] bg-accent py-2.5 text-[14px] font-[700] text-accent-ink transition-colors hover:opacity-90 cursor-pointer border-none"
+            >
+              {lang === "es" ? "Ir a mi panel" : "Go to dashboard"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

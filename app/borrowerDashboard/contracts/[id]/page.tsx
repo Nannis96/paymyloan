@@ -27,6 +27,17 @@ interface ContractData {
     calculatedMonthlyPayment: number | string | null;
     maturityDate?: string;
   };
+  lenderCompany?: {
+    companyName: string;
+  };
+  borrowers?: {
+    isPrimary: boolean;
+    borrowerProfile?: {
+      user?: {
+        name: string;
+      };
+    };
+  }[];
 }
 
 interface PaymentData {
@@ -154,7 +165,7 @@ function ContractDetailContent() {
   const totalPages = Math.max(1, Math.ceil(payments.length / itemsPerPage));
   const currentPayments = payments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  if (isLoading) {
+if (isLoading) {
     return (
       <div className="flex p-10 items-center justify-center">
         <p className="text-ink-3">{cd.loading}</p>
@@ -171,20 +182,27 @@ function ContractDetailContent() {
     );
   }
 
+  // Extraer datos reales usando las APIs del contrato y los diccionarios 
+  const primaryBorrower = contract.borrowers?.find(b => b.isPrimary)?.borrowerProfile?.user?.name || cd.borrowerFallback;
+  const lenderName = contract.lenderCompany?.companyName || cd.lenderFallback;
+
   return (
     <div className="animate-in fade-in duration-300">
       <div className="w-full">
         
         <header className="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <h1 className="text-[28px] font-[900] tracking-tight text-ink">{cd.title}: {contract.contractNumber}</h1>
-            <p className="mt-[4px] text-[14px] text-ink-3">{cd.subtitle}</p>
+            <h1 className="text-[28px] font-[900] tracking-tight text-ink">
+              {contract.property.addressLine1}
+            </h1>
+            <p className="mt-[4px] text-[14px] text-ink-3">
+              {cd.title}: {contract.contractNumber} &middot; {contract.property.city}, {contract.property.state}
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href={`/borrowerDashboard/contracts/${contract.id}/payoff`} className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90">
               {t.dashboardBorrower.actions.payoff}
             </Link>
-
             {/* Boton conectado a la pagina existente de draw-request */}
             <Link href={`/borrowerDashboard/draw-request?contractId=${contract.id}`} className="inline-flex items-center justify-center rounded-lg border border-rule-strong bg-surface px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-accent hover:text-accent shadow-sm">
               {t.dashboardBorrower.actions.drawRequest}
@@ -235,21 +253,21 @@ function ContractDetailContent() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          
           {/* Box Partes Involucradas */}
           <div className="rounded-xl border border-rule bg-surface p-6">
             <h2 className="text-sm font-bold uppercase tracking-widest text-accent mb-4">{cd.parties}</h2>
             <div className="flex flex-col gap-3 text-sm">
               <div className="flex justify-between border-b border-rule pb-2">
                 <span className="text-ink-3">{cd.labels.lender}</span>
-                <span className="font-bold text-ink">{cd.lenderFallback}</span>
+                <span className="font-bold text-ink">{lenderName}</span>
               </div>
               <div className="flex justify-between pt-1">
                 <span className="text-ink-3">{cd.labels.borrower}</span>
-                <span className="font-bold text-ink">{cd.borrowerFallback}</span>
+                <span className="font-bold text-ink">{primaryBorrower}</span>
               </div>
             </div>
           </div>
-
           {/* Box Terminos Financieros */}
           <div className="rounded-xl border border-rule bg-surface p-6">
             <h2 className="text-sm font-bold uppercase tracking-widest text-accent mb-4">{cd.financials}</h2>

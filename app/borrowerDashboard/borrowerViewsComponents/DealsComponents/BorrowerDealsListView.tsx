@@ -37,7 +37,9 @@ export default function BorrowerDealsListView() {
         if (res.ok) {
           const json = await res.json();
           if (json.success) {
-            setLoanRequests(json.data.items || []);
+            // Filtramos las solicitudes que ya se convirtieron en contratos (MATCHED) para no duplicarlas
+            const activeRequests = (json.data.items || []).filter((req: any) => req.status !== "MATCHED");
+            setLoanRequests(activeRequests);
             setReqTotalPages(json.data.totalPages || 1);
           }
         }
@@ -270,17 +272,22 @@ export default function BorrowerDealsListView() {
 
                 {renderProgressBar("contract", contract.status)}
 
-                <div className="mt-[16px] flex justify-end border-t border-rule pt-[12px]">
+                <div className="mt-[16px] flex justify-end gap-[8px] border-t border-rule pt-[12px]">
                   {contract.status === "PAID_OFF" ? (
-                  <Link href={`/borrowerDashboard/leave-a-review?contractId=${contract.id}`} className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
-                    {isEs ? "Calificar prestamista" : "Rate lender"}
-                  </Link>
-                ) : (
-                  <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
-                      {isEs ? "Ver contrato" : "View contract"}
+                    <Link href={`/borrowerDashboard/leave-a-review?contractId=${contract.id}`} className="cursor-pointer rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
+                      {isEs ? "Calificar prestamista" : "Rate lender"}
                     </Link>
-                )}
-              </div>
+                  ) : (
+                    <>
+                      <Link href={contract.loanRequestId ? `/borrowerDashboard/deals/${contract.loanRequestId}` : "#"} className="rounded-[6px] border border-rule-strong bg-surface-2 px-[14px] py-[6px] text-[12px] font-[600] text-ink-3 no-underline transition-colors hover:bg-rule">
+                        {isEs ? "Ver detalles" : "View details"}
+                      </Link>
+                      <Link href={`/borrowerDashboard/contracts/${contract.id}`} className="rounded-[6px] bg-accent px-[14px] py-[6px] text-[12px] font-[600] text-white no-underline transition-colors hover:bg-blue-700">
+                        {isEs ? "Ver contrato" : "View contract"}
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
             ))}
 
