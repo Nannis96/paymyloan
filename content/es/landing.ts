@@ -128,10 +128,10 @@ export const landing = {
     },
   },
 
-welcomeModal: { brand: "PayMyLoan", brandSuffix: ".ai", tagline: "Pr stamos privados   simplificados.", question: " mo podemos ayudarte hoy?", lender: { icon: "L", title: " Tienes fondos para desplegar?", sub: "Quiero fondear tratos inmobiliarios" }, borrower: { icon: "B", title: "¿Quieres fondear un trato?", sub: "Necesito capital para mi siguiente trato" }, signin: { icon: " ", title: "Iniciar sesión", sub: "Accede a tu portal" } },
+welcomeModal: { brand: "PayMyLoan", brandSuffix: ".ai", tagline: "Prestamos privados   simplificados.", question: " ¿Cómo podemos ayudarte hoy?", lender: { icon: "L", title: " Tienes fondos para desplegar?", sub: "Quiero fondear tratos inmobiliarios" }, borrower: { icon: "B", title: "¿Quieres fondear un trato?", sub: "Necesito capital para mi siguiente trato" }, signin: { icon: " ", title: "Iniciar sesión", sub: "Accede a tu portal" } },
   nav: { skip: "Saltar al formulario de registro", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "Cómo funciona" }, { href: "#costo", label: "Costo de la plataforma" }, { href: "#seguridad", label: "Seguridad" }, ], features: "Funcionalidades", howItWorks: "Cómo funciona", login: "Iniciar sesión", logout: "Cerrar sesión", notifications: "Notificaciones",cta: "Ingresar", themeToggle: "Cambiar tema", langToggle: "Cambiar idioma", backToDashboard: "Volver al panel", },
 
-landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why: "Por qu  PML", demo: "Demo", founderStory: "Historia del Fundador", signIn: "Iniciar sesión", getStarted: "Comenzar gratis" },
+landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why: "Por qu  PML", about: "Nosotros", demo: "Demo", founderStory: "Historia del Fundador", signIn: "Iniciar sesi n", getStarted: "Comenzar gratis" },
   hero: { eyebrow: "Servicing de préstamos privados", title: "Un solo saldo en el que ambos confían.", deck: "PayMyLoan.ai administra préstamos privados con garantía inmobiliaria: el prestatario paga por ACH, el prestamista ve exactamente qué se pagó y de qué propiedad, y ambos trabajan sobre los mismos términos, documentos y saldo.", points: [ "Pago por ACH: 0.8% con tope de $5.00 por transacción", "Términos aceptados por las dos partes, con fecha, hora e IP", "Verificación en dos pasos obligatoria para prestamistas", ], trustLabel: "Operado por", trust: [ "Dueño a Dueño LLC", "Pagos procesados por Stripe", "ACH Direct Debit", ], },
 
   pmlHero: { badge: "Gestión de Préstamos con IA", subtitle: "PML — Prestamista de Dinero Privado. PayMyLoan.ai. Ambas partes del acuerdo.", title1: "De la propuesta", title2: "al pago final.", title3: "Una sola plataforma.", by: "por PayMyLoan.ai", desc: "La propuesta. La solicitud de préstamo. El compromiso. El procesamiento de pagos. La liquidación. Todo en un solo lugar — tanto para prestatarios como para prestamistas.", cta1: "Quiero acceso anticipado", cta2: "Ver cómo funciona", },
@@ -269,8 +269,28 @@ landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why:
           title: "Los prestamistas en tu mercado te esperan.",
           subtitle: "Publica gratis tu primer trato con un código de referido, o paga $99/mes. Sin bancos. Sin brokers. Sin esperas.",
           btnGhost: "Buscar prestamistas",
-          btnPrimary: "Publicar trato gratis →"
+          btnPrimary: "Publicar trato gratis"
         }
+      }
+    },
+    aboutUs: {
+      hero: {
+        subtitle: "RESPUESTAS REALES. OPCIONES MÁS BRILLANTES."
+      },
+      whatIs: {
+        title: "¿Qué es PayMyLoan.ai?",
+        desc: "PayMyLoan.ai (PML) es una plataforma de préstamos de dinero privado construida para inversores inmobiliarios y prestamistas privados. Conecta a prestatarios que necesitan financiamiento rápido y flexible con prestamistas que buscan retornos sólidos respaldados por bienes raíces reales. Piénsalo como la capa de infraestructura para tratos de dinero privado: el lugar donde ambas partes de la transacción conviven, se comunican, rastrean y reciben pagos."
+      },
+      whoItIsFor: {
+        title: "Para quién es",
+        borrowersLabel: "Los Prestatarios",
+        borrowersDesc: "son inversores inmobiliarios (operadores fix-and-flip, inversores BRRRR, propietarios, desarrolladores) que necesitan préstamos puente para fondear sus tratos rápidamente. PML les da un lugar para publicar tratos, construir un historial, ser analizados por Scout (la IA), y presentar directamente a prestamistas listos para fondear.",
+        lendersLabel: "Los Prestamistas",
+        lendersDesc: "son individuos privados o pequeños fondos que quieren mejores retornos que una cuenta de ahorros, respaldados por bienes raíces. PML les da un flujo de tratos curado, perfiles de prestatarios para evaluar el riesgo y pagos ACH automatizados para que cobren intereses mensuales sin perseguir a nadie."
+      },
+      coreProblem: {
+        title: "El problema central que resuelve PML",
+        desc: "PayMyLoan.ai (PML) es una plataforma de préstamos de dinero privado construida para inversores inmobiliarios y prestamistas privados. Conecta a prestatarios que necesitan financiamiento rápido y flexible con prestamistas que buscan retornos sólidos respaldados por bienes raíces reales. Piénsalo como la capa de infraestructura para tratos de dinero privado: el lugar donde ambas partes de la transacción conviven, se comunican, rastrean y reciben pagos."
       }
     },
     lenderFaq: {

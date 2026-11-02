@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useSite } from "@/app/components/layout/SiteShell";
-import { Landmark, X } from "lucide-react";
+import { X } from "lucide-react";
 
 export default function WelcomeModal() {
   const { t, setAppMode, lang, setLang } = useSite();
@@ -65,21 +66,29 @@ export default function WelcomeModal() {
           {lang === "es" ? "EN" : "ES"}
         </button>
 
-        {/* Icono Principal */}
-        <div className="mx-auto mb-5 flex h-[52px] w-[52px] items-center justify-center rounded-xl bg-accent-soft text-accent">
-          <Landmark size={24} />
+        {/* Cabecera con Mascota y Titulo */}
+        <div className="mb-8 flex flex-col sm:flex-row items-center justify-center gap-6 sm:text-left">
+          <div className="shrink-0">
+            <Image 
+              src="/mascot/saludando.png" 
+              alt="Mascota saludando" 
+              width={90} 
+              height={90} 
+              className="object-contain"
+            />
+          </div>
+          <div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
+              {m.brand}{m.brandSuffix}
+            </div>
+            <h2 className="mb-2 text-[26px] font-extrabold leading-[1.2] tracking-tight text-ink">
+              {m.question}
+            </h2>
+            <p className="text-[14px] text-ink-3">
+              {m.tagline}
+            </p>
+          </div>
         </div>
-
-        {/* Titulo y Subtitulo */}
-        <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
-          {m.brand}{m.brandSuffix}
-        </div>
-        <h2 className="mb-2 text-[26px] font-extrabold leading-[1.2] tracking-tight text-ink">
-          {m.question}
-        </h2>
-        <p className="mb-8 text-[14px] text-ink-3">
-          {m.tagline}
-        </p>
 
         {/* Opciones Principales */}
         <div className="mb-6 flex flex-col gap-3">

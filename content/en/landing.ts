@@ -133,7 +133,7 @@ export const landing: typeof Es = {
 welcomeModal: { brand: "PayMyLoan", brandSuffix: ".ai", tagline: "Private money lending   simplified.", question: "How can we help you today?", lender: { icon: "L", title: "Have Funds to Deploy?", sub: "I want to fund real estate deals" }, borrower: { icon: "B", title: "Want a Deal Funded?", sub: "I need capital for my next deal" }, signin: { icon: " ", title: "User Sign In", sub: "Access your portal" } },
   nav: { skip: "Skip to the sign-up form", brand: "PayMyLoan", brandSuffix: ".ai", links: [ { href: "#como-funciona", label: "How it works" }, { href: "#costo", label: "Platform cost" }, { href: "#seguridad", label: "Security" }, ], features: "Features", howItWorks: "How it works", login: "Log in", logout: "Log out", notifications: "Notifications",cta: "Log in", themeToggle: "Switch theme", langToggle: "Switch language", backToDashboard: "Back to dashboard", },
 
-landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML", demo: "Demo", founderStory: "Founder Story", signIn: "Sign in", getStarted: "Get started free" },
+landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML", about: "About Us", demo: "Demo", founderStory: "Founder Story", signIn: "Sign in", getStarted: "Get started free" },
   hero: { eyebrow: "Private loan servicing", title: "One balance both sides trust.", deck: "PayMyLoan.ai services private real-estate-secured loans: the borrower pays by ACH, the lender sees exactly what was paid and on which property, and both work from the same terms, documents and balance.", points: [ "ACH payments: 0.8%, capped at $5.00 per transaction", "Terms accepted by both parties, with date, time and IP", "Two-factor authentication required for lenders", ], trustLabel: "Operated by", trust: [ "Dueño a Dueño LLC", "Payments processed by Stripe", "ACH Direct Debit", ], },
 
   pmlHero: { badge: "AI-Powered Loan Management", subtitle: "PML — Private Money Lender. PayMyLoan.ai. Both sides of the deal.", title1: "From pitch", title2: "to payoff.", title3: "One platform.", by: "by PayMyLoan.ai", desc: "The pitch. The loan request. The commitment. Payment processing. The payoff. All in one place — for borrowers and lenders alike.", cta1: "Get Early Access", cta2: "See how it works", },
@@ -323,10 +323,30 @@ landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML"
           ]
         }
       ],
-      cta: { 
-        title: "Ready to put your capital to work?", 
-        sub: "Lender accounts are always free. Browse deals in under 2 minutes.", 
-        btn: "Create free lender account" 
+      cta: {
+          title: "Ready to put your capital to work?",
+          sub: "Lender accounts are always free. Browse deals in under 2 minutes.",
+          btn: "Create free lender account"
+        }
+    },
+    aboutUs: {
+      hero: {
+        subtitle: "REAL ANSWERS. BRIGHTER OPTIONS."
+      },
+      whatIs: {
+        title: "What Is PayMyLoan.ai?",
+        desc: "PayMyLoan.ai (PML) is a private money lending platform built for real estate investors and private lenders. It connects borrowers who need fast, flexible financing with lenders who want strong returns backed by real property. Think of it as the infrastructure layer for private money deals — the place where both sides of the transaction live, communicate, track, and get paid."
+      },
+      whoItIsFor: {
+        title: "Who It's For",
+        borrowersLabel: "Borrowers",
+        borrowersDesc: "are real estate investors — fix-and-flip operators, BRRRR investors, landlords, developers — who need bridge loans to fund their deals fast. PML gives them a place to post deals, build a track record, get analyzed by Scout (the AI), and pitch directly to lenders ready to fund.",
+        lendersLabel: "Lenders",
+        lendersDesc: "are private individuals or small funds who want better returns than a savings account, backed by real property. PML gives them a curated deal pipeline, borrower profiles to evaluate risk, and automated ACH payments so they collect monthly interest without chasing anyone."
+      },
+      coreProblem: {
+        title: "The Core Problem PML Solves",
+        desc: "PayMyLoan.ai (PML) is a private money lending platform built for real estate investors and private lenders. It connects borrowers who need fast, flexible financing with lenders who want strong returns backed by real property. Think of it as the infrastructure layer for private money deals — the place where both sides of the transaction live, communicate, track, and get paid."
       }
     },
     lenderOptin: {
