@@ -11,14 +11,27 @@ export default function DealView() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  const { lang } = useSite();
+  const { lang, t } = useSite();
+  const dp = t.dealPage;
   const isEs = lang === "es";
-
+  
   const [deal, setDeal] = useState<any>(null);
   const [quotes, setQuotes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSelecting, setIsSelecting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  
+  // Estado para el modal de elementos bloqueados
+  const [infoModal, setInfoModal] = useState<{ title: string; desc: string } | null>(null);
+
+  // Manejador que abre documentos reales (despues) o muestra el modal educativo
+  const handleItemClick = (title: string, desc: string, isAvailable: boolean) => {
+    if (isAvailable) {
+      console.log(`Abriendo ${title}...`);
+    } else {
+      setInfoModal({ title, desc });
+    }
+  };
 
   useEffect(() => {
     // Evita hacer fetch si Next.js aún no extrae el ID de la URL
@@ -367,7 +380,7 @@ export default function DealView() {
         <div className="lg:col-span-1 space-y-4">
           
           {/* Documentos */}
-          <details className="group rounded-[12px] border border-rule bg-surface shadow-sm open:bg-surface-2 transition-colors">
+          <details className="group rounded-[12px] border border-rule bg-surface shadow-sm open:bg-surface-2 transition-colors" open>
             <summary className="flex cursor-pointer items-center justify-between p-[16px] text-[14px] font-[800] text-ink list-none [&::-webkit-details-marker]:hidden">
               {isEs ? "Documentos" : "Documents"}
               <span className="transition-transform duration-200 group-open:rotate-180">
@@ -375,17 +388,30 @@ export default function DealView() {
               </span>
             </summary>
             <div className="flex flex-col gap-3 p-[0_16px_16px_16px] text-[13px] text-ink-2">
-              <div className="cursor-default hover:text-accent">{isEs ? "Contrato" : "Contract"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Carta de Compromiso" : "Commitment Letter"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Prueba de Seguro" : "Evidence of Insurance"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Escritura de Garantía" : "Warranty Deed"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Escritura de Fideicomiso" : "Deed of Trust"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Estado de Liquidación" : "Settlement Statement"}</div>
+              {deal.status === 'MATCHED' || deal.contract?.id || deal.contractId ? (
+                <>
+                  <Link href={deal.contract?.id || deal.contractId ? `/borrowerDashboard/contracts/${deal.contract?.id || deal.contractId}` : "/borrowerDashboard/contracts"} className="font-[700] text-accent hover:underline">{isEs ? "Contrato" : "Contract"}</Link>
+                  <Link href="/borrowerDashboard/documents" className="font-[700] text-accent hover:underline">{isEs ? "Carta de Compromiso" : "Commitment Letter"}</Link>
+                  <Link href="/borrowerDashboard/documents" className="font-[700] text-accent hover:underline">{isEs ? "Evidencia de Seguro" : "Evidence of Insurance"}</Link>
+                  <Link href="/borrowerDashboard/documents" className="font-[700] text-accent hover:underline">{isEs ? "Escritura de Garantía" : "Warranty Deed"}</Link>
+                  <Link href="/borrowerDashboard/documents" className="font-[700] text-accent hover:underline">{isEs ? "Escritura de Fideicomiso" : "Deed of Trust"}</Link>
+                  <Link href="/borrowerDashboard/documents" className="font-[700] text-accent hover:underline">{isEs ? "Estado de Liquidación" : "Settlement Statement"}</Link>
+                </>
+              ) : (
+                <>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.contractTitle, dp.lockedModal.contractDesc, false)}>{isEs ? "Contrato" : "Contract"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.commitmentTitle, dp.lockedModal.commitmentDesc, false)}>{isEs ? "Carta de Compromiso" : "Commitment Letter"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.insuranceTitle, dp.lockedModal.insuranceDesc, false)}>{isEs ? "Evidencia de Seguro" : "Evidence of Insurance"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.warrantyTitle, dp.lockedModal.warrantyDesc, false)}>{isEs ? "Escritura de Garantía" : "Warranty Deed"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.trustTitle, dp.lockedModal.trustDesc, false)}>{isEs ? "Escritura de Fideicomiso" : "Deed of Trust"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.settlementTitle, dp.lockedModal.settlementDesc, false)}>{isEs ? "Estado de Liquidación" : "Settlement Statement"}</div>
+                </>
+              )}
             </div>
           </details>
 
-          {/* Comunicación / Actividad */}
-          <details className="group rounded-[12px] border border-rule bg-surface shadow-sm open:bg-surface-2 transition-colors">
+          {/* Comunicacion / Actividad */}
+          <details className="group rounded-[12px] border border-rule bg-surface shadow-sm open:bg-surface-2 transition-colors" open>
             <summary className="flex cursor-pointer items-center justify-between p-[16px] text-[14px] font-[800] text-ink list-none [&::-webkit-details-marker]:hidden">
               {isEs ? "Comunicación / Actividad" : "Communication / Activity"}
               <span className="transition-transform duration-200 group-open:rotate-180">
@@ -393,14 +419,22 @@ export default function DealView() {
               </span>
             </summary>
             <div className="flex flex-col gap-3 p-[0_16px_16px_16px] text-[13px] text-ink-2">
-              <div className="cursor-default hover:text-accent">{isEs ? "Textos" : "Texts"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Ofertas" : "Offers"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Correos" : "Mails"}</div>
+              {deal.status === 'MATCHED' ? (
+                <>
+                  <Link href="/borrowerDashboard/messages" className="font-[700] text-accent hover:underline">{isEs ? "Textos / Mensajería" : "Texts / Messaging"}</Link>
+                  <Link href={`/borrowerDashboard/deals/${deal.id}`} className="font-[700] text-accent hover:underline">{isEs ? "Ofertas y Contraofertas" : "Offers & Counters"}</Link>
+                </>
+              ) : (
+                <>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.textsTitle, dp.lockedModal.textsDesc, false)}>{isEs ? "Textos / Mensajería" : "Texts / Messaging"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.offersTitle, dp.lockedModal.offersDesc, false)}>{isEs ? "Ofertas y Contraofertas" : "Offers & Counters"}</div>
+                </>
+              )}
             </div>
           </details>
 
           {/* Contactos del Trato */}
-          <details className="group rounded-[12px] border border-rule bg-surface shadow-sm open:bg-surface-2 transition-colors">
+          <details className="group rounded-[12px] border border-rule bg-surface shadow-sm open:bg-surface-2 transition-colors" open>
             <summary className="flex cursor-pointer items-center justify-between p-[16px] text-[14px] font-[800] text-ink list-none [&::-webkit-details-marker]:hidden">
               {isEs ? "Contactos del Trato" : "Deal Contacts"}
               <span className="transition-transform duration-200 group-open:rotate-180">
@@ -408,14 +442,42 @@ export default function DealView() {
               </span>
             </summary>
             <div className="flex flex-col gap-3 p-[0_16px_16px_16px] text-[13px] text-ink-2">
-              <div className="cursor-default hover:text-accent">{isEs ? "Seguro" : "Insurance"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Título" : "Title"}</div>
-              <div className="cursor-default hover:text-accent">{isEs ? "Contador" : "Bookkeeper"}</div>
+              {deal.status === 'MATCHED' ? (
+                <>
+                  <Link href="/borrowerDashboard/contacts" className="font-[700] text-accent hover:underline">{isEs ? "Contacto de Seguro" : "Insurance Contact"}</Link>
+                  <Link href="/borrowerDashboard/contacts" className="font-[700] text-accent hover:underline">{isEs ? "Compañía de Títulos" : "Title Company"}</Link>
+                  <Link href="/borrowerDashboard/contacts" className="font-[700] text-accent hover:underline">{isEs ? "Contador" : "Bookkeeper"}</Link>
+                </>
+              ) : (
+                <>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.insContactTitle, dp.lockedModal.insContactDesc, false)}>{isEs ? "Contacto de Seguro" : "Insurance Contact"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.titleContactTitle, dp.lockedModal.titleContactDesc, false)}>{isEs ? "Compañía de Títulos" : "Title Company"}</div>
+                  <div className="cursor-pointer hover:text-accent" onClick={() => handleItemClick(dp.lockedModal.bkContactTitle, dp.lockedModal.bkContactDesc, false)}>{isEs ? "Contador" : "Bookkeeper"}</div>
+                </>
+              )}
             </div>
           </details>
-
         </div>
       </div>
+
+      {/* Modal Informativo */}
+      {infoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-sm rounded-[12px] bg-surface p-6 shadow-lg animate-in zoom-in-95 border border-rule">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </div>
+            <h3 className="mb-2 text-[16px] font-[800] text-ink">{infoModal.title}</h3>
+            <p className="mb-6 text-[13px] leading-relaxed text-ink-2">{infoModal.desc}</p>
+            <button
+              onClick={() => setInfoModal(null)}
+              className="w-full rounded-[8px] bg-accent py-2.5 text-[13px] font-[700] text-white transition-colors hover:bg-blue-700 cursor-pointer border-none"
+            >
+              {dp.lockedModal.gotIt}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

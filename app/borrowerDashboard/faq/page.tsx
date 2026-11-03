@@ -1,33 +1,63 @@
 "use client";
+
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import Link from "next/link";
 
-export default function SupportPage() {
-  const { lang } = useSite();
-  const isEs = lang === "es";
+export default function FaqPage() {
+  const { t } = useSite();
+  
+  // Seguro por si hay un error de TS en los diccionarios y no se compilan
+  const faq = t.faq || {
+    title: "FAQ",
+    subtitle: "Cargando...",
+    sections: []
+  };
 
   return (
     <SiteShell isMinimal={true}>
-      <div className="flex h-[70vh] flex-col items-center justify-center animate-in fade-in duration-300">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-accent-soft text-accent">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-          </svg>
+      <div className="w-full animate-in fade-in duration-300 pb-12 pt-2">
+        
+        {/* Encabezado */}
+        <header className="mb-8">
+          <h1 className="text-[28px] font-[900] tracking-tight text-ink mb-2">
+            {faq.title}
+          </h1>
+          <p className="text-[14px] text-ink-3">
+            {faq.subtitle}
+          </p>
+        </header>
+
+        {/* Listado de FAQs estructurado por secciones */}
+        <div className="flex flex-col gap-8">
+          {faq.sections.map((section: any, idx: number) => (
+            <section key={idx}>
+              <h2 className="mb-4 text-[16px] font-[800] text-accent">
+                {section.title}
+              </h2>
+              <div className="flex flex-col gap-3">
+                {section.items.map((item: any, itemIdx: number) => (
+                  <details
+                    key={itemIdx}
+                    className="group rounded-[10px] border border-rule bg-surface shadow-sm open:bg-surface-2 transition-colors"
+                  >
+                    <summary className="flex cursor-pointer items-center justify-between p-[16px] text-[14px] font-[700] text-ink list-none [&::-webkit-details-marker]:hidden hover:text-accent transition-colors">
+                      {item.q}
+                      <span className="transition-transform duration-200 group-open:rotate-180 text-ink-3 group-hover:text-accent">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 6l4 4 4-4" />
+                        </svg>
+                      </span>
+                    </summary>
+                    <div className="p-[0_16px_16px_16px] text-[13px] text-ink-2 leading-[1.7]">
+                      {item.a}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
-        <h1 className="text-[28px] font-[900] tracking-tight text-ink mb-3">
-          {isEs ? "Próximamente" : "Coming Soon"}
-        </h1>
-        <p className="text-[15px] text-ink-3 mb-8 text-center max-w-[400px] leading-relaxed">
-          {isEs 
-            ? "Estamos trabajando duro juntando la información que pueda ser de mayor ayuda para ti. ¡Estará disponible muy pronto!" 
-            : "We're working hard to gather the information that may be most helpful for you. It will be available very soon!"}
-        </p>
-        <Link 
-          href="/borrowerDashboard" 
-          className="rounded-lg bg-accent px-6 py-3 text-[14px] font-bold text-white transition-colors hover:bg-blue-700 shadow-sm"
-        >
-          {isEs ? "Volver al Dashboard" : "Back to Dashboard"}
-        </Link>
+
       </div>
     </SiteShell>
   );

@@ -87,16 +87,9 @@ function ManagePaymentsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-bg p-6 lg:p-14 animate-in fade-in duration-300">
-      <div className="mx-auto max-w-[900px]">
-        
-        <Link
-          href="/borrowerDashboard"
-          className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
-        >
-          <span>&larr;</span> {mp.back}
-        </Link>
-
+    <div className="w-full h-full animate-in fade-in duration-300">
+      <div className="w-full">
+                 
         <header className="mb-10">
           <h1 className="text-[32px] font-black tracking-tight text-ink">{mp.title}</h1>
           <p className="text-ink-2 mt-1">{mp.subtitle}</p>
