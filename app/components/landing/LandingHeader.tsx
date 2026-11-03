@@ -42,6 +42,12 @@ export default function LandingHeader() {
             {ln.why}
           </Link>
           <Link
+             href="/about-us"
+             className={`transition-colors ${pathname === '/about-us' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+          >
+            {ln.about}
+          </Link>
+          <Link
              href="/demo"
              className={`transition-colors ${pathname === '/demo' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
           >

@@ -111,7 +111,7 @@ export default function SubmitDealView() {
   const handlePrev = () => { if (step > 1) setStep(step - 1); };
 
   // Envío al Backend
-  const handlePostDeal = async () => {
+  const handlePostDeal = async (isDraft = false) => {
     setIsSubmitting(true);
     try {
       
@@ -151,8 +151,7 @@ export default function SubmitDealView() {
       if (createRes.ok) {
         const createJson = await createRes.json();
         const dealId = createJson.data?.id;
-
-        if (dealId) {
+        if (dealId && !isDraft) {
           await apiFetch(API_ROUTES.borrowers.publishLoanRequest(dealId), {
             method: "POST",
           });
@@ -587,13 +586,19 @@ export default function SubmitDealView() {
                     <span className="text-[13px] font-semibold text-amber">Unverified</span>
                   </div>
                 </div>
-
                 <button 
-                  onClick={handlePostDeal}
+                  onClick={() => handlePostDeal(false)}
                   disabled={isSubmitting}
-                  className="w-full rounded-md bg-accent p-3.5 text-[15px] font-extrabold tracking-tight text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                  className="w-full rounded-md bg-accent p-3.5 text-[15px] font-extrabold tracking-tight text-white transition-colors hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? "Procesando..." : sd.review.btnPost}
+                </button>
+                <button 
+                  onClick={() => handlePostDeal(true)}
+                  disabled={isSubmitting}
+                  className="mt-3 w-full rounded-md bg-surface-2 border border-rule p-3.5 text-[15px] font-extrabold tracking-tight text-ink-2 transition-colors hover:bg-rule disabled:opacity-50 cursor-pointer"
+                >
+                  {isSubmitting ? "Procesando..." : "Save as Draft"}
                 </button>
                 <div className="mt-2.5 text-center text-[11px] leading-[1.6] text-ink-3 whitespace-pre-line">
                   {sd.review.postNote}
@@ -603,12 +608,12 @@ export default function SubmitDealView() {
           )}
 
         </div>
-      </main>
+    </main>
 
-      {/* Bottom Fixed Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between border-t border-rule bg-white px-8 py-3.5 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
-        <button 
-          onClick={handlePrev} 
+    {/* Bottom Fixed Bar */}
+    <div className="fixed bottom-0 left-0 md:left-[200px] right-0 z-40 flex items-center justify-between border-t border-rule bg-white px-8 py-3.5 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+      <button
+        onClick={handlePrev}
           className={`rounded-md border border-rule bg-surface px-4 py-2 text-[13px] font-semibold text-ink-2 transition-colors hover:border-ink-3 hover:text-ink ${step === 1 ? "invisible" : ""}`}
         >
           {sd.actions.back}
