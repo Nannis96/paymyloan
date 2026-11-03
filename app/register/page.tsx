@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { type Intent } from "@/app/lib/registro";
@@ -33,6 +33,16 @@ function RegisterContent() {
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
   const [correoEnviado, setCorreoEnviado] = useState("");
   const [isResent, setIsResent] = useState(false);
+  // ?ref=CODIGO de un afiliado: se valida para avisar; un codigo invalido se ignora (igual que en el back).
+  const [refCode, setRefCode] = useState<string | null>(null);
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("ref")?.trim();
+    if (!code) return;
+    fetch(API_ROUTES.affiliates.validate(code))
+      .then((r) => r.json())
+      .then((j) => j?.data?.valid && setRefCode(code))
+      .catch(() => {});
+  }, []);
 
   const limpiar = (campo: Campo) =>
     setErrores((prev) => (prev[campo] ? { ...prev, [campo]: undefined } : prev));
@@ -83,7 +93,8 @@ function RegisterContent() {
           email: correo.trim(),
           phone: telefono.replace(/\D/g, ""),
           password: password,
-          role: intent === "lender" ? "LENDER" : "BORROWER"
+          role: intent === "lender" ? "LENDER" : "BORROWER",
+          ...(refCode ? { referralCode: refCode } : {}),
         }),
       });
       const json = await response.json();
@@ -182,6 +193,7 @@ function RegisterContent() {
           ) : (
             /* PANEL 1: SIGNUP */
             <form ref={formRef} onSubmit={onSubmit} noValidate className="animate-in fade-in duration-300">
+              {refCode && <div className="mb-4 rounded-lg bg-success-soft p-2 text-center text-[12px] font-semibold text-success">{lang === "es" ? "Te invitó un afiliado" : "You were invited by an affiliate"} · {refCode}</div>}
               <div className="mb-1.5 text-[22px] font-[800] tracking-[-0.4px] text-ink">{f.title}</div>
               <div className="mb-6 text-[13px] leading-[1.5] text-ink-3">{f.subtitle}</div>
 

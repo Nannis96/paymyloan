@@ -1,20 +1,25 @@
 "use client";
-
 import { useSite } from "@/app/components/layout/SiteShell";
-import { User } from "lucide-react";
+import { affText, fmtTerms } from "@/app/lib/affiliates";
+import { useAff } from "../AffiliateContext";
+import { Stat, Title } from "../ui";
 
 export default function AccountPage() {
-  const { t } = useSite();
-  const title = t.affiliateDashboard.sidebar.account;
-  const comingSoon = t.affiliateDashboard.comingSoon;
-
+  const { lang } = useSite();
+  const a = affText(lang);
+  const { me, busy, error, deactivate } = useAff();
   return (
-    <div className="w-full max-w-[1200px] animate-in fade-in duration-300">
-      <h1 className="text-[22px] font-[800] tracking-[-0.3px] text-ink mb-8">{title}</h1>
-      <div className="rounded-[10px] border border-rule bg-surface p-16 text-center shadow-sm flex flex-col items-center justify-center">
-        <User className="w-12 h-12 text-ink-3 mb-4 opacity-50" />
-        <div className="text-[15px] font-[600] text-ink-2">{comingSoon}</div>
+    <div className="max-w-[700px] animate-in fade-in duration-300">
+      <Title>{a.account}</Title>
+      <div className="mb-6 flex flex-wrap gap-4">
+        <Stat label={a.terms} value={fmtTerms(me?.commissionType, me?.commissionValue)} />
+        <Stat label={a.delay} value={me?.payoutDelayDays ? `${me.payoutDelayDays} ${a.days}` : a.immediate} />
       </div>
+      {error && <div className="mb-4 rounded-lg bg-crit-soft p-3 text-[13px] text-crit">{error}</div>}
+      <button type="button" disabled={busy} onClick={() => window.confirm(a.deactivateConfirm) && deactivate()}
+        className="rounded-lg border border-crit px-4 py-2 text-[13px] font-bold text-crit hover:bg-crit-soft disabled:opacity-50">
+        {a.deactivate}
+      </button>
     </div>
   );
 }

@@ -305,3 +305,58 @@ export interface AdminOverview {
     dealsCount: number;
   }[];
 }
+
+// ── Afiliados (Docs/plan/19-afiliados.md) ────────────────────────────────
+export type AffiliateStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED" | "INACTIVE";
+export type AffiliateCommissionType = "PERCENT" | "FIXED";
+export type AffiliateCommissionStatus = "PENDING" | "PAID" | "VOID";
+
+/** GET /affiliates/me. Sin perfil: { isAffiliate:false, status:null }. Montos en centavos. */
+export interface MyAffiliate {
+  id?: string;
+  isAffiliate: boolean;
+  status: AffiliateStatus | null;
+  code?: string | null;
+  link?: string | null;
+  commissionType?: AffiliateCommissionType | null;
+  commissionValue?: string | number | null;
+  payoutDelayDays?: number | null;
+  statusReason?: string | null;
+  referralsCount?: number;
+  subscribedCount?: number;
+  pendingCents?: number;
+  paidCents?: number;
+}
+
+export interface AffiliateCommission {
+  id: string;
+  affiliateId: string;
+  referredUserId: string;
+  source: string;
+  baseAmountCents: number;
+  commissionType: AffiliateCommissionType;
+  commissionValue: string | number;
+  amountCents: number;
+  currency: string;
+  status: AffiliateCommissionStatus;
+  payableAt: ISODate | null;
+  paidAt: ISODate | null;
+  paymentReference: string | null;
+  voidedAt: ISODate | null;
+  note: string | null;
+  createdAt: ISODate;
+}
+
+/** GET /affiliates/me/referrals: sin correo ni telefono. */
+export interface AffiliateReferral {
+  name: string;
+  joinedAt: ISODate;
+  subscribed: boolean;
+}
+
+/** Fila/ficha del admin. */
+export interface AdminAffiliate extends MyAffiliate {
+  userId?: string;
+  user?: { id: string; name: string; email: string };
+  createdAt?: ISODate;
+}

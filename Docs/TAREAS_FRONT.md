@@ -156,3 +156,11 @@ Counter-offer, extension, draw, payoff, documents/PDF, ACH, preferencias lender,
 
 ## Orden sugerido
 T0.1→T0.7 → T2.x (2FA antes de ofertar/emitir) → T3 → T4 → T5 → T6 → T7/T8 → T9 → T10 → T11. T1.x en paralelo cuando D1 esté resuelta.
+
+## Afiliados (contrato: `paymyloan-back/Docs/plan/19-afiliados.md`)
+
+- Portal único `/affiliate-dashboard` para LENDER y BORROWER (`/borrowerDashboard/affiliates` redirige). `Gate.tsx` muestra alta/estado si el perfil no está `APPROVED`; estado en `useAffiliate()` (`app/lib/affiliates.ts`), compartido por `AffiliateCtx`.
+- Admin: `/adminDashboard/affiliates` → `AffiliatesAdminView` (afiliados + comisiones; escrituras con 2FA vía `TwoFactorRequiredBanner`).
+- Registro: `?ref=CODIGO` se valida con `GET /affiliates/validate` y se envía como `referralCode`.
+- Montos en centavos (`fmtCents`). Textos ES/EN en `affText()` (`app/lib/affiliates.ts`).
+- Pendiente: UI de suscripción (pago/trial/`SUBSCRIPTION_REQUIRED`).

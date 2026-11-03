@@ -1,7 +1,7 @@
 "use client";
 
-import { AffiliatesView } from "../AdminViewsComponents/PlaceholderViews";
+import { AffiliatesAdminView } from "../AdminViewsComponents/AffiliatesAdminView";
 
 export default function Page() {
-  return <AffiliatesView />;
+  return <AffiliatesAdminView />;
 }
