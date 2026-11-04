@@ -48,6 +48,7 @@ export const API_ROUTES = {
     me: `${BASE_URL}/api/subscription/me`,
     pay: `${BASE_URL}/api/subscription/me/pay`,
     cancel: `${BASE_URL}/api/subscription/me/cancel`,
+    price: `${BASE_URL}/api/subscription/price`,
   },
   borrowers: {
     me: `${BASE_URL}/api/borrowers/me`,
