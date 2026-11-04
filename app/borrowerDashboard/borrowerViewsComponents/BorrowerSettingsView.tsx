@@ -21,6 +21,11 @@ export default function BorrowerSettingsView() {
     : sub.status === "CANCELLED" && sub.hasAccess ? (isEs ? `Cancelada (acceso hasta ${until})` : `Cancelled (access until ${until})`)
     : sub.status === "TRIALING" && sub.hasAccess ? (isEs ? `Prueba gratuita: ${sub.daysLeftInTrial} días` : `Free trial: ${sub.daysLeftInTrial} days left`)
     : (isEs ? "Sin suscripción" : "Not subscribed");
+  const planName = !sub ? "—"
+    : sub.status === "ACTIVE" ? t.billing.planName
+    : sub.status === "CANCELLED" && sub.hasAccess ? `${t.billing.planName} (${isEs ? "cancelado" : "cancelled"})`
+    : sub.status === "TRIALING" && sub.hasAccess ? (isEs ? "Prueba gratuita" : "Free trial")
+    : (isEs ? "Sin suscripción" : "No subscription");
   const s = (t.dashboardLender as any).settings || (t.dashboardLender.mimic as any).settings;
 
   // Estado del usuario traído de la API real
@@ -162,7 +167,7 @@ export default function BorrowerSettingsView() {
           <div className="text-[13px] font-[500] text-ink">{s.billing.plan}</div>
           <div className="text-[13px] text-ink-3">
             <span className="inline-flex items-center gap-[5px] rounded-[20px] bg-surface-2 px-[10px] py-[3px] text-[11px] font-[700] text-ink-3 border border-rule">
-              {s.billing.free}
+              {planName}
             </span>
           </div>
         </div>
