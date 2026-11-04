@@ -305,3 +305,14 @@ export interface AdminOverview {
     dealsCount: number;
   }[];
 }
+
+export interface SubscriptionView {
+  status: "TRIALING" | "ACTIVE" | "CANCELLED" | "EXPIRED";
+  hasAccess: boolean;
+  daysLeftInTrial: number;
+  trialEndsAt: string;
+  currentPeriodEnd: string | null;
+  priceCents: number;
+  currency: string;
+  billingMode: "simulated" | "stripe";
+}

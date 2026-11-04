@@ -52,6 +52,12 @@ export async function apiFetch(url: string, init: RequestInit = {}) {
     if (await renovarSesion()) res = await enviar();
     if (res.status === 401) cerrarSesion();
   }
+  // Borrower sin suscripcion vigente: el back bloquea solo acciones que abren un
+  // prestamo nuevo (pagos y lecturas siguen libres). Cualquier caller cae aqui.
+  if (res.status === 403 && (await res.clone().json().catch(() => null))?.error?.code === "SUBSCRIPTION_REQUIRED") {
+    window.location.href = "/billing";
+    return new Promise<Response>(() => {}); // la pagina se va; que el caller no siga
+  }
   return res;
 }
 
