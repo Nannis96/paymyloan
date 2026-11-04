@@ -11,7 +11,7 @@ import { useUnreadMessages } from "@/app/lib/useUnreadMessages";
 import { useUnreadNotifications } from "@/app/lib/useUnreadNotifications";
 import { api, toList } from "@/app/lib/apiFetch";
 import { API_ROUTES } from "@/app/lib/endpoints";
-import type { LoanRequest } from "@/app/types/api";
+import type { LoanRequest, SubscriptionView } from "@/app/types/api";
 
 export default function BorrowerDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,7 +36,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       .catch(() => {});
   }, [pathname]);
 
+  // Suscripcion: aviso de trial / vencida con enlace a /billing.
+  const [sub, setSub] = useState<SubscriptionView | null>(null);
+  useEffect(() => {
+    api<SubscriptionView>(API_ROUTES.subscription.me).then(setSub).catch(() => {});
+  }, [pathname]);
+  const subBanner = !sub ? null
+    : !sub.hasAccess ? (isEs ? "Tu suscripción venció: solo puedes pagar tus deudas actuales. Suscríbete para pedir nuevos tratos." : "Your subscription expired: you can only pay your existing loans. Subscribe to request new deals.")
+    : sub.status === "TRIALING" ? (isEs ? `Te quedan ${sub.daysLeftInTrial} días de prueba gratuita.` : `${sub.daysLeftInTrial} days left in your free trial.`)
+    : null;
+
   const sb = {
+    subscription: isEs ? "Suscripción" : "Subscription",
     dashboard: "Dashboard",
     deals: isEs ? "Tratos" : "Deals",
     contracts: isEs ? "Contratos" : "Contracts",
@@ -128,6 +139,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {sb.documents}
           </Link>
 
+          <Link href="/billing" className={navItemBase}>
+            <svg className="w-[18px] h-[18px] shrink-0 opacity-50" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M2 8h14" stroke="currentColor" strokeWidth="1.4"/></svg>
+            {sb.subscription}
+          </Link>
+
           <Link href="/borrowerDashboard/settings" className={`${navItemBase} ${pathname.includes("/settings") ? navItemActive : ""}`}>
             <svg className={`w-[18px] h-[18px] shrink-0 ${pathname.includes("/settings") ? "opacity-100" : "opacity-50"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             {sb.settings}
@@ -163,6 +179,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
         {/* MAIN CONTENT */}
         <div className="flex-1 p-[28px_32px]">
+          {subBanner && pathname !== "/billing" && (
+            <div className={`mb-5 flex items-center justify-between gap-4 rounded-lg border px-4 py-3 text-[13px] ${sub?.hasAccess ? "border-rule bg-surface-2 text-ink-2" : "border-crit text-crit"}`}>
+              <span>{subBanner}</span>
+              <Link href="/billing" className="shrink-0 font-[700] text-accent no-underline">{isEs ? "Activar suscripción" : "Activate subscription"}</Link>
+            </div>
+          )}
           {children}
         </div>
       </div>

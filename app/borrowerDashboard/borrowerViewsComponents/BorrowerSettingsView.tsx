@@ -4,10 +4,21 @@ import { apiFetch } from "@/app/lib/apiFetch";
 import { useEffect, useState } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { api } from "@/app/lib/apiFetch";
+import type { SubscriptionView } from "@/app/types/api";
 import Link from "next/link";
 
 export default function BorrowerSettingsView() {
-  const { t } = useSite();
+  const { t, lang } = useSite();
+  const isEs = lang === "es";
+  const [sub, setSub] = useState<SubscriptionView | null>(null);
+  useEffect(() => {
+    api<SubscriptionView>(API_ROUTES.subscription.me).then(setSub).catch(() => {});
+  }, []);
+  const subText = !sub ? "—"
+    : sub.status === "ACTIVE" && sub.currentPeriodEnd ? (isEs ? `Activa hasta ${new Date(sub.currentPeriodEnd).toLocaleDateString("es")}` : `Active until ${new Date(sub.currentPeriodEnd).toLocaleDateString("en")}`)
+    : sub.hasAccess ? (isEs ? `Prueba gratuita: ${sub.daysLeftInTrial} días` : `Free trial: ${sub.daysLeftInTrial} days left`)
+    : (isEs ? "Vencida" : "Expired");
   const s = (t.dashboardLender as any).settings || (t.dashboardLender.mimic as any).settings;
 
   // Estado del usuario traído de la API real
@@ -141,9 +152,9 @@ export default function BorrowerSettingsView() {
             <div className="text-[14px] font-[700] text-ink">{s.billing.title}</div>
             <div className="mt-[2px] text-[12px] text-ink-3">{s.billing.sub}</div>
           </div>
-          <button className="cursor-pointer rounded-[6px] border border-rule-strong bg-surface px-[14px] py-[6px] font-sans text-[12px] font-[600] text-ink-2 hover:border-ink-3 transition-colors">
-            {s.billing.manage}
-          </button>
+          <Link href="/billing" className="cursor-pointer rounded-[6px] border border-accent bg-accent px-[14px] py-[6px] font-sans text-[12px] font-[600] text-accent-ink no-underline hover:opacity-90 transition-opacity">
+            {sub?.status === "ACTIVE" ? s.billing.manage : (isEs ? "Suscribirme" : "Subscribe")}
+          </Link>
         </div>
         <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.billing.plan}</div>
@@ -155,7 +166,7 @@ export default function BorrowerSettingsView() {
         </div>
         <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.billing.subPlan}</div>
-          <div className="text-[13px] text-ink-3">{s.billing.notActive}</div>
+          <div className="text-[13px] text-ink-3">{subText}</div>
         </div>
         <div className="flex items-center justify-between p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.billing.method}</div>

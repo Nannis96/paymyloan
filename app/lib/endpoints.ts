@@ -44,6 +44,11 @@ export const API_ROUTES = {
     meMessageThreadRead: (borrowerProfileId: string) => `${BASE_URL}/api/lenders/me/messages/threads/${borrowerProfileId}/read`,
     rating: (lenderCompanyId: string) => `${BASE_URL}/api/lenders/${lenderCompanyId}/rating`,
   },
+  subscription: {
+    me: `${BASE_URL}/api/subscription/me`,
+    pay: `${BASE_URL}/api/subscription/me/pay`,
+    cancel: `${BASE_URL}/api/subscription/me/cancel`,
+  },
   borrowers: {
     me: `${BASE_URL}/api/borrowers/me`,
     mePassword: `${BASE_URL}/api/borrowers/me/password`,
