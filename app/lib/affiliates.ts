@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { api } from "./apiFetch";
+import { api, ApiError } from "./apiFetch";
 import { API_ROUTES } from "./endpoints";
 import type { MyAffiliate } from "@/app/types/api";
 
@@ -24,7 +24,9 @@ export function useAffiliate() {
       setMe(await api<MyAffiliate>(API_ROUTES.affiliates.me));
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "error");
+      // 404 = el back aun no tiene el modulo o no hay perfil: se trata como "no afiliado", sin error.
+      if (e instanceof ApiError && e.status === 404) setMe({ isAffiliate: false, status: null });
+      else setError(e instanceof Error ? e.message : "error");
     }
   }, []);
   useEffect(() => { void reload(); }, [reload]);

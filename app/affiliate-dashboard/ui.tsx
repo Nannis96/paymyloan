@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { api } from "@/app/lib/apiFetch";
+import { api, ApiError } from "@/app/lib/apiFetch";
 import type { Paginated } from "@/app/types/api";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { affText } from "@/app/lib/affiliates";
@@ -53,7 +53,12 @@ export function PagedTable<T>({ url, extra = {}, cols, row }: {
     const q = new URLSearchParams({ page: String(page), pageSize: "20", ...extra });
     api<Paginated<T>>(`${url}?${q}`)
       .then((d) => vigente && (setData(d), setError(null)))
-      .catch((e) => vigente && setError(e instanceof Error ? e.message : "error"));
+      .catch((e) => {
+        if (!vigente) return;
+        // 404 = sin datos / modulo no disponible: lista vacia, no error.
+        if (e instanceof ApiError && e.status === 404) { setData({ items: [], page: 1, pageSize: 20, total: 0, totalPages: 1 }); setError(null); }
+        else setError(e instanceof Error ? e.message : "error");
+      });
     return () => { vigente = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, page, key]);
