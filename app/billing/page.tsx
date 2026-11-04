@@ -43,6 +43,9 @@ function BillingContent() {
   };
 
   const fmt = (d: string) => new Date(d).toLocaleDateString(isEs ? "es" : "en");
+  // Precio del back (SUBSCRIPTION_PRICE_CENTS); los textos de content/ traen "$9" fijo.
+  const price = sub ? new Intl.NumberFormat(isEs ? "es" : "en", { style: "currency", currency: sub.currency }).format(sub.priceCents / 100) : "";
+  const px = (text: string) => (sub ? text.replace(/\$9(\.00)?/, price) : text.replace(/\$9(\.00)?/, "…"));
   const end = sub?.currentPeriodEnd ? fmt(sub.currentPeriodEnd) : "";
   const paid = sub?.status === "ACTIVE" && !!sub.currentPeriodEnd;
   const cancelledWithAccess = sub?.status === "CANCELLED" && sub.hasAccess;
@@ -53,7 +56,7 @@ function BillingContent() {
     : (isEs ? "Sin suscripción activa. Puedes seguir pagando tus préstamos actuales, pero no pedir nuevos tratos." : "No active subscription. You can still pay your current loans, but not request new deals.");
   const payLabel = paid ? (isEs ? "Pagar un mes más" : "Pay one more month")
     : sub?.status === "CANCELLED" || (sub && !sub.hasAccess) ? (isEs ? "Reactivar suscripción" : "Reactivate subscription")
-    : b.payBtn;
+    : px(b.payBtn);
 
   return (
     <div className="min-h-screen bg-bg p-6 lg:p-14 flex items-center justify-center">
@@ -68,7 +71,7 @@ function BillingContent() {
         <div className="rounded-2xl border border-rule bg-surface p-8 shadow-xl sm:p-10">
           <header className="mb-8 text-center border-b border-rule pb-6">
             <h1 className="text-[28px] font-black tracking-tight text-ink">{b.title}</h1>
-            <p className="text-ink-2 mt-2 text-sm leading-relaxed">{b.subtitle}</p>
+            <p className="text-ink-2 mt-2 text-sm leading-relaxed">{px(b.subtitle)}</p>
           </header>
 
           <div className="mb-6 flex items-center justify-between rounded-xl bg-surface-2 p-5 border border-rule">
@@ -76,7 +79,7 @@ function BillingContent() {
               <div className="text-[13px] font-bold text-ink">{b.planName}</div>
               <div className="text-[11px] text-ink-3 mt-1">{status}</div>
             </div>
-            <div className="text-lg font-black text-accent">{b.planPrice}</div>
+            <div className="text-lg font-black text-accent">{px(b.planPrice)}</div>
           </div>
 
           {error && <p className="mb-4 text-center text-[13px] text-crit">{error}</p>}
