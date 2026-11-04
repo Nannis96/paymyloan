@@ -43,12 +43,17 @@ function BillingContent() {
   };
 
   const fmt = (d: string) => new Date(d).toLocaleDateString(isEs ? "es" : "en");
-  const paid = sub?.status === "ACTIVE" && sub.currentPeriodEnd;
-  const status = !sub ? "" : paid
-    ? (isEs ? `Suscripción activa hasta el ${fmt(sub.currentPeriodEnd!)}.` : `Active until ${fmt(sub.currentPeriodEnd!)}.`)
-    : sub.hasAccess
-      ? (isEs ? `Prueba gratuita: ${sub.daysLeftInTrial} días restantes.` : `Free trial: ${sub.daysLeftInTrial} days left.`)
-      : (isEs ? "Tu suscripción venció. Puedes seguir pagando tus préstamos actuales, pero no pedir nuevos tratos." : "Your subscription expired. You can still pay your current loans, but not request new deals.");
+  const end = sub?.currentPeriodEnd ? fmt(sub.currentPeriodEnd) : "";
+  const paid = sub?.status === "ACTIVE" && !!sub.currentPeriodEnd;
+  const cancelledWithAccess = sub?.status === "CANCELLED" && sub.hasAccess;
+  const status = !sub ? ""
+    : paid ? (isEs ? `✓ Suscrito. Próximo cobro: ${end}.` : `✓ Subscribed. Next charge: ${end}.`)
+    : cancelledWithAccess ? (isEs ? `Cancelada. Conservas el acceso hasta ${end}.` : `Cancelled. You keep access until ${end}.`)
+    : sub.status === "TRIALING" && sub.hasAccess ? (isEs ? `Prueba gratuita: ${sub.daysLeftInTrial} días restantes.` : `Free trial: ${sub.daysLeftInTrial} days left.`)
+    : (isEs ? "Sin suscripción activa. Puedes seguir pagando tus préstamos actuales, pero no pedir nuevos tratos." : "No active subscription. You can still pay your current loans, but not request new deals.");
+  const payLabel = paid ? (isEs ? "Pagar un mes más" : "Pay one more month")
+    : sub?.status === "CANCELLED" || (sub && !sub.hasAccess) ? (isEs ? "Reactivar suscripción" : "Reactivate subscription")
+    : b.payBtn;
 
   return (
     <div className="min-h-screen bg-bg p-6 lg:p-14 flex items-center justify-center">
@@ -85,8 +90,12 @@ function BillingContent() {
               disabled={busy || !sub}
               className="w-full rounded-lg bg-accent px-5 py-4 text-[15px] font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-md disabled:opacity-50"
             >
-              {busy ? b.processing : paid ? (isEs ? "Renovar un mes más" : "Renew one more month") : b.payBtn}
+              {busy ? b.processing : payLabel}
             </button>
+          )}
+
+          {sub?.billingMode === "simulated" && (
+            <p className="mt-3 text-center text-[11px] text-ink-3">{isEs ? "Modo de pruebas: cada pago cubre un mes y no se renueva solo." : "Test mode: each payment covers one month and does not auto-renew."}</p>
           )}
 
           {paid && (

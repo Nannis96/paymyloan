@@ -15,10 +15,12 @@ export default function BorrowerSettingsView() {
   useEffect(() => {
     api<SubscriptionView>(API_ROUTES.subscription.me).then(setSub).catch(() => {});
   }, []);
+  const until = sub?.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toLocaleDateString(isEs ? "es" : "en") : "";
   const subText = !sub ? "—"
-    : sub.status === "ACTIVE" && sub.currentPeriodEnd ? (isEs ? `Activa hasta ${new Date(sub.currentPeriodEnd).toLocaleDateString("es")}` : `Active until ${new Date(sub.currentPeriodEnd).toLocaleDateString("en")}`)
-    : sub.hasAccess ? (isEs ? `Prueba gratuita: ${sub.daysLeftInTrial} días` : `Free trial: ${sub.daysLeftInTrial} days left`)
-    : (isEs ? "Vencida" : "Expired");
+    : sub.status === "ACTIVE" && until ? (isEs ? `✓ Suscrito (próximo cobro ${until})` : `✓ Subscribed (next charge ${until})`)
+    : sub.status === "CANCELLED" && sub.hasAccess ? (isEs ? `Cancelada (acceso hasta ${until})` : `Cancelled (access until ${until})`)
+    : sub.status === "TRIALING" && sub.hasAccess ? (isEs ? `Prueba gratuita: ${sub.daysLeftInTrial} días` : `Free trial: ${sub.daysLeftInTrial} days left`)
+    : (isEs ? "Sin suscripción" : "Not subscribed");
   const s = (t.dashboardLender as any).settings || (t.dashboardLender.mimic as any).settings;
 
   // Estado del usuario traído de la API real
