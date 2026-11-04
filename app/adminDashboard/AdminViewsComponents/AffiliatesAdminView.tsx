@@ -179,17 +179,50 @@ function AffiliateDetail({ id, onClose, onChanged }: { id: string; onClose: () =
   );
 }
 
+type Modal =
+  | { kind: "paid"; c: AffiliateCommission }
+  | { kind: "date"; c: AffiliateCommission }
+  | { kind: "void"; c: AffiliateCommission }
+  | { kind: "force"; c: AffiliateCommission; message: string; body: { paymentReference?: string } };
+
+// Mismo estilo que los modales de UsersTable.
+function CommissionModal({ title, children, onCancel, onConfirm, confirmDisabled, busy, isEs }: {
+  title: string; children: React.ReactNode; onCancel: () => void; onConfirm: () => void;
+  confirmDisabled?: boolean; busy: boolean; isEs: boolean;
+}) {
+  return (
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
+      <form onSubmit={(e) => { e.preventDefault(); onConfirm(); }} className="w-full max-w-[440px] rounded-2xl border border-rule bg-surface p-6 shadow-2xl">
+        <h2 className="mb-5 text-lg font-black text-ink">{title}</h2>
+        {children}
+        <div className="mt-6 flex gap-3">
+          <button type="button" onClick={onCancel} className="flex-1 rounded-lg border border-rule px-5 py-3 text-sm font-bold text-ink-2 transition-colors hover:bg-surface-2">
+            {isEs ? "Cancelar" : "Cancel"}
+          </button>
+          <button type="submit" disabled={busy || confirmDisabled} className="flex-1 rounded-lg bg-accent px-5 py-3 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:opacity-40">
+            {isEs ? "Confirmar" : "Confirm"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function CommissionsList() {
   const { lang } = useSite();
   const a = affText(lang);
+  const isEs = lang === "es";
   const [status, setStatus] = useState("");
   const [payable, setPayable] = useState(false);
   const [reload, setReload] = useState(0);
+  const [modal, setModal] = useState<Modal | null>(null);
+  const [text, setText] = useState(""); // referencia / nota / fecha según el modal
   const { write, busy, banner } = useWrite(() => setReload((k) => k + 1));
 
-  async function markPaid(c: AffiliateCommission) {
-    const ref = window.prompt(a.ref) ?? undefined;
-    if (ref === undefined) return;
+  const open = (m: Modal, initial = "") => { setText(initial); setModal(m); };
+  const close = () => setModal(null);
+
+  async function markPaid(c: AffiliateCommission, ref: string) {
     const url = API_ROUTES.affiliates.adminCommissionAction(c.id, "mark-paid");
     const body = { paymentReference: ref || undefined };
     try {
@@ -197,14 +230,52 @@ function CommissionsList() {
       setReload((k) => k + 1);
     } catch (e) {
       if (e instanceof ApiError && e.code === "AFFILIATE_COMMISSION_NOT_PAYABLE_YET") {
-        if (window.confirm(`${e.message}\n\nForce?`)) await write(url, J({ ...body, force: true }));
-      } else await write(url, J(body)); // reintenta para reutilizar el manejo de 2FA / error
+        open({ kind: "force", c, message: e.message, body });
+        return;
+      }
+      await write(url, J(body)); // reintenta para reutilizar el manejo de 2FA / error
     }
   }
+
+  async function confirm() {
+    if (!modal) return;
+    const { c } = modal;
+    if (modal.kind === "paid") { close(); await markPaid(c, text); }
+    else if (modal.kind === "force") { close(); await write(API_ROUTES.affiliates.adminCommissionAction(c.id, "mark-paid"), J({ ...modal.body, force: true })); }
+    else if (modal.kind === "date") { close(); await write(API_ROUTES.affiliates.adminCommissionById(c.id), { method: "PATCH", body: JSON.stringify({ payableAt: new Date(text).toISOString() }) }); }
+    else { close(); await write(API_ROUTES.affiliates.adminCommissionAction(c.id, "void"), J({ note: text })); }
+  }
+
+  const field = "w-full rounded-lg border border-rule bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none focus:border-accent";
+  const label = "mb-1 block text-xs font-bold text-ink-3";
 
   return (
     <>
       {banner}
+      {modal && (
+        <CommissionModal
+          isEs={isEs}
+          busy={busy}
+          onCancel={close}
+          onConfirm={confirm}
+          confirmDisabled={(modal.kind === "date" || modal.kind === "void") && !text.trim()}
+          title={modal.kind === "paid" ? a.PAID : modal.kind === "date" ? a.payableAt : modal.kind === "void" ? a.VOID : (isEs ? "Forzar pago" : "Force payment")}
+        >
+          {modal.kind === "paid" && (<>
+            <label className={label}>{a.ref}</label>
+            <input autoFocus value={text} onChange={(e) => setText(e.target.value)} className={field} />
+          </>)}
+          {modal.kind === "date" && (<>
+            <label className={label}>{a.payableAt}</label>
+            <input autoFocus type="date" value={text} onChange={(e) => setText(e.target.value)} className={field} />
+          </>)}
+          {modal.kind === "void" && (<>
+            <label className={label}>{isEs ? "Nota" : "Note"}</label>
+            <input autoFocus value={text} onChange={(e) => setText(e.target.value)} className={field} />
+          </>)}
+          {modal.kind === "force" && <p className="text-sm text-ink-2">{modal.message}</p>}
+        </CommissionModal>
+      )}
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <select value={status} onChange={(e) => setStatus(e.target.value)} className={inp} aria-label={a.status}>
           <option value="">{a.all}</option>
@@ -224,15 +295,9 @@ function CommissionsList() {
           <StatusPill key="s" status={c.status} label={a[c.status]} />, fmtDate(c.payableAt, lang),
           c.status === "PENDING" ? (
             <span key="a" className="flex gap-2">
-              <button type="button" disabled={busy} className={btn} onClick={() => markPaid(c)}>{a.PAID}</button>
-              <button type="button" disabled={busy} className={btn} onClick={() => {
-                const d = window.prompt("YYYY-MM-DD", c.payableAt?.slice(0, 10) ?? "");
-                if (d) write(API_ROUTES.affiliates.adminCommissionById(c.id), { method: "PATCH", body: JSON.stringify({ payableAt: new Date(d).toISOString() }) });
-              }}>{a.payableAt}</button>
-              <button type="button" disabled={busy} className={btn} onClick={() => {
-                const note = window.prompt("Nota / Note");
-                if (note) write(API_ROUTES.affiliates.adminCommissionAction(c.id, "void"), J({ note }));
-              }}>{a.VOID}</button>
+              <button type="button" disabled={busy} className={btn} onClick={() => open({ kind: "paid", c })}>{a.PAID}</button>
+              <button type="button" disabled={busy} className={btn} onClick={() => open({ kind: "date", c }, c.payableAt?.slice(0, 10) ?? "")}>{a.payableAt}</button>
+              <button type="button" disabled={busy} className={btn} onClick={() => open({ kind: "void", c })}>{a.VOID}</button>
             </span>
           ) : null,
         ]}
