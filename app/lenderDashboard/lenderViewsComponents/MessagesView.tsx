@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { api, toList, ApiError } from "@/app/lib/apiFetch";
 import { API_ROUTES } from "@/app/lib/endpoints";
@@ -14,9 +15,11 @@ const threadKey = (th: MessageThread) =>
   `${th.borrowerProfile?.id ?? th.lastMessage.borrowerProfileId}:${th.lastMessage.lenderCompanyId}`;
 
 export default function MessagesView() {
-  const { t } = useSite();
+  const searchParams = useSearchParams();
+  const targetBorrowerId = searchParams.get("borrowerId");
+
+  const { t, lang } = useSite();
   const m = t.messaging;
-  
   const [threads, setThreads] = useState<MessageThread[] | null>(null);
   const [threadsError, setThreadsError] = useState("");
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -33,15 +36,45 @@ export default function MessagesView() {
 
   // ponytail: polling cada POLL_MS en vez de push (SSE/WebSocket) hasta que el back lo ofrezca.
   useEffect(() => {
-    const load = () =>
-      api(API_ROUTES.lenders.meMessageThreads)
-        .then((d) => {
-          const list = toList<MessageThread>(d);
-          setThreads(list);
-          setSelectedKey((cur) => cur ?? (list[0] ? threadKey(list[0]) : null));
-          setThreadsError("");
-        })
-        .catch((e) => setThreadsError(e instanceof Error ? e.message : "Error"));
+    const load = async () => {
+      try {
+        // Consultamos hilos activos y contactos elegibles en paralelo
+        const [threadsData, borrowersData] = await Promise.all([
+          api(API_ROUTES.lenders.meMessageThreads),
+          api(API_ROUTES.lenders.meBorrowers).catch(() => ({ items: [] }))
+        ]);
+        const list = toList<MessageThread>(threadsData);
+        const borrowersList = toList<any>(borrowersData);
+
+        const existingIds = new Set(list.map((th) => th.borrowerProfile?.id ?? th.lastMessage?.borrowerProfileId));
+        
+        // Creamos hilos falsos para los prestatarios con los que aun no hemos conversado
+        const dummyThreads = borrowersList
+          .filter((b) => !existingIds.has(b.id) && b.lenderCompanies?.[0])
+          .map((b) => ({
+            borrowerProfile: b,
+            lastMessage: {
+              id: "dummy-" + b.id,
+              borrowerProfileId: b.id,
+              lenderCompanyId: b.lenderCompanies[0].id,
+              senderUserId: "",
+              senderRole: "BORROWER",
+              body: lang === "es" ? "Nueva conversacion..." : "New conversation...",
+              readAt: null,
+              createdAt: new Date().toISOString()
+            },
+            unreadCount: 0
+          } as unknown as MessageThread));
+
+        const combinedList = [...list, ...dummyThreads];
+        setThreads(combinedList);
+        setSelectedKey((cur) => cur ?? (combinedList[0] ? threadKey(combinedList[0]) : null));
+        setThreadsError("");
+      } catch (e) {
+        setThreadsError(e instanceof Error ? e.message : "Error");
+      }
+    };
+    
     load();
     const tick = () => !document.hidden && load();
     const id = setInterval(tick, POLL_MS);
@@ -50,7 +83,7 @@ export default function MessagesView() {
       clearInterval(id);
       document.removeEventListener("visibilitychange", tick);
     };
-  }, []);
+  }, [lang]);
 
   // Abrir hilo: historial + marcar leido. lenderCompanyId siempre explicito (el back lo exige con >1 empresa).
   useEffect(() => {
@@ -71,7 +104,14 @@ export default function MessagesView() {
           window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
           setThreads((ts) => ts && ts.map((th) => (threadKey(th) === selectedKey ? { ...th, unreadCount: 0 } : th)));
         })
-        .catch((e) => setSendError(e instanceof Error ? e.message : "Error"));
+        .catch((e) => {
+          if (e instanceof ApiError && e.code === "THREAD_NOT_FOUND") {
+            // Ignoramos el error 404 para las conversaciones nuevas (contactos elegibles sin mensajes)
+            setMessages([]);
+          } else {
+            setSendError(e instanceof Error ? e.message : "Error");
+          }
+        });
     load();
     const tick = () => !document.hidden && load();
     const id = setInterval(tick, POLL_MS);
