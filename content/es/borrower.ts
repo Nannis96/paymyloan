@@ -271,6 +271,17 @@ export const borrower = {
 
   vetting: { title: "Aplicación y Verificación", subtitle: "Completa este proceso una sola vez para acceder a capital privado.", feeNotice: "Tarifa de aplicación (no reembolsable)", form: { bankStatements: "Estados de Cuenta (Últimos 3 meses)", idUpload: "Identificación Oficial", submitAndPay: "Pagar $99 y Enviar", selectFile: "Seleccionar archivo", dealHistory: "Historial de Proyectos", dealHistoryDesc: "Ingresa hasta 5 direcciones de proyectos recientes.", addressLabel: "Dirección", addressPh: "Ej. 123 Main St, Austin, TX", addAddress: "+ Agregar otra dirección", consentCredit: "Autorizo a Dueño a Dueño LLC y sus prestamistas asociados a realizar una verificación de crédito (Credit Pull).", consentBackground: "Autorizo a Dueño a Dueño LLC a realizar una verificación de antecedentes (Background Check).", consentAlert: "Debes aceptar las verificaciones de crédito y antecedentes para continuar.", step: "Paso", of: "de", next: "Siguiente", back: "Atrás", saveAndContinueLater: "Guardar y continuar después", savedAlert: "Tu progreso ha sido guardado. Puedes regresar en cualquier momento." } },
 
+  contacts: {
+    title: "Directorio de Contactos",
+    subtitle: "Prestamistas con los que tienes contratos o que han ofertado en tus tratos.",
+    searchPlaceholder: "Buscar contactos...",
+    empty: "No tienes contactos disponibles a n.",
+    loading: "Cargando contactos...",
+    messageBtn: "Enviar Mensaje",
+    roles: { lender: "Prestamista" },
+    associatedDeals: "Tratos asociados",
+    errorFetch: "Error al cargar los contactos."
+  },
   borrowerOnboarding: {
     title: "Un paso antes de publicar",
     subtitle: "Cuentanos sobre tu negocio para que los prestamistas sepan con quien trabajan.\nToma unos 60 segundos.",
