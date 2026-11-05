@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X, Lock } from "lucide-react";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
-import RegisterForm from "@/app/components/landing/RegisterForm";
+//import RegisterForm from "@/app/components/landing/RegisterForm"; //para cuando termine version beta
+import PreRegisterForm from "@/app/components/landing/PreRegisterForm";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { HOME_BY_ROLE } from "@/app/lib/roles";
 
@@ -222,13 +223,13 @@ function LoginContent() {
               </button>
 
               <div className="mt-4 text-center text-[14px] text-ink-3">
-                {t.noAccount}{" "}
+                {siteT.preRegister?.alreadyAccount === "¿Ya tienes acceso?" ? "¿Aún no tienes cuenta?" : "Don't have an account yet?"}{" "}
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
                   className="font-medium text-accent hover:underline"
                 >
-                  {t.signup}
+                  {siteT.preRegister?.submitBtn}
                 </button>
               </div>
             </form>
@@ -287,7 +288,7 @@ function LoginContent() {
             >
               <X size={18} />
             </button>
-            <RegisterForm />
+            <PreRegisterForm />
           </div>
         </div>
       )}

@@ -57,7 +57,7 @@ export const auth: typeof Es = {
     }
   },
 
-  loginPage: { title: "Log In", subtitle: "Enter your credentials to manage your loans.", cardTitle: "SECURE LOGIN", emailLabel: "Email address", emailPlaceholder: "email@example.com", passwordLabel: "Password", passwordPlaceholder: "Enter your password", submit: "SIGN IN", forgot: "I'VE FORGOTTEN MY PASSWORD", back: "BACK TO HOME", noAccount: "Don't have an account yet?", signup: "Sign up here", processing: "Processing...", twoFactorTitle: "2FA VERIFICATION", twoFactorDesc: "Enter the 6-digit code from your authenticator app or a recovery code.", twoFactorLabel: "Verification code", twoFactorPlaceholder: "E.g. 123456", twoFactorVerifying: "Verifying...", twoFactorConfirm: "CONFIRM", twoFactorCancel: "Cancel", errorDefault: "Failed to log in", error2FA: "Incorrect or expired 2FA code", errorNetwork: "Unknown network error", },
+  loginPage: { title: "Log In", subtitle: "Enter your credentials to manage your loans.", cardTitle: "SECURE LOGIN", emailLabel: "Email address", emailPlaceholder: "email@example.com", passwordLabel: "Password", passwordPlaceholder: "Enter your password", submit: "SIGN IN", forgot: "I'VE FORGOTTEN MY PASSWORD", back: "BACK TO HOME", noAccount: "Don't have an account yet?", signup: "Be one of the first to join the waitlist", processing: "Processing...", twoFactorTitle: "2FA VERIFICATION", twoFactorDesc: "Enter the 6-digit code from your authenticator app or a recovery code.", twoFactorLabel: "Verification code", twoFactorPlaceholder: "E.g. 123456", twoFactorVerifying: "Verifying...", twoFactorConfirm: "CONFIRM", twoFactorCancel: "Cancel", errorDefault: "Failed to log in", error2FA: "Incorrect or expired 2FA code", errorNetwork: "Unknown network error", },
 
   verifyEmail: {
     borrower: {
@@ -99,4 +99,17 @@ export const auth: typeof Es = {
       btnPrimary: "Log in"
     }
   },
+  preRegister: {
+    alreadyAccount: "Already have access?",
+    login: "Log in",
+    successTitle: "You're on the list!",
+    successDesc1: "Thanks for your interest in PayMyLoan.ai. We've added you to our early access list.",
+    successDesc2: "We'll notify you as soon as your account is ready to be activated.",
+    backHome: "Back to home",
+    title: "Early Access",
+    subtitle: "Register to get priority access when we launch our platform.",
+    processing: "Processing...",
+    submitBtn: "Join the waitlist"
+  }
+
 };

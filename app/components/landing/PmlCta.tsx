@@ -1,7 +1,7 @@
 "use client";
 
 import { useSite } from "../layout/SiteShell";
-import RegisterForm from "./RegisterForm";
+import PreRegisterForm from "./PreRegisterForm";
 export default function PmlCta() {
   const { t } = useSite();
   const c = t.pmlCta;
@@ -20,7 +20,7 @@ export default function PmlCta() {
         </div>
         
         <div className="w-full max-w-[420px] shrink-0">
-          <RegisterForm />
+          <PreRegisterForm />
         </div>
       </div>
     </section>
