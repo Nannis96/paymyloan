@@ -1,7 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Search, Plus, Mail, Phone, Building, MoreVertical } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
+import { Search, Plus, Mail, Phone, Building, MessageSquare, Loader2 } from 'lucide-react';
+import { useSite } from '@/app/components/layout/SiteShell';
+import { apiFetch, toList } from '@/app/lib/apiFetch';
+import { API_ROUTES } from '@/app/lib/endpoints';
 
 export type ContactCategory = 'ALL' | 'BORROWER' | 'TITLE' | 'INSURANCE' | 'BOOKKEEPER' | 'VENDOR';
 
@@ -15,67 +19,58 @@ interface Contact {
   associatedDeals?: number;
 }
 
-const INITIAL_CONTACTS: Contact[] = [
-  {
-    id: '1',
-    name: 'Marcus Sterling',
-    company: 'Apex Capital Ventures',
-    category: 'BORROWER',
-    email: 'marcus@apexventures.com',
-    phone: '(214) 555-0182',
-    associatedDeals: 3,
-  },
-  {
-    id: '2',
-    name: 'Sarah Jenkins',
-    company: 'Lone Star Title & Escrow Co.',
-    category: 'TITLE',
-    email: 'sjenkins@lonestartitle.com',
-    phone: '(512) 555-9041',
-    associatedDeals: 6,
-  },
-  {
-    id: '3',
-    name: 'David Holbrook',
-    company: 'Texas Shield Insurance Agency',
-    category: 'INSURANCE',
-    email: 'dholbrook@texasshield.com',
-    phone: '(512) 555-3210',
-    associatedDeals: 4,
-  },
-  {
-    id: '4',
-    name: 'Elena Morales, CPA',
-    company: 'Morales Financial Services',
-    category: 'BOOKKEEPER',
-    email: 'elena@moralescpa.com',
-    phone: '(214) 555-7762',
-    associatedDeals: 8,
-  },
-  {
-    id: '5',
-    name: 'Jake Reynolds',
-    company: 'Prime Appraisals & Inspection',
-    category: 'VENDOR',
-    email: 'jake@primeinspection.com',
-    phone: '(817) 555-6619',
-    associatedDeals: 2,
-  },
-];
-
 export default function ContactsView() {
-  const [contacts] = useState<Contact[]>(INITIAL_CONTACTS);
+  const { lang } = useSite();
+  const isEs = lang === 'es';
+
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ContactCategory>('ALL');
 
   const categories: { label: string; value: ContactCategory }[] = [
-    { label: 'All Contacts', value: 'ALL' },
-    { label: 'Borrowers', value: 'BORROWER' },
-    { label: 'Title & Escrow', value: 'TITLE' },
-    { label: 'Insurance', value: 'INSURANCE' },
-    { label: 'Bookkeepers', value: 'BOOKKEEPER' },
-    { label: 'Vendors', value: 'VENDOR' },
+    { label: isEs ? 'Todos' : 'All Contacts', value: 'ALL' },
+    { label: isEs ? 'Prestatarios' : 'Borrowers', value: 'BORROWER' },
+    { label: isEs ? 'Titulo y Fideicomiso' : 'Title & Escrow', value: 'TITLE' },
+    { label: isEs ? 'Seguros' : 'Insurance', value: 'INSURANCE' },
+    { label: isEs ? 'Contadores' : 'Bookkeepers', value: 'BOOKKEEPER' },
+    { label: isEs ? 'Proveedores' : 'Vendors', value: 'VENDOR' },
   ];
+
+  // Obtenemos los borrowers reales conectados a la compania del lender[cite: 2]
+  useEffect(() => {
+    async function fetchContacts() {
+      try {
+        const res = await apiFetch(API_ROUTES.lenders.meBorrowers);
+        const json = await res.json();
+        
+        if (json.success) {
+          const borrowersList = toList<any>(json.data);
+          
+          // Mapeamos el modelo del backend a la interfaz de la tabla[cite: 2]
+          const mappedContacts: Contact[] = borrowersList.map((b) => ({
+            id: b.id,
+            name: b.user?.name || (isEs ? "Sin nombre" : "Unnamed"),
+            company: b.entityName || undefined,
+            category: 'BORROWER',
+            email: b.user?.email || "",
+            phone: b.user?.phone || "",
+            associatedDeals: 0
+          }));
+          setContacts(mappedContacts);
+        } else {
+          throw new Error(json.error?.message || "Error al cargar contactos");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Error de red");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchContacts();
+  }, [isEs]);
 
   const getCategoryBadge = (category: ContactCategory) => {
     switch (category) {
@@ -130,17 +125,17 @@ export default function ContactsView() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+ <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#0a2540] tracking-tight">
-            Contacts & Directory
+            {isEs ? "Contactos y Directorio" : "Contacts & Directory"}
           </h1>
           <p className="text-sm text-[#425466] mt-1">
-            Manage your network of Title companies, Insurance agents, Borrowers, Bookkeepers, and Vendors.
+            {isEs
+              ? "Gestiona tu red de companias de titulo, agentes de seguros, prestatarios, contadores y proveedores."
+              : "Manage your network of Title companies, Insurance agents, Borrowers, Bookkeepers, and Vendors."}
           </p>
         </div>
-
-       
       </div>
 
       {/* Barra de Filtros y Búsqueda */}
@@ -171,7 +166,7 @@ export default function ContactsView() {
           <Search className="w-4 h-4 text-[#aab7c4] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search contacts..."
+            placeholder={isEs ? "Buscar contactos..." : "Search contacts..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-3 py-1.5 text-sm bg-white border border-[#e6ebf1] rounded-lg text-[#0a2540] placeholder-[#aab7c4] focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff]"
@@ -184,16 +179,35 @@ export default function ContactsView() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-[#e6ebf1] text-[11px] font-bold uppercase tracking-wider text-[#aab7c4] bg-[#fafbfd]">
-              <th className="py-3.5 px-4">Contact / Company</th>
-              <th className="py-3.5 px-4">Type</th>
-              <th className="py-3.5 px-4">Email</th>
-              <th className="py-3.5 px-4">Phone</th>
-              <th className="py-3.5 px-4 text-center">Deals</th>
-              <th className="py-3.5 px-4 text-right">Actions</th>
+              <th className="py-3.5 px-4">{isEs ? "Contacto / Compania" : "Contact / Company"}</th>
+              <th className="py-3.5 px-4">{isEs ? "Tipo" : "Type"}</th>
+              <th className="py-3.5 px-4">{isEs ? "Correo" : "Email"}</th>
+              <th className="py-3.5 px-4">{isEs ? "Telefono" : "Phone"}</th>
+              <th className="py-3.5 px-4 text-center">{isEs ? "Tratos" : "Deals"}</th>
+              <th className="py-3.5 px-4 text-right">{isEs ? "Acciones" : "Actions"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#f0f3f7] text-sm">
-            {filteredContacts.map((contact) => (
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-12 text-center text-[#aab7c4]">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                  {isEs ? "Cargando contactos..." : "Loading contacts..."}
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan={6} className="py-12 text-center text-red-500">
+                  {error}
+                </td>
+              </tr>
+            ) : filteredContacts.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-12 text-center text-[#aab7c4]">
+                  {isEs ? "No se encontraron contactos en tu red." : "No contacts found in your network."}
+                </td>
+              </tr>
+            ) : filteredContacts.map((contact) => (
               <tr key={contact.id} className="hover:bg-[#f8fafc] transition-colors">
                 <td className="py-4 px-4 min-w-[200px]">
                   <div className="font-semibold text-[#0a2540]">{contact.name}</div>
@@ -223,12 +237,13 @@ export default function ContactsView() {
                   {contact.associatedDeals ?? 0}
                 </td>
                 <td className="py-4 px-4 text-right whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="p-1.5 text-[#aab7c4] hover:text-[#0a2540] rounded-lg hover:bg-[#f6f9fc] transition-colors"
+                  <Link
+                    href={`/lenderDashboard/messages?borrowerId=${contact.id}`}
+                    className="inline-flex p-1.5 text-[#aab7c4] hover:text-[#635bff] rounded-lg hover:bg-[#f0efff] transition-colors"
+                    title={isEs ? "Enviar mensaje" : "Send message"}
                   >
-                    <MoreVertical className="w-4 h-4" />
-                  </button>
+                    <MessageSquare className="w-4 h-4" />
+                  </Link>
                 </td>
               </tr>
             ))}

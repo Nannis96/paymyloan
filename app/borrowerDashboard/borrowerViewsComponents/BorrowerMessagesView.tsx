@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
-import { api, toList, ApiError } from "@/app/lib/apiFetch";
+import { api, toList, ApiError, apiFetch } from "@/app/lib/apiFetch";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { fetchLatestMessages } from "@/app/lib/messages";
 import { MESSAGES_READ_EVENT } from "@/app/lib/useUnreadMessages";
@@ -10,10 +11,10 @@ import type { Message, MessageThread } from "@/app/types/api";
 
 const POLL_MS = 8000;
 const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-
 export default function BorrowerMessagesView() {
-  const { t } = useSite();
+  const { t, lang } = useSite();
   const m = t.messaging;
+  const searchParams = useSearchParams();
 
   const [threads, setThreads] = useState<MessageThread[] | null>(null);
   const [threadsError, setThreadsError] = useState("");
@@ -23,6 +24,34 @@ export default function BorrowerMessagesView() {
   const [notAllowed, setNotAllowed] = useState(false);
   const [text, setText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Guardamos la lista de lenders del borrower para cruzar el nombre en conversaciones nuevas
+  const [myLenders, setMyLenders] = useState<any[]>([]);
+
+  useEffect(() => {
+    const paramId = searchParams.get("lenderCompanyId");
+    if (paramId) {
+      setSelectedId(paramId);
+    }
+  }, [searchParams]);
+
+  // Obtener la lista de empresas de prestamistas del perfil del prestatario
+  useEffect(() => {
+    async function fetchMyLenders() {
+      try {
+        const res = await apiFetch(API_ROUTES.borrowers.me);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data?.lenderCompanies) {
+            setMyLenders(json.data.lenderCompanies);
+          }
+        }
+      } catch (e) {
+        console.error("Error fetching my lenders", e);
+      }
+    }
+    fetchMyLenders();
+  }, []);
 
   // ponytail: polling cada POLL_MS en vez de push (SSE/WebSocket) hasta que el back lo ofrezca.
   useEffect(() => {
@@ -38,7 +67,7 @@ export default function BorrowerMessagesView() {
     load();
     const tick = () => !document.hidden && load();
     const id = setInterval(tick, POLL_MS);
-    document.addEventListener("visibilitychange", tick); // al volver a la pestana, refresca ya
+    document.addEventListener("visibilitychange", tick);
     return () => {
       clearInterval(id);
       document.removeEventListener("visibilitychange", tick);
@@ -51,7 +80,7 @@ export default function BorrowerMessagesView() {
     setMessages([]);
     setSendError("");
     setNotAllowed(false);
-    let lastId = ""; // solo re-render y re-marca leido si llego/salio un mensaje nuevo
+    let lastId = "";
     const load = () =>
       fetchLatestMessages(API_ROUTES.borrowers.meMessageThread(selectedId))
         .then(async (list) => {
@@ -67,14 +96,13 @@ export default function BorrowerMessagesView() {
     load();
     const tick = () => !document.hidden && load();
     const id = setInterval(tick, POLL_MS);
-    document.addEventListener("visibilitychange", tick); // al volver a la pestana, refresca ya
+    document.addEventListener("visibilitychange", tick);
     return () => {
       clearInterval(id);
       document.removeEventListener("visibilitychange", tick);
     };
   }, [selectedId]);
 
-  // Scroll automatico hacia abajo
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -83,7 +111,6 @@ export default function BorrowerMessagesView() {
     const body = text.trim();
     if (!body || !selectedId) return;
 
-    // Validacion de informacion de contacto (telefonos o correos)
     if (/(\d[\s\-\.]?){7,}/.test(body) || /\S+@\S+\.\S+/.test(body)) {
       setSendError(m.blockedMsg);
       return;
@@ -111,7 +138,11 @@ export default function BorrowerMessagesView() {
   };
 
   const current = threads?.find((th) => th.lenderCompany?.id === selectedId);
-  const lenderName = current?.lenderCompany?.companyName ?? "";
+  const fallbackLender = myLenders.find((l) => l.id === selectedId);
+  
+  // Resolvemos el nombre desde el hilo activo, o en su defecto desde la lista de lenders (para conversaciones nuevas)
+  const lenderName = current?.lenderCompany?.companyName || fallbackLender?.companyName || "";
+  const isNewConversation = !current && fallbackLender;
 
   return (
     <div className="animate-in fade-in duration-300">
@@ -152,15 +183,28 @@ export default function BorrowerMessagesView() {
           </div>
         </div>
 
-        {/* AREA DE CHAT */}
-        <div className="flex flex-1 flex-col overflow-hidden bg-bg">
+        {/* AREA DE CHAT - Diferenciada con fondo bg-surface-2 */}
+        <div className="flex flex-1 flex-col overflow-hidden bg-surface-2">
           
           {/* HEADER CHAT */}
-          <div className="flex items-center justify-between border-b border-rule bg-surface p-[16px_24px]">
-            <div className="flex flex-col">
-              <div className="text-[15px] font-[800] text-ink">{lenderName}</div>
+          <div className="flex items-center justify-between border-b border-rule bg-surface p-[16px_24px] shadow-sm z-10">
+            <div className="flex items-center gap-3">
+              <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-brand-dark text-[15px] font-[900] text-white shadow-sm">
+                {initials(lenderName || "PR")}
+              </div>
+              <div className="flex flex-col">
+                <div className="text-[16px] font-[800] text-ink">
+                  {lenderName || (lang === "es" ? "Prestamista Privado" : "Private Lender")}
+                </div>
+                {isNewConversation && (
+                  <div className="text-[12px] font-[600] text-accent mt-0.5">
+                    {lang === "es" ? "Iniciar conversación..." : "Start conversation..."}
+                  </div>
+                )}
+              </div>
             </div>
-            <span className="hidden rounded-[12px] bg-accent-soft p-[3px_10px] text-[11px] font-[700] text-accent sm:inline-block">
+            
+            <span className="hidden rounded-full bg-accent-soft p-[4px_12px] text-[11px] font-[800] uppercase tracking-wider text-accent sm:inline-block">
               {m.activeThread}
             </span>
           </div>
@@ -171,11 +215,11 @@ export default function BorrowerMessagesView() {
               const isMe = msg.senderRole === "BORROWER";
               return (
                 <div key={msg.id} className={`flex items-end gap-[10px] ${isMe ? "flex-row-reverse" : ""}`}>
-                  <div className={`flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full text-[12px] font-[700] text-white ${isMe ? "bg-accent" : "bg-brand-dark"}`}>
-                    {isMe ? "ME" : initials(lenderName)}
+                  <div className={`flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full text-[12px] font-[700] text-white shadow-sm ${isMe ? "bg-accent" : "bg-brand-dark"}`}>
+                    {isMe ? "ME" : initials(lenderName || "PR")}
                   </div>
                   <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                    <div className={`max-w-[420px] whitespace-pre-wrap rounded-[12px] p-[12px_16px] text-[13px] leading-[1.6] ${isMe ? "bg-accent text-white" : "bg-surface-2 text-ink"}`}>
+                    <div className={`max-w-[420px] whitespace-pre-wrap rounded-[12px] p-[12px_16px] text-[13px] leading-[1.6] shadow-sm ${isMe ? "bg-accent text-white" : "bg-surface text-ink border border-rule"}`}>
                       {msg.body}
                     </div>
                     <div className={`mt-[4px] px-[4px] text-[11px] text-ink-3 ${isMe ? "text-right" : ""}`}>
@@ -191,7 +235,7 @@ export default function BorrowerMessagesView() {
           {/* AREA DE INPUT */}
           <div className="flex flex-col gap-[10px] border-t border-rule bg-surface p-[16px_24px]">
             {notAllowed ? (
-              <div className="rounded-[8px] bg-surface-2 p-[12px_16px] text-[13px] text-ink-3">{m.notAllowed}</div>
+              <div className="rounded-[8px] bg-surface-2 p-[12px_16px] text-[13px] text-ink-3 border border-rule">{m.notAllowed}</div>
             ) : (
             <>
             <div className="flex items-end gap-[10px]">
@@ -205,7 +249,7 @@ export default function BorrowerMessagesView() {
               />
               <button 
                 onClick={handleSend}
-                className="h-[44px] shrink-0 cursor-pointer rounded-[8px] border-none bg-accent p-[10px_18px] text-[13px] font-[700] text-accent-ink transition-colors hover:bg-blue-700"
+                className="h-[44px] shrink-0 cursor-pointer rounded-[8px] border-none bg-accent p-[10px_18px] text-[13px] font-[700] text-accent-ink transition-colors hover:bg-blue-700 shadow-sm"
               >
                 {m.send}
               </button>

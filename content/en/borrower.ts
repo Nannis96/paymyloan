@@ -273,6 +273,17 @@ export const borrower: typeof Es = {
 
   vetting: { title: "Vetting Application", subtitle: "Complete this process once to access private capital.", feeNotice: "Application fee (non-refundable)", form: { bankStatements: "Bank Statements (Last 3 months)", idUpload: "Official ID", submitAndPay: "Pay $99 & Submit", selectFile: "Select file", dealHistory: "Past Deal History", dealHistoryDesc: "Enter up to 5 recent project addresses.", addressLabel: "Address", addressPh: "E.g. 123 Main St, Austin, TX", addAddress: "+ Add another address", consentCredit: "I authorize Dueño a Dueño LLC and its partnered lenders to run a Credit Pull.", consentBackground: "I authorize Dueño a Dueño LLC to run a Background Check.", consentAlert: "You must accept the credit and background checks to continue.", step: "Step", of: "of", next: "Next", back: "Back", saveAndContinueLater: "Save & continue later", savedAlert: "Your progress has been saved. You can come back anytime." } },
 
+  contacts: {
+    title: "Contacts Directory",
+    subtitle: "Lenders with whom you have contracts or who have bid on your deals.",
+    searchPlaceholder: "Search contacts...",
+    empty: "No contacts available yet.",
+    loading: "Loading contacts...",
+    messageBtn: "Send Message",
+    roles: { lender: "Lender" },
+    associatedDeals: "Associated deals",
+    errorFetch: "Error loading contacts."
+  },
   borrowerOnboarding: {
     title: "One step before you post",
     subtitle: "Tell us about your business so lenders know who they're working with.\nTakes about 60 seconds.",
