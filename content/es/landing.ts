@@ -109,7 +109,7 @@ export const landing = {
       cta: {
         title1: "Tú traes el trato.",
         title2: "Nosotros el resto.",
-        sub: "Publica gratis con un código de referido, o $99/mes. Sin bancos, sin revisión de crédito, sin rodeos. Los prestamistas en tu mercado están listos ahora mismo.",
+        sub: "Publica gratis con un código de referido, o {subPrice}/mes. Sin bancos, sin revisión de crédito, sin rodeos. Los prestamistas en tu mercado están listos ahora mismo.",
         btn1: "Publicar trato gratis",
         btn2: "Ver una demo en vivo"
       }
@@ -267,7 +267,7 @@ landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why:
         },
         cta: {
           title: "Los prestamistas en tu mercado te esperan.",
-          subtitle: "Publica gratis tu primer trato con un código de referido, o paga $99/mes. Sin bancos. Sin brokers. Sin esperas.",
+          subtitle: "Publica gratis tu primer trato con un código de referido, o paga {subPrice}/mes. Sin bancos. Sin brokers. Sin esperas.",
           btnGhost: "Buscar prestamistas",
           btnPrimary: "Publicar trato gratis"
         }
@@ -337,7 +337,7 @@ landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why:
           items: [
             { q: "¿Cómo funciona el ACH — cuándo llega el dinero a mi cuenta?", a: "Los pagos mensuales de intereses se debitan de la cuenta bancaria del prestatario el día 1 de cada mes a través de Stripe ACH Debit + verificación bancaria de Plaid. La liquidación en tu cuenta generalmente toma 2–3 días hábiles.<br><br>El <strong>período inicial (stub period)</strong> (el mes parcial desde la fecha de cierre hasta fin de mes) se cobra en la hoja de liquidación al cierre en efectivo — no vía ACH. Tu primer débito ACH es el día 1 del mes siguiente al mes de cierre.<br><br>Ejemplo: Cierre el 15 de Septiembre → primer ACH el 1 de Noviembre." },
             { q: "¿Cómo funcionan las liquidaciones (payoffs)?", a: "Cuando un prestatario solicita una liquidación, PML genera una carta de liquidación automáticamente utilizando la tasa de interés original del contrato (no una tasa de penalización). Recibirás:<ul><li>Monto de liquidación válido hasta una fecha específica</li><li>Monto por día (per diem) para días adicionales</li><li>Carta de liquidación en PDF firmada</li><li>Alerta SMS inmediata</li></ul><br><strong>Protección contra fraude de transferencias:</strong> Las instrucciones completas de transferencia nunca se envían por correo electrónico. La carta de liquidación muestra solo los últimos 4 dígitos de tu cuenta. Prestatarios y compañías de títulos deben llamarte directamente para recibir los detalles completos.", highlight: "Siempre verifica los cambios en las instrucciones de transferencia llamando — nunca te bases solo en un correo electrónico." },
-            { q: "¿Cuáles son las tarifas? ¿Me cobran algo como prestamista?", a: "<strong>Los prestamistas no pagan nada. Nunca.</strong><br><br>PML cobra a los prestatarios:<ul><li>Suscripción de $99/mes (comienza al publicar un trato)</li><li>Tarifa única de verificación de identidad de $99</li><li>10% del interés mensual — solo cuando PML conectó el trato</li><li>1% de tarifa de conexión al prestamista — cobrada al cierre en la hoja de liquidación cuando PML conectó el trato</li></ul><br>Tratos por invitación directa (tú invitaste al prestatario o ellos a ti) — tanto el 10% del interés mensual como el 1% de conexión son condonados para el prestatario." }
+            { q: "¿Cuáles son las tarifas? ¿Me cobran algo como prestamista?", a: "<strong>Los prestamistas no pagan nada. Nunca.</strong><br><br>PML cobra a los prestatarios:<ul><li>Suscripción de {subPrice}/mes (comienza al publicar un trato)</li><li>Tarifa única de verificación de identidad de $99</li><li>10% del interés mensual — solo cuando PML conectó el trato</li><li>1% de tarifa de conexión al prestamista — cobrada al cierre en la hoja de liquidación cuando PML conectó el trato</li></ul><br>Tratos por invitación directa (tú invitaste al prestatario o ellos a ti) — tanto el 10% del interés mensual como el 1% de conexión son condonados para el prestatario." }
           ]
         }
       ],
@@ -480,7 +480,7 @@ landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why:
                 feeBody1Highlight: "PML no hizo la conexión",
                 feeBody1Cont: " — por lo que la tarifa de conexión no aplica.",
                 feeBody2Highlight: "Qué sigue aplicando:",
-                feeBody2Cont: " El prestatario paga su suscripción de $99/mes. Eso es todo. Sin tarifa de conexión del 1%. Sin el 10% del interés mensual.",
+                feeBody2Cont: " El prestatario paga su suscripción de {subPrice}/mes. Eso es todo. Sin tarifa de conexión del 1%. Sin el 10% del interés mensual.",
                 feeBody3Highlight: "El trato se etiqueta",
                 borrowerReceivesTitle: "Lo que recibe tu prestatario",
                 borrowerReceivesBody: "Un correo de PayMyLoan.ai:\n\nAsunto: John Smith está esperando para fondear tu siguiente trato\n\n\"Hola — John Smith, un prestamista privado en PayMyLoan, tiene un trato reservado para ti. Publica tu propiedad en menos de 10 minutos y John podrá fondearla sin competir con nadie más.\"\n\nCTA: Publicar mi trato → dirige a una página de registro compartida etiquetada previamente a la cuenta de John."
@@ -502,7 +502,7 @@ landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why:
                 feeTitle: "Traer a tu prestamista ahorra dinero",
                 feeBody1: "Dado que PML no hace la presentación, ",
                 feeBody1Highlight: "no se aplica la tarifa de conexión",
-                feeBody1Cont: ". Pagas solamente la suscripción de $99/mes. El 10% del interés mensual y la tarifa de conexión al prestamista del 1% son condonados para tratos invitados.",
+                feeBody1Cont: ". Pagas solamente la suscripción de {subPrice}/mes. El 10% del interés mensual y la tarifa de conexión al prestamista del 1% son condonados para tratos invitados.",
                 lenderReceivesTitle: "Lo que recibe tu prestamista",
                 lenderReceivesBody: "Un correo de PayMyLoan.ai:\n\nAsunto: Marcus Johnson tiene un trato listo para ti\n\n\"Hola — Marcus Johnson, un prestatario que conoces, ha publicado un trato en PayMyLoan y quiere que lo fondees. Puedes revisar todo el trato, hacer una oferta y cerrar — todo en un solo lugar.\"\n\nCTA: Ver el trato de Marcus → el prestamista aterriza directo en la tarjeta del trato, etiquetado a la cuenta de Marcus.",
                 noFundTitle: "¿Qué pasa si el prestamista no fondea?",
@@ -535,7 +535,7 @@ landingNav: { lenders: "Para Prestamistas", borrowers: "Para Prestatarios", why:
                 sub: "El trato se etiqueta al crearse. El motor de tarifas lee la etiqueta automáticamente — sin intervenciones manuales.",
                 headers: ["Tarifa", "Mercado PML", "PML los conectó", "Invitación Directa", "Ya se conocían", "Notas"],
                 rows: [
-                  { fee: "Suscripción de $99/mes", match: "Sí", invite: "Sí", notes: "Siempre — el prestatario paga la infraestructura de cualquier modo" },
+                  { fee: "Suscripción de {subPrice}/mes", match: "Sí", invite: "Sí", notes: "Siempre — el prestatario paga la infraestructura de cualquier modo" },
                   { fee: "Verificación de identidad $99", match: "Si el prestamista la requiere", invite: "Si el prestamista la requiere", notes: "El prestamista decide requerirla — es su elección en ambos flujos" },
                   { fee: "Tarifa de conexión al prestamista (1%)", match: "Sí — al cierre", invite: "Condonada", notes: "PML sólo gana esto cuando nosotros hacemos la introducción" },
                   { fee: "10% del interés mensual", match: "Sí — mensual", invite: "Condonada", notes: "Misma lógica — sin matchmaking, no hay tarifa de matchmaking" }

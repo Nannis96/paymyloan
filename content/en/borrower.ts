@@ -87,7 +87,7 @@ export const borrower: typeof Es = {
       desc2Post: " Lenders on PML are aware of our platform fee and factor it into their offer terms.",
       table: { fee: "Fee", amount: "Amount", when: "When due" },
       items: [
-        { name: "Monthly subscription", amt: "$99/mo", when: "Monthly, beginning when deal is posted. Waived if borrower has a valid promo code or affiliate referral link." },
+        { name: "Monthly subscription", amt: "{subPrice}/mo", when: "Monthly, beginning when deal is posted. Waived if borrower has a valid promo code or affiliate referral link." },
         { name: "Borrower underwriting fee", amt: "$99 (one-time)", when: "When a lender requests full identity verification" },
         { name: "Lender connection fee", amt: "1% of loan amount", when: "At closing — only if PML connected borrower to lender. Paid via settlement statement." }
       ],
@@ -107,7 +107,7 @@ export const borrower: typeof Es = {
     ack: {
       items: [
         "I understand that a <strong>1% lender connection fee</strong> ($1,150 estimated) will be collected at closing via the settlement statement if PayMyLoan.ai connected me with my lender.",
-        "I understand that a <strong>$99/month subscription fee</strong> begins when I post my deal. This fee is waived if I have a valid promo code or affiliate referral link.",
+        "I understand that a <strong>{subPrice}/month subscription fee</strong> begins when I post my deal. This fee is waived if I have a valid promo code or affiliate referral link.",
         "I authorize PayMyLoan.ai to send this signed agreement to my title company as authorization to include the platform fee on the settlement statement.",
         "I have read and agree to the PayMyLoan.ai <strong>Terms of Service</strong> and <strong>Privacy Policy</strong>."
       ]

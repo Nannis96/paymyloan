@@ -111,7 +111,7 @@ export const landing: typeof Es = {
       cta: {
         title1: "You bring the deal.",
         title2: "We do the rest.",
-        sub: "Post free with a referral code, or $99/month. No banks, no credit checks, no runaround. Lenders in your market are ready right now.",
+        sub: "Post free with a referral code, or {subPrice}/month. No banks, no credit checks, no runaround. Lenders in your market are ready right now.",
         btn1: "Post your deal free",
         btn2: "See a live demo"
       }
@@ -269,7 +269,7 @@ landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML"
         },
         cta: {
           title: "Lenders in your market are ready right now.",
-          subtitle: "Post free with a referral code, or $99/month. No banks, no brokers, no waiting.",
+          subtitle: "Post free with a referral code, or {subPrice}/month. No banks, no brokers, no waiting.",
           btnGhost: "Browse lenders",
           btnPrimary: "Post your deal free →"
         }
@@ -319,7 +319,7 @@ landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML"
           items: [
             { q: "How does ACH work — when does money hit my account?", a: "Monthly interest payments pull from the borrower's bank account on the 1st of each month via Stripe ACH Debit + Plaid bank verification. Settlement to your account typically takes 2–3 business days.<br><br>The <strong>stub period</strong> (partial first month from closing date to month end) is collected on the settlement statement at closing as cash — not via ACH. Your first ACH pull is the 1st of the month after the month following closing.<br><br>Example: Close September 15 → first ACH November 1." },
             { q: "How do payoffs work?", a: "When a borrower requests a payoff, PML generates a payoff letter automatically using the original contract interest rate (not a default rate). You receive:<ul><li>Payoff amount good through a specific date</li><li>Per diem for each additional day</li><li>Signed payoff letter PDF</li><li>SMS alert immediately</li></ul><br><strong>Wire fraud protection:</strong> Full wire instructions are never sent via email. The payoff letter shows only the last 4 digits of your account. Borrowers and title companies must call you directly to receive complete wire details.", highlight: "Always verify wire instruction changes by calling — never based on email alone." },
-            { q: "What are the fees? Am I charged anything as a lender?", a: "<strong>Lenders pay nothing. Ever.</strong><br><br>PML charges borrowers:<ul><li>$99/month subscription (starts when deal is posted)</li><li>$99 one-time identity verification fee</li><li>10% of monthly interest — only when PML connected the deal</li><li>1% lender connection fee — collected at closing on the settlement statement when PML connected the deal</li></ul><br>Direct invite deals (you invited the borrower or they invited you) — the 10% monthly interest share and 1% connection fee are both waived for the borrower." }
+            { q: "What are the fees? Am I charged anything as a lender?", a: "<strong>Lenders pay nothing. Ever.</strong><br><br>PML charges borrowers:<ul><li>{subPrice}/month subscription (starts when deal is posted)</li><li>$99 one-time identity verification fee</li><li>10% of monthly interest — only when PML connected the deal</li><li>1% lender connection fee — collected at closing on the settlement statement when PML connected the deal</li></ul><br>Direct invite deals (you invited the borrower or they invited you) — the 10% monthly interest share and 1% connection fee are both waived for the borrower." }
           ]
         }
       ],
@@ -482,7 +482,7 @@ landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML"
                 feeBody1Highlight: "PML didn't make the introduction",
                 feeBody1Cont: " — so the connection fee doesn't apply.",
                 feeBody2Highlight: "What still applies:",
-                feeBody2Cont: " Borrower pays the $99/month subscription. That's it. No 1% lender connection fee. No 10% of monthly interest.",
+                feeBody2Cont: " Borrower pays the {subPrice}/month subscription. That's it. No 1% lender connection fee. No 10% of monthly interest.",
                 feeBody3Highlight: "The deal is tagged",
                 borrowerReceivesTitle: "What your borrower receives",
                 borrowerReceivesBody: "An email from PayMyLoan.ai:\n\nSubject: John Smith is waiting to fund your next deal\n\n\"Hi — John Smith, a private lender on PayMyLoan, has a deal reserved for you. Post your property in under 10 minutes and John can fund it without competing with anyone else.\"\n\nCTA: Post my deal → lands on co-branded signup page pre-tagged to John's account"
@@ -504,7 +504,7 @@ landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML"
                 feeTitle: "Bringing your own lender saves money",
                 feeBody1: "Since PML isn't making the introduction, ",
                 feeBody1Highlight: "no connection fee applies",
-                feeBody1Cont: ". You pay the $99/month subscription only. The 10% of monthly interest and 1% lender fee are waived for invited deals.",
+                feeBody1Cont: ". You pay the {subPrice}/month subscription only. The 10% of monthly interest and 1% lender fee are waived for invited deals.",
                 lenderReceivesTitle: "What your lender receives",
                 lenderReceivesBody: "An email from PayMyLoan.ai:\n\nSubject: Marcus Johnson has a deal ready for you\n\n\"Hi — Marcus Johnson, a borrower you know, has posted a deal on PayMyLoan and wants you to fund it. You can review the full deal, make an offer, and close — all in one place.\"\n\nCTA: View Marcus's deal → lender lands directly on the deal card, pre-tagged to Marcus's account",
                 noFundTitle: "What happens if the lender doesn't fund?",
@@ -537,7 +537,7 @@ landingNav: { lenders: "For Lenders", borrowers: "For Borrowers", why: "Why PML"
                 sub: "The deal is tagged at creation. The fee engine reads the tag automatically — no manual override needed.",
                 headers: ["Fee", "Platform Match", "PML introduced them", "Direct Invite", "They knew each other", "Notes"],
                 rows: [
-                  { fee: "$99/month subscription", match: "Yes", invite: "Yes", notes: "Always — borrower pays for infrastructure regardless" },
+                  { fee: "{subPrice}/month subscription", match: "Yes", invite: "Yes", notes: "Always — borrower pays for infrastructure regardless" },
                   { fee: "$99 identity verification", match: "If lender requires", invite: "If lender requires", notes: "Lender decides whether to require it — their choice on both flows" },
                   { fee: "1% lender connection fee", match: "Yes — at closing", invite: "Waived", notes: "PML only earns this when PML made the introduction" },
                   { fee: "10% of monthly interest", match: "Yes — ongoing", invite: "Waived", notes: "Same logic — no matchmaking, no matchmaking fee" }

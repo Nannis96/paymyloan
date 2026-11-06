@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useSyncExternalStore,
   useState,
   type ReactNode,
@@ -99,6 +100,17 @@ export default function SiteShell({
   const [activeTab, setActiveTab] = useState<number>(0);
   // "en" va en el bundle inicial; "es" se descarga solo si se usa.
   const [es, setEs] = useState<Copy | null>(null);
+  // Precio mensual: lo manda el back (SUBSCRIPTION_PRICE_CENTS) y reemplaza "{subPrice}" en content/.
+  const [subPrice, setSubPrice] = useState("…");
+  useEffect(() => {
+    fetch(API_ROUTES.subscription.price)
+      .then((r) => r.json())
+      .then(({ data }) => {
+        const usd = data.priceCents / 100;
+        setSubPrice(new Intl.NumberFormat("en", { style: "currency", currency: data.currency, minimumFractionDigits: Number.isInteger(usd) ? 0 : 2 }).format(usd));
+      })
+      .catch(() => {});
+  }, []);
   const [isVerifying, setIsVerifying] = useState<boolean>(true);
 
   const handleSetAppMode = (mode: AppMode) => {
@@ -116,7 +128,8 @@ export default function SiteShell({
     if (lang === "es") import("@/content/es").then((m) => setEs(m.default));
   }, [lang]);
 
-  const t: Copy = lang === "es" && es ? es : en;
+  const base: Copy = lang === "es" && es ? es : en;
+  const t = useMemo<Copy>(() => JSON.parse(JSON.stringify(base).replaceAll("{subPrice}", subPrice)), [base, subPrice]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
