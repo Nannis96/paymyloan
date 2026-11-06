@@ -55,7 +55,7 @@ export const auth = {
     }
   },
 
-  loginPage: { title: "Inicia sesión", subtitle: "Ingresa tus credenciales para administrar préstamos.", cardTitle: "ACCESO SEGURO", emailLabel: "Correo electrónico", emailPlaceholder: "correo@ejemplo.com", passwordLabel: "Contraseña", passwordPlaceholder: "Ingresa tu contraseña", submit: "INGRESAR", forgot: "OLVIDÉ MI CONTRASEÑA", back: "VOLVER AL INICIO", noAccount: "¿Aún no tienes cuenta?", signup: "Regístrate aquí", processing: "Procesando...", twoFactorTitle: "VERIFICACIÓN 2FA", twoFactorDesc: "Ingresa el código de 6 dígitos de tu aplicación autenticadora o un código de recuperación.", twoFactorLabel: "Código de verificación", twoFactorPlaceholder: "Ej. 123456", twoFactorVerifying: "Verificando...", twoFactorConfirm: "CONFIRMAR", twoFactorCancel: "Cancelar", errorDefault: "Error al iniciar sesión", error2FA: "Código 2FA incorrecto o expirado", errorNetwork: "Error de red desconocido", },
+  loginPage: { title: "Inicia sesión", subtitle: "Ingresa tus credenciales para administrar préstamos.", cardTitle: "ACCESO SEGURO", emailLabel: "Correo electrónico", emailPlaceholder: "correo@ejemplo.com", passwordLabel: "Contraseña", passwordPlaceholder: "Ingresa tu contraseña", submit: "INGRESAR", forgot: "OLVIDÉ MI CONTRASEÑA", back: "VOLVER AL INICIO", noAccount: "¿Aún no tienes cuenta?", signup: "Sé de los primeros en registrarte", processing: "Procesando...", twoFactorTitle: "VERIFICACIÓN 2FA", twoFactorDesc: "Ingresa el código de 6 dígitos de tu aplicación autenticadora o un código de recuperación.", twoFactorLabel: "Código de verificación", twoFactorPlaceholder: "Ej. 123456", twoFactorVerifying: "Verificando...", twoFactorConfirm: "CONFIRMAR", twoFactorCancel: "Cancelar", errorDefault: "Error al iniciar sesión", error2FA: "Código 2FA incorrecto o expirado", errorNetwork: "Error de red desconocido", },
 
   verifyEmail: {
     borrower: {
@@ -97,4 +97,17 @@ export const auth = {
       btnPrimary: "Iniciar sesion"
     }
   },
+  
+  preRegister: {
+    alreadyAccount: "¿Ya tienes acceso?",
+    login: "Inicia sesión",
+    successTitle: "¡Estás en la lista!",
+    successDesc1: "Gracias por tu interés en PayMyLoan.ai. Te hemos añadido a nuestra lista de acceso anticipado.",
+    successDesc2: "Te notificaremos tan pronto como tu cuenta esté lista para ser activada.",
+    backHome: "Volver al inicio",
+    title: "Acceso Anticipado",
+    subtitle: "Regístrate para obtener acceso prioritario cuando lancemos nuestra plataforma.",
+    processing: "Procesando...",
+    submitBtn: "Unirse a la lista de espera"
+  }
 };

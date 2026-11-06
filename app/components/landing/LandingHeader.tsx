@@ -67,7 +67,7 @@ export default function LandingHeader() {
           <Link href="/login" className="text-[14px] font-semibold text-ink-2 transition-colors hover:text-ink">
             {ln.signIn}
           </Link>
-          <Link href="/register" className="rounded-md bg-accent px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-blue-700">
+          <Link href="/pre-register" className="rounded-md bg-accent px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-blue-700">
             {ln.getStarted}
           </Link>
         </div>
