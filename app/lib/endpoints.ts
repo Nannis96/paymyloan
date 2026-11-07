@@ -69,6 +69,12 @@ export const API_ROUTES = {
     loanRequestQuotes: (id: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}/quotes`,
     selectQuote: (id: string, quoteId: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}/quotes/${quoteId}/select`,
   },
+  documents: {
+    byContract: (id: string) => `${BASE_URL}/api/contracts/${id}/documents`,
+    byLoanRequest: (id: string) => `${BASE_URL}/api/loan-requests/${id}/documents`,
+    content: (id: string) => `${BASE_URL}/api/documents/${id}/content`,
+    byId: (id: string) => `${BASE_URL}/api/documents/${id}`,
+  },
   contracts: {
     base: `${BASE_URL}/api/contracts`,
     byId: (id: string) => `${BASE_URL}/api/contracts/${id}`,

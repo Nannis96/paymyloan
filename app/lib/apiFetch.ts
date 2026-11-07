@@ -42,7 +42,7 @@ export async function apiFetch(url: string, init: RequestInit = {}) {
     fetch(url, {
       ...init,
       headers: {
-        ...(init.body ? { "Content-Type": "application/json" } : {}),
+        ...(init.body && !(init.body instanceof FormData) ? { "Content-Type": "application/json" } : {}),
         Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
         ...init.headers,
       },
