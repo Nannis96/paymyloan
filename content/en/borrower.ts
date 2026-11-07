@@ -280,6 +280,7 @@ export const borrower: typeof Es = {
     empty: "No contacts available yet.",
     loading: "Loading contacts...",
     messageBtn: "Send Message",
+    msgNotAllowed: "Messaging not available",
     roles: { lender: "Lender" },
     associatedDeals: "Associated deals",
     errorFetch: "Error loading contacts."

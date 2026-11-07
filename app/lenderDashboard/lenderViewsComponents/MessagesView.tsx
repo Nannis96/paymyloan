@@ -48,9 +48,10 @@ export default function MessagesView() {
 
         const existingIds = new Set(list.map((th) => th.borrowerProfile?.id ?? th.lastMessage?.borrowerProfileId));
         
-        // Creamos hilos falsos para los prestatarios con los que aun no hemos conversado
+        // Solo creamos un hilo falso si el usuario llego por un enlace directo (?borrowerId=X)
+        // y todavia no existe un hilo con ese prestatario. Evitamos saturar el sidebar con contactos historicos.
         const dummyThreads = borrowersList
-          .filter((b) => !existingIds.has(b.id) && b.lenderCompanies?.[0])
+          .filter((b) => b.id === targetBorrowerId && !existingIds.has(b.id) && b.lenderCompanies?.[0])
           .map((b) => ({
             borrowerProfile: b,
             lastMessage: {
@@ -66,7 +67,8 @@ export default function MessagesView() {
             unreadCount: 0
           } as unknown as MessageThread));
 
-        const combinedList = [...list, ...dummyThreads];
+        // Ponemos el nuevo hilo arriba (si existe) seguido de los hilos activos
+        const combinedList = [...dummyThreads, ...list];
         setThreads(combinedList);
         setSelectedKey((cur) => cur ?? (combinedList[0] ? threadKey(combinedList[0]) : null));
         setThreadsError("");

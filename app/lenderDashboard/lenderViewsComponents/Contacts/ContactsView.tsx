@@ -17,6 +17,7 @@ interface Contact {
   email: string;
   phone: string;
   associatedDeals?: number;
+  canMessage?: boolean;
 }
 
 export default function ContactsView() {
@@ -43,26 +44,87 @@ export default function ContactsView() {
   useEffect(() => {
     async function fetchContacts() {
       try {
-        const res = await apiFetch(API_ROUTES.lenders.meBorrowers);
-        const json = await res.json();
-        
-        if (json.success) {
-          const borrowersList = toList<any>(json.data);
-          
-          // Mapeamos el modelo del backend a la interfaz de la tabla[cite: 2]
-          const mappedContacts: Contact[] = borrowersList.map((b) => ({
-            id: b.id,
-            name: b.user?.name || (isEs ? "Sin nombre" : "Unnamed"),
-            company: b.entityName || undefined,
-            category: 'BORROWER',
-            email: b.user?.email || "",
-            phone: b.user?.phone || "",
-            associatedDeals: 0
-          }));
-          setContacts(mappedContacts);
-        } else {
-          throw new Error(json.error?.message || "Error al cargar contactos");
+        const [borrowersRes, contractsRes, reqsRes, threadsRes] = await Promise.all([
+          apiFetch(API_ROUTES.lenders.meBorrowers),
+          apiFetch(API_ROUTES.contracts.base),
+          apiFetch(API_ROUTES.marketplace.loanRequests),
+          apiFetch(API_ROUTES.lenders.meMessageThreads)
+        ]);
+
+        if (!borrowersRes.ok) {
+           throw new Error("Error al cargar contactos");
         }
+        
+        const borrowersJson = await borrowersRes.json();
+        const borrowersList = toList<any>(borrowersJson.data);
+        const borrowersMap = new Map();
+
+        // Mapeamos el modelo del backend a la interfaz de la tabla[cite: 2]
+        borrowersList.forEach((b: any) => {
+           borrowersMap.set(b.id, {
+             id: b.id,
+             name: b.user?.name || (isEs ? "Sin nombre" : "Unnamed"),
+             company: b.entityName || undefined,
+             category: 'BORROWER',
+             email: b.user?.email || "",
+             phone: b.user?.phone || "",
+             associatedDeals: 0,
+             canMessage: false
+           });
+        });
+
+        if (contractsRes.ok) {
+          const contractsJson = await contractsRes.json();
+          if (contractsJson.success && contractsJson.data?.items) {
+            contractsJson.data.items.forEach((contract: any) => {
+              contract.borrowers?.forEach((cb: any) => {
+                const borrowerId = cb.borrowerProfileId;
+                if (borrowerId && borrowersMap.has(borrowerId)) {
+                  const existing = borrowersMap.get(borrowerId);
+                  existing.associatedDeals += 1;
+                  if (contract.status !== "DRAFT") existing.canMessage = true;
+                  borrowersMap.set(borrowerId, existing);
+                }
+              });
+            });
+          }
+        }
+
+        if (reqsRes.ok) {
+          const reqsJson = await reqsRes.json();
+          if (reqsJson.success && reqsJson.data?.items) {
+            reqsJson.data.items.forEach((req: any) => {
+               if (req.quotes) {
+                 req.quotes.forEach((quote: any) => {
+                   if (quote.status === "SUBMITTED" || quote.status === "SELECTED") {
+                     const borrowerId = req.borrowerProfileId;
+                     if (borrowerId && borrowersMap.has(borrowerId)) {
+                       const existing = borrowersMap.get(borrowerId);
+                       existing.canMessage = true;
+                       borrowersMap.set(borrowerId, existing);
+                     }
+                   }
+                 });
+               }
+            });
+          }
+        }
+
+        if (threadsRes.ok) {
+          const threadsJson = await threadsRes.json();
+          if (threadsJson.success && threadsJson.data) {
+            threadsJson.data.forEach((thread: any) => {
+              const borrowerId = thread.borrowerProfile?.id || thread.lastMessage?.borrowerProfileId;
+              if (borrowerId && borrowersMap.has(borrowerId)) {
+                const existing = borrowersMap.get(borrowerId);
+                existing.canMessage = true;
+                borrowersMap.set(borrowerId, existing);
+              }
+            });
+          }
+        }
+
+        setContacts(Array.from(borrowersMap.values()));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error de red");
       } finally {
@@ -237,13 +299,22 @@ export default function ContactsView() {
                   {contact.associatedDeals ?? 0}
                 </td>
                 <td className="py-4 px-4 text-right whitespace-nowrap">
-                  <Link
-                    href={`/lenderDashboard/messages?borrowerId=${contact.id}`}
-                    className="inline-flex p-1.5 text-[#aab7c4] hover:text-[#635bff] rounded-lg hover:bg-[#f0efff] transition-colors"
-                    title={isEs ? "Enviar mensaje" : "Send message"}
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                  </Link>
+                  {contact.canMessage ? (
+                    <Link
+                      href={`/lenderDashboard/messages?borrowerId=${contact.id}`}
+                      className="inline-flex p-1.5 text-[#aab7c4] hover:text-[#635bff] rounded-lg hover:bg-[#f0efff] transition-colors"
+                      title={isEs ? "Enviar mensaje" : "Send message"}
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <div
+                      className="inline-flex p-1.5 text-[#aab7c4] opacity-50 cursor-not-allowed rounded-lg"
+                      title={isEs ? "Mensajeria no disponible" : "Messaging not available"}
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}

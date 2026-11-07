@@ -170,7 +170,18 @@ dashboardBorrower: { title: "Borrower Dashboard", subtitle: "Your loans, propert
     },
     actions: { back: "Back", continue: "Continue", submit: "Submit profile" }
   },
-
+  contacts: {
+    title: "Contacts Directory",
+    subtitle: "Borrowers with whom you have contracts or who you have bid on their deals.",
+    searchPlaceholder: "Search contacts...",
+    empty: "No contacts available yet.",
+    loading: "Loading contacts...",
+    messageBtn: "Send Message",
+    msgNotAllowed: "Messaging not available",
+    roles: { lender: "Borrower" },
+    associatedDeals: "Associated deals",
+    errorFetch: "Error loading contacts."
+  },
   commitmentLetter: { title: "Commitment Letter", subtitle: "Binding agreement between borrower and lender.", fees: { title: "Closing Fee Summary", origination: "Origination Points", processing: "Processing Fee", underwriting: "Underwriting Fee", platform: "PML Connection Fee", totalDue: "Total Due at Closing (Borrower)" }, actions: { accept: "Accept & Sign", decline: "Decline" }, achModal: { title: "Set Up Autopay (ACH)", subtitle: "To complete the signature, select the bank account from which your monthly payments will be automatically deducted starting on the commencement date.", selectAccount: "Select a linked account", confirmBtn: "Confirm ACH & Sign", cancel: "Cancel" }, disclaimer: "Upon acceptance, this letter will be automatically sent to the Title Company and Insurance Company. Dueño a Dueño LLC operates as a technology connector, and does not originate, fund, or service the loan itself.", loading: "Loading commitment letter...", errorAuth: "You don't have permission to view this commitment letter or your session expired.", errorFetch: "Failed to fetch commitment letter", errorAccept: "Failed to accept terms", errorReject: "Failed to decline terms", errorNetwork: "Unknown network error", paidTo: "Paid to Dueño a Dueño LLC ", customFeeFallback: "Fee", rejectCommentPh: "Reason for declining (optional)...", rejecting: "Declining...", accepting: "Accepting...", },
 
   issueCommitment: { title: "Issue Commitment Letter", subtitle: "Configure fees for deal REF:", closingFeesTitle: "Closing Fees", originationPoints: "Origination Points (%)", processingFee: "Processing Fee ($)", underwritingFee: "Underwriting Fee ($)", docPrepFee: "Doc Prep Fee ($)", customFeeName: "Custom Fee Name", customFeeNamePh: "E.g. Appraisal Fee", customFeeAmount: "Custom Fee Amount ($)", penaltiesTitle: "Post-Closing Penalties", latePenalty: "Late Payment Penalty", latePenaltyPh: "E.g. 5% or $50", prePayPenalty: "Pre-Pay Penalty", prePayPenaltyPh: "E.g. 1% of balance", phPoints: "E.g. 2", phFee: "E.g. 500", systemNoteTitle: "System Note:", systemNote: "The Marketplace Connection Fee (1 point, min $999) will be automatically added to the final summary by the platform if applicable to this deal.", submit: "Generate and Issue Letter", submitting: "Issuing...", errorFetch: "Failed to issue commitment letter", errorNetwork: "Unknown network error" },

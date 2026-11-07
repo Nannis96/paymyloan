@@ -197,13 +197,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           >
             {sb.affiliates || (lang === "es" ? "Afiliados" : "Affiliates")}
           </Link>
-          {/* BOTON DE LOGOUT */}
-          <div className="mt-4 md:mt-auto border-t border-[#e6ebf1] pt-4 md:pt-5 px-4 md:px-[20px]">
-            <LogoutButton
-              className="w-full flex items-center gap-2 md:gap-[10px] py-2 md:py-[10px] text-[13px] md:text-[14px] font-[500] text-[#425466] hover:text-[#c62626] transition-colors"
-              iconSize={18}
-            />
-          </div>
+          
         </div>
         {/* MAIN CONTENT */}
         <div className="flex-1 px-4 py-6 sm:px-6 md:px-8 lg:px-[32px] lg:py-[28px]">
