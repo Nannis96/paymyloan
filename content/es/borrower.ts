@@ -278,6 +278,7 @@ export const borrower = {
     empty: "No tienes contactos disponibles a n.",
     loading: "Cargando contactos...",
     messageBtn: "Enviar Mensaje",
+    msgNotAllowed: "Mensajeria no disponible",
     roles: { lender: "Prestamista" },
     associatedDeals: "Tratos asociados",
     errorFetch: "Error al cargar los contactos."

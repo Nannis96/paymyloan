@@ -14,6 +14,7 @@ export default function ContactsPage() {
     empty: lang === "es" ? "No tienes contactos disponibles aun." : "No contacts available yet.",
     loading: lang === "es" ? "Cargando contactos..." : "Loading contacts...",
     messageBtn: lang === "es" ? "Enviar Mensaje" : "Send Message",
+    msgNotAllowed: lang === "es" ? "Mensajeria no disponible" : "Messaging not available",
     roles: { lender: lang === "es" ? "Prestamista" : "Lender" },
     associatedDeals: lang === "es" ? "Tratos asociados" : "Associated deals",
   };
@@ -25,9 +26,11 @@ export default function ContactsPage() {
     async function fetchContacts() {
       try {
         // Consultar API del prestatario y de contratos para unificar la lista de prestamistas
-        const [meRes, contractsRes] = await Promise.all([
+        const [meRes, contractsRes, reqsRes, threadsRes] = await Promise.all([
           apiFetch(API_ROUTES.borrowers.me),
-          apiFetch(API_ROUTES.contracts.base)
+          apiFetch(API_ROUTES.contracts.base),
+          apiFetch(API_ROUTES.borrowers.meLoanRequests),
+          apiFetch(API_ROUTES.borrowers.meMessageThreads)
         ]);
 
         const lendersMap = new Map();
@@ -36,7 +39,7 @@ export default function ContactsPage() {
           const meJson = await meRes.json();
           if (meJson.success && meJson.data?.lenderCompanies) {
             meJson.data.lenderCompanies.forEach((lender: any) => {
-              lendersMap.set(lender.id, { ...lender, associatedDeals: 0 });
+              lendersMap.set(lender.id, { ...lender, associatedDeals: 0, canMessage: false });
             });
           }
         }
@@ -47,9 +50,45 @@ export default function ContactsPage() {
             contractsJson.data.items.forEach((contract: any) => {
               // Si el contrato tiene los detalles del prestamista, lo agregamos/actualizamos
               if (contract.lenderCompanyId && contract.lenderCompany) {
-                const existing = lendersMap.get(contract.lenderCompanyId) || { ...contract.lenderCompany, associatedDeals: 0 };
+                const existing = lendersMap.get(contract.lenderCompanyId) || { ...contract.lenderCompany, associatedDeals: 0, canMessage: false };
                 existing.associatedDeals = (existing.associatedDeals || 0) + 1;
+                if (contract.status !== "DRAFT") existing.canMessage = true;
                 lendersMap.set(contract.lenderCompanyId, existing);
+              }
+            });
+          }
+        }
+
+        if (reqsRes.ok) {
+          const reqsJson = await reqsRes.json();
+          if (reqsJson.success && reqsJson.data?.items) {
+            reqsJson.data.items.forEach((req: any) => {
+              if (req.quotes) {
+                req.quotes.forEach((quote: any) => {
+                  if (quote.status === "SUBMITTED" || quote.status === "SELECTED") {
+                    const existing = lendersMap.get(quote.lenderCompanyId);
+                    if (existing) {
+                      existing.canMessage = true;
+                      lendersMap.set(quote.lenderCompanyId, existing);
+                    }
+                  }
+                });
+              }
+            });
+          }
+        }
+
+        if (threadsRes.ok) {
+          const threadsJson = await threadsRes.json();
+          if (threadsJson.success && threadsJson.data) {
+            threadsJson.data.forEach((thread: any) => {
+              const lenderId = thread.lenderCompany?.id || thread.lastMessage?.lenderCompanyId;
+              if (lenderId) {
+                const existing = lendersMap.get(lenderId);
+                if (existing) {
+                  existing.canMessage = true;
+                  lendersMap.set(lenderId, existing);
+                }
               }
             });
           }
@@ -122,13 +161,22 @@ export default function ContactsPage() {
                     {contact.city && contact.state ? `${contact.city}, ${contact.state}` : "Local"}
                   </div>
                 </div>
-                <Link 
-                  href={`/borrowerDashboard/messages?lenderCompanyId=${contact.id}`} 
-                  className="absolute top-6 right-6 flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-accent transition-colors hover:bg-accent hover:text-white"
-                  title={c.messageBtn}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                </Link>
+                {contact.canMessage ? (
+                  <Link
+                    href={`/borrowerDashboard/messages?lenderCompanyId=${contact.id}`}
+                    className="absolute top-6 right-6 flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-accent transition-colors hover:bg-accent hover:text-white"
+                    title={c.messageBtn}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  </Link>
+                ) : (
+                  <div
+                    className="absolute top-6 right-6 flex h-9 w-9 items-center justify-center rounded-full bg-surface text-ink-3 opacity-50 cursor-not-allowed"
+                    title={c.msgNotAllowed}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  </div>
+                )}
               </div>
             ))}
           </div>
