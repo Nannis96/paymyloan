@@ -168,6 +168,18 @@ dashboardBorrower: { title: "Panel de Prestatario", subtitle: "Tus préstamos, p
     },
     actions: { back: "Atrás", continue: "Continuar", submit: "Enviar perfil" }
   },
+  contacts: {
+    title: "Directorio de Contactos",
+    subtitle: "Prestatarios con los que tienes contratos o has ofertado en sus tratos.",
+    searchPlaceholder: "Buscar contactos...",
+    empty: "No tienes contactos disponibles a n.",
+    loading: "Cargando contactos...",
+    messageBtn: "Enviar Mensaje",
+    msgNotAllowed: "Mensajeria no disponible",
+    roles: { lender: "Prestatario" },
+    associatedDeals: "Tratos asociados",
+    errorFetch: "Error al cargar los contactos."
+  },
 
   commitmentLetter: { title: "Carta de Compromiso", subtitle: "Acuerdo vinculante entre el prestatario y el prestamista.", fees: { title: "Resumen de Tarifas (Al Cierre)", origination: "Puntos de Originación", processing: "Tarifa de Procesamiento", underwriting: "Tarifa de Underwriting", platform: "Tarifa de Conexión PML", totalDue: "Total a pagar al cierre (Prestatario)" }, actions: { accept: "Aceptar y Firmar", decline: "Rechazar" }, achModal: { title: "Configurar Domiciliación (ACH)", subtitle: "Para completar la firma, selecciona la cuenta bancaria de donde se descontarán automáticamente tus pagos mensuales a partir de la fecha de inicio.", selectAccount: "Selecciona una cuenta vinculada", confirmBtn: "Confirmar ACH y Firmar", cancel: "Cancelar" }, disclaimer: "Al aceptar, esta carta se enviará automáticamente a la notaría (Title Company) y a la aseguradora. Dueño a Dueño LLC opera como un conector tecnológico, no origina, fondea, ni administra el préstamo por sí mismo.", loading: "Cargando carta de compromiso...", errorAuth: "Sesión no válida o no iniciada.", errorFetch: "Error al obtener los términos del contrato", errorAccept: "Error al aceptar los términos", errorReject: "Error al rechazar los términos", errorNetwork: "Error de red desconocido", paidTo: "Pagado a Dueño a Dueño LLC", customFeeFallback: "Tarifa", rejectCommentPh: "Motivo del rechazo (opcional)...", rejecting: "Rechazando...", accepting: "Aceptando..." },
 
