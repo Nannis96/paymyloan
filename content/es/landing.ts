@@ -8,7 +8,8 @@ export const landing = {
         title2: " Imán de Tratos.",
         sub: "Escanea tratos en tu mercado, despliega tu capital y déjanos el resto a nosotros. Evaluación de prestatarios, análisis del trato, rastreo de pagos, cartas de liquidación — todo listo. Tú solo di que sí.",
         btn1: "Explorar tratos abiertos",
-        btn2: "Crear cuenta gratis"
+        btn2: "Crear cuenta gratis",
+        demoBtn: "Tomar el Tour de Demostración"
       },
       ribbon: {
         title: "PML usa IA para potenciar todo tu negocio de préstamos",

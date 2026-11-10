@@ -38,6 +38,16 @@ export default function BorrowerLandingView() {
             {l.hero.btn2}
           </Link>
         </div>
+        
+        <div className="mt-6 flex justify-center">
+          <Link
+            href="/borrowerDemo"
+            className="group flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-5 py-2 text-[13px] font-bold text-accent transition-all hover:bg-accent hover:text-white no-underline"
+          >
+            <Zap size={14} className="fill-accent transition-colors group-hover:fill-white" />
+            {t.prototype.lenderLanding.hero.demoBtn || "Take the Interactive Demo Tour"}
+          </Link>
+        </div>
       </section>
 
       {/* PROOF STRIP */}

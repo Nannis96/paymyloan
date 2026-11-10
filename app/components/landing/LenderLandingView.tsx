@@ -43,10 +43,19 @@ export default function LenderLandingView() {
             {l.hero.btn1}
           </Link>
           <Link
-            href="/register"
+            href="/pre-register"
             className="inline-block rounded-[7px] border border-rule-strong bg-surface px-7 py-[14px] text-[15px] font-semibold text-ink transition-colors hover:border-ink-3"
           >
             {l.hero.btn2}
+          </Link>
+        </div>
+        <div className="mt-6 flex justify-center">
+          <Link
+            href="/lenderDemo"
+            className="group flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-5 py-2 text-[13px] font-bold text-accent transition-all hover:bg-accent hover:text-white"
+          >
+            <Zap size={14} className="fill-accent transition-colors group-hover:fill-white" />
+            {l.hero.demoBtn || "Take the Interactive Demo Tour"}
           </Link>
         </div>
       </section>
@@ -257,7 +266,7 @@ export default function LenderLandingView() {
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/register"
+            href="/pre-register"
             className="inline-block rounded-[7px] bg-accent px-[34px] py-[15px] text-[16px] font-bold text-white transition-opacity hover:bg-[#524ddb]"
           >
             {l.cta.btn1}

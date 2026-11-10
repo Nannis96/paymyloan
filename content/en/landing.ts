@@ -10,7 +10,8 @@ export const landing: typeof Es = {
         title2: " Deal Magnet.",
         sub: "Scan for deals in your market, deploy your capital, and let us handle everything else. Borrower vetting, deal underwriting, payment tracking, payoff letters — all done. You just say yes.",
         btn1: "Browse open deals",
-        btn2: "Create free account"
+        btn2: "Create free account",
+        demoBtn: "Take the Interactive Demo Tour"
       },
       ribbon: {
         title: "PML uses AI to power your entire lending business",
