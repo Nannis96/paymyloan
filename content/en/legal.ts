@@ -173,7 +173,7 @@ export const legal: typeof Es = {
         heading: "6. Fees and payments",
         paragraphs: ["PayMyLoan, LLC charges the following fees to borrowers. Lenders are always free."],
         list: [
-          "Monthly subscription: $99/month, beginning when your deal is posted. Waived with a valid promo code or affiliate referral link.",
+          "Monthly subscription: {subPrice}/month, beginning when your deal is posted. Waived with a valid promo code or affiliate referral link.",
           "Identity verification fee: $99 one-time, charged only when a lender requests identity verification of your account.",
           "Lender connection fee: 1% of the loan amount, collected at closing via the settlement statement — only on deals where PayMyLoan, LLC connected the borrower and lender.",
           "Monthly platform fee (PML-connected deals only): 10% of the monthly interest payment made to the lender, collected each month for the life of the loan — only on deals where PayMyLoan, LLC introduced the borrower and lender. Example: if your monthly interest payment to the lender is $1,150, PayMyLoan, LLC collects $115 of that amount each month. This fee is disclosed in the Borrower Fee Agreement at deal posting.",

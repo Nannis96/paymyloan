@@ -171,7 +171,7 @@ export const legal = {
         heading: "6. Tarifas y pagos",
         paragraphs: ["PayMyLoan, LLC cobra las siguientes tarifas a los prestatarios. Los prestamistas siempre usan la plataforma gratis."],
         list: [
-          "Suscripción mensual: $99/mes, que comienza cuando se publica tu trato. Exenta con un código promocional válido o enlace de referido de afiliado.",
+          "Suscripción mensual: {subPrice}/mes, que comienza cuando se publica tu trato. Exenta con un código promocional válido o enlace de referido de afiliado.",
           "Tarifa de verificación de identidad: $99 por única vez, cobrada solo cuando un prestamista solicita la verificación de identidad de tu cuenta.",
           "Tarifa de conexión del prestamista: 1% del monto del préstamo, cobrada al cierre en la hoja de liquidación — solo en tratos donde PayMyLoan, LLC conectó al prestatario y al prestamista.",
           "Tarifa de plataforma mensual (solo tratos conectados por PML): 10% del pago de interés mensual realizado al prestamista, cobrada cada mes durante la vida del préstamo — solo en tratos donde PayMyLoan, LLC hizo la introducción. Ejemplo: si tu pago de interés al prestamista es de $1,150, PayMyLoan, LLC cobra $115 de ese monto cada mes. Esta tarifa se divulga en el Acuerdo de Tarifas al publicar el trato.",

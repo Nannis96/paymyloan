@@ -44,6 +44,12 @@ export const API_ROUTES = {
     meMessageThreadRead: (borrowerProfileId: string) => `${BASE_URL}/api/lenders/me/messages/threads/${borrowerProfileId}/read`,
     rating: (lenderCompanyId: string) => `${BASE_URL}/api/lenders/${lenderCompanyId}/rating`,
   },
+  subscription: {
+    me: `${BASE_URL}/api/subscription/me`,
+    pay: `${BASE_URL}/api/subscription/me/pay`,
+    cancel: `${BASE_URL}/api/subscription/me/cancel`,
+    price: `${BASE_URL}/api/subscription/price`,
+  },
   borrowers: {
     me: `${BASE_URL}/api/borrowers/me`,
     mePassword: `${BASE_URL}/api/borrowers/me/password`,
@@ -62,6 +68,12 @@ export const API_ROUTES = {
     loanRequestTargets: (id: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}/targets`,
     loanRequestQuotes: (id: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}/quotes`,
     selectQuote: (id: string, quoteId: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}/quotes/${quoteId}/select`,
+  },
+  documents: {
+    byContract: (id: string) => `${BASE_URL}/api/contracts/${id}/documents`,
+    byLoanRequest: (id: string) => `${BASE_URL}/api/loan-requests/${id}/documents`,
+    content: (id: string) => `${BASE_URL}/api/documents/${id}/content`,
+    byId: (id: string) => `${BASE_URL}/api/documents/${id}`,
   },
   contracts: {
     base: `${BASE_URL}/api/contracts`,
@@ -87,6 +99,21 @@ export const API_ROUTES = {
     verifications: `${BASE_URL}/api/admin/verifications`,
     approveVerification: (id: string) => `${BASE_URL}/api/admin/verifications/${id}/approve`,
     rejectVerification: (id: string) => `${BASE_URL}/api/admin/verifications/${id}/reject`,
+  },
+  affiliates: {
+    validate: (code: string) => `${BASE_URL}/api/affiliates/validate?code=${encodeURIComponent(code)}`,
+    me: `${BASE_URL}/api/affiliates/me`,
+    meApply: `${BASE_URL}/api/affiliates/me/apply`,
+    meReferrals: `${BASE_URL}/api/affiliates/me/referrals`,
+    meCommissions: `${BASE_URL}/api/affiliates/me/commissions`,
+    adminBase: `${BASE_URL}/api/admin/affiliates`,
+    adminById: (id: string) => `${BASE_URL}/api/admin/affiliates/${id}`,
+    adminAction: (id: string, action: "approve" | "reject" | "suspend") => `${BASE_URL}/api/admin/affiliates/${id}/${action}`,
+    adminTerms: (id: string) => `${BASE_URL}/api/admin/affiliates/${id}/commission`,
+    adminManualCommission: (id: string) => `${BASE_URL}/api/admin/affiliates/${id}/commissions`,
+    adminCommissions: `${BASE_URL}/api/admin/affiliates/commissions`,
+    adminCommissionById: (id: string) => `${BASE_URL}/api/admin/affiliates/commissions/${id}`,
+    adminCommissionAction: (id: string, action: "mark-paid" | "void") => `${BASE_URL}/api/admin/affiliates/commissions/${id}/${action}`,
   },
   transactions: {
     byId: (id: string) => `${BASE_URL}/api/transactions/${id}`,

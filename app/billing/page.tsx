@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
-import { Lock, CreditCard } from "lucide-react";
+import { Lock } from "lucide-react";
+import { api } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import type { SubscriptionView } from "@/app/types/api";
 
 export default function BillingPage() {
   return (
@@ -14,83 +17,99 @@ export default function BillingPage() {
 }
 
 function BillingContent() {
-  const { t } = useSite();
+  const { t, lang } = useSite();
   const b = t.billing;
+  const isEs = lang === "es";
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sub, setSub] = useState<SubscriptionView | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  useEffect(() => {
+    api<SubscriptionView>(API_ROUTES.subscription.me).then(setSub).catch((e) => setError(e.message));
+  }, []);
 
-    // TODO: BACKEND - Integracion real con Stripe Elements.
-    // Aqui se crearia el PaymentMethod y se enviaria al backend para crear la Subscription.
-    console.log("Procesando pago de $9/mes...");
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      // Redirigir al dashboard de borrower tras el exito
-      window.location.href = "/borrower";
-    }, 1500);
+  const act = async (url: string) => {
+    setBusy(true);
+    setError(null);
+    try {
+      await api(url, { method: "POST" });
+      setSub(await api<SubscriptionView>(API_ROUTES.subscription.me));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error");
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const INPUT = "w-full rounded-lg border border-rule bg-surface-2 px-4 py-3 text-[15px] text-ink outline-none transition-colors focus:border-accent";
+  const fmt = (d: string) => new Date(d).toLocaleDateString(isEs ? "es" : "en");
+  // Precio del back (SUBSCRIPTION_PRICE_CENTS); los textos de content/ traen "$9" fijo.
+  const price = sub ? new Intl.NumberFormat(isEs ? "es" : "en", { style: "currency", currency: sub.currency }).format(sub.priceCents / 100) : "";
+  const px = (text: string) => (sub ? text.replace(/\$9(\.00)?/, price) : text.replace(/\$9(\.00)?/, "…"));
+  const end = sub?.currentPeriodEnd ? fmt(sub.currentPeriodEnd) : "";
+  const paid = sub?.status === "ACTIVE" && !!sub.currentPeriodEnd;
+  const cancelledWithAccess = sub?.status === "CANCELLED" && sub.hasAccess;
+  const status = !sub ? ""
+    : paid ? (isEs ? `✓ Suscrito. Próximo cobro: ${end}.` : `✓ Subscribed. Next charge: ${end}.`)
+    : cancelledWithAccess ? (isEs ? `Cancelada. Conservas el acceso hasta ${end}.` : `Cancelled. You keep access until ${end}.`)
+    : sub.status === "TRIALING" && sub.hasAccess ? (isEs ? `Prueba gratuita: ${sub.daysLeftInTrial} días restantes.` : `Free trial: ${sub.daysLeftInTrial} days left.`)
+    : (isEs ? "Sin suscripción activa. Puedes seguir pagando tus préstamos actuales, pero no pedir nuevos tratos." : "No active subscription. You can still pay your current loans, but not request new deals.");
+  const payLabel = paid ? (isEs ? "Pagar un mes más" : "Pay one more month")
+    : sub?.status === "CANCELLED" || (sub && !sub.hasAccess) ? (isEs ? "Reactivar suscripción" : "Reactivate subscription")
+    : px(b.payBtn);
 
   return (
     <div className="min-h-screen bg-bg p-6 lg:p-14 flex items-center justify-center">
       <div className="w-full max-w-[500px]">
-        
         <Link
-          href="/borrower"
+          href="/borrowerDashboard"
           className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-3 transition-colors hover:text-accent"
         >
-          <span>&larr;</span> Volver
+          <span>&larr;</span> {isEs ? "Volver" : "Back"}
         </Link>
 
         <div className="rounded-2xl border border-rule bg-surface p-8 shadow-xl sm:p-10">
           <header className="mb-8 text-center border-b border-rule pb-6">
             <h1 className="text-[28px] font-black tracking-tight text-ink">{b.title}</h1>
-            <p className="text-ink-2 mt-2 text-sm leading-relaxed">{b.subtitle}</p>
+            <p className="text-ink-2 mt-2 text-sm leading-relaxed">{px(b.subtitle)}</p>
           </header>
 
           <div className="mb-6 flex items-center justify-between rounded-xl bg-surface-2 p-5 border border-rule">
             <div>
               <div className="text-[13px] font-bold text-ink">{b.planName}</div>
-              <div className="text-[11px] text-ink-3 mt-1">Facturado mensualmente</div>
+              <div className="text-[11px] text-ink-3 mt-1">{status}</div>
             </div>
-            <div className="text-lg font-black text-accent">{b.planPrice}</div>
+            <div className="text-lg font-black text-accent">{px(b.planPrice)}</div>
           </div>
 
-          <form onSubmit={handleSubscribe} className="flex flex-col gap-5">
-            <div>
-              <label className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-ink-3">
-                {b.cardLabel}
-              </label>
-              
-              {/* Elemento falso simulando Stripe Elements para el diseño UI */}
-              <div className="relative">
-                <CreditCard className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
-                <input 
-                  type="text" 
-                  placeholder="0000 0000 0000 0000" 
-                  className={`${INPUT} pl-10 font-mono`} 
-                  required 
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <input type="text" placeholder="MM/YY" className={`${INPUT} font-mono`} required />
-                <input type="text" placeholder="CVC" className={`${INPUT} font-mono`} required />
-              </div>
-            </div>
+          {error && <p className="mb-4 text-center text-[13px] text-crit">{error}</p>}
 
+          {sub?.billingMode === "stripe" ? (
+            // ponytail: Stripe Checkout es la etapa 2 del back (/pay hoy responde 409 en este modo).
+            <p className="text-center text-[13px] text-ink-3">{isEs ? "El cobro con tarjeta estará disponible pronto." : "Card payments coming soon."}</p>
+          ) : (
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="mt-4 w-full rounded-lg bg-accent px-5 py-4 text-[15px] font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-md disabled:opacity-50"
+              onClick={() => act(API_ROUTES.subscription.pay)}
+              disabled={busy || !sub}
+              className="w-full rounded-lg bg-accent px-5 py-4 text-[15px] font-bold text-accent-ink transition-opacity hover:opacity-90 shadow-md disabled:opacity-50"
             >
-              {isSubmitting ? b.processing : b.payBtn}
+              {busy ? b.processing : payLabel}
             </button>
-          </form>
+          )}
+
+          {sub?.billingMode === "simulated" && (
+            <p className="mt-3 text-center text-[11px] text-ink-3">{isEs ? "Modo de pruebas: cada pago cubre un mes y no se renueva solo." : "Test mode: each payment covers one month and does not auto-renew."}</p>
+          )}
+
+          {paid && (
+            <button
+              onClick={() => act(API_ROUTES.subscription.cancel)}
+              disabled={busy}
+              className="mt-3 w-full text-center text-[12px] font-bold text-ink-3 hover:text-crit disabled:opacity-50"
+            >
+              {isEs ? "Cancelar suscripción" : "Cancel subscription"}
+            </button>
+          )}
 
           <p className="mt-6 flex items-start justify-center gap-2 text-center text-[11px] leading-relaxed text-ink-3">
             <Lock className="mt-[2px] h-3 w-3 shrink-0" />

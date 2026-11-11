@@ -3,31 +3,27 @@
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { formatShortCurrency } from "./utils";
-import { BASE_URL } from "@/app/lib/endpoints";
-import { apiFetch } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { api, toList } from "@/app/lib/apiFetch";
+import type { Contract } from "@/app/types/api";
+
+// nextPaymentDueDate es el pago pendiente mas viejo: mismo criterio que daysPastDue de /admin/overview.
+const daysPastDue = (due: string | null) =>
+  due ? Math.max(0, Math.floor((Date.now() - new Date(due).getTime()) / 86_400_000)) : 0;
 
 export function AllDealsView() {
   const { t, lang } = useSite();
   const d = t.dashboardAdmin;
   const v = d.views.allDeals;
 
-  const [contracts, setContracts] = useState<any[]>([]);
+  const [contracts, setContracts] = useState<Contract[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchContracts() {
       try {
-        const res = await apiFetch(`${BASE_URL}/api/contracts?pageSize=50`);
-        if (!res.ok) {
-          throw new Error(d.errorFetch || "Error al cargar contratos");
-        }
-        const json = await res.json();
-        if (json.success) {
-          setContracts(json.data.items || []);
-        } else {
-          throw new Error(json.error?.message || d.errorFetch);
-        }
+        setContracts(toList<Contract>(await api<unknown>(`${API_ROUTES.contracts.base}?pageSize=50`)));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error de red");
       } finally {
@@ -76,7 +72,7 @@ export function AllDealsView() {
                   <td className="px-4 py-3">{formatShortCurrency(Number(deal.currentTerms?.principalAmount) || 0)}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-block rounded-lg px-2 py-0.5 text-[10px] font-bold ${deal.status === 'ACTIVE' ? 'bg-success-soft text-success' : deal.status === 'DELINQUENT' ? 'bg-crit-soft text-crit' : 'bg-surface-2 border border-rule-strong text-ink-3'}`}>
-                      {deal.status === 'ACTIVE' ? d.tables.pillActive : deal.status === 'DELINQUENT' ? d.tables.pillLate.replace("{n}", "15") : deal.status}
+                      {deal.status === 'ACTIVE' ? d.tables.pillActive : deal.status === 'DELINQUENT' ? d.tables.pillLate.replace("{n}", String(daysPastDue(deal.nextPaymentDueDate))) : deal.status}
                     </span>
                   </td>
                   <td className={`px-4 py-3 ${deal.status === 'DELINQUENT' ? 'font-bold text-crit' : ''}`}>

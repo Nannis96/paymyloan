@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { QRCodeSVG } from "qrcode.react"; // <-- Importamos la librería segura
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { api } from "@/app/lib/apiFetch";
 
 interface TwoFactorSetupModalProps {
   isOpen: boolean;
@@ -35,23 +35,13 @@ export default function TwoFactorSetupModal({ isOpen, onClose, onSuccess }: TwoF
 
   const fetchSetupData = async () => {
     try {
-      const token = localStorage.getItem("accessToken") || "";
-      const res = await fetch(`${BASE_URL}/api/auth/2fa/setup`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const json = await res.json();
-      
-      if (json.success && json.data) {
-        // Guardamos la URL para el componente QRCodeSVG (generación 100% local y segura)
-        setOtpAuthUrl(json.data.otpAuthUrl);
-        setSecretStr(json.data.secret);
-        setStep("SETUP");
-      } else {
-        setError(json.error?.message || (isEs ? "Error al iniciar 2FA" : "Error starting 2FA"));
-      }
+      // Guardamos la URL para el componente QRCodeSVG (generación 100% local y segura)
+      const data = await api<{ otpAuthUrl: string; secret: string }>(API_ROUTES.auth.twoFaSetup, { method: "POST" });
+      setOtpAuthUrl(data.otpAuthUrl);
+      setSecretStr(data.secret);
+      setStep("SETUP");
     } catch (err) {
-      setError(isEs ? "Error de red" : "Network error");
+      setError(err instanceof Error && err.message ? err.message : (isEs ? "Error al iniciar 2FA" : "Error starting 2FA"));
     }
   };
 
@@ -61,25 +51,14 @@ export default function TwoFactorSetupModal({ isOpen, onClose, onSuccess }: TwoF
     setError(null);
 
     try {
-      const token = localStorage.getItem("accessToken") || "";
-      const res = await fetch(`${BASE_URL}/api/auth/2fa/verify`, {
+      const data = await api<{ recoveryCodes: string[] }>(API_ROUTES.auth.twoFaVerify, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code }),
       });
-      const json = await res.json();
-
-      if (json.success && json.data?.recoveryCodes) {
-        setRecoveryCodes(json.data.recoveryCodes);
-        setStep("RECOVERY");
-      } else {
-        setError(json.error?.message || (isEs ? "Código incorrecto" : "Incorrect code"));
-      }
+      setRecoveryCodes(data.recoveryCodes);
+      setStep("RECOVERY");
     } catch (err) {
-      setError(isEs ? "Error de red" : "Network error");
+      setError(err instanceof Error && err.message ? err.message : (isEs ? "Código incorrecto" : "Incorrect code"));
     } finally {
       setIsVerifying(false);
     }
@@ -109,7 +88,7 @@ export default function TwoFactorSetupModal({ isOpen, onClose, onSuccess }: TwoF
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-ink/50 px-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-xl bg-surface p-6 shadow-xl">
         <h3 className="mb-2 text-lg font-bold text-ink">
           {isEs ? "Configurar Autenticación de Dos Factores" : "Set Up Two-Factor Authentication"}

@@ -85,7 +85,7 @@ export const borrower = {
       desc2Post: " Los prestamistas en PML conocen nuestra tarifa de plataforma y la consideran en los terminos de su oferta.",
       table: { fee: "Tarifa", amount: "Monto", when: "Cuando se debe" },
       items: [
-        { name: "Suscripcion mensual", amt: "$99/mes", when: "Mensual, iniciando al publicar el trato. Exenta si el prestatario tiene un codigo promocional valido o enlace de referido." },
+        { name: "Suscripcion mensual", amt: "{subPrice}/mes", when: "Mensual, iniciando al publicar el trato. Exenta si el prestatario tiene un codigo promocional valido o enlace de referido." },
         { name: "Tarifa de verificacion", amt: "$99 (unica vez)", when: "Cuando un prestamista solicita verificacion de identidad completa." },
         { name: "Tarifa de conexion al prestamista", amt: "1% del prestamo", when: "Al cierre — solo si PML conecto al prestatario con el prestamista. Pagada en el estado de liquidacion." }
       ],
@@ -105,7 +105,7 @@ export const borrower = {
     ack: {
       items: [
         "Entiendo que una <strong>tarifa de conexion del 1%</strong> ($1,150 estimado) se cobrara al cierre via el estado de liquidacion si PayMyLoan.ai me conecto con mi prestamista.",
-        "Entiendo que una <strong>suscripcion de $99/mes</strong> comienza cuando publico mi trato. Esta tarifa es exenta si tengo un codigo promocional o enlace de referido.",
+        "Entiendo que una <strong>suscripcion de {subPrice}/mes</strong> comienza cuando publico mi trato. Esta tarifa es exenta si tengo un codigo promocional o enlace de referido.",
         "Autorizo a PayMyLoan.ai a enviar este acuerdo firmado a mi compania de titulos como autorizacion para incluir la tarifa de plataforma en el estado de liquidacion.",
         "He leido y acepto los <strong>Terminos de Servicio</strong> y el <strong>Aviso de Privacidad</strong> de PayMyLoan.ai."
       ]

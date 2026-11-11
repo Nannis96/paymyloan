@@ -5,14 +5,19 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import FileDropzone from "@/app/components/ui/FileDropzone";
+
+// Fuera del componente: Date.now() es impuro y react-hooks/purity lo rechaza dentro.
+const inDays = (n: number) => new Date(Date.now() + n * 86400000).toISOString();
 
 export default function SubmitDealView() {
-  const { t } = useSite();
+  const { t, lang } = useSite();
   const sd = t.submitDeal;
   const router = useRouter();
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
 
   // Estados del Formulario Combinado
   const [formData, setFormData] = useState({
@@ -138,15 +143,20 @@ export default function SubmitDealView() {
         purchasePrice: numPurchase || null,
         rehabAmount: numRehab || null,
         totalLoanAmountRequested: numLoan || 100000,
-        requestedClosingDate: new Date(Date.now() + 30 * 86400000).toISOString(),
+        requestedClosingDate: inDays(30),
         requestedTimelineNotes: formData.description,
         visibility: "PUBLIC"
       };
 
-      const createRes = await apiFetch(API_ROUTES.borrowers.meLoanRequests, {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
+      // Con archivos: multipart (data + files), todo o nada en el back.
+      let body: BodyInit = JSON.stringify(payload);
+      if (files.length) {
+        const fd = new FormData();
+        fd.append("data", JSON.stringify(payload));
+        files.forEach((f) => fd.append("files", f));
+        body = fd;
+      }
+      const createRes = await apiFetch(API_ROUTES.borrowers.meLoanRequests, { method: "POST", body });
 
       if (createRes.ok) {
         const createJson = await createRes.json();
@@ -585,6 +595,12 @@ export default function SubmitDealView() {
                     <span className="text-[13px] text-ink-3">Verification</span>
                     <span className="text-[13px] font-semibold text-amber">Unverified</span>
                   </div>
+                </div>
+                <div className="mb-5">
+                  <div className="mb-2.5 text-[10px] font-bold uppercase tracking-[0.7px] text-ink-3">
+                    {lang === "es" ? "Fotos y documentos (opcional)" : "Photos & documents (optional)"}
+                  </div>
+                  <FileDropzone files={files} onChange={setFiles} isEs={lang === "es"} disabled={isSubmitting} />
                 </div>
                 <button 
                   onClick={() => handlePostDeal(false)}

@@ -6,6 +6,12 @@ import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
 import LogoutButton from "@/app/components/ambos/LogoutButton";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
+import { useEffect, useState } from "react";
+import { api } from "@/app/lib/apiFetch";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import { useAffiliate, affText } from "@/app/lib/affiliates";
+import { AffiliateCtx } from "./AffiliateContext";
+import Gate from "./Gate";
 import { LayoutGrid, Clock, Users, Share2, User, CreditCard } from "lucide-react";
 
 export default function AffiliateDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -18,8 +24,15 @@ export default function AffiliateDashboardLayout({ children }: { children: React
 
 function AffiliateLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { t } = useSite();
+  const { t, lang } = useSite();
   const sb = t.affiliateDashboard.sidebar;
+  const a = affText(lang);
+  const aff = useAffiliate();
+  const [name, setName] = useState("");
+  useEffect(() => {
+    api<{ user?: { name?: string } }>(API_ROUTES.auth.me).then((d) => setName(d.user?.name ?? "")).catch(() => {});
+  }, []);
+  const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "?";
 
   const navItemBase = "flex items-center gap-[10px] px-[20px] py-[10px] text-[13px] text-ink-2 cursor-pointer relative no-underline hover:bg-surface-2 hover:text-ink transition-all border-l-[3px] border-transparent";
   const navItemActive = "text-accent font-[700] border-l-accent bg-accent-soft";
@@ -34,14 +47,14 @@ function AffiliateLayoutContent({ children }: { children: React.ReactNode }) {
           PayMy<span className="text-accent">Loan</span>.ai
         </Link>
         <div className="flex items-center gap-[16px]">
-          <div className="text-[12px] text-ink-3 hidden sm:block">{sb.portalName}</div>
+          <div className="text-[12px] text-ink-3 hidden sm:block">{a.portal}</div>
           <LangToggle className="h-[30px] rounded-[4px] px-2 text-[11px] font-[700] text-ink-3 hover:bg-surface-2 hover:text-ink transition-colors" />
           <ThemeToggle className="h-[30px] w-[30px] rounded-[4px] text-ink-3 hover:bg-surface-2 hover:text-ink transition-colors" iconSize={15} />
           
           <div className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-accent text-[13px] font-[700] text-white">
-            JD
+            {initials}
           </div>
-          <div className="text-[13px] font-[600] text-ink hidden sm:block">James Davis</div>
+          <div className="text-[13px] font-[600] text-ink hidden sm:block">{name}</div>
         </div>
       </nav>
 
@@ -86,7 +99,9 @@ function AffiliateLayoutContent({ children }: { children: React.ReactNode }) {
 
         {/* MAIN CONTENT */}
         <div className="ml-[200px] flex-1 p-[32px]">
-          {children}
+          <AffiliateCtx.Provider value={aff}>
+            <Gate>{children}</Gate>
+          </AffiliateCtx.Provider>
         </div>
       </div>
     </div>
