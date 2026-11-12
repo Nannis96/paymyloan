@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useTour } from "../context/DemoTourProvider";
+import { useTour } from "@/app/publicDemo/context/lenderDemo/DemoTourProvider";
 import { DEMO_MOCKS } from "./mockedThings";
 
 export default function DemoBrowseDeals({ dictionary }: { dictionary: any }) {

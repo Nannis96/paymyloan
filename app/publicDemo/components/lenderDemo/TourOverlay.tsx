@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useTour } from "../context/DemoTourProvider";
+import { useTour } from "@/app/publicDemo/context/lenderDemo/DemoTourProvider";
 import { useSite } from "@/app/components/layout/SiteShell";
 import Link from "next/link";
 

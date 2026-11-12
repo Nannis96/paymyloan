@@ -1,21 +1,14 @@
 "use client";
+
 import React from "react";
-import { DemoTourProvider } from "./context/DemoTourProvider";
-import TourOverlay from "./components/TourOverlay";
-import DemoBrowseDeals from "./components/DemoBrowseDeals";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { DemoTourProvider } from "../../context/lenderDemo/DemoTourProvider";
+import TourOverlay from "./TourOverlay";
+import DemoBrowseDeals from "./DemoBrowseDeals";
+import { useSite } from "@/app/components/layout/SiteShell";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
 
-export default function LenderDemoPage() {
-  return (
-    <SiteShell isMinimal={true}>
-      <LenderDemoContent />
-    </SiteShell>
-  );
-}
-
-function LenderDemoContent() {
+export default function LenderDemoFlow() {
   const { t } = useSite();
 
   return (

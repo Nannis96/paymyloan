@@ -1,29 +1,21 @@
+// app/publicDemo/components/borrowerDemo/BorrowerDemoFlow.tsx
 "use client";
 
 import React from "react";
 import Link from "next/link";
-import { BorrowerTourProvider, useBorrowerTour } from "./context/BorrowerTourProvider";
-import BorrowerTourOverlay from "./components/BorrowerTourOverlay";
-import DemoBorrowerFlow from "./components/DemoBorrowerFlow";
-import SiteShell, { useSite } from "@/app/components/layout/SiteShell";
+import { BorrowerTourProvider, useBorrowerTour } from "../../context/borrowerDemo/BorrowerTourProvider";
+import BorrowerTourOverlay from "./BorrowerTourOverlay";
+import DemoBorrowerFlowComponent from "./DemoBorrowerFlow";
+import { useSite } from "@/app/components/layout/SiteShell";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
 
-export default function BorrowerDemoPage() {
-  return (
-    <SiteShell isMinimal={true}>
-      <BorrowerTourProvider>
-        <DemoLayoutContent />
-      </BorrowerTourProvider>
-    </SiteShell>
-  );
-}
-
-function DemoLayoutContent() {
+// Separamos el contenido para poder usar el hook useBorrowerTour (que requiere estar dentro del Provider)
+function FlowContent() {
   const { lang } = useSite();
   const isEs = lang === "es";
   const { currentStep, nextStep } = useBorrowerTour();
-
+  
   const sb = {
     dashboard: "Dashboard",
     deals: isEs ? "Tratos" : "Deals",
@@ -41,7 +33,7 @@ function DemoLayoutContent() {
     support: isEs ? "Soporte" : "Support",
     faqHelp: isEs ? "Preguntas Frecuentes" : "Faq/Help",
   };
-
+  
   const navItemBase = "flex items-center gap-[10px] px-[18px] py-[10px] text-[13px] font-[500] text-ink-2 cursor-pointer relative no-underline hover:bg-surface-2 hover:text-ink transition-all w-full text-left";
 
   return (
@@ -100,9 +92,17 @@ function DemoLayoutContent() {
         {/* MAIN CONTENT */}
         <div className="flex-1">
           <BorrowerTourOverlay />
-          <DemoBorrowerFlow />
+          <DemoBorrowerFlowComponent />
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BorrowerDemoFlow() {
+  return (
+    <BorrowerTourProvider>
+      <FlowContent />
+    </BorrowerTourProvider>
   );
 }

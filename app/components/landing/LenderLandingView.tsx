@@ -51,7 +51,7 @@ export default function LenderLandingView() {
         </div>
         <div className="mt-6 flex justify-center">
           <Link
-            href="/lenderDemo"
+            href="/publicDemo?flow=lender"
             className="group flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-5 py-2 text-[13px] font-bold text-accent transition-all hover:bg-accent hover:text-white"
           >
             <Zap size={14} className="fill-accent transition-colors group-hover:fill-white" />

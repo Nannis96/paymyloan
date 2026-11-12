@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useBorrowerTour } from "../context/BorrowerTourProvider";
+import { useBorrowerTour } from "@/app/publicDemo/context/borrowerDemo/BorrowerTourProvider";
 import { useSite } from "@/app/components/layout/SiteShell";
 
 export default function DemoBorrowerFlow() {

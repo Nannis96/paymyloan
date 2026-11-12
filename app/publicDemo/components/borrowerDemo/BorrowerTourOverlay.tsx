@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useBorrowerTour } from "../context/BorrowerTourProvider";
+import { useBorrowerTour } from "@/app/publicDemo/context/borrowerDemo/BorrowerTourProvider";
 import { useSite } from "@/app/components/layout/SiteShell";
 
 export default function BorrowerTourOverlay() {
