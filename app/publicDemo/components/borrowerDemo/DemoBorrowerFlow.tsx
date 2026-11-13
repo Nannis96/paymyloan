@@ -11,39 +11,65 @@ export default function DemoBorrowerFlow() {
   const isEs = lang === "es";
   const sd = t.submitDeal;
 
-  // Estado local independiente para permitir exploración libre al terminar el tour
+ // Estado local independiente para permitir exploración libre al terminar el tour
   const [step, setStep] = useState(1);
+
+  // Generamos un estado vacío para cuando el usuario reinicie el formulario
+  const emptyFormData = React.useMemo(() => ({
+    loanType: sd?.loanType?.bridge || "Bridge Loan",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    propertyType: sd?.property?.propTypes?.[0] || "Single family",
+    occupancy: sd?.property?.occupancies?.[0] || "Vacant",
+    beds: "",
+    baths: "",
+    sqft: "",
+    condition: sd?.property?.conditions?.[1] || "Needs light work",
+    description: "",
+    purchasePrice: "",
+    loanAmount: "",
+    arv: "",
+    rehab: "",
+    term: sd?.financials?.terms?.[2] || "12 months",
+    rate: sd?.financials?.maxRates?.[1] || "12%",
+    exitStrategy: sd?.financials?.exits?.[0] || "Sell after rehab"
+  }), [sd]);
 
   // Sincronizamos el formulario con el tour SOLO si el tour está activo
   useEffect(() => {
     if (currentStep >= 0) {
       if (currentStep <= 2) setStep(1);
-      else if (currentStep === 3) setStep(2);
-      else if (currentStep === 4) setStep(3);
-      else if (currentStep >= 5) setStep(4);
+      else if (currentStep === 3 || currentStep === 4) setStep(2);
+      else if (currentStep === 5) setStep(3);
+      else if (currentStep >= 6) setStep(4);
     }
   }, [currentStep]);
 
+  // Escuchar evento global para reiniciar el formulario dejándolo en blanco
+  useEffect(() => {
+    const handleReset = () => {
+      setFormData(emptyFormData);
+      setStep(1);
+    };
+    window.addEventListener("reset-deal-form", handleReset);
+    return () => window.removeEventListener("reset-deal-form", handleReset);
+  }, [emptyFormData]);
+
   const [formData, setFormData] = useState({
-    loanType: sd?.loanType?.bridge || "Bridge Loan",
-    address: "123 Main St, Memphis, TN",
-    city: "Memphis",
-    state: "TN",
-    zip: "38127",
-    propertyType: sd?.property?.propTypes?.[0] || "Single family",
-    occupancy: sd?.property?.occupancies?.[0] || "Vacant",
+    ...emptyFormData,
+    address: "123 Fake Street, Faketown, FK",
+    city: "Faketown",
+    state: "FK",
+    zip: "12345",
     beds: "3",
     baths: "2",
     sqft: "1400",
-    condition: sd?.property?.conditions?.[1] || "Needs light work",
-    description: "",
     purchasePrice: "85000",
     loanAmount: "110000",
     arv: "185000",
-    rehab: "30000",
-    term: sd?.financials?.terms?.[2] || "12 months",
-    rate: sd?.financials?.maxRates?.[1] || "12%",
-    exitStrategy: sd?.financials?.exits?.[0] || "Sell after rehab"
+    rehab: "30000"
   });
 
   const [isLookingUp, setIsLookingUp] = useState(false);
@@ -213,10 +239,10 @@ export default function DemoBorrowerFlow() {
                     </div>
                   )}
                 </div>
-
-                <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  <div>
-                    <label className={LABEL}>{sd.property.city}</label>
+            <div id="demo-form-prop-specs">
+              <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div>
+                  <label className={LABEL}>{sd.property.city}</label>
                     <input type="text" value={formData.city} onChange={(e) => updateField("city", e.target.value)} className={INPUT} />
                   </div>
                   <div>
@@ -272,15 +298,14 @@ export default function DemoBorrowerFlow() {
                       >
                         {cond}
                       </button>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-
               </div>
+            </div> {/* Cierra el agrupador demo-form-prop-specs */}
             </div>
-          )}
-
-          {/* PASO 3: Financials */}
+          </div>
+        )}
+        {/* PASO 3: Financials */}
           {step === 3 && (
             <div className="animate-in fade-in duration-300">
               <div className="rounded-xl border border-rule bg-surface p-7 sm:p-8">
@@ -505,12 +530,15 @@ export default function DemoBorrowerFlow() {
                   >
                     {isEs ? "Registrarse" : "Register"}
                   </Link>
-                  <button 
-                    onClick={endDemo}
-                    className="w-full rounded-md bg-surface-2 border border-rule p-3.5 text-[15px] font-extrabold tracking-tight text-ink-2 transition-colors hover:bg-rule cursor-pointer"
-                  >
-                    {isEs ? "Finalizar Demo" : "End Demo"}
-                  </button>
+                  <button
+                   onClick={() => {
+                     window.dispatchEvent(new Event("reset-deal-form"));
+                     endDemo();
+                   }}
+                  className="w-full rounded-md bg-surface-2 border border-rule p-3.5 text-[15px] font-extrabold tracking-tight text-ink-2 transition-colors hover:bg-rule cursor-pointer"
+                >
+                  {isEs ? "Finalizar Demo" : "End Demo"}
+                </button>
                 </div>
                 
                 <div className="mt-4 text-center text-[11px] leading-[1.6] text-ink-3 whitespace-pre-line">

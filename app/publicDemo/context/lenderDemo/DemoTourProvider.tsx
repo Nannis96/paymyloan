@@ -6,6 +6,7 @@ interface TourContextProps {
   nextStep: () => void;
   prevStep: () => void;
   endDemo: () => void;
+  closeDemo: () => void;
   restartDemo: () => void;
 }
 
@@ -16,11 +17,12 @@ export function DemoTourProvider({ children }: { children: React.ReactNode }) {
 
   const nextStep = () => setCurrentStep((prev) => prev + 1);
   const prevStep = () => setCurrentStep((prev) => Math.max(0, prev - 1));
-  const endDemo = () => setCurrentStep(-1); // -1 indica que el tour terminó
+  const endDemo = () => setCurrentStep(-1); // -1 indica que el tour terminó (muestra modal final)
+  const closeDemo = () => setCurrentStep(-2); // -2 cierra completamente el tour para explorar libremente
   const restartDemo = () => setCurrentStep(0);
-  
+
   return (
-    <TourContext.Provider value={{ currentStep, nextStep, prevStep, endDemo, restartDemo }}>
+    <TourContext.Provider value={{ currentStep, nextStep, prevStep, endDemo, closeDemo, restartDemo }}>
       {children}
     </TourContext.Provider>
   );

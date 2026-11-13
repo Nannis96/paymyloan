@@ -6,8 +6,12 @@ import { DEMO_MOCKS } from "./mockedThings";
 export default function DemoBrowseDeals({ dictionary }: { dictionary: any }) {
   const m = dictionary.marketplace;
   const shared = dictionary.uiComponents;
-  const { currentStep, nextStep } = useTour();
+  const { currentStep, nextStep, closeDemo } = useTour();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Estados para controlar los filtros
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [maxLtv, setMaxLtv] = useState(100); // 100 para mostrar todos por defecto
 
   // Escuchar el paso del tour para abrir el modal automaticamente
   useEffect(() => {
@@ -19,20 +23,46 @@ export default function DemoBrowseDeals({ dictionary }: { dictionary: any }) {
     <div className="p-6 lg:p-10 font-sans text-ink">
       <div className="mb-6 text-2xl font-bold tracking-tight">{m.title}</div>
       
-      {/* ID: demo-filter-bar (Paso 2) */}
+      {/* ID: demo-filter-bar */}
       <div id="demo-filter-bar" className="mb-6 flex flex-wrap items-center gap-2 rounded-xl border border-rule bg-surface p-4 shadow-sm">
-        <button className="rounded-full bg-accent-soft px-4 py-1.5 text-xs font-bold text-accent">{m.filters.all}</button>
-        <button className="rounded-full border border-rule px-4 py-1.5 text-xs font-medium text-ink-2">{m.filters.bridge}</button>
-        <button className="rounded-full border border-rule px-4 py-1.5 text-xs font-medium text-ink-2">{m.filters.slowFlip}</button>
+        {["All", "Bridge", "Slow flip", "Rental", "Fix & Flip"].map((filterType) => (
+          <button 
+            key={filterType}
+            onClick={() => setActiveFilter(filterType)}
+            className={`rounded-full px-4 py-1.5 text-xs transition-colors cursor-pointer ${
+              activeFilter === filterType 
+                ? "bg-accent-soft font-bold text-accent border border-transparent" 
+                : "border border-rule font-medium text-ink-2 hover:bg-surface-2"
+            }`}
+          >
+            {filterType === "All" ? m.filters.all : 
+             filterType === "Bridge" ? m.filters.bridge : 
+             filterType === "Slow flip" ? m.filters.slowFlip : filterType}
+          </button>
+        ))}
         <div className="mx-2 h-5 w-px bg-rule"></div>
-        <select className="rounded-md border border-rule px-3 py-1.5 text-xs text-ink-2 outline-none bg-white">
-          <option>LTV &le; 75%</option>
-          <option>LTV &le; 70%</option>
+        <select 
+          onChange={(e) => setMaxLtv(parseInt(e.target.value))} 
+          className="rounded-md border border-rule px-3 py-1.5 text-xs text-ink-2 outline-none bg-white cursor-pointer"
+        >
+          <option value="100">Any LTV</option>
+          <option value="75">LTV &le; 75%</option>
+          <option value="70">LTV &le; 70%</option>
+          <option value="65">LTV &le; 65%</option>
         </select>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {DEMO_MOCKS.cards.map((card, index) => (
+        {DEMO_MOCKS.cards
+          .filter(card => {
+            // Filtrar por categoría
+            if (activeFilter !== "All" && card.type !== activeFilter) return false;
+            // Filtrar por LTV
+            const cardLtv = parseInt(card.ltv.replace('%', ''));
+            if (cardLtv > maxLtv) return false;
+            return true;
+          })
+          .map((card, index) => (
           <div key={index} id={card.id || undefined} className={`flex flex-col overflow-hidden rounded-xl border border-rule bg-surface hover:shadow-md transition-shadow ${card.opacity} ${card.hiddenOnMobile ? "hidden md:flex" : ""}`}>
             <div className="border-b border-rule p-5">
               <span className={`mb-3 inline-block rounded-lg px-2.5 py-1 text-[11px] font-bold ${card.type === "Slow flip" ? "bg-green-100 text-green-700" : "bg-accent-soft text-accent"}`}>
@@ -121,10 +151,22 @@ export default function DemoBrowseDeals({ dictionary }: { dictionary: any }) {
                 </div>
               </div>
               <div className="mt-2 flex justify-end gap-2" id="demo-modal-submit">
-                <button onClick={() => setIsModalOpen(false)} className="rounded-md border border-rule bg-surface px-4 py-2 text-sm font-semibold text-ink-2 hover:bg-surface-2 transition-colors cursor-pointer">
+                <button 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    if (currentStep >= 0) closeDemo();
+                  }} 
+                  className="rounded-md border border-rule bg-surface px-4 py-2 text-sm font-semibold text-ink-2 hover:bg-surface-2 transition-colors cursor-pointer"
+                >
                   Cancel
                 </button>
-                <button className="rounded-md bg-accent px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">
+                <button 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    if (currentStep >= 0) closeDemo();
+                  }}
+                  className="rounded-md bg-accent px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
+                >
                   {m.dealDetails.btnSubmit}
                 </button>
               </div>

@@ -80,9 +80,12 @@ function FlowContent() {
           </div>
           
           {/* EL ID demo-post-deal INICIA EL TOUR APUNTANDO AQUI */}
-          <div 
-            id="demo-post-deal" 
-            onClick={() => { if (currentStep === 1) nextStep(); }}
+          <div
+             id="demo-post-deal"
+             onClick={() => { 
+               if (currentStep === 1) nextStep(); 
+               else if (currentStep === -1) window.dispatchEvent(new Event("reset-deal-form"));
+             }}
             className="mx-[14px] mt-[12px] block rounded-[7px] bg-accent p-[10px] text-center font-sans text-[13px] font-[700] text-accent-ink cursor-pointer transition-colors hover:bg-blue-700 relative z-[110]"
           >
             {sb.postDeal}

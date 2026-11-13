@@ -32,9 +32,14 @@ export default function BorrowerTourOverlay() {
       desc: isEs ? "Ingresa la dirección y dejaremos que llenes el resto de la solicitud." : "Enter the address and fill out the rest of the application."
     },
     {
+      id: "demo-form-prop-specs",
+      title: isEs ? "Especificaciones" : "Property specs",
+      desc: isEs ? "Completa las características, como recámaras, baños y condición actual." : "Fill in the features like beds, baths, and current condition."
+    },
+    {
       id: "demo-form-financials",
       title: isEs ? "Finanzas del trato" : "Deal financials",
-      desc: isEs ? "Ingresa los números. La plataforma calculará el LTV y tu pago mensual." : "Enter the numbers. The platform will calculate LTV and your monthly payment."
+      desc: isEs ? "Una vez que ingreses los números, la plataforma calculará el LTV y tu pago mensual." : "Once you enter the numbers, the platform will calculate LTV and your monthly payment."
     },
     {
       id: "demo-review-post",

@@ -30,13 +30,26 @@ export const DEMO_MOCKS = {
     },
     {
       id: "demo-deal-card-3",
-      type: "Bridge",
+      type: "Rental",
       address: "789 Mock Boulevard",
       cityState: "Test Town, USA 13579",
       loanRequest: "$210,000",
       arv: "$280,000",
       ltv: "75%",
       rating: "A",
+      buttonId: "",
+      opacity: "opacity-75",
+      hiddenOnMobile: true
+    },
+    {
+      id: "demo-deal-card-4",
+      type: "Fix & Flip",
+      address: "321 Builder Lane",
+      cityState: "New City, USA 54321",
+      loanRequest: "$150,000",
+      arv: "$230,000",
+      ltv: "65%",
+      rating: "A-",
       buttonId: "",
       opacity: "opacity-75",
       hiddenOnMobile: true
