@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import FileDropzone from "@/app/components/ui/FileDropzone";
+import PropertyMap from "@/app/components/ui/PropertyMap";
 
 // Fuera del componente: Date.now() es impuro y react-hooks/purity lo rechaza dentro.
 const inDays = (n: number) => new Date(Date.now() + n * 86400000).toISOString();
@@ -272,7 +273,8 @@ export default function SubmitDealView() {
             <div className="animate-in fade-in duration-300">
               <div className="rounded-xl border border-rule bg-surface p-7 sm:p-8">
                 <h2 className="mb-1 text-[18px] font-bold tracking-tight text-ink">{sd.property.title}</h2>
-                <p className="mb-6 text-[13px] text-ink-3">{sd.property.sub}</p>
+                <p className="mb-4 text-[13px] text-ink-3">{sd.property.sub}</p>
+                <PropertyMap address={[formData.address, formData.city, formData.state, formData.zip].filter(Boolean).join(", ")} />
 
                 <div className="mb-4">
                   <label className={LABEL}>{sd.property.address}</label>
