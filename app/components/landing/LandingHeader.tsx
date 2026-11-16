@@ -24,14 +24,14 @@ export default function LandingHeader() {
         
         <div className="hidden flex-1 items-center gap-8 text-[14px] lg:flex">
           <Link
-             href="/lender"
-             className={`transition-colors ${pathname === '/lender' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+             href="/Lender"
+             className={`transition-colors ${pathname === '/Lender' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
           >
             {ln.lenders}
           </Link>
           <Link
-            href="/borrower"
-            className={`transition-colors ${pathname === '/borrower' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
+            href="/Borrower"
+            className={`transition-colors ${pathname === '/Borrower' ? 'text-accent font-bold' : 'text-ink-2 hover:text-ink font-medium'}`}
           >
             {ln.borrowers}
           </Link>

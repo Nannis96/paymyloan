@@ -26,11 +26,14 @@ Decisiones de diseño detrás de cada endpoint de auth: [plan/07](plan/07-autent
 - [Prestamistas y Deudores — autoservicio](#prestamistas-y-deudores--autoservicio)
 - [Contratos](#contratos-srcappapicontracts)
 - [Pagos](#pagos-srcappapicontractsidpayments-srcappapitransactions)
+- [Suscripciones](#suscripciones-srcappapisubscription-srcappapiadminsubscriptions)
+- [Afiliados](#afiliados-srcappapiaffiliates-srcappapiadminaffiliates)
 - [Auditoría](#auditoría-srcappapiaudit-logs)
 - [Admin — Overview](#admin--overview-srcappapiadminoverview)
 - [Verificación de entidad](#verificación-de-entidad-srcappapiadminverificationsborrowersmeverificationlendersmecompaniescompanyidverification)
 - [Marketplace / Loan Requests](#marketplace--loan-requests-srcappapiborrowersmeloan-requests-srcappapimarketplaceloan-requests)
 - [Mensajería](#mensajería-srcappapilendersmemessages-srcappapiborrowersmemessages)
+- [Documentos](#documentos-srcappapicontractsiddocuments-srcappapiloan-requestsiddocuments-srcappapidocuments)
 - [Catálogo de códigos de error](#catálogo-de-códigos-de-error)
 
 ---
@@ -71,7 +74,7 @@ Decisiones de diseño detrás de cada endpoint de auth: [plan/07](plan/07-autent
 
 ## Variables de entorno
 
-Fuente única: `src/config/env.ts` (`.env.example` documenta lo mismo con comentarios). En `NODE_ENV=production`, el proceso corta al arrancar si falta `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` o `DATABASE_URL`; el resto tiene un valor por defecto seguro para desarrollo.
+Fuente única: `src/config/env.ts` (`.env.example` documenta lo mismo con comentarios). En `NODE_ENV=production`, el proceso corta al arrancar si falta `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `DATABASE_URL` o `DOCUMENTS_MASTER_KEY`; el resto tiene un valor por defecto seguro para desarrollo.
 
 | Variable | Default (dev) | Usada por | Para qué |
 |---|---|---|---|
@@ -91,8 +94,19 @@ Fuente única: `src/config/env.ts` (`.env.example` documenta lo mismo con coment
 | `EMAIL_FROM` | `servicing@paymyloan.ai` | `src/lib/email.ts` | Remitente en los correos enviados vía Resend |
 | `RATE_LIMIT_LOGIN_MAX` | `5` | `login`, `login/2fa`, `password/forgot` | Intentos permitidos por ventana, por bucket+IP |
 | `RATE_LIMIT_LOGIN_WINDOW_MS` | `900000` (15 min) | idem | Duración de la ventana |
+| `SUBSCRIPTION_PRICE_CENTS` | `900` | `subscription.service.ts` | Precio mensual de la suscripción del Borrower, en centavos. Cambiarlo = editar y redesplegar; afecta solo cobros futuros ([plan/18](plan/18-suscripciones.md)) |
+| `SUBSCRIPTION_TRIAL_DAYS` | `7` | idem | Días de trial al crear la suscripción (`0` = vencida desde el inicio) |
+| `SUBSCRIPTION_CURRENCY` | `usd` | idem | Moneda guardada en cada pago |
+| `AFFILIATE_APPROVAL_MODE` | `admin` | `affiliates.service.ts#applyAffiliate` | `admin`: el Admin aprueba las solicitudes; `self`: el usuario se prende/apaga solo ([plan/19](plan/19-afiliados.md)) |
+| `AFFILIATE_DEFAULT_COMMISSION_TYPE` / `AFFILIATE_DEFAULT_COMMISSION_VALUE` | `PERCENT` / `0` | `resolveTerms` | Tarifa para afiliados sin tarifa propia. Valor `0` = no se genera comisión |
+| `AFFILIATE_DEFAULT_PAYOUT_DELAY_DAYS` | *(vacío)* | `computePayableAt` | Retraso por defecto antes de poder pagar una comisión; vacío = inmediato |
+| `ALLOW_SIMULATED_BILLING` | `false` | `subscription.service.ts#payMySubscription` | En producción el cobro simulado responde `403 SIMULATED_BILLING_DISABLED` salvo que sea `true` ([plan/18](plan/18-suscripciones.md), `D-SU-8`) |
+| `BILLING_MODE` | `simulated` | `subscription.service.ts#payMySubscription` | `simulated` registra el pago sin pasarela; `stripe` (etapa 2) hace que `pay` responda `409 BILLING_NOT_SIMULATED` |
 | `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `STRIPE_PUBLISHABLE_KEY` | *(vacío)* | *(sin uso todavía)* | Reservadas para Fase 7 (Pagos) — bloqueadas por la decisión Stripe Connect vs. cuenta única |
-| `S3_BUCKET` / `S3_REGION` / `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | *(vacío)* | *(sin uso todavía)* | Reservadas para Fase 11 (Documentos) |
+| `AWS_REGION` | `us-east-2` | `src/lib/s3.ts` | Región del bucket de documentos |
+| `S3_BUCKET` | `paymyloan-bucket` | `src/lib/s3.ts` | Bucket privado de documentos (todo bajo el prefijo `documents/`) |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | *(vacío)* | SDK de AWS (cadena estándar) | Credenciales con `s3:PutObject`/`GetObject`/`DeleteObject` sobre `arn:aws:s3:::paymyloan-bucket/documents/*`. Vacías = el SDK busca un rol IAM |
+| `DOCUMENTS_MASTER_KEY` | placeholder inseguro (obligatoria en prod) | `src/lib/documentCrypto.ts` | 32 bytes en base64 (`openssl rand -base64 32`). Envuelve la clave propia de cada documento. **Si se pierde, los documentos ya subidos son irrecuperables** |
 
 ---
 
@@ -270,6 +284,7 @@ Auto-registro de `LENDER` o `BORROWER` — el usuario crea su propia cuenta, sin
   | `phone` | string | opcional — exactamente 10 dígitos (`^\d{10}$`) |
   | `password` | string | 8–72 caracteres, al menos 1 mayúscula y 1 número (`D-P2-6`) |
   | `role` | string | **solo** `LENDER` o `BORROWER` — `ADMIN`/`BOOKKEEPER`/`INSURANCE_COMPANY` no pueden auto-registrarse |
+  | `referralCode` | string | opcional — 4–16 caracteres, se normaliza a mayúsculas. Código de un afiliado `APPROVED` ([Afiliados](#afiliados-srcappapiaffiliates-srcappapiadminaffiliates)); uno inexistente o de un afiliado no aprobado **se ignora en silencio** (no bloquea el registro) |
 
   ```json
   {
@@ -390,6 +405,9 @@ Perfil propio + el detalle de rol correspondiente. Como el JWT no lleva `lenderI
       "user": /* SafeUser */ {},
       // roles activos (D-P7-1) — puede incluir LENDER y BORROWER a la vez
       "roles": ["BORROWER", "LENDER"],
+      // Fase 21: true solo si el AffiliateProfile está APPROVED; affiliateStatus es null si nunca pidió serlo
+      "isAffiliate": false,
+      "affiliateStatus": null,
       // presente si existe un LenderProfile (no depende de `user.role`)
       "lenderProfile": {
         "id": "...",
@@ -1069,8 +1087,15 @@ Crea el contrato en un solo paso.
 
   Notas: `lenderCompanyId` solo hace falta si el Lender tiene más de una `LenderCompany`; `insuranceCompanyId` y `borrowerProfileIds` son opcionales; `prePayPenaltyType`/`prePayPenaltyAmount` viajan juntos o ninguno de los dos.
 
-- **Response `201`**: `Contract` completo (ver forma abajo), `status: "DRAFT"`, `currentTerms` con `versionNumber: 1` y `status: "DRAFT"`.
-- **Errores**: `400 VALIDATION_ERROR` · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (`lenderCompanyId`/`insuranceCompanyId`/algún `borrowerProfileId` ajeno o no vinculado) · `409 NO_LENDER_COMPANY` · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`) · `409 PROPERTY_SELF_ENCUMBERED` (`D-P7-3`).
+- **Con documentos (opcional, PB-002)**: mandar `multipart/form-data` con el mismo JSON (como texto) en el campo `data` y 1–10 archivos en `files` (PDF/JPEG/PNG/WEBP/HEIC, 10 MB c/u). Se cifran igual que en [Documentos](#documentos-srcappapicontractsiddocuments-srcappapiloan-requestsiddocuments-srcappapidocuments) y se guardan **en la misma transacción**: si un archivo es inválido, S3 falla o el alta no pasa sus validaciones, no se crea el contrato ni queda ningún archivo. Sin archivos, el JSON de siempre sigue funcionando igual.
+
+  ```bash
+  curl -X POST "$API/api/contracts" -H "Authorization: Bearer $TOKEN" \
+    -F 'data={"property":{...},"terms":{...}}' -F "files=@pagare.pdf" -F "files=@fachada.jpg"
+  ```
+
+- **Response `201`**: `Contract` completo (ver forma abajo), `status: "DRAFT"`, `currentTerms` con `versionNumber: 1` y `status: "DRAFT"`, más `documents: DocumentMeta[]` (vacío si no se mandaron archivos).
+- **Errores**: `400 VALIDATION_ERROR` · `400 INVALID_JSON`/`INVALID_FORM_DATA`/`FILE_TOO_LARGE`/`UNSUPPORTED_FILE_TYPE` (archivos) · `502 STORAGE_ERROR` · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (`lenderCompanyId`/`insuranceCompanyId`/algún `borrowerProfileId` ajeno o no vinculado) · `409 NO_LENDER_COMPANY` · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`) · `409 PROPERTY_SELF_ENCUMBERED` (`D-P7-3`).
 
 ### `GET /api/contracts`
 
@@ -1105,7 +1130,14 @@ Lista + filtros `status` y `search` (número de contrato o dirección de la prop
   }
   ```
 
-- **Errores**: `400 VALIDATION_ERROR` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` · `409 TERMS_NOT_EDITABLE` · `409 NO_CURRENT_TERMS`.
+- **Con documentos (opcional, PB-002)**: `multipart/form-data` con el JSON (como texto) en `data` y 1–10 archivos en `files` (PDF/JPEG/PNG/WEBP/HEIC, 10 MB c/u), cifrados igual que en [Documentos](#documentos-srcappapicontractsiddocuments-srcappapiloan-requestsiddocuments-srcappapidocuments). Con archivos, `data` es **opcional** (se puede mandar solo `files` para adjuntar sin cambiar nada más). Cambios y documentos se guardan **en la misma transacción**: si un archivo es inválido, S3 falla o el cambio no pasa sus reglas (p. ej. `409 TERMS_NOT_EDITABLE`), no se guarda ni el cambio ni ningún archivo. La respuesta agrega `documents: DocumentMeta[]` (los recién subidos). Solo el `LENDER` puede adjuntar acá: el `ADMIN` puede editar pero no subir archivos (`403 FORBIDDEN`, `D-DOC-6`).
+
+  ```bash
+  curl -X PATCH "$API/api/contracts/$CONTRACT_ID" -H "Authorization: Bearer $TOKEN" \
+    -F 'data={"property":{"city":"Dallas"}}' -F "files=@tasacion.pdf"
+  ```
+
+- **Errores**: `400 VALIDATION_ERROR` · `400 INVALID_JSON`/`INVALID_FORM_DATA`/`FILE_TOO_LARGE`/`UNSUPPORTED_FILE_TYPE` (archivos) · `502 STORAGE_ERROR` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` · `409 TERMS_NOT_EDITABLE` · `409 NO_CURRENT_TERMS`.
 
 ### `DELETE /api/contracts/:id`
 
@@ -1316,6 +1348,114 @@ Revierte `ScheduledPayment.amountPaid`/`status` de las filas que ese pago había
 
 ---
 
+## Suscripciones (`src/app/api/subscription/`, `src/app/api/admin/subscriptions/`)
+
+Fase 20 — diseño completo y reglas en [plan/18-suscripciones.md](plan/18-suscripciones.md) (`D-SU-1`..`D-SU-7`). Solo los usuarios con `BorrowerProfile` tienen suscripción (un Lender dual también, tras `become-borrower`). **Cobro simulado** (etapa 1): Stripe llega en la etapa 2 sin cambiar estas rutas.
+
+**Estado efectivo**: `TRIALING` / `ACTIVE` / `CANCELLED` (cancelada pero con acceso) / `EXPIRED` (derivado: sin trial ni periodo vigente). `hasAccess` = trial vigente o periodo pagado vigente.
+
+**Gate `403 SUBSCRIPTION_REQUIRED`**: sin `hasAccess`, el Borrower no puede iniciar un préstamo nuevo — `POST`/`publish` de `/api/borrowers/me/loan-requests`, `.../quotes/:quoteId/select` y `POST /api/contracts/:id/terms/:termsId/accept` **cuando el contrato está en `PENDING_ACCEPTANCE`** (las enmiendas de un préstamo ya activo no se bloquean). Pagos, payoff, lecturas, mensajería y `/api/subscription/*` nunca se bloquean.
+
+### `GET /api/subscription/me`
+
+- **Auth**: Autenticado, rol `BORROWER` (sin 2FA). Crea la suscripción si el Borrower aún no la tenía.
+- **Response `200`**: `{ id, status, hasAccess, daysLeftInTrial, trialEndsAt, currentPeriodEnd, cancelledAt, priceCents, currency, billingMode }`.
+- **Errores**: `401`/`403` · `404 SUBSCRIPTION_NOT_FOUND` (el usuario no tiene `BorrowerProfile`).
+
+### `POST /api/subscription/me/pay`
+
+Cobro simulado: inserta un `SubscriptionPayment` (`SIMULATED`, `SUCCEEDED`, monto `SUBSCRIPTION_PRICE_CENTS`), deja la suscripción `ACTIVE` y extiende un mes desde el fin del periodo/trial vigente (no se pierden días). El primer pago con monto > 0 lleva `isFirstPayment=true` (dispara la comisión de afiliado cuando exista el módulo).
+
+- **Response `201`**: `{ subscription: { ...GET /me }, payment: { id, amountCents, currency, status, source, isFirstPayment, periodStart, periodEnd, paidAt } }`.
+- **Errores**: `401`/`403` · `403 SIMULATED_BILLING_DISABLED` (producción sin `ALLOW_SIMULATED_BILLING=true`) · `404 SUBSCRIPTION_NOT_FOUND` · `409 BILLING_NOT_SIMULATED`.
+
+### `POST /api/subscription/me/cancel`
+
+Marca `CANCELLED`; el acceso sigue hasta el fin del periodo/trial. Pagar de nuevo la reactiva.
+
+- **Response `200`**: la suscripción (misma forma que `GET /me`).
+- **Errores**: `401`/`403` · `404 SUBSCRIPTION_NOT_FOUND` · `409 SUBSCRIPTION_ALREADY_CANCELLED`.
+
+### `GET /api/subscription/me/payments`
+
+- **Query**: `page` (1), `pageSize` (20, máx. 100). **Response `200`**: `{ items: SubscriptionPayment[], page, pageSize, total, totalPages }`, más reciente primero.
+
+### `GET /api/admin/subscriptions`
+
+- **Auth**: `ADMIN` + 2FA (`D-P3-1`). **Query**: `status` (`TRIALING`/`ACTIVE`/`CANCELLED`/`EXPIRED`, efectivo), `search` (nombre o correo), `page`, `pageSize`.
+- **Response `200`**: paginado de `{ id, user: { id, name, email }, status, hasAccess, trialEndsAt, currentPeriodEnd, lastPaymentAt, priceCents }`.
+
+### `GET /api/admin/subscriptions/:id`
+
+- **Response `200`**: la suscripción (forma de `GET /me`) + `user` + `payments[]`. **Errores**: `400 VALIDATION_ERROR` (id) · `404 SUBSCRIPTION_NOT_FOUND`.
+
+### `POST /api/admin/subscriptions/:id/grant`
+
+- **Request body**: `{ "days": 30, "reason": "Cortesía" }` (`days` entero 1–365, `reason` obligatorio).
+- Extiende el acceso `days` días desde el fin vigente, deja `ACTIVE` e inserta un pago `ADMIN_GRANT` de monto `0` (nunca dispara comisión).
+- **Response `201`**: `{ subscription, payment }`. **Errores**: `400 VALIDATION_ERROR` · `404 SUBSCRIPTION_NOT_FOUND`.
+
+### `POST /api/admin/subscriptions/:id/cancel`
+
+- **Request body**: `{ "immediate": false }` (opcional, default `false`). Con `true` corta el acceso ya (`trialEndsAt` y `currentPeriodEnd` = ahora).
+- **Response `200`**: la suscripción. **Errores**: `404 SUBSCRIPTION_NOT_FOUND` · `409 SUBSCRIPTION_ALREADY_CANCELLED` (sin `immediate`).
+
+---
+
+## Afiliados (`src/app/api/affiliates/`, `src/app/api/admin/affiliates/`)
+
+Fase 21 — reglas y diseño en [plan/19-afiliados.md](plan/19-afiliados.md) (`D-AF-1`..`D-AF-7`). **Afiliado no es un rol**: cualquier usuario autenticado puede serlo. `isAffiliate` = `status === APPROVED`. Estados: `PENDING` · `APPROVED` · `REJECTED` · `SUSPENDED` (Admin) · `INACTIVE` (lo apagó el propio usuario).
+
+**Comisión**: se genera una sola vez por referido, en su **primer pago de suscripción con monto > 0**, si el afiliado sigue `APPROVED` y la comisión calculada es > 0. `PERCENT` → `round(pago × valor / 100)`; `FIXED` → `round(valor × 100)` centavos. El monto queda guardado (cambiar la tarifa después no lo altera). Pago **manual** del Admin (`mark-paid`).
+
+**Forma de un perfil** (`POST apply`, `DELETE me`, `approve`, `reject`, `suspend`, `PATCH commission`): `{ id, isAffiliate, status, code, link, commissionType, commissionValue, payoutDelayDays, statusReason }`. `link` = `{CORS_ORIGIN}/register?ref={code}`; `code` es `null` hasta la primera aprobación y no cambia nunca. `commissionType`/`commissionValue`/`payoutDelayDays` ya vienen resueltos (tarifa propia o default de `.env`).
+
+**Forma de una comisión**: `{ id, affiliateId, referredUserId, subscriptionPaymentId, source (SUBSCRIPTION|MANUAL), baseAmountCents, commissionType, commissionValue, amountCents, currency, status (PENDING|PAID|VOID), payableAt, paidAt, paidById, paymentReference, voidedAt, voidedById, note, createdAt }`.
+
+### Público
+
+#### `GET /api/affiliates/validate?code=ABC123XY`
+- Sin sesión. **Response `200`**: `{ "valid": true }` solo si el código es de un afiliado `APPROVED`; inexistente, de un afiliado no aprobado o mal formado → `{ "valid": false }` (nunca `400`). No devuelve datos del afiliado.
+- **Rate limit**: 30 consultas por IP cada 15 min → `429 RATE_LIMITED`. Solo es comodidad para el front: `POST /api/auth/register` no la necesita.
+
+### Usuario (cualquier sesión autenticada, sin 2FA)
+
+#### `POST /api/affiliates/me/apply`
+- Modo `admin` → `PENDING`; modo `self` → `APPROVED` al instante. Un `INACTIVE` vuelve a `APPROVED` sin pedir permiso; un `REJECTED` vuelve a `PENDING`.
+- **Response `201`**: el perfil. **Errores**: `401` · `409 AFFILIATE_ALREADY_ACTIVE` (`APPROVED`/`PENDING`) · `409 AFFILIATE_SUSPENDED`.
+
+#### `DELETE /api/affiliates/me`
+- `APPROVED → INACTIVE`. Sus referidos y comisiones se conservan. **Response `200`**: el perfil. **Errores**: `401` · `409 AFFILIATE_NOT_ACTIVE`.
+
+#### `GET /api/affiliates/me`
+- **Response `200`**: sin perfil `{ "isAffiliate": false, "status": null }`; con perfil, el perfil + `referralsCount`, `subscribedCount`, `pendingCents`, `paidCents`.
+
+#### `GET /api/affiliates/me/referrals`
+- **Query**: `page`, `pageSize`. **Response `200`**: paginado de `{ name, joinedAt, subscribed }` (sin correo ni teléfono).
+
+#### `GET /api/affiliates/me/commissions`
+- **Query**: `status` (`PENDING`/`PAID`/`VOID`), `page`, `pageSize`. **Response `200`**: paginado de comisiones.
+
+### Admin (`ADMIN` + 2FA, `D-P3-1`)
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/api/admin/affiliates` | Paginado. Filtros `status`, `search` (nombre, correo o código), `page`, `pageSize`. Ítem: perfil + `user:{id,name,email}`, `referralsCount`, `pendingCents`, `paidCents`, `createdAt` |
+| GET | `/api/admin/affiliates/:id` | Perfil + `user` + totales + `referrals[]` (hasta 50) + `commissions[]` (últimas 20) |
+| POST | `/api/admin/affiliates/:id/approve` | Body opcional `{ commissionType, commissionValue, payoutDelayDays }` (tipo y valor van juntos; `PERCENT` ≤ 100). Desde `PENDING`/`REJECTED`/`SUSPENDED`. Genera `code` la primera vez y notifica al usuario |
+| POST | `/api/admin/affiliates/:id/reject` | Body `{ reason }`. Solo desde `PENDING` |
+| POST | `/api/admin/affiliates/:id/suspend` | Body `{ reason }`. Solo desde `APPROVED` |
+| PATCH | `/api/admin/affiliates/:id/commission` | Body `{ commissionType, commissionValue, payoutDelayDays? }` (`null` = inmediato). Solo afecta comisiones futuras |
+| POST | `/api/admin/affiliates/:id/commissions` | Comisión manual `{ amountCents (>0), referredUserId?, note, payableAt? }` → `201`. `409 AFFILIATE_INVALID_STATE` si el afiliado nunca fue aprobado |
+| GET | `/api/admin/affiliates/commissions` | Paginado. Filtros `status`, `affiliateId`, `payable=true` (`PENDING` con `payableAt` ya cumplida) |
+| PATCH | `/api/admin/affiliates/commissions/:id` | Body `{ payableAt }`. Solo `PENDING` |
+| POST | `/api/admin/affiliates/commissions/:id/mark-paid` | Body `{ paymentReference?, force? }`. Solo `PENDING`; con `payableAt` futuro → `409 AFFILIATE_COMMISSION_NOT_PAYABLE_YET` salvo `force: true`. Notifica al afiliado |
+| POST | `/api/admin/affiliates/commissions/:id/void` | Body `{ note }`. Solo `PENDING` |
+
+**Errores comunes del bloque**: `400 VALIDATION_ERROR` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 AFFILIATE_NOT_FOUND` (afiliado o comisión) · `409 AFFILIATE_INVALID_STATE` (transición no permitida) · `409 AFFILIATE_COMMISSION_NOT_PENDING`.
+
+---
+
 ## Auditoría (`src/app/api/audit-logs`)
 
 ### `GET /api/audit-logs`
@@ -1500,8 +1640,15 @@ En cualquier punto entre el paso 3 y el 7, el Deudor puede arrepentirse y bajar 
   }
   ```
 
-- **Response `201`**: `LoanRequest` completo, `status: "DRAFT"`, `property.lenderCompanyId: null`.
-- **Errores**: `400 VALIDATION_ERROR` · `401`/`403` · `404 BORROWER_NOT_FOUND`.
+- **Con documentos (opcional, PB-002)**: mandar `multipart/form-data` con el mismo JSON (como texto) en el campo `data` y 1–10 archivos en `files` (PDF/JPEG/PNG/WEBP/HEIC, 10 MB c/u). Se cifran igual que en [Documentos](#documentos-srcappapicontractsiddocuments-srcappapiloan-requestsiddocuments-srcappapidocuments) y se guardan **en la misma transacción**: si un archivo es inválido, S3 falla o el alta no pasa sus validaciones, no se crea la loan request ni queda ningún archivo. Sin archivos, el JSON de siempre sigue funcionando igual.
+
+  ```bash
+  curl -X POST "$API/api/borrowers/me/loan-requests" -H "Authorization: Bearer $TOKEN" \
+    -F 'data={"property":{...},"projectType":"FIX_AND_FLIP",...}' -F "files=@cocina.jpg" -F "files=@presupuesto.pdf"
+  ```
+
+- **Response `201`**: `LoanRequest` completo, `status: "DRAFT"`, `property.lenderCompanyId: null`, más `documents: DocumentMeta[]` (vacío si no se mandaron archivos).
+- **Errores**: `400 VALIDATION_ERROR` · `400 INVALID_JSON`/`INVALID_FORM_DATA`/`FILE_TOO_LARGE`/`UNSUPPORTED_FILE_TYPE` (archivos) · `502 STORAGE_ERROR` · `401`/`403` · `404 BORROWER_NOT_FOUND`.
 
 ### `GET`/`PATCH /api/borrowers/me/loan-requests/:id`
 
@@ -1516,7 +1663,13 @@ Propios. `PATCH` (incluye `property`) solo mientras `status=DRAFT`.
   { "totalLoanAmountRequested": 270000, "requestedTimelineNotes": "Flexible on closing date, 30-45 days." }
   ```
 
-- **Errores**: `400 VALIDATION_ERROR` (`PATCH`) · `401`/`403` · `404 NOT_FOUND` · `409 LOAN_REQUEST_NOT_EDITABLE` (`PATCH` fuera de `DRAFT`).
+- **Con documentos en el `PATCH` (opcional, PB-002)**: `multipart/form-data` con el JSON (como texto) en `data` y 1–10 archivos en `files` (PDF/JPEG/PNG/WEBP/HEIC, 10 MB c/u), cifrados igual que en [Documentos](#documentos-srcappapicontractsiddocuments-srcappapiloan-requestsiddocuments-srcappapidocuments). Con archivos, `data` es **opcional** (se puede mandar solo `files` para adjuntar sin cambiar nada más). Cambios y documentos se guardan **en la misma transacción**: si un archivo es inválido, S3 falla o el cambio no pasa sus reglas (solo `DRAFT` → `409 LOAN_REQUEST_NOT_EDITABLE`), no se guarda ni el cambio ni ningún archivo. La respuesta agrega `documents: DocumentMeta[]` (los recién subidos). Para una solicitud ya publicada, usar `POST /api/loan-requests/:id/documents`.
+
+  ```bash
+  curl -X PATCH "$API/api/borrowers/me/loan-requests/$ID" -H "Authorization: Bearer $TOKEN" -F "files=@bano.jpg"
+  ```
+
+- **Errores**: `400 VALIDATION_ERROR` (`PATCH`) · `400 INVALID_JSON`/`INVALID_FORM_DATA`/`FILE_TOO_LARGE`/`UNSUPPORTED_FILE_TYPE` (archivos) · `502 STORAGE_ERROR` · `401`/`403` · `404 NOT_FOUND` · `409 LOAN_REQUEST_NOT_EDITABLE` (`PATCH` fuera de `DRAFT`).
 
 ### `POST /api/borrowers/me/loan-requests/:id/publish` / `.../withdraw`
 
@@ -1720,6 +1873,59 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 
 ---
 
+## Documentos (`src/app/api/contracts/[id]/documents`, `src/app/api/loan-requests/[id]/documents`, `src/app/api/documents`)
+
+Documentos (PDF) e imágenes (JPEG, PNG, WEBP, HEIC) colgados de un **contrato** o de una **loan request**. Cada archivo se cifra en el backend con AES-256-GCM y una clave propia (envuelta con `DOCUMENTS_MASTER_KEY`) **antes** de subirse a S3; S3 nunca tiene el contenido en claro. Por eso no hay URLs firmadas: el archivo se ve siempre a través de `GET /api/documents/:id/content`, que lo descifra.
+
+- **Quién sube**: `LENDER` y `BORROWER` con acceso al padre (escritura de `LENDER` exige 2FA, `D-P3-1`).
+- **Quién ve**: los mismos, más `ADMIN`.
+- **Quién borra**: **solo quien lo subió** (`403 FORBIDDEN` para el resto con acceso; `404` para quien no tiene acceso).
+- **Acceso a una loan request**: el Borrower dueño y un Lender a quien va dirigida (`PUBLISHED` + target de su empresa) o cuyo contrato nació de ella ven y suben; un Lender que solo la ve por ser `PUBLIC` en el marketplace **solo ve** (subir → `403 FORBIDDEN`); `ADMIN` ve todo. Acceso a un contrato: el mismo de `GET /api/contracts/:id`.
+- **De contrato a loan request**: `GET /api/contracts/:id` incluye `loanRequestId` y `loanRequest: { id, status, projectType, totalLoanAmountRequested, requestedClosingDate, createdAt } | null` (null si el contrato fue directo). Las fotos/documentos de esa loan request se listan con `GET /api/loan-requests/:loanRequestId/documents`.
+
+- **Al crear o editar**: `POST`/`PATCH` de `/api/contracts` y de `/api/borrowers/me/loan-requests` también aceptan archivos en la misma llamada (multipart, campo `data` + `files`; en el `PATCH` `data` es opcional), con el mismo cifrado y todo o nada junto con el alta o el cambio — ver cada endpoint.
+
+Forma de `DocumentMeta`: `{ id, contractId|null, loanRequestId|null, originalFileName, mimeType, sizeBytes, uploadedByUserId, createdAt }`.
+
+### `POST /api/contracts/:id/documents` · `POST /api/loan-requests/:id/documents`
+
+**¿Para qué sirve?** Subir uno o varios archivos de una vez.
+
+- **Body**: `multipart/form-data`, campo `files` repetido (1–10 archivos, máx. 10 MB cada uno).
+- **Todo o nada**: si un archivo es inválido o falla la subida de uno, no queda guardado ninguno.
+- El tipo se detecta por el contenido del archivo (no por la extensión ni el `Content-Type` del cliente).
+- **Response `201`**: `DocumentMeta[]`.
+- **Errores**: `400 INVALID_FORM_DATA` / `VALIDATION_ERROR` (0 o más de 10 archivos) / `FILE_TOO_LARGE` / `UNSUPPORTED_FILE_TYPE` · `401`/`403` · `404 NOT_FOUND` · `502 STORAGE_ERROR` (S3 falló).
+
+```bash
+curl -X POST "$API/api/contracts/$CONTRACT_ID/documents" -H "Authorization: Bearer $TOKEN" \
+  -F "files=@nota.pdf" -F "files=@fachada.jpg"
+```
+
+### `GET /api/contracts/:id/documents` · `GET /api/loan-requests/:id/documents`
+
+**¿Para qué sirve?** Listar los documentos del padre (solo metadatos, más nuevos primero).
+
+- **Response `200`**: `DocumentMeta[]`.
+- **Errores**: `401`/`403` · `404 NOT_FOUND`.
+
+### `GET /api/documents/:id/content`
+
+**¿Para qué sirve?** Ver o descargar el archivo, ya descifrado.
+
+- **Response `200`**: el archivo binario con su `Content-Type` real, `Content-Disposition: inline` (o `attachment` con `?download=1`) y `Cache-Control: private, no-store`. No es JSON.
+- **Errores**: `401`/`403` · `404 NOT_FOUND` · `500 DOCUMENT_CORRUPTED` (el objeto en S3 fue alterado o no corresponde a la clave).
+
+### `DELETE /api/documents/:id`
+
+**¿Para qué sirve?** Eliminar un documento definitivamente: borra el objeto de S3 y la fila (queda `DOCUMENT_DELETED` en AuditLog).
+
+- **Auth**: solo quien lo subió.
+- **Response `200`**: `{ "deleted": true }`.
+- **Errores**: `401` · `403 FORBIDDEN` (no lo subiste vos) · `404 NOT_FOUND`.
+
+---
+
 ## Catálogo de códigos de error
 
 `code` es estable entre versiones; `message` es texto en **inglés** (convención fijada 2026-09-08 — toda respuesta de la API, éxito o error, va en inglés; el resto del código/documentación sigue en español) pensado para mostrarse tal cual, no para parsearse.
@@ -1727,6 +1933,18 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 | `code` | HTTP | Cuándo |
 |---|---|---|
 | `INVALID_JSON` | 400 | El body no es JSON válido |
+| `AFFILIATE_NOT_FOUND` | 404 | Afiliado o comisión inexistente ([Afiliados](#afiliados-srcappapiaffiliates-srcappapiadminaffiliates)) |
+| `AFFILIATE_ALREADY_ACTIVE` | 409 | `apply` estando `APPROVED` o `PENDING` |
+| `AFFILIATE_SUSPENDED` | 409 | `apply` estando `SUSPENDED` |
+| `AFFILIATE_NOT_ACTIVE` | 409 | `DELETE /api/affiliates/me` sin estar `APPROVED` |
+| `AFFILIATE_INVALID_STATE` | 409 | Transición no permitida; comisión manual a un afiliado nunca aprobado |
+| `AFFILIATE_COMMISSION_NOT_PENDING` | 409 | `mark-paid` / `void` / `PATCH` sobre una comisión ya `PAID` o `VOID` |
+| `AFFILIATE_COMMISSION_NOT_PAYABLE_YET` | 409 | `mark-paid` con `payableAt` futuro y sin `force` |
+| `SUBSCRIPTION_REQUIRED` | 403 | El Borrower no tiene trial ni periodo pagado vigente y quiso iniciar un préstamo nuevo (ver [Suscripciones](#suscripciones-srcappapisubscription-srcappapiadminsubscriptions)) |
+| `SUBSCRIPTION_NOT_FOUND` | 404 | Suscripción inexistente, o el usuario no tiene `BorrowerProfile` |
+| `SUBSCRIPTION_ALREADY_CANCELLED` | 409 | Cancelar una suscripción ya cancelada |
+| `SIMULATED_BILLING_DISABLED` | 403 | `POST /api/subscription/me/pay` en producción sin `ALLOW_SIMULATED_BILLING=true` |
+| `BILLING_NOT_SIMULATED` | 409 | `POST /api/subscription/me/pay` con `BILLING_MODE≠simulated` |
 | `VALIDATION_ERROR` | 400 | El body no cumple el schema Zod del endpoint (primer error de validación) |
 | `LENDER_COMPANY_REQUIRED` | 400 | `POST /api/marketplace/loan-requests/:id/quotes`, `POST /api/lenders/me/messages` y `GET /api/lenders/me/messages/threads/:borrowerProfileId` (Fase 17), y (mientras estuvo activo) `POST /api/lenders/me/borrowers` (`D-P5-1`, deshabilitado) — el Lender tiene más de una `LenderCompany` y no mandó `lenderCompanyId` |
 | `INVALID_TOKEN` | 400 o 401 | Refresh token / pending token / access token / token de reset: inválido, manipulado o expirado. `password/reset` usa 400 (es un dato del body); el resto usa 401 |
@@ -1765,6 +1983,11 @@ Todas las cotizaciones recibidas (cualquier `status`), para comparar.
 | `TWO_FACTOR_NOT_ENABLED` | 409 | `/2fa/disable` o `/2fa/recovery-codes` cuando el usuario no tiene 2FA activo |
 | `TWO_FACTOR_SETUP_REQUIRED` | 409 | `/2fa/verify` sin haber llamado antes a `/2fa/setup` |
 | `CONTRACT_NOT_DELETABLE` | 409 | `DELETE /api/contracts/:id` con `status` distinto de `DRAFT` |
+| `INVALID_FORM_DATA` | 400 | `POST .../documents` cuyo body no es `multipart/form-data`, o `POST /api/contracts`/`POST /api/borrowers/me/loan-requests` en multipart sin el campo `data` (en los `PATCH` es opcional) |
+| `FILE_TOO_LARGE` | 400 | `POST .../documents` con un archivo vacío o de más de 10 MB |
+| `UNSUPPORTED_FILE_TYPE` | 400 | `POST .../documents` con un archivo que no es PDF/JPEG/PNG/WEBP/HEIC (detectado por contenido) |
+| `STORAGE_ERROR` | 502 | `POST .../documents`: S3 rechazó la subida — no queda guardado ningún archivo del lote |
+| `DOCUMENT_CORRUPTED` | 500 | `GET /api/documents/:id/content`: el objeto en S3 no se pudo descifrar (alterado o clave incorrecta) |
 | `CONTRACT_HAS_TRANSACTIONS` | 409 | `DELETE /api/contracts/:id` — el contrato (aunque `DRAFT`) ya tiene alguna `Transaction` |
 | `CONTRACT_NOT_CANCELLABLE` | 409 | `POST /api/contracts/:id/cancel` con `status` fuera de `PENDING_ACCEPTANCE`/`ACTIVE`/`DELINQUENT` |
 | `ALREADY_ASSOCIATED` | 409 | `POST /api/contracts/:id/borrowers` — ese `borrowerProfileId` ya está asociado (activo) a ese contrato |
