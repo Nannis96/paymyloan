@@ -25,26 +25,35 @@ export default function BorrowerDealsListView() {
   const [contractTotalPages, setContractTotalPages] = useState(1);
   const [contractIsLoading, setContractIsLoading] = useState(true);
 
+  const [reqError, setReqError] = useState("");
+  const [contractError, setContractError] = useState("");
+
   const PAGE_SIZE = 10;
+  // ponytail: el backend puede ignorar sortBy/sortOrder; el sort local solo ordena dentro de la pagina
+  const SORT = "sortBy=createdAt&sortOrder=desc";
+  const byNewest = (a: any, b: any) => +new Date(b.createdAt || 0) - +new Date(a.createdAt || 0);
+  const errMsg = isEs ? "No se pudo cargar. Intenta de nuevo." : "Could not load. Please try again.";
 
   // Fetch Loan Requests
   useEffect(() => {
     async function fetchLoanRequests() {
       setReqIsLoading(true);
+      setReqError("");
       try {
-        const res = await apiFetch(`${API_ROUTES.borrowers.meLoanRequests}?page=${reqPage}&pageSize=${PAGE_SIZE}`);
+        const res = await apiFetch(`${API_ROUTES.borrowers.meLoanRequests}?page=${reqPage}&pageSize=${PAGE_SIZE}&${SORT}`);
         
         if (res.ok) {
           const json = await res.json();
           if (json.success) {
             // Filtramos las solicitudes que ya se convirtieron en contratos (MATCHED) para no duplicarlas
-            const activeRequests = (json.data.items || []).filter((req: any) => req.status !== "MATCHED");
+            const activeRequests = (json.data.items || []).filter((req: any) => req.status !== "MATCHED").sort(byNewest);
             setLoanRequests(activeRequests);
             setReqTotalPages(json.data.totalPages || 1);
-          }
-        }
+          } else setReqError(json.message || errMsg);
+        } else setReqError(errMsg);
       } catch (error) {
         console.error("Error fetching loan requests:", error);
+        setReqError(errMsg);
       } finally {
         setReqIsLoading(false);
       }
@@ -56,18 +65,20 @@ export default function BorrowerDealsListView() {
   useEffect(() => {
     async function fetchContracts() {
       setContractIsLoading(true);
+      setContractError("");
       try {
-        const res = await apiFetch(`${API_ROUTES.contracts.base}?page=${contractPage}&pageSize=${PAGE_SIZE}`);
+        const res = await apiFetch(`${API_ROUTES.contracts.base}?page=${contractPage}&pageSize=${PAGE_SIZE}&${SORT}`);
         
         if (res.ok) {
           const json = await res.json();
           if (json.success) {
-            setContracts(json.data.items || []);
+            setContracts([...(json.data.items || [])].sort(byNewest));
             setContractTotalPages(json.data.totalPages || 1);
-          }
-        }
+          } else setContractError(json.message || errMsg);
+        } else setContractError(errMsg);
       } catch (error) {
         console.error("Error fetching contracts:", error);
+        setContractError(errMsg);
       } finally {
         setContractIsLoading(false);
       }
@@ -183,6 +194,8 @@ export default function BorrowerDealsListView() {
         
         {reqIsLoading ? (
           <div className="p-10 text-[14px] text-ink-3 text-center">{isEs ? "Cargando solicitudes..." : "Loading requests..."}</div>
+        ) : reqError ? (
+          <div className="rounded-[10px] border border-crit bg-surface p-[16px] text-center text-[13px] text-crit">{reqError}</div>
         ) : loanRequests.length === 0 ? (
           <div className="rounded-[10px] border border-rule bg-surface p-[24px] text-center text-[13px] text-ink-3">
             {isEs ? "No tienes solicitudes activas." : "You have no active requests."}
@@ -245,6 +258,8 @@ export default function BorrowerDealsListView() {
         
         {contractIsLoading ? (
           <div className="p-10 text-[14px] text-ink-3 text-center">{isEs ? "Cargando contratos..." : "Loading contracts..."}</div>
+        ) : contractError ? (
+          <div className="rounded-[10px] border border-crit bg-surface p-[16px] text-center text-[13px] text-crit">{contractError}</div>
         ) : contracts.length === 0 ? (
           <div className="rounded-[10px] border border-rule bg-surface p-[24px] text-center text-[13px] text-ink-3">
             {isEs ? "No tienes contratos en curso." : "You have no active contracts."}
