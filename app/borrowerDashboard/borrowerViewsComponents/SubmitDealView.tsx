@@ -144,38 +144,39 @@ export default function SubmitDealView() {
         purchasePrice: numPurchase || null,
         rehabAmount: numRehab || null,
         totalLoanAmountRequested: numLoan || 100000,
-        requestedClosingDate: inDays(30),
+        requestedClosingDate: inDays(30).slice(0, 10), // la API espera YYYY-MM-DD
         requestedTimelineNotes: formData.description,
         visibility: "PUBLIC"
       };
 
       // Con archivos: multipart (data + files), todo o nada en el back.
-      let body: BodyInit = JSON.stringify(payload);
+      // Zod rechaza null en opcionales: se omiten las claves vacias
+      const clean = (o: any): any => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== null && v !== "").map(([k, v]) => [k, v && typeof v === "object" ? clean(v) : v]));
+      const cleanPayload = clean(payload);
+      let body: BodyInit = JSON.stringify(cleanPayload);
       if (files.length) {
         const fd = new FormData();
-        fd.append("data", JSON.stringify(payload));
+        fd.append("data", JSON.stringify(cleanPayload));
         files.forEach((f) => fd.append("files", f));
         body = fd;
       }
       const createRes = await apiFetch(API_ROUTES.borrowers.meLoanRequests, { method: "POST", body });
 
-      if (createRes.ok) {
-        const createJson = await createRes.json();
-        const dealId = createJson.data?.id;
-        if (dealId && !isDraft) {
-          await apiFetch(API_ROUTES.borrowers.publishLoanRequest(dealId), {
-            method: "POST",
-          });
+      const createJson = await createRes.json().catch(() => ({}));
+      if (!createRes.ok) throw new Error(`${createJson.message || createRes.status} ${JSON.stringify(createJson.error ?? createJson.details ?? createJson.errors ?? "")}`);
+      const dealId = createJson.data?.id;
+      if (dealId && !isDraft) {
+        const pubRes = await apiFetch(API_ROUTES.borrowers.publishLoanRequest(dealId), { method: "POST" });
+        if (!pubRes.ok) {
+          const pubJson = await pubRes.json().catch(() => ({}));
+          throw new Error(pubJson.message || `Error al publicar (${pubRes.status})`);
         }
-      } else {
-        // Fallback visual si el backend no está conectado
-        await new Promise(resolve => setTimeout(resolve, 800));
       }
 
       router.push("/borrowerDashboard");
     } catch (error) {
       console.error(error);
-      alert("Error al publicar el trato.");
+      alert(`Error al publicar el trato: ${error instanceof Error ? error.message : ""}`);
     } finally {
       setIsSubmitting(false);
     }
