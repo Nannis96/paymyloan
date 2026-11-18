@@ -185,6 +185,12 @@ export const borrower: typeof Es = {
   },
 
   submitDeal: {
+    addressGuide: "E.g., 123 Main St, Springfield, IL. Include street, number, city, and state for better accuracy.",
+    mapAdjustTitle: "Map Adjustment",
+    mapAdjustDesc: "Drag the pin to the exact location if the automatic search was inaccurate.",
+    mapLoading: "Loading map...",
+    mapNotFound: "Location not found. Drag pin to correct position.",
+    mapMissingKey: "Missing Google Maps API Key",
     title: "Post a Deal",
     subtitle: "Post your loan request and let lenders compete for your deal.",
     steps: ["Loan type", "Property", "Financials", "Review & post"],
@@ -208,6 +214,9 @@ export const borrower: typeof Es = {
       addressLookup: "Looking up...",
       addressSuccess: "Auto-filled from public records",
       addressFail: "Could not auto-fill — please enter details manually.",
+      mapLimitTitle: "Demo limit reached",
+      mapLimitDesc: "You can view another property in {time} seconds.",
+      viewMapBtn: "View",
       city: "City",
       state: "State",
       zip: "ZIP code",
