@@ -21,7 +21,7 @@ declare global { interface Window { google?: GMaps; __gmapsReady?: Promise<void>
 
 // Carga la Maps JS API una sola vez. Se usa su Geocoder porque el web service de Geocoding
 // rechaza keys restringidas por referrer.
-function loadMaps() {
+export function loadMaps() {
   window.__gmapsReady ??= new Promise<void>((resolve, reject) => {
     const s = document.createElement("script");
     s.src = `https://maps.googleapis.com/maps/api/js?key=${KEY}&loading=async&v=weekly`;

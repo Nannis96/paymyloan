@@ -61,6 +61,7 @@ export const API_ROUTES = {
     meMessageThreadRead: (lenderCompanyId: string) => `${BASE_URL}/api/borrowers/me/messages/threads/${lenderCompanyId}/read`,
     rating: (borrowerProfileId: string) => `${BASE_URL}/api/borrowers/${borrowerProfileId}/rating`,
     removeLoanRequestTarget: (id: string, lenderCompanyId: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}/targets/${lenderCompanyId}`,
+    propertyLookup: `${BASE_URL}/api/borrowers/me/property-lookup`,
     meLoanRequests: `${BASE_URL}/api/borrowers/me/loan-requests`,
     meLoanRequestById: (id: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}`,
     publishLoanRequest: (id: string) => `${BASE_URL}/api/borrowers/me/loan-requests/${id}/publish`,

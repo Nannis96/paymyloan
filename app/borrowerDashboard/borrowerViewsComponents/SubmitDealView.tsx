@@ -1,14 +1,17 @@
 "use client";
 
 import { apiFetch } from "@/app/lib/apiFetch";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import FileDropzone from "@/app/components/ui/FileDropzone";
-import PropertyMap from "@/app/components/ui/PropertyMap";
+import PropertyMap, { loadMaps } from "@/app/components/ui/PropertyMap";
 
 // Fuera del componente: Date.now() es impuro y react-hooks/purity lo rechaza dentro.
+// Orden = sd.property.propTypes (single, multi 2-4, multi 5+, comercial, terreno).
+const PROP_TYPE_ENUM = ["SINGLE_FAMILY", "MULTI_FAMILY", "MULTI_FAMILY", "COMMERCIAL", "LAND"];
+const PROP_TYPE_IDX: Record<string, number> = { SINGLE_FAMILY: 0, CONDO: 0, TOWNHOUSE: 0, MULTI_FAMILY: 1, COMMERCIAL: 3, LAND: 4 };
 const inDays = (n: number) => new Date(Date.now() + n * 86400000).toISOString();
 
 export default function SubmitDealView() {
@@ -46,46 +49,116 @@ export default function SubmitDealView() {
   // Estados de Simulación RentCast
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupMessage, setLookupMessage] = useState<{ text: string; isError: boolean } | null>(null);
-  const lookupTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Funciones de actualización de estado
   const updateField = (field: string, value: string) => {
+    touched.current.add(field);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Simulación de RentCast Auto-fill
-  const handleAddressInput = (val: string) => {
-    updateField("address", val);
-    if (lookupTimer.current) clearTimeout(lookupTimer.current);
-    
-    if (val.length < 10) {
-      setLookupMessage(null);
-      return;
-    }
+  // Autollenado RentCast (vía back). Se dispara al elegir una sugerencia de Google o al salir del
+  // campo de dirección; nunca al teclear. lastQuery evita pagar dos veces la misma dirección.
+  const lastQuery = useRef("");
+  const lastFailed = useRef(false);
+  const skipBlur = useRef(false);
+  const touched = useRef(new Set<string>()); // campos que el usuario editó: RentCast no los pisa
+  const rcType = useRef<string | null>(null);
 
+  const lookupAddress = async (query: string, retryOnly = false) => {
+    const q = query.trim();
+    const key = q.toLowerCase().replace(/\s+/g, " ");
+    if (q.length < 10 || key === lastQuery.current || (retryOnly && !lastFailed.current)) return;
+    lastQuery.current = key;
     setIsLookingUp(true);
     setLookupMessage(null);
-
-    lookupTimer.current = setTimeout(() => {
+    try {
+      const res = await apiFetch(`${API_ROUTES.borrowers.propertyLookup}?address=${encodeURIComponent(q)}`);
+      if (!res.ok) throw new Error(String(res.status));
+      const d = (await res.json()).data;
+      lastFailed.current = false;
+      const free = (f: string) => !touched.current.has(f);
+      const num = (v: unknown) => (v == null ? undefined : String(v));
+      rcType.current = d.propertyType ?? null;
+      // Los campos que el usuario no editó se reemplazan siempre (incluso por vacío): son de la propiedad anterior.
+      setFormData(prev => ({
+        ...prev,
+        city: free("city") ? d.city ?? "" : prev.city,
+        state: free("state") ? d.state ?? prev.state : prev.state,
+        zip: free("zip") ? d.postalCode ?? "" : prev.zip,
+        beds: free("beds") ? num(d.bedrooms) ?? "" : prev.beds,
+        baths: free("baths") ? num(d.bathrooms) ?? "" : prev.baths,
+        sqft: free("sqft") ? num(d.squareFootage) ?? "" : prev.sqft,
+        arv: free("arv") ? (d.afterRepairValue ? String(Math.round(d.afterRepairValue)) : "") : prev.arv,
+        propertyType: free("propertyType") && d.propertyType ? sd.property.propTypes[PROP_TYPE_IDX[d.propertyType] ?? 0] : prev.propertyType,
+        // RentCast solo informa ownerOccupied=true con certeza; false no distingue vacante de inquilino.
+        occupancy: free("occupancy") && d.ownerOccupied === true ? sd.property.occupancies[1] : prev.occupancy,
+      }));
+      setLookupMessage({ text: sd.property.addressSuccess, isError: false });
+    } catch {
+      lastFailed.current = true;
+      setLookupMessage({ text: sd.property.addressFail, isError: true });
+    } finally {
       setIsLookingUp(false);
-      // Simulamos que encuentra la propiedad si escriben "Memphis"
-      if (val.toLowerCase().includes("memphis")) {
-        setFormData(prev => ({
-          ...prev,
-          city: "Memphis",
-          state: "TN",
-          zip: "38127",
-          beds: "3",
-          baths: "2",
-          sqft: "1400",
-          arv: "185000"
-        }));
-        setLookupMessage({ text: `${sd.property.addressSuccess} · 3bd/2ba · 1,400 sqft · ARV est. $185,000`, isError: false });
-      } else {
-        setLookupMessage({ text: sd.property.addressFail, isError: true });
-      }
-    }, 1200);
+    }
   };
+
+  // El estado por defecto ("TN") solo cuenta si ya hay ciudad o zip; solo con la calle sería una consulta engañosa.
+  const fullAddress = () => [formData.address, formData.city, (formData.city || formData.zip) && formData.state, formData.zip].filter(Boolean).join(", ");
+
+  // Sugerencias de Google Places con dropdown propio (AutocompleteService clásico). Si Places no carga,
+  // simplemente no hay sugerencias y queda el flujo manual por blur.
+  const [suggestions, setSuggestions] = useState<{ id: string; text: string }[]>([]);
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const places = useRef<{ g: any; svc: any; det: any; token: any } | null>(null);
+  const sugTimer = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (step !== 2) return;
+    (async () => {
+      try {
+        await loadMaps();
+        const g = (window as any).google.maps;
+        await g.importLibrary("places");
+        places.current = { g, svc: new g.places.AutocompleteService(), det: new g.places.PlacesService(document.createElement("div")), token: new g.places.AutocompleteSessionToken() };
+      } catch (e) {
+        console.warn("Places autocomplete no disponible:", e);
+      }
+    })();
+  }, [step]);
+
+  const suggest = (val: string) => {
+    if (sugTimer.current) clearTimeout(sugTimer.current);
+    if (val.trim().length < 4 || !places.current) return setSuggestions([]);
+    sugTimer.current = setTimeout(() => {
+      places.current?.svc.getPlacePredictions(
+        { input: val, types: ["address"], componentRestrictions: { country: "us" }, sessionToken: places.current.token },
+        (r: any[] | null) => setSuggestions((r ?? []).map((x) => ({ id: x.place_id, text: x.description }))),
+      );
+    }, 250);
+  };
+
+  const pickSuggestion = (id: string) => {
+    setSuggestions([]);
+    const pl = places.current;
+    if (!pl) return;
+    pl.det.getDetails({ placeId: id, fields: ["address_components", "formatted_address"], sessionToken: pl.token }, (place: any) => {
+      pl.token = new pl.g.places.AutocompleteSessionToken();
+      if (!place?.address_components) return;
+      const get = (type: string, short = false) => { const c = place.address_components.find((x: any) => x.types.includes(type)); return (short ? c?.short_name : c?.long_name) ?? ""; };
+      const street = [get("street_number"), get("route")].filter(Boolean).join(" ");
+      touched.current.clear();
+      setFormData(prev => ({
+        ...prev,
+        address: street || prev.address,
+        city: get("locality") || get("sublocality") || get("administrative_area_level_2"),
+        state: get("administrative_area_level_1", true) || prev.state,
+        zip: get("postal_code"),
+      }));
+      skipBlur.current = true;
+      lookupAddress(String(place.formatted_address ?? "").replace(/, USA$/, ""));
+    });
+  };
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // Cálculos en vivo (Live Calc y LTV)
   const parseNum = (val: string) => parseFloat(val.replace(/,/g, "")) || 0;
@@ -134,9 +207,9 @@ export default function SubmitDealView() {
           city: formData.city || "Ciudad",
           state: formData.state || "Estado",
           postalCode: formData.zip || "00000",
-          propertyType: "SINGLE_FAMILY", // Podria mapearse desde formData.propertyType
+          propertyType: (!touched.current.has("propertyType") && rcType.current) || PROP_TYPE_ENUM[sd.property.propTypes.indexOf(formData.propertyType)] || "SINGLE_FAMILY",
           bedrooms: parseInt(formData.beds) || null,
-          bathrooms: parseInt(formData.baths) || null,
+          bathrooms: parseFloat(formData.baths) || null,
           squareFootage: parseInt(formData.sqft) || null,
           afterRepairValue: numArv || null
         },
@@ -282,11 +355,30 @@ export default function SubmitDealView() {
                   <div className="relative">
                     <input 
                       type="text" 
+                      autoComplete="off"
                       value={formData.address}
-                      onChange={(e) => handleAddressInput(e.target.value)}
+                      onChange={(e) => {
+                        // Dirección nueva = propiedad nueva: se sueltan los datos autollenados de la anterior.
+                        skipBlur.current = false;
+                        lastFailed.current = false;
+                        const { city, zip } = touched.current.has("city") || touched.current.has("zip") ? { city: undefined, zip: undefined } : { city: "", zip: "" };
+                        touched.current.clear();
+                        setFormData(prev => ({ ...prev, address: e.target.value, ...(city === "" ? { city, zip } : {}) }));
+                        suggest(e.target.value);
+                      }}
+                      onBlur={() => { setSuggestions([]); if (!skipBlur.current) lookupAddress(fullAddress()); }}
                       placeholder={sd.property.addressPh}
                       className={INPUT}
                     />
+                    {suggestions.length > 0 && (
+                      <ul className="absolute left-0 right-0 top-full z-20 mt-1 overflow-hidden rounded-md border border-rule bg-surface shadow-lg">
+                        {suggestions.map((x) => (
+                          <li key={x.id} onMouseDown={(e) => { e.preventDefault(); pickSuggestion(x.id); }} className="cursor-pointer px-3 py-2 text-[13px] text-ink hover:bg-accent-soft">
+                            {x.text.replace(/, USA$/, "")}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     {isLookingUp && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-accent animate-pulse">
                         {sd.property.addressLookup}
@@ -306,15 +398,15 @@ export default function SubmitDealView() {
                 <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div>
                     <label className={LABEL}>{sd.property.city}</label>
-                    <input type="text" value={formData.city} onChange={(e) => updateField("city", e.target.value)} className={INPUT} />
+                    <input type="text" value={formData.city} onChange={(e) => updateField("city", e.target.value)} onBlur={() => lookupAddress(fullAddress(), true)} className={INPUT} />
                   </div>
                   <div>
                     <label className={LABEL}>{sd.property.state}</label>
-                    <input type="text" value={formData.state} onChange={(e) => updateField("state", e.target.value)} className={INPUT} />
+                    <input type="text" value={formData.state} onChange={(e) => updateField("state", e.target.value)} onBlur={() => lookupAddress(fullAddress(), true)} className={INPUT} />
                   </div>
                   <div>
                     <label className={LABEL}>{sd.property.zip}</label>
-                    <input type="text" value={formData.zip} onChange={(e) => updateField("zip", e.target.value)} className={INPUT} />
+                    <input type="text" value={formData.zip} onChange={(e) => updateField("zip", e.target.value)} onBlur={() => lookupAddress(fullAddress(), true)} className={INPUT} />
                   </div>
                 </div>
 
