@@ -4,8 +4,9 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useBorrowerTour } from "@/app/publicDemo/context/borrowerDemo/BorrowerTourProvider";
 import { useSite } from "@/app/components/layout/SiteShell";
+import PropertyMapDemo from "./PropertyMapDemo";
 
-export default function DemoBorrowerFlow() {
+export default function DemoDealAnalyzerForm() {
   const { currentStep, endDemo } = useBorrowerTour();
   const { t, lang } = useSite();
   const isEs = lang === "es";
@@ -75,6 +76,45 @@ export default function DemoBorrowerFlow() {
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupMessage, setLookupMessage] = useState<{ text: string; isError: boolean } | null>(null);
   const lookupTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Estado para limitar los usos del mapa y búsqueda manual
+  const [mapAttempts, setMapAttempts] = useState(0);
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
+  const [mapSearchAddress, setMapSearchAddress] = useState("");
+
+  const handleSearchMap = () => {
+    const fullAddress = [formData.address, formData.city, formData.state, formData.zip].filter(Boolean).join(", ");
+    if (fullAddress.length < 10) return;
+    if (isCooldown) return;
+    
+    if (mapSearchAddress !== fullAddress) {
+      if (mapAttempts < 3) {
+        setMapSearchAddress(fullAddress);
+        setMapAttempts(prev => prev + 1);
+      } else {
+        setIsCooldown(true);
+        setCooldownTime(60);
+      }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearchMap();
+    }
+  };
+
+  useEffect(() => {
+    if (isCooldown && cooldownTime > 0) {
+      const t = setInterval(() => setCooldownTime(prev => prev - 1), 1000);
+      return () => clearInterval(t);
+    } else if (isCooldown && cooldownTime === 0) {
+      setIsCooldown(false);
+      setMapAttempts(0);
+    }
+  }, [isCooldown, cooldownTime]);
 
   if (!sd) return null;
 
@@ -214,21 +254,57 @@ export default function DemoBorrowerFlow() {
                 <h2 className="mb-1 text-[18px] font-bold tracking-tight text-ink">{sd.property.title}</h2>
                 <p className="mb-6 text-[13px] text-ink-3">{sd.property.sub}</p>
 
+                {isCooldown ? (
+                  <div className="mb-6 flex h-64 w-full flex-col items-center justify-center rounded-md border border-rule bg-surface-2 px-4 text-center text-[13px] text-ink-3">
+                    <div className="text-[20px] mb-2">⏳</div>
+                    <div className="font-semibold text-ink-2">
+                      {sd.property.mapLimitTitle}
+                    </div>
+                    <div>
+                      {sd.property.mapLimitDesc?.replace("{time}", cooldownTime.toString())}
+                    </div>
+                  </div>
+                ) : (
+                  <PropertyMapDemo 
+                    address={mapSearchAddress} 
+                    labels={{
+                      missingKey: (sd.property as any).mapMissingKey || (isEs ? "Falta API Key de Google Maps" : "Missing Google Maps API Key"),
+                      loading: (sd.property as any).mapLoading || (isEs ? "Cargando mapa..." : "Loading map..."),
+                      notFound: (sd.property as any).mapNotFound || (isEs ? "Ubicación no encontrada. Arrastra el pin a la posición correcta." : "Location not found. Drag pin to correct position."),
+                      adjustTitle: (sd.property as any).mapAdjustTitle || (isEs ? "Ajuste de Mapa" : "Map Adjustment"),
+                      adjustDesc: (sd.property as any).mapAdjustDesc || (isEs ? "Arrastra el pin a la ubicación exacta si la búsqueda automática no fue precisa." : "Drag the pin to the exact location if the automatic search was inaccurate.")
+                    }}
+                  />
+                )}
+
                 <div className="mb-4" id="demo-form-address">
                   <label className={LABEL}>{sd.property.address}</label>
-                  <div className="relative">
-                    <input 
-                      type="text" 
-                      value={formData.address}
-                      onChange={(e) => handleAddressInput(e.target.value)}
-                      placeholder={sd.property.addressPh}
-                      className={INPUT}
-                    />
-                    {isLookingUp && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-accent animate-pulse">
-                        {sd.property.addressLookup}
-                      </div>
-                    )}
+                  <div className="mb-1.5 text-[10.5px] font-medium text-ink-3/80">
+                    {(sd.property as any).addressGuide || (isEs ? "Ej. 123 Main St, Springfield, IL. Incluye calle, número, ciudad y estado para mayor precisión." : "E.g., 123 Main St, Springfield, IL. Include street, number, city, and state for better accuracy.")}
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input 
+                        type="text" 
+                        value={formData.address}
+                        onChange={(e) => handleAddressInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder={sd.property.addressPh}
+                        className={INPUT}
+                      />
+                      {isLookingUp && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-accent animate-pulse">
+                          {sd.property.addressLookup}
+                        </div>
+                      )}
+                    </div>
+                    <button 
+                      onClick={handleSearchMap}
+                      className="shrink-0 rounded-md bg-accent px-4 text-[13px] font-bold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+                      disabled={isCooldown}
+                    >
+                      {sd.property.viewMapBtn}
+                    </button>
                   </div>
                   {!lookupMessage && !isLookingUp && <div className="mt-1 text-[11px] text-ink-3">{sd.property.addressHint}</div>}
                   {lookupMessage && (

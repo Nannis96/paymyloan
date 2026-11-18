@@ -183,6 +183,12 @@ export const borrower = {
   },
 
   submitDeal: {
+    addressGuide: "Ej. 123 Main St, Springfield, IL. Incluye calle, número, ciudad y estado para mayor precisión.",
+    mapAdjustTitle: "Ajuste de Mapa",
+    mapAdjustDesc: "Arrastra el pin a la ubicación exacta si la búsqueda automática no fue precisa.",
+    mapLoading: "Cargando mapa...",
+    mapNotFound: "Ubicación no encontrada. Arrastra el pin a la posición correcta.",
+    mapMissingKey: "Falta API Key de Google Maps",
     title: "Publicar un trato",
     subtitle: "Publica tu solicitud de préstamo y deja que los prestamistas compitan por tu trato.",
     steps: ["Tipo de préstamo", "Propiedad", "Finanzas", "Revisión"],
@@ -206,6 +212,9 @@ export const borrower = {
       addressLookup: "Buscando...",
       addressSuccess: "Autocompletado desde registros públicos",
       addressFail: "No se pudo autocompletar — ingresa los detalles manualmente.",
+      mapLimitTitle: "Límite de demostración alcanzado",
+      mapLimitDesc: "Podrás visualizar otra propiedad en {time} segundos.",
+      viewMapBtn: "Ver fachada",
       city: "Ciudad",
       state: "Estado",
       zip: "Código postal",

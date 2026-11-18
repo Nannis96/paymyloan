@@ -5,7 +5,7 @@ import React from "react";
 import Link from "next/link";
 import { BorrowerTourProvider, useBorrowerTour } from "../../context/borrowerDemo/BorrowerTourProvider";
 import BorrowerTourOverlay from "./BorrowerTourOverlay";
-import DemoBorrowerFlowComponent from "./DemoBorrowerFlow";
+import DemoDealAnalyzerForm from "./DemoDealAnalyzerForm";
 import { useSite } from "@/app/components/layout/SiteShell";
 import LangToggle from "@/app/components/ambos/LangToggle";
 import ThemeToggle from "@/app/components/ambos/ThemeToggle";
@@ -95,7 +95,7 @@ function FlowContent() {
         {/* MAIN CONTENT */}
         <div className="flex-1">
           <BorrowerTourOverlay />
-          <DemoBorrowerFlowComponent />
+          <DemoDealAnalyzerForm />
         </div>
       </div>
     </div>
