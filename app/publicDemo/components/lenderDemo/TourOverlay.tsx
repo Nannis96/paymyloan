@@ -109,7 +109,13 @@ export default function TourOverlay() {
       />
       <div 
         className="absolute z-[9999] w-[320px] rounded-xl bg-surface p-6 shadow-xl border border-rule pointer-events-auto transition-all duration-500"
-        style={{ top: bounds.bottom + 20, left: Math.max(20, bounds.left + bounds.width / 2 - 160) }}
+        style={{
+          top: bounds.bottom + 20,
+          left:
+            currentStep === 0
+              ? "calc(100vw - 320px - 5vw)"
+              : Math.max(20, bounds.left + bounds.width / 2 - 160),
+        }}
       >
         <div className="mb-2 text-xs font-bold uppercase tracking-widest text-accent">
           Step {currentStep + 1} of {TOUR_STEPS.length}

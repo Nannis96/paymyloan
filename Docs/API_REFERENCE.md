@@ -1035,7 +1035,7 @@ Crea el contrato en un solo paso.
   |---|---|---|
   | `lenderCompanyId` | string | Obligatorio solo si el Lender tiene más de una `LenderCompany` (mismo patrón que `BE-045`) |
   | `property` | object | `addressLine1`/`city`/`state`/`postalCode`/`propertyType` obligatorios; resto de campos de valuación (`bedrooms`, `estimatedMarketValue`, `afterRepairValue`, etc.) opcionales, carga manual |
-  | `terms` | object | `structure` (`INTEREST_ONLY`/`AMORTIZED`/`BALLOON`), `principalAmount`, `interestRate`, `amortizationTermMonths`, `firstPaymentDate`, `paymentDueDay` (1–31), `maturityDate` (> `firstPaymentDate`, es la fecha del **último** pago, inclusive), `lateFeeType`/`lateFeeAmount`, `gracePeriodDays` (default 10), `prePayPenaltyType`/`prePayPenaltyAmount` (opcionales, juntos o ninguno) |
+  | `terms` | object | `structure` (`INTEREST_ONLY`/`AMORTIZED`/`BALLOON`), `principalAmount`, `interestRate`, `amortizationTermMonths`, `firstPaymentDate`, `paymentDueDay` (1–31, opcional: si falta se toma el día de `firstPaymentDate`; si viene, `firstPaymentDate` debe caer en ese día — o en el último día de su mes si el mes no lo tiene), `maturityDate` (> `firstPaymentDate`, es la fecha del **último** pago, inclusive), `lateFeeType`/`lateFeeAmount`, `gracePeriodDays` (default 10), `prePayPenaltyType`/`prePayPenaltyAmount` (opcionales, juntos o ninguno) |
   | `insuranceCompanyId` | string | Opcional |
   | `borrowerProfileIds` | string[] | Opcional — cada uno debe tener un `LenderBorrower` `ACTIVE` con la `LenderCompany` resuelta |
 
@@ -1096,6 +1096,24 @@ Crea el contrato en un solo paso.
 
 - **Response `201`**: `Contract` completo (ver forma abajo), `status: "DRAFT"`, `currentTerms` con `versionNumber: 1` y `status: "DRAFT"`, más `documents: DocumentMeta[]` (vacío si no se mandaron archivos).
 - **Errores**: `400 VALIDATION_ERROR` · `400 INVALID_JSON`/`INVALID_FORM_DATA`/`FILE_TOO_LARGE`/`UNSUPPORTED_FILE_TYPE` (archivos) · `502 STORAGE_ERROR` · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` (`lenderCompanyId`/`insuranceCompanyId`/algún `borrowerProfileId` ajeno o no vinculado) · `409 NO_LENDER_COMPANY` · `409 SELF_LENDING_NOT_ALLOWED` (`D-P7-2`) · `409 PROPERTY_SELF_ENCUMBERED` (`D-P7-3`).
+
+### `POST /api/contracts/import`
+
+**¿Para qué sirve?** Dar de alta un contrato que **ya venía cobrándose** fuera de la plataforma. Nace `ACTIVE` directo (sin aceptación de los deudores, por ahora), con `originationSource: "LEGACY_IMPORT"` y `ContractTerms` v1 `ACCEPTED`.
+
+- **Auth**: Autenticado, rol `LENDER` (dueño de la empresa) o `ADMIN` + 2FA activo (escritura). El Admin debe mandar `lenderCompanyId`.
+- **Request body**: mismo shape que [`POST /api/contracts`](#post-apicontracts) (sin documentos), con estas diferencias:
+
+  | Campo | Tipo | Notas |
+  |---|---|---|
+  | `terms` | object | Los términos **originales**: `principalAmount` = monto prestado al inicio; `firstPaymentDate` puede estar en el pasado |
+  | `loanStartDate` | date | Obligatorio. Inicio real del préstamo (≤ `firstPaymentDate`) |
+  | `currentBalance` | number | Obligatorio. Saldo de capital hoy (> 0 y ≤ `principalAmount`) |
+  | `borrowerProfileIds` | string[] | Obligatorio (1–10) |
+
+- **Cómo se arma el cronograma**: las cuotas con vencimiento anterior a hoy quedan `PAID` (sin `Transaction`). El capital ya pagado (`principalAmount − currentBalance`) se reparte entre ellas en proporción a su capital teórico — un abono extra queda absorbido ahí —, de modo que el saldo proyectado de la última cuota pasada es exactamente `currentBalance`. Las cuotas futuras se recalculan desde `currentBalance` con la tasa y los meses que faltan hasta `maturityDate`. `currentPrincipalBalance` y `nextPaymentDueDate` salen de ese cronograma.
+- **Response `201`**: `Contract` completo, `status: "ACTIVE"`.
+- **Errores**: `400 VALIDATION_ERROR` (incluye `maturityDate` ya vencida o `currentBalance` fuera de rango) · `400 LEGACY_CONTRACT_IN_ARREARS` (el saldo es mayor al que permite el cronograma original: contrato atrasado, aún no soportado) · `400 LENDER_COMPANY_REQUIRED` · `401`/`403`/`403 TWO_FACTOR_REQUIRED` · `404 NOT_FOUND` · `409 SELF_LENDING_NOT_ALLOWED` · `409 PROPERTY_SELF_ENCUMBERED`.
 
 ### `GET /api/contracts`
 
@@ -1273,9 +1291,11 @@ Asocia/retira (soft) un `BorrowerProfile` — validado contra `LenderBorrower AC
   },
   "borrowers": [ { "borrowerProfileId": "...", "isPrimary": true, "addedAt": "..." } ],
   "currentPrincipalBalance": null, "nextPaymentDueDate": null,
-  "activatedAt": null, "paidOffAt": null, "cancelledAt": null, "createdAt": "..."
+  "loanStartDate": null, "activatedAt": null, "paidOffAt": null, "cancelledAt": null, "createdAt": "..."
 }
 ```
+
+`loanStartDate`: inicio del préstamo. En contratos nuevos se fija al activarse (= `activatedAt`); en contratos importados (`originationSource: "LEGACY_IMPORT"`) es la fecha que capturó el usuario, mientras `activatedAt` es cuándo se dieron de alta en el sistema.
 
 Los montos (`Decimal` de Prisma) serializan como string en el JSON de respuesta.
 
@@ -1914,7 +1934,7 @@ curl -X POST "$API/api/contracts/$CONTRACT_ID/documents" -H "Authorization: Bear
 **¿Para qué sirve?** Ver o descargar el archivo, ya descifrado.
 
 - **Response `200`**: el archivo binario con su `Content-Type` real, `Content-Disposition: inline` (o `attachment` con `?download=1`) y `Cache-Control: private, no-store`. No es JSON.
-- **Errores**: `401`/`403` · `404 NOT_FOUND` · `500 DOCUMENT_CORRUPTED` (el objeto en S3 fue alterado o no corresponde a la clave).
+- **Errores**: `401`/`403` · `404 NOT_FOUND` (también si la fila existe pero el objeto ya no está en S3) · `500 DOCUMENT_CORRUPTED` (el objeto en S3 fue alterado o no corresponde a la clave) · `502 STORAGE_ERROR` (S3 no disponible).
 
 ### `DELETE /api/documents/:id`
 
@@ -1922,7 +1942,7 @@ curl -X POST "$API/api/contracts/$CONTRACT_ID/documents" -H "Authorization: Bear
 
 - **Auth**: solo quien lo subió.
 - **Response `200`**: `{ "deleted": true }`.
-- **Errores**: `401` · `403 FORBIDDEN` (no lo subiste vos) · `404 NOT_FOUND`.
+- **Errores**: `401` · `403 FORBIDDEN` (no lo subiste vos) · `404 NOT_FOUND` · `502 STORAGE_ERROR` (S3 no disponible — la fila no se borra, se puede reintentar).
 
 ---
 
@@ -1986,7 +2006,7 @@ curl -X POST "$API/api/contracts/$CONTRACT_ID/documents" -H "Authorization: Bear
 | `INVALID_FORM_DATA` | 400 | `POST .../documents` cuyo body no es `multipart/form-data`, o `POST /api/contracts`/`POST /api/borrowers/me/loan-requests` en multipart sin el campo `data` (en los `PATCH` es opcional) |
 | `FILE_TOO_LARGE` | 400 | `POST .../documents` con un archivo vacío o de más de 10 MB |
 | `UNSUPPORTED_FILE_TYPE` | 400 | `POST .../documents` con un archivo que no es PDF/JPEG/PNG/WEBP/HEIC (detectado por contenido) |
-| `STORAGE_ERROR` | 502 | `POST .../documents`: S3 rechazó la subida — no queda guardado ningún archivo del lote |
+| `STORAGE_ERROR` | 502 | Cualquier falla de S3 al subir, ver o borrar un documento (credenciales, permisos, red, bucket). Mensaje **siempre genérico** (`Document storage is temporarily unavailable, please try again later`): el error real de AWS (que puede traer ARNs o nombres IAM) queda solo en el log del servidor (`S3 operation failed`, con `operation`/`key`/`errorName`), nunca en la respuesta. Al subir, no queda guardado ningún archivo del lote ni el alta/cambio asociado |
 | `DOCUMENT_CORRUPTED` | 500 | `GET /api/documents/:id/content`: el objeto en S3 no se pudo descifrar (alterado o clave incorrecta) |
 | `CONTRACT_HAS_TRANSACTIONS` | 409 | `DELETE /api/contracts/:id` — el contrato (aunque `DRAFT`) ya tiene alguna `Transaction` |
 | `CONTRACT_NOT_CANCELLABLE` | 409 | `POST /api/contracts/:id/cancel` con `status` fuera de `PENDING_ACCEPTANCE`/`ACTIVE`/`DELINQUENT` |

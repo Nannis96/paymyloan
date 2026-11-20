@@ -12,14 +12,13 @@ export default function LenderLandingView() {
   // Calculadora State
   const [capital, setCapital] = useState(250000);
   const [rate, setRate] = useState(12);
-  const [loans, setLoans] = useState(3);
 
   const formatCurrency = (val: number) =>
     "$" + val.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const monthlyInterest = (capital * (rate / 100)) / 12;
   const annualInterest = monthlyInterest * 12;
-
+  const netAnnualReturn = annualInterest * 0.9;
   return (
     <div className="flex w-full flex-col bg-bg text-ink animate-in fade-in duration-300">
       
@@ -37,7 +36,7 @@ export default function LenderLandingView() {
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/marketplace"
+            href="/login"
             className="inline-block rounded-[7px] bg-accent px-8 py-[14px] text-[16px] font-bold text-white transition-opacity hover:bg-[#524ddb]"
           >
             {l.hero.btn1}
@@ -95,8 +94,8 @@ export default function LenderLandingView() {
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {/* Feature 1 */}
-          <div className="rounded-xl border border-rule bg-surface p-8">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-8 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <CheckCircle2 size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2.5 text-[16px] font-black text-ink">{l.features.cards[0].title}</div>
@@ -104,8 +103,8 @@ export default function LenderLandingView() {
           </div>
 
           {/* Feature 2 */}
-          <div className="rounded-xl border border-rule bg-surface p-8">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-8 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <TrendingUp size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2.5 text-[16px] font-black text-ink">{l.features.cards[1].title}</div>
@@ -113,17 +112,17 @@ export default function LenderLandingView() {
           </div>
 
           {/* Feature 3 */}
-          <div className="rounded-xl border border-rule bg-surface p-8">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-8 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <Search size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2.5 text-[16px] font-black text-ink">{l.features.cards[2].title}</div>
             <div className="text-[14px] leading-[1.75] text-ink-2">{l.features.cards[2].desc}</div>
           </div>
 
-          {/* Feature 4 (AI Highlight) */}
-          <div className="rounded-xl border-2 border-accent bg-surface-2 p-8 dark:bg-surface-2/50">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-white">
+          {/* Feature 4 */}
+          <div className="group rounded-xl border border-rule bg-surface p-8 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <Zap size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2.5 text-[16px] font-black text-ink">{l.features.cards[3].title}</div>
@@ -208,23 +207,7 @@ export default function LenderLandingView() {
                 />
               </div>
 
-              <div className="mb-5">
-                <div className="mb-2 flex justify-between text-[13px] font-semibold text-ink-2">
-                  <span>{l.calc.loans}</span>
-                  <span className="text-accent">
-                    {loans} {loans === 1 && lang === "en" ? "loan" : l.calc.loansSuffix}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="20"
-                  step="1"
-                  value={loans}
-                  onChange={(e) => setLoans(Number(e.target.value))}
-                  className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-rule-strong accent-accent"
-                />
-              </div>
+              
             </div>
 
             <div className="flex flex-col gap-2.5">
@@ -249,7 +232,7 @@ export default function LenderLandingView() {
                   <div className="text-[13px] font-bold text-ink">{l.calc.total}</div>
                   <div className="mt-[1px] text-[11px] text-ink-3">{l.calc.totalSub}</div>
                 </div>
-                <div className="text-[22px] font-black text-accent">{formatCurrency(annualInterest)}</div>
+                <div className="text-[22px] font-black text-accent">{formatCurrency(netAnnualReturn)}</div>
               </div>
             </div>
           </div>
@@ -272,7 +255,7 @@ export default function LenderLandingView() {
             {l.cta.btn1}
           </Link>
           <Link
-            href="/marketplace"
+            href="/login"
             className="inline-block rounded-[7px] border border-white/20 bg-transparent px-[28px] py-[15px] text-[15px] font-semibold text-white transition-colors hover:border-white/50"
           >
             {l.cta.btn2}

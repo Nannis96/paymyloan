@@ -31,9 +31,9 @@ export default function WelcomeModal() {
     if (choice === "signin") {
       router.push("/login");
     } else if (choice === "lender") {
-      router.push("/lender");
+      router.push("/Lender");
     } else if (choice === "borrower") {
-      router.push("/borrower");
+      router.push("/Borrower");
     }
   };
 

@@ -76,8 +76,8 @@ export default function BorrowerLandingView() {
         
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {/* Card 1 */}
-          <div className="rounded-xl border border-rule bg-surface p-7">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-7 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <Files size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2 text-[15px] font-black text-ink">{l.features.cards[0].title}</div>
@@ -85,8 +85,8 @@ export default function BorrowerLandingView() {
           </div>
 
           {/* Card 2 */}
-          <div className="rounded-xl border border-rule bg-surface p-7">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-7 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <CalendarClock size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2 text-[15px] font-black text-ink">{l.features.cards[1].title}</div>
@@ -94,8 +94,8 @@ export default function BorrowerLandingView() {
           </div>
 
           {/* Card 3 */}
-          <div className="rounded-xl border border-rule bg-surface p-7">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-7 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <Zap size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2 text-[15px] font-black text-ink">{l.features.cards[2].title}</div>
@@ -103,8 +103,8 @@ export default function BorrowerLandingView() {
           </div>
 
           {/* Card 4 */}
-          <div className="rounded-xl border border-rule bg-surface p-7">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-7 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <TrendingUp size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2 text-[15px] font-black text-ink">{l.features.cards[3].title}</div>
@@ -112,17 +112,17 @@ export default function BorrowerLandingView() {
           </div>
 
           {/* Card 5 */}
-          <div className="rounded-xl border border-rule bg-surface p-7">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+          <div className="group rounded-xl border border-rule bg-surface p-7 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <Globe size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2 text-[15px] font-black text-ink">{l.features.cards[4].title}</div>
             <div className="text-[13px] leading-[1.7] text-ink-2">{l.features.cards[4].desc}</div>
           </div>
 
-          {/* Card 6 (AI Highlight) */}
-          <div className="rounded-xl border border-accent bg-[#fafafe] p-7 dark:bg-accent-soft/20">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-white">
+          {/* Card 6 */}
+          <div className="group rounded-xl border border-rule bg-surface p-7 transition-all duration-300 lg:hover:-translate-y-1 lg:hover:scale-[1.02] lg:hover:rounded-2xl lg:hover:border-accent lg:hover:bg-surface-2 lg:hover:shadow-lg">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent-soft text-accent transition-colors duration-300 lg:group-hover:bg-accent lg:group-hover:text-white">
               <Sparkles size={18} strokeWidth={2.5} />
             </div>
             <div className="mb-2 text-[15px] font-black text-ink">{l.features.cards[5].title}</div>
