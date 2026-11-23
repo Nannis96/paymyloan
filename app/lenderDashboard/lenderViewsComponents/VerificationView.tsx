@@ -15,11 +15,12 @@ export default function VerificationView() {
   const [entityName, setEntityName] = useState("");
   const [entityType, setEntityType] = useState("LLC");
   const [ein, setEin] = useState("");
-  const [stateOfFormation, setStateOfFormation] = useState("Tennessee");
+  const [stateOfFormation, setStateOfFormation] = useState("");
   const [address, setAddress] = useState("");
   const [signatoryName, setSignatoryName] = useState("");
   const [signatoryTitle, setSignatoryTitle] = useState("");
 
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   
@@ -51,9 +52,11 @@ export default function VerificationView() {
           const verifRes = await fetch(`${BASE_URL}/api/lenders/me/companies/${comp.id}/verification`, { headers });
           const verifJson = await verifRes.json();
           if (verifJson.success && verifJson.data) {
-            setVerificationStatus(verifJson.data.status); // PENDING, APPROVED, REJECTED
+            setVerificationStatus(verifJson.data.status);
+        setRejectionReason(verifJson.data.rejectionReason ?? null); // PENDING, APPROVED, REJECTED
+            setRejectionReason(verifJson.data.rejectionReason ?? null);
             setEntityType(verifJson.data.entityType || "LLC");
-            setStateOfFormation(verifJson.data.stateOfFormation || "Tennessee");
+            setStateOfFormation(verifJson.data.stateOfFormation || "");
             setSignatoryName(verifJson.data.signatoryName || "");
             setSignatoryTitle(verifJson.data.signatoryTitle || "");
           }
@@ -235,6 +238,13 @@ export default function VerificationView() {
           )}
         </div>
         
+        {verificationStatus === "REJECTED" && rejectionReason && (
+          <div className="mb-[16px] rounded-[8px] border border-[#fecaca] bg-[#fef2f2] px-[14px] py-[10px] text-[13px] text-[#991b1b]">
+            <span className="font-[700]">{isEs ? "Motivo del rechazo: " : "Reason for rejection: "}</span>
+            {rejectionReason}
+          </div>
+        )}
+
         <div className="mb-[20px] text-[13px] text-[#8898aa]">
           {isEs ? "Esta información se usa para verificar tu entidad. No se comparte con prestatarios." : "This information is used to verify your lending entity. It is not shared with borrowers."}
         </div>
@@ -268,7 +278,7 @@ export default function VerificationView() {
             <label className="text-[11px] font-[700] uppercase tracking-[0.4px] text-[#8898aa]">
               {isEs ? "Estado de formación" : "State of formation"}
             </label>
-            <input type="text" value={stateOfFormation} onChange={(e) => setStateOfFormation(e.target.value)} disabled={isReadOnly} placeholder="Ej. TN" className="w-full rounded-[6px] border border-[#e6ebf1] px-[12px] py-[9px] font-sans text-[13px] text-[#0a2540] outline-none focus:border-[#635bff] disabled:bg-gray-50" />
+            <input type="text" value={stateOfFormation} onChange={(e) => setStateOfFormation(e.target.value)} disabled={isReadOnly} placeholder={isEs ? "Ej. TN" : "e.g. TN"} className="w-full rounded-[6px] border border-[#e6ebf1] px-[12px] py-[9px] font-sans text-[13px] text-[#0a2540] outline-none focus:border-[#635bff] disabled:bg-gray-50" />
           </div>
           <div className="flex flex-col gap-[5px] md:col-span-2">
             <label className="text-[11px] font-[700] uppercase tracking-[0.4px] text-[#8898aa]">
