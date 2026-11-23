@@ -56,5 +56,8 @@ export function useProfileEdit<T extends U>(user: T | null, setUser: (u: T) => v
     }
   };
 
-  return { editing, form, setForm, saving, error, start, save, cancel: () => setEditing(false) };
+  // La contraseña actual solo se pide al tocar email o contraseña.
+  const needsCurrent = editing && (form.newPassword !== "" || form.email.trim() !== (user?.email || ""));
+
+  return { needsCurrent, editing, form, setForm, saving, error, start, save, cancel: () => setEditing(false) };
 }
