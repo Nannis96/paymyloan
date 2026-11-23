@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
+import { useProfileEdit } from "@/app/components/dashboards/settings/useProfileEdit";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -12,6 +13,7 @@ export default function SettingsView() {
   const s = (t.dashboardLender.mimic as any).settings;
 
   const [user, setUser] = useState<{ name?: string; email?: string; phone?: string | null; isTwoFactorEnabled?: boolean } | null>(null);
+  const pe = useProfileEdit(user, setUser);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -100,14 +102,18 @@ export default function SettingsView() {
           <div>
             <div className="text-[14px] font-[700] text-[#0a2540]">{s.profile.title}</div>
             <div className="mt-[2px] text-[12px] text-[#8898aa]">{s.profile.sub}</div>
+            {pe.error && <div className="text-[12px] text-[#dc2626]">{pe.error}</div>}
           </div>
-          <button className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">
-            {s.profile.edit}
-          </button>
+          <div className="flex gap-[8px]">
+            {pe.editing && <button onClick={pe.cancel} className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">Cancel</button>}
+            <button onClick={pe.editing ? pe.save : pe.start} disabled={pe.saving} className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">
+              {pe.editing ? (pe.saving ? "…" : "Save") : s.profile.edit}
+            </button>
+          </div>
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.name}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.name || "N/A"}</div>
+          {pe.editing ? <input value={pe.form.name} onChange={(e) => pe.setForm({ ...pe.form, name: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">{user?.name || "N/A"}</div>}
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.email}</div>
@@ -119,7 +125,7 @@ export default function SettingsView() {
         </div>
         <div className="flex items-center justify-between p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.phone}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.phone || s.profile.unassigned}</div>
+          {pe.editing ? <input value={pe.form.phone} onChange={(e) => pe.setForm({ ...pe.form, phone: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">{user?.phone || s.profile.unassigned}</div>}
         </div>
       </div>
 
