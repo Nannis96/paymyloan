@@ -106,12 +106,18 @@ export default function BorrowerSettingsView() {
         </div>
         <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.profile.email}</div>
-          <div className="text-[13px] text-ink-3">{user?.email || "john@example.com"}</div>
+          {pe.editing ? <input type="text" placeholder="" value={pe.form.email} onChange={(e) => pe.setForm({ ...pe.form, email: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-ink-3">{user?.email || "john@example.com"}</div>}
         </div>
         <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.profile.pass}</div>
-          <div className="text-[13px] text-ink-3">••••••••</div>
+          {pe.editing ? <input type="password" placeholder="New password" value={pe.form.newPassword} onChange={(e) => pe.setForm({ ...pe.form, newPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-ink-3">••••••••</div>}
         </div>
+        {pe.editing && (
+          <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
+            <div className="text-[13px] font-[500] text-ink">Current password</div>
+            <input type="password" placeholder="Required for email/password" value={pe.form.currentPassword} onChange={(e) => pe.setForm({ ...pe.form, currentPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" />
+          </div>
+        )}
         <div className="flex items-center justify-between p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.profile.phone}</div>
           {pe.editing ? <input value={pe.form.phone} onChange={(e) => pe.setForm({ ...pe.form, phone: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-ink-3">{user?.phone || s.profile.unassigned}</div>}

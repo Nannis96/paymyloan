@@ -103,12 +103,18 @@ export default function SettingsView() {
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.email}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.email || "N/A"}</div>
+          {pe.editing ? <input type="text" placeholder="" value={pe.form.email} onChange={(e) => pe.setForm({ ...pe.form, email: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">{user?.email || "N/A"}</div>}
         </div>
         <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.pass}</div>
-          <div className="text-[13px] text-[#8898aa]">••••••••</div>
+          {pe.editing ? <input type="password" placeholder="New password" value={pe.form.newPassword} onChange={(e) => pe.setForm({ ...pe.form, newPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">••••••••</div>}
         </div>
+        {pe.editing && (
+          <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
+            <div className="text-[13px] font-[500] text-[#0a2540]">Current password</div>
+            <input type="password" placeholder="Required for email/password" value={pe.form.currentPassword} onChange={(e) => pe.setForm({ ...pe.form, currentPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" />
+          </div>
+        )}
         <div className="flex items-center justify-between p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.phone}</div>
           {pe.editing ? <input value={pe.form.phone} onChange={(e) => pe.setForm({ ...pe.form, phone: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">{user?.phone || s.profile.unassigned}</div>}
