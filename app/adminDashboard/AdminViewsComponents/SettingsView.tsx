@@ -5,6 +5,7 @@ import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, ApiError, cerrarSesion } from "@/app/lib/apiFetch";
 import type { SafeUser } from "@/app/types/api";
+import { useProfileEdit } from "@/app/components/dashboards/settings/useProfileEdit";
 import TwoFactorSetupModal from "@/app/components/dashboards/settings/TwoFactorSetupModal";
 
 const CARD = "mb-4 max-w-[720px] rounded-xl border border-rule bg-surface p-7 shadow-sm";
@@ -57,99 +58,60 @@ export function SettingsView() {
   );
 }
 
-// AF-20: PATCH /api/auth/me. Cambiar el correo pide currentPassword y el back
-// revoca todas las sesiones, asi que despues se manda al login.
+// AF-20: perfil con el mismo layout de filas que lender/borrower (useProfileEdit).
+// Nombre/teléfono no piden contraseña; email y contraseña sí (currentPassword).
 function ProfileCard({ user, onSaved }: { user: SafeUser; onSaved: (u: SafeUser) => void }) {
   const { t } = useSite();
   const v = t.dashboardAdmin.views.settings;
   const ul = t.adminUsersList;
+  const pe = useProfileEdit(user, onSaved);
 
-  const [form, setForm] = useState({ name: user.name, email: user.email, phone: user.phone ?? "" });
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [fieldError, setFieldError] = useState<{ field: "email" | "password"; message: string } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  const emailChanged = form.email.trim().toLowerCase() !== user.email;
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    const body: Record<string, string> = {};
-    if (form.name.trim() !== user.name) body.name = form.name.trim();
-    if (form.phone.trim() && form.phone.trim() !== (user.phone ?? "")) body.phone = form.phone.trim();
-    if (emailChanged) {
-      body.email = form.email.trim();
-      body.currentPassword = currentPassword;
-    }
-    if (Object.keys(body).length === 0) return;
-
-    setSaving(true);
-    setError(null);
-    setFieldError(null);
-    setSaved(false);
-    try {
-      const data = await api<{ user: SafeUser }>(API_ROUTES.auth.me, { method: "PATCH", body: JSON.stringify(body) });
-      if (emailChanged) return cerrarSesion();
-      onSaved(data.user);
-      setSaved(true);
-    } catch (err) {
-      if (err instanceof ApiError && err.code === "EMAIL_TAKEN") setFieldError({ field: "email", message: ul.errorEmailTaken });
-      else if (err instanceof ApiError && err.code === "INVALID_CREDENTIALS") setFieldError({ field: "password", message: v.wrongPassword });
-      else setError(err instanceof Error ? err.message : t.dashboardAdmin.errorNetwork);
-    } finally {
-      setSaving(false);
-    }
-  }
+  const ROW = "flex items-center justify-between border-t border-rule p-[14px_22px]";
+  const LBL = "text-[13px] font-[500] text-ink";
+  const VAL = "text-[13px] text-ink-3";
+  const IN = "w-[220px] rounded-[6px] border border-rule bg-surface px-[8px] py-[4px] text-[13px] text-ink";
+  const field = (k: "name" | "phone" | "email" | "newPassword" | "currentPassword", type = "text", auto?: string) => (
+    <input type={type} autoComplete={auto} value={pe.form[k]} onChange={(e) => pe.setForm({ ...pe.form, [k]: e.target.value })} className={IN} />
+  );
+  const BTN_SM = "cursor-pointer rounded-[6px] border border-rule-strong bg-surface px-[14px] py-[6px] font-sans text-[12px] font-[600] text-ink-2 transition-colors hover:border-ink-3";
 
   return (
-    <form onSubmit={submit} className={CARD}>
-      <CardTitle>{v.profileTitle}</CardTitle>
-      {error && <div className="mb-4 rounded-lg bg-crit-soft p-3 text-[13px] font-medium text-crit">{error}</div>}
-      {saved && <div className="mb-4 rounded-lg bg-success-soft p-3 text-[13px] font-medium text-success">{v.saved}</div>}
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="mb-4 max-w-[720px] overflow-hidden rounded-[10px] border border-rule bg-surface">
+      <div className="flex items-center justify-between p-[18px_22px]">
         <div>
-          <label className={LABEL}>{ul.table.name}</label>
-          <input required maxLength={120} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={INPUT} />
+          <div className="text-[14px] font-[700] text-ink">{v.profileTitle}</div>
+          {pe.error && <div className="mt-[2px] text-[12px] text-crit">{pe.error}</div>}
         </div>
-        <div>
-          <label className={LABEL}>{ul.table.phone}</label>
-          <input type="tel" inputMode="numeric" pattern="\d{10}" maxLength={10} title={ul.phoneHint} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={`${INPUT} font-mono`} />
+        <div className="flex gap-[8px]">
+          {pe.editing && <button onClick={pe.cancel} className={BTN_SM}>{ul.cancel}</button>}
+          <button onClick={pe.editing ? pe.save : pe.start} disabled={pe.saving} className={BTN_SM}>
+            {pe.editing ? (pe.saving ? "…" : ul.save) : ul.edit}
+          </button>
         </div>
-        <div className="sm:col-span-2">
-          <label className={LABEL}>{ul.table.email}</label>
-          <input
-            required
-            type="email"
-            value={form.email}
-            onChange={(e) => { setForm({ ...form, email: e.target.value }); setFieldError(null); }}
-            className={`${INPUT} ${fieldError?.field === "email" ? "border-red-500" : ""}`}
-          />
-          {fieldError?.field === "email" && <span className="mt-1 block text-xs text-red-500">{fieldError.message}</span>}
-        </div>
-        {emailChanged && (
-          <div className="sm:col-span-2">
-            <label className={LABEL}>{v.currentPassword}</label>
-            <input
-              required
-              type="password"
-              autoComplete="current-password"
-              value={currentPassword}
-              onChange={(e) => { setCurrentPassword(e.target.value); setFieldError(null); }}
-              className={`${INPUT} ${fieldError?.field === "password" ? "border-red-500" : ""}`}
-            />
-            {fieldError?.field === "password" && <span className="mt-1 block text-xs text-red-500">{fieldError.message}</span>}
-            <span className="mt-1 block text-[11px] text-amber">{v.emailChangeWarning}</span>
-          </div>
-        )}
       </div>
-      <span className="mt-2 block text-[10px] text-ink-3">{ul.phoneHint}</span>
-
-      <div className="mt-5 flex justify-end">
-        <button type="submit" disabled={saving} className={BTN}>{saving ? "..." : ul.save}</button>
+      <div className={ROW}>
+        <div className={LBL}>{ul.table.name}</div>
+        {pe.editing ? field("name") : <div className={VAL}>{user.name}</div>}
       </div>
-    </form>
+      <div className={ROW}>
+        <div className={LBL}>{ul.table.phone}</div>
+        {pe.editing ? field("phone", "tel") : <div className={VAL}>{user.phone || "—"}</div>}
+      </div>
+      <div className={ROW}>
+        <div className={LBL}>{ul.table.email}</div>
+        {pe.editing ? field("email", "email") : <div className={VAL}>{user.email}</div>}
+      </div>
+      <div className={ROW}>
+        <div className={LBL}>{v.password}</div>
+        {pe.editing ? field("newPassword", "password", "new-password") : <div className={VAL}>••••••••</div>}
+      </div>
+      {pe.needsCurrent && (
+        <div className={ROW}>
+          <div className={LBL}>{v.currentPassword}</div>
+          {field("currentPassword", "password", "current-password")}
+        </div>
+      )}
+    </div>
   );
 }
 
