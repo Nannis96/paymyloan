@@ -139,8 +139,8 @@ function AddUserContent() {
                   <option value="ADMIN">{u.roles.admin}</option>
                   <option value="LENDER">{u.roles.lender}</option>
                   <option value="BORROWER">{u.roles.borrower}</option>
-                  {/* <option value="BOOKKEEPER">{u.roles.bookkeeper}</option> */}
-                  {/* <option value="INSURANCE_COMPANY">{u.roles.insurance}</option> */}
+                  <option value="BOOKKEEPER">{u.roles.bookkeeper}</option>
+                  <option value="INSURANCE_COMPANY">{u.roles.insurance}</option>
                 </select>
               </div>
 
