@@ -26,6 +26,8 @@ export const lender: typeof Es = {
       settings: {
         title: "Settings",
         sub: "Manage your account, and notifications.",
+        verifyBanner: { text1: "Your profile is unverified.", text2: "Complete verification to unlock lender offers.", btn: "Verify now — {verifyFee}" },
+        billing: { title: "Subscription & billing", sub: "Your current plan and payment method.", manage: "Manage", plan: "Current plan", subPlan: "Monthly subscription", method: "Payment method", free: "Free", notActive: "Not active", none: "None on file" },
         profile: { title: "Profile", sub: "Your name, email, and password.", edit: "Edit", name: "Full name", email: "Email", pass: "Password", phone: "Phone", unassigned: "Not provided" },
         verification: { title: "Verification", sub: "Identity and business verification status.", biz: "Business verified", id: "Identity verified", unverified: "Not verified" },
         notifs: { title: "Notifications", sub: "Choose what updates you receive.", offer: "Lender offer received", status: "Deal status updates", approved: "Verification approved", news: "Platform news and updates" },

@@ -24,6 +24,8 @@ export const lender = {
     settings: {
         title: "Configuracion",
         sub: "Administra tu cuenta y notificaciones.",
+        verifyBanner: { text1: "Tu perfil no esta verificado.", text2: "Completa la verificacion para desbloquear ofertas.", btn: "Verificar ahora — {verifyFee}" },
+        billing: { title: "Suscripcion y facturacion", sub: "Tu plan actual y metodo de pago.", manage: "Administrar", plan: "Plan actual", subPlan: "Suscripcion mensual", method: "Metodo de pago", free: "Gratis", notActive: "No activa", none: "Ninguno" },
         profile: { title: "Perfil", sub: "Tu nombre, correo y contraseña.", edit: "Editar", name: "Nombre completo", email: "Correo electronico", pass: "Contraseña", phone: "Telefono", unassigned: "No proporcionado" },
         verification: { title: "Verificacion", sub: "Estado de verificacion de identidad y negocio.", biz: "Negocio verificado", id: "Identidad verificada", unverified: "No verificado" },
         notifs: { title: "Notificaciones", sub: "Elige que actualizaciones recibes.", offer: "Oferta de prestamista recibida", status: "Actualizaciones de trato", approved: "Verificacion aprobada", news: "Noticias de la plataforma" },
