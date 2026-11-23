@@ -142,7 +142,7 @@ function VettingApplicationContent() {
                 </div>
                 
                 <div className="mt-2 flex flex-col items-center gap-3">
-                  <span className="text-sm font-bold text-ink-2">{v.feeNotice}: <span className="text-accent text-lg">$99.00</span></span>
+                  <span className="text-sm font-bold text-ink-2">{v.feeNotice}: <span className="text-accent text-lg">{v.feeAmount}</span></span>
                 </div>
               </div>
             )}

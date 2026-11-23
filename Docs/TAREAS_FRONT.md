@@ -54,7 +54,7 @@ Notas: ante 401 renueva la sesión con el refresh token y reintenta una vez; si 
 - [ ] **T1.1** `lender/messaging`: versión lender (hilo con borrower, menú lender).
 - [ ] **T1.2** `lender/notifications`: notificaciones reales de lender (cotización seleccionada, términos aceptados/rechazados, mensaje, pago vencido, verificación).
 - [ ] **T1.3** `lender/review`: calificar al borrower (`direction`).
-- [ ] **T1.4** `lender/settings` y `lender/security`: sin "Post a deal", "Bank/ACH", "Verify now $99" (según D2).
+- [ ] **T1.4** `lender/settings` y `lender/security`: sin "Post a deal", "Bank/ACH" (según D2).
 - [ ] **T1.5** `lender/counter-offer`: lado lender (responder contraoferta del deudor).
 - [ ] **T1.6** `lender/payment-schedule`: vista de lo que el lender *recibe*.
 - [ ] **T1.7** `lender/payoff-request`: aprobar/recibir payoff, no solicitarlo.

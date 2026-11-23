@@ -88,7 +88,7 @@ export const borrower: typeof Es = {
       table: { fee: "Fee", amount: "Amount", when: "When due" },
       items: [
         { name: "Monthly subscription", amt: "{subPrice}/mo", when: "Monthly, beginning when deal is posted. Waived if borrower has a valid promo code or affiliate referral link." },
-        { name: "Borrower underwriting fee", amt: "$99 (one-time)", when: "When a lender requests full identity verification" },
+        { name: "Borrower underwriting fee", amt: "{verifyFee} (one-time)", when: "When a lender requests full identity verification" },
         { name: "Lender connection fee", amt: "1% of loan amount", when: "At closing — only if PML connected borrower to lender. Paid via settlement statement." }
       ],
       totalDue: "Total due today",
@@ -280,7 +280,7 @@ export const borrower: typeof Es = {
 
   payoff: { title: "Payoff Request", requestBtn: "Request Payoff", expectedDate: "Expected closing date", successAlert: "Request sent to lender.", processing: "Processing...", errorFetch: "Failed to process request", errorNetwork: "Unknown network error" },
 
-  vetting: { title: "Vetting Application", subtitle: "Complete this process once to access private capital.", feeNotice: "Application fee (non-refundable)", form: { bankStatements: "Bank Statements (Last 3 months)", idUpload: "Official ID", submitAndPay: "Pay $99 & Submit", selectFile: "Select file", dealHistory: "Past Deal History", dealHistoryDesc: "Enter up to 5 recent project addresses.", addressLabel: "Address", addressPh: "E.g. 123 Main St, Austin, TX", addAddress: "+ Add another address", consentCredit: "I authorize Dueño a Dueño LLC and its partnered lenders to run a Credit Pull.", consentBackground: "I authorize Dueño a Dueño LLC to run a Background Check.", consentAlert: "You must accept the credit and background checks to continue.", step: "Step", of: "of", next: "Next", back: "Back", saveAndContinueLater: "Save & continue later", savedAlert: "Your progress has been saved. You can come back anytime." } },
+  vetting: { title: "Vetting Application", subtitle: "Complete this process once to access private capital.", feeNotice: "Application fee (non-refundable)", feeAmount: "{verifyFee}", form: { bankStatements: "Bank Statements (Last 3 months)", idUpload: "Official ID", submitAndPay: "Pay {verifyFee} & Submit", selectFile: "Select file", dealHistory: "Past Deal History", dealHistoryDesc: "Enter up to 5 recent project addresses.", addressLabel: "Address", addressPh: "E.g. 123 Main St, Austin, TX", addAddress: "+ Add another address", consentCredit: "I authorize Dueño a Dueño LLC and its partnered lenders to run a Credit Pull.", consentBackground: "I authorize Dueño a Dueño LLC to run a Background Check.", consentAlert: "You must accept the credit and background checks to continue.", step: "Step", of: "of", next: "Next", back: "Back", saveAndContinueLater: "Save & continue later", savedAlert: "Your progress has been saved. You can come back anytime." } },
 
   contacts: {
     title: "Contacts Directory",

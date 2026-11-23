@@ -1,13 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function SettingsView() {
-  const router = useRouter();
   const { t, lang } = useSite();
   const s = (t.dashboardLender.mimic as any).settings;
 
@@ -82,18 +80,6 @@ export default function SettingsView() {
         {s.sub}
       </div>
 
-      {/* Verification banner */}
-      {verificationStatus !== "APPROVED" && (
-        <div className="mb-[16px] flex items-center justify-between rounded-[8px] border border-[#fcd34d] bg-[#fffbeb] p-[14px_18px]">
-          <div className="text-[13px] font-[500] text-[#b45309]">
-            <strong className="font-[700]">{s.verifyBanner.text1}</strong> {s.verifyBanner.text2}
-          </div>
-          <button onClick={() => router.push("/lenderDashboard/verification")} className="whitespace-nowrap rounded-[6px] border-none bg-[#635bff] px-[16px] py-[7px] font-sans text-[12px] font-[700] text-white cursor-pointer hover:opacity-90">
-            {s.verifyBanner.btn}
-          </button>
-        </div>
-      )}
-
       {/* Profile */}
       <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
         <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[18px_22px]">
@@ -161,35 +147,6 @@ export default function SettingsView() {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Billing */}
-      <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
-        <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[18px_22px]">
-          <div>
-            <div className="text-[14px] font-[700] text-[#0a2540]">{s.billing.title}</div>
-            <div className="mt-[2px] text-[12px] text-[#8898aa]">{s.billing.sub}</div>
-          </div>
-          <button className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">
-            {s.billing.manage}
-          </button>
-        </div>
-        <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.billing.plan}</div>
-          <div className="text-[13px] text-[#8898aa]">
-            <span className="inline-flex items-center gap-[5px] rounded-[20px] bg-[#f0f4f8] px-[10px] py-[3px] text-[11px] font-[700] text-[#8898aa]">
-              {s.billing.free}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.billing.subPlan}</div>
-          <div className="text-[13px] text-[#8898aa]">{s.billing.notActive}</div>
-        </div>
-        <div className="flex items-center justify-between p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.billing.method}</div>
-          <div className="text-[13px] text-[#8898aa]">{s.billing.none}</div>
-        </div>
       </div>
 
       {/* Security Actions (Redirige a la nueva ruta) */}
