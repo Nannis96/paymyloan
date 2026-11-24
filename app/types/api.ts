@@ -251,7 +251,7 @@ export interface VerificationRequest {
   rejectionReason: string | null;
   reviewedAt: ISODate | null;
   createdAt: ISODate;
-  lenderCompany?: LenderCompanySummary | null;
+  lenderCompany?: (LenderCompanySummary & { addressLine1?: string; addressLine2?: string | null; city?: string; state?: string; postalCode?: string }) | null;
   borrowerProfile?: { id: string } | null;
   submittedByUser?: { name: string; email?: string };
   /** El back lo usa en la vista; no figura en el schema de Prisma. */

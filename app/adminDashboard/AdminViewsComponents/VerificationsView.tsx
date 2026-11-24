@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import { api, ApiError, toList } from "@/app/lib/apiFetch";
@@ -21,6 +21,9 @@ export function VerificationsView() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("PENDING");
   const [reloadKey, setReloadKey] = useState(0);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const es = lang === "es";
+  const sel = verifications.find((r) => r.id === openId);
 
   useEffect(() => {
     let vigente = true;
@@ -34,6 +37,12 @@ export function VerificationsView() {
       .finally(() => vigente && setIsLoading(false));
     return () => { vigente = false; };
   }, [statusFilter, reloadKey, t.dashboardAdmin.errorNetwork]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenId(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const handleAction = async (req: VerificationRequest, action: "approve" | "reject") => {
     let body: string | undefined;
@@ -104,9 +113,11 @@ export function VerificationsView() {
                 <tr><td colSpan={6} className="p-6 text-center text-ink-3">{t.dashboardAdmin.loading}</td></tr>
               ) : verifications.length > 0 ? (
                 verifications.map((req) => (
-                  <tr key={req.id} className="transition-colors hover:bg-surface-2">
+                  <tr key={req.id} onClick={() => setOpenId(req.id)} className="cursor-pointer transition-colors hover:bg-surface-2">
                     <td className="px-4 py-3 font-bold text-ink">
-                      {req.entityName}
+                      <button type="button" onClick={() => setOpenId(req.id)} className="text-left font-bold hover:text-accent">
+                        {req.entityName}
+                      </button>
                       <span className="mt-0.5 block text-[10px] font-normal text-ink-3">EIN: {req.ein || "N/A"}</span>
                     </td>
                     <td className="px-4 py-3">{req.entityType}</td>
@@ -119,7 +130,7 @@ export function VerificationsView() {
                     <td className="px-4 py-3">
                       {new Date(req.createdAt).toLocaleDateString(lang === "es" ? "es-MX" : "en-US", { month: "short", day: "numeric" })}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                       {req.status === "PENDING" ? (
                         <div className="flex justify-end gap-2">
                           <button
@@ -159,6 +170,58 @@ export function VerificationsView() {
           </table>
         </div>
       </div>
+      {sel && (
+        <div className="fixed inset-0 z-[100] flex justify-end bg-ink/50 backdrop-blur-sm" onClick={() => setOpenId(null)}>
+          <aside role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} className="h-full w-full max-w-[480px] overflow-y-auto border-l border-rule bg-surface p-6 shadow-2xl">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.4px] text-ink-3">{v.title}</div>
+                <h2 className="text-[20px] font-extrabold text-ink">{sel.entityName}</h2>
+              </div>
+              <button type="button" onClick={() => setOpenId(null)} aria-label={es ? "Cerrar" : "Close"} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-ink transition-colors hover:bg-crit hover:text-white">✕</button>
+            </div>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[13px]">
+              {([
+            [es ? "Nombre legal" : "Legal name", sel.entityName],
+            [es ? "Tipo de entidad" : "Entity type", sel.entityType],
+            ["EIN", sel.ein],
+            [es ? "Estado de formación" : "State of formation", sel.stateOfFormation],
+            [es ? "Firmante" : "Signatory", sel.signatoryName],
+            [es ? "Puesto del firmante" : "Signatory title", sel.signatoryTitle],
+            [es ? "Solicitante" : "Submitted by", sel.submittedByUser?.name],
+            [es ? "Correo del solicitante" : "Applicant email", sel.submittedByUser?.email],
+            [es ? "Empresa registrada" : "Registered company", sel.lenderCompany?.companyName],
+            [es ? "Dirección" : "Address", sel.lenderCompany?.addressLine1 && [sel.lenderCompany.addressLine1, sel.lenderCompany.addressLine2, sel.lenderCompany.city, `${sel.lenderCompany.state} ${sel.lenderCompany.postalCode}`].filter(Boolean).join(", ")],
+            [es ? "Enviada" : "Submitted", new Date(sel.createdAt).toLocaleString(es ? "es-MX" : "en-US")],
+            [es ? "Revisada" : "Reviewed", sel.reviewedAt ? new Date(sel.reviewedAt).toLocaleString(es ? "es-MX" : "en-US") : null],
+              ] as [string, string | null | undefined][]).map(([label, value]) => (
+                <Fragment key={label}>
+                  <dt className="text-ink-3">{label}</dt>
+                  <dd className="break-words text-ink">{value || "N/A"}</dd>
+                </Fragment>
+              ))}
+            </dl>
+            {sel.status === "PENDING" && (
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={async () => { await handleAction(sel, "reject"); }}
+                  disabled={busyId === sel.id}
+                  className="flex-1 rounded-lg border border-crit px-4 py-2.5 text-sm font-bold text-crit transition-colors hover:bg-crit hover:text-white disabled:opacity-50"
+                >
+                  {v.reject}
+                </button>
+                <button
+                  onClick={async () => { await handleAction(sel, "approve"); }}
+                  disabled={busyId === sel.id}
+                  className="flex-1 rounded-lg bg-success px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  {busyId === sel.id ? "..." : v.approve}
+                </button>
+              </div>
+            )}
+          </aside>
+        </div>
+      )}
     </div>
   );
 }
