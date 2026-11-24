@@ -5,23 +5,16 @@ import { useState, useEffect, useCallback } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
 import EntityCreation from "./EntityCreation";
-
-interface LenderCompanySummary {
-  id: string;
-  companyName: string;
-  ein: string;
-  city: string;
-  state: string;
-  status: string;
-  isOpenToDeals: boolean;
-}
+import EntityDetailModal from "./EntityDetailModal";
+import type { LenderCompany } from "@/app/types/api";
 
 export default function EntitiesView() {
   const { t, lang } = useSite();
   const isEs = lang === "es";
   const title = (t.dashboardLender.mimic as any).sidebar?.entities || "Entities";
 
-  const [companies, setCompanies] = useState<LenderCompanySummary[]>([]);
+  const [companies, setCompanies] = useState<LenderCompany[]>([]);
+  const [selected, setSelected] = useState<LenderCompany | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,7 +68,7 @@ export default function EntitiesView() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px]">
             {companies.map(company => (
-              <div key={company.id} className="rounded-[10px] border border-[#e6ebf1] bg-white p-[20px] shadow-sm transition-shadow hover:shadow-md">
+              <div key={company.id} role="button" tabIndex={0} onClick={() => setSelected(company)} onKeyDown={(e) => e.key === "Enter" && setSelected(company)} className="cursor-pointer rounded-[10px] border border-[#e6ebf1] bg-white p-[20px] shadow-sm transition-shadow hover:shadow-md">
                 <div className="mb-[12px] flex items-start justify-between">
                   <div>
                     <div className="text-[15px] font-[700] text-[#0a2540]">{company.companyName}</div>
@@ -113,6 +106,10 @@ export default function EntitiesView() {
           </div>
         )}
       </div>
+
+      {selected && (
+        <EntityDetailModal company={selected} onClose={() => setSelected(null)} onSaved={fetchEntities} />
+      )}
     </div>
   );
 }
