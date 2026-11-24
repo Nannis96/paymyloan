@@ -4,7 +4,19 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useBorrowerTour } from "@/app/publicDemo/context/borrowerDemo/BorrowerTourProvider";
 import { useSite } from "@/app/components/layout/SiteShell";
-import PropertyMapDemo from "./PropertyMapDemo";
+import { API_ROUTES } from "@/app/lib/endpoints";
+import PropertyMapDemo, { loadMaps, type PinLocationResult } from "./PropertyMapDemo";
+
+const PROP_TYPE_IDX: Record<string, number> = {
+  SINGLE_FAMILY: 0,
+  CONDO: 0,
+  TOWNHOUSE: 0,
+  MULTI_FAMILY: 1,
+  COMMERCIAL: 3,
+  LAND: 4,
+};
+const MAX_DEMO_ATTEMPTS = 3;
+const COOLDOWN_SECONDS = 60;
 
 export default function DemoDealAnalyzerForm() {
   const { currentStep, endDemo } = useBorrowerTour();
@@ -48,93 +60,239 @@ export default function DemoDealAnalyzerForm() {
     }
   }, [currentStep]);
 
-  // Escuchar evento global para reiniciar el formulario dejándolo en blanco
+  const [formData, setFormData] = useState(emptyFormData);
+
+  const [isLookingUp, setIsLookingUp] = useState(false);
+  const [lookupMessage, setLookupMessage] = useState<{ text: string; isError: boolean } | null>(null);
+  const [searchAttempts, setSearchAttempts] = useState(0);
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
+  const [mapSearchAddress, setMapSearchAddress] = useState("");
+
+  // Deduplicación de consultas RentCast y respeto a campos editados por el usuario
+  const lastQuery = useRef("");
+  const lastFailed = useRef(false);
+  const skipBlur = useRef(false);
+  const touched = useRef(new Set<string>());
+
+  // Sugerencias de Google Places
+  const [suggestions, setSuggestions] = useState<{ id: string; text: string }[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const places = useRef<{ g: any; svc: any; det: any; token: any } | null>(null);
+  const sugTimer = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     const handleReset = () => {
       setFormData(emptyFormData);
       setStep(1);
+      setLookupMessage(null);
+      setSuggestions([]);
+      setMapSearchAddress("");
+      lastQuery.current = "";
+      lastFailed.current = false;
+      touched.current.clear();
     };
     window.addEventListener("reset-deal-form", handleReset);
     return () => window.removeEventListener("reset-deal-form", handleReset);
   }, [emptyFormData]);
 
-  const [formData, setFormData] = useState({
-    ...emptyFormData,
-    address: "123 Fake Street, Faketown, FK",
-    city: "Faketown",
-    state: "FK",
-    zip: "12345",
-    beds: "3",
-    baths: "2",
-    sqft: "1400",
-    purchasePrice: "85000",
-    loanAmount: "110000",
-    arv: "185000",
-    rehab: "30000"
-  });
+  useEffect(() => {
+    if (isCooldown && cooldownTime > 0) {
+      const timer = setInterval(() => setCooldownTime((prev) => prev - 1), 1000);
+      return () => clearInterval(timer);
+    } else if (isCooldown && cooldownTime === 0) {
+      setIsCooldown(false);
+      setSearchAttempts(0);
+    }
+  }, [isCooldown, cooldownTime]);
 
-  const [isLookingUp, setIsLookingUp] = useState(false);
-  const [lookupMessage, setLookupMessage] = useState<{ text: string; isError: boolean } | null>(null);
-  const lookupTimer = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (step !== 2) return;
+    (async () => {
+      try {
+        await loadMaps();
+        const g = (window as any).google?.maps;
+        if (!g) return;
+        await g.importLibrary("places");
+        places.current = {
+          g,
+          svc: new g.places.AutocompleteService(),
+          det: new g.places.PlacesService(document.createElement("div")),
+          token: new g.places.AutocompleteSessionToken(),
+        };
+      } catch (e) {
+        console.warn("Places autocomplete no disponible:", e);
+      }
+    })();
+  }, [step]);
 
-  // Estado para limitar los usos del mapa y búsqueda manual
-  const [mapAttempts, setMapAttempts] = useState(0);
-  const [isCooldown, setIsCooldown] = useState(false);
-  const [cooldownTime, setCooldownTime] = useState(0);
-  const [mapSearchAddress, setMapSearchAddress] = useState("");
+  if (!sd) return null;
+
+  const updateField = (field: string, value: string) => {
+    touched.current.add(field);
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const fullAddress = () =>
+    [formData.address, formData.city, (formData.city || formData.zip) && formData.state, formData.zip]
+      .filter(Boolean)
+      .join(", ");
+
+  const normalizeQuery = (q: string) => q.trim().toLowerCase().replace(/\s+/g, " ");
+
+  const consumeAttemptOrCooldown = (): boolean => {
+    if (isCooldown) return false;
+    if (searchAttempts >= MAX_DEMO_ATTEMPTS) {
+      setIsCooldown(true);
+      setCooldownTime(COOLDOWN_SECONDS);
+      return false;
+    }
+    setSearchAttempts((prev) => prev + 1);
+    return true;
+  };
+
+  // Usa fetch directo (no apiFetch) para no redirigir a /login ante un 401 en modo público
+  const lookupAddress = async (query: string, options: { retryOnly?: boolean; updateMap?: boolean } = {}) => {
+    const { retryOnly = false, updateMap = true } = options;
+    const q = query.trim();
+    const key = normalizeQuery(q);
+
+    if (q.length < 10) return;
+    if (retryOnly && !lastFailed.current) return;
+    if (key === lastQuery.current && !retryOnly) {
+      if (updateMap && mapSearchAddress !== q) setMapSearchAddress(q);
+      return;
+    }
+
+    if (!consumeAttemptOrCooldown()) {
+      setLookupMessage({
+        text: isEs
+          ? `Límite de búsquedas alcanzado. Espera ${cooldownTime || COOLDOWN_SECONDS}s.`
+          : `Search limit reached. Please wait ${cooldownTime || COOLDOWN_SECONDS}s.`,
+        isError: true,
+      });
+      return;
+    }
+
+    lastQuery.current = key;
+    if (updateMap) setMapSearchAddress(q);
+    setIsLookingUp(true);
+    setLookupMessage(null);
+
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+      const res = await fetch(`${API_ROUTES.borrowers.propertyLookup}?address=${encodeURIComponent(q)}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok) throw new Error(String(res.status));
+
+      const json = await res.json();
+      const d = json?.data ?? json;
+      lastFailed.current = false;
+
+      const free = (f: string) => !touched.current.has(f);
+      const num = (v: unknown) => (v == null ? undefined : String(v));
+
+      setFormData((prev) => ({
+        ...prev,
+        city: free("city") ? d.city ?? "" : prev.city,
+        state: free("state") ? d.state ?? prev.state : prev.state,
+        zip: free("zip") ? d.postalCode ?? "" : prev.zip,
+        beds: free("beds") ? num(d.bedrooms) ?? "" : prev.beds,
+        baths: free("baths") ? num(d.bathrooms) ?? "" : prev.baths,
+        sqft: free("sqft") ? num(d.squareFootage) ?? "" : prev.sqft,
+        arv: free("arv") ? (d.afterRepairValue ? String(Math.round(d.afterRepairValue)) : "") : prev.arv,
+        propertyType:
+          free("propertyType") && d.propertyType
+            ? sd.property.propTypes[PROP_TYPE_IDX[d.propertyType] ?? 0]
+            : prev.propertyType,
+        occupancy: free("occupancy") && d.ownerOccupied === true ? sd.property.occupancies[1] : prev.occupancy,
+      }));
+      setLookupMessage({ text: sd.property.addressSuccess, isError: false });
+    } catch {
+      lastFailed.current = true;
+      setLookupMessage({
+        text: sd.property.addressFail || (isEs ? "No se pudieron obtener los datos de la propiedad." : "Could not fetch property details."),
+        isError: true,
+      });
+    } finally {
+      setIsLookingUp(false);
+    }
+  };
+
+  const suggest = (val: string) => {
+    if (sugTimer.current) clearTimeout(sugTimer.current);
+    if (val.trim().length < 4 || !places.current) {
+      setSuggestions([]);
+      return;
+    }
+    sugTimer.current = setTimeout(() => {
+      places.current?.svc.getPlacePredictions(
+        { input: val, types: ["address"], componentRestrictions: { country: "us" }, sessionToken: places.current.token },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (r: any[] | null) => setSuggestions((r ?? []).map((x) => ({ id: x.place_id, text: x.description })))
+      );
+    }, 250);
+  };
+
+  const pickSuggestion = (id: string) => {
+    setSuggestions([]);
+    const pl = places.current;
+    if (!pl) return;
+    pl.det.getDetails(
+      { placeId: id, fields: ["address_components", "formatted_address"], sessionToken: pl.token },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (place: any) => {
+        pl.token = new pl.g.places.AutocompleteSessionToken();
+        if (!place?.address_components) return;
+        const get = (type: string, short = false) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const c = place.address_components.find((x: any) => x.types.includes(type));
+          return (short ? c?.short_name : c?.long_name) ?? "";
+        };
+        const street = [get("street_number"), get("route")].filter(Boolean).join(" ");
+        touched.current.clear();
+        setFormData((prev) => ({
+          ...prev,
+          address: street || prev.address,
+          city: get("locality") || get("sublocality") || get("administrative_area_level_2"),
+          state: get("administrative_area_level_1", true) || prev.state,
+          zip: get("postal_code"),
+        }));
+        skipBlur.current = true;
+        lookupAddress(String(place.formatted_address ?? "").replace(/, USA$/, ""), { updateMap: true });
+      }
+    );
+  };
+
+  const handleConfirmPinAddress = (loc: PinLocationResult) => {
+    const newKey = normalizeQuery(loc.formattedAddress);
+    if (!loc.address || newKey === lastQuery.current) return;
+
+    touched.current.clear();
+    setFormData((prev) => ({
+      ...prev,
+      address: loc.address,
+      city: loc.city || prev.city,
+      state: loc.state || prev.state,
+      zip: loc.zip || prev.zip,
+    }));
+    lookupAddress(loc.formattedAddress, { updateMap: true });
+  };
 
   const handleSearchMap = () => {
-    const fullAddress = [formData.address, formData.city, formData.state, formData.zip].filter(Boolean).join(", ");
-    if (fullAddress.length < 10) return;
-    if (isCooldown) return;
-    
-    if (mapSearchAddress !== fullAddress) {
-      if (mapAttempts < 3) {
-        setMapSearchAddress(fullAddress);
-        setMapAttempts(prev => prev + 1);
-      } else {
-        setIsCooldown(true);
-        setCooldownTime(60);
-      }
-    }
+    const addr = fullAddress();
+    if (addr.length < 10) return;
+    lookupAddress(addr, { updateMap: true });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      setSuggestions([]);
+      skipBlur.current = true;
       handleSearchMap();
     }
-  };
-
-  useEffect(() => {
-    if (isCooldown && cooldownTime > 0) {
-      const t = setInterval(() => setCooldownTime(prev => prev - 1), 1000);
-      return () => clearInterval(t);
-    } else if (isCooldown && cooldownTime === 0) {
-      setIsCooldown(false);
-      setMapAttempts(0);
-    }
-  }, [isCooldown, cooldownTime]);
-
-  if (!sd) return null;
-
-  const updateField = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleAddressInput = (val: string) => {
-    updateField("address", val);
-    if (lookupTimer.current) clearTimeout(lookupTimer.current);
-    if (val.length < 10) {
-      setLookupMessage(null);
-      return;
-    }
-    setIsLookingUp(true);
-    setLookupMessage(null);
-    lookupTimer.current = setTimeout(() => {
-      setIsLookingUp(false);
-      setLookupMessage({ text: `${sd.property.addressSuccess} · 3bd/2ba · 1,400 sqft · ARV est. $185,000`, isError: false });
-    }, 1200);
   };
 
   const parseNum = (val: string) => parseFloat(val.replace(/,/g, "")) || 0;
@@ -265,14 +423,15 @@ export default function DemoDealAnalyzerForm() {
                     </div>
                   </div>
                 ) : (
-                  <PropertyMapDemo 
-                    address={mapSearchAddress} 
+                  <PropertyMapDemo
+                    address={mapSearchAddress}
+                    onConfirmPinAddress={handleConfirmPinAddress}
                     labels={{
                       missingKey: (sd.property as any).mapMissingKey || (isEs ? "Falta API Key de Google Maps" : "Missing Google Maps API Key"),
                       loading: (sd.property as any).mapLoading || (isEs ? "Cargando mapa..." : "Loading map..."),
                       notFound: (sd.property as any).mapNotFound || (isEs ? "Ubicación no encontrada. Arrastra el pin a la posición correcta." : "Location not found. Drag pin to correct position."),
                       adjustTitle: (sd.property as any).mapAdjustTitle || (isEs ? "Ajuste de Mapa" : "Map Adjustment"),
-                      adjustDesc: (sd.property as any).mapAdjustDesc || (isEs ? "Arrastra el pin a la ubicación exacta si la búsqueda automática no fue precisa." : "Drag the pin to the exact location if the automatic search was inaccurate.")
+                      adjustDesc: (sd.property as any).mapAdjustDesc || (isEs ? "Arrastra el pin a la propiedad correcta y pulsa Confirmar para actualizar sus datos." : "Drag the pin to the exact property and click Confirm to refresh its data."),
                     }}
                   />
                 )}
@@ -284,24 +443,57 @@ export default function DemoDealAnalyzerForm() {
                   </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
+                        autoComplete="off"
                         value={formData.address}
-                        onChange={(e) => handleAddressInput(e.target.value)}
+                        onChange={(e) => {
+                          skipBlur.current = false;
+                          lastFailed.current = false;
+                          const clearLocation = !touched.current.has("city") && !touched.current.has("zip");
+                          touched.current.clear();
+                          setFormData((prev) => ({
+                            ...prev,
+                            address: e.target.value,
+                            ...(clearLocation ? { city: "", zip: "" } : {}),
+                          }));
+                          suggest(e.target.value);
+                        }}
+                        onBlur={() => {
+                          setSuggestions([]);
+                          if (!skipBlur.current) lookupAddress(fullAddress(), { updateMap: true });
+                        }}
                         onKeyDown={handleKeyDown}
                         placeholder={sd.property.addressPh}
                         className={INPUT}
                       />
+                      {suggestions.length > 0 && (
+                        <ul className="absolute left-0 right-0 top-full z-20 mt-1 overflow-hidden rounded-md border border-rule bg-surface shadow-lg">
+                          {suggestions.map((x) => (
+                            <li
+                              key={x.id}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                pickSuggestion(x.id);
+                              }}
+                              className="cursor-pointer px-3 py-2 text-[13px] text-ink hover:bg-accent-soft"
+                            >
+                              {x.text.replace(/, USA$/, "")}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                       {isLookingUp && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-accent animate-pulse">
                           {sd.property.addressLookup}
                         </div>
                       )}
                     </div>
-                    <button 
+                    <button
+                      type="button"
                       onClick={handleSearchMap}
                       className="shrink-0 rounded-md bg-accent px-4 text-[13px] font-bold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
-                      disabled={isCooldown}
+                      disabled={isCooldown || isLookingUp}
                     >
                       {sd.property.viewMapBtn}
                     </button>
@@ -315,21 +507,22 @@ export default function DemoDealAnalyzerForm() {
                     </div>
                   )}
                 </div>
-            <div id="demo-form-prop-specs">
-              <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div>
-                  <label className={LABEL}>{sd.property.city}</label>
-                    <input type="text" value={formData.city} onChange={(e) => updateField("city", e.target.value)} className={INPUT} />
+
+                <div id="demo-form-prop-specs">
+                  <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div>
+                      <label className={LABEL}>{sd.property.city}</label>
+                      <input type="text" value={formData.city} onChange={(e) => updateField("city", e.target.value)} onBlur={() => lookupAddress(fullAddress(), { retryOnly: true, updateMap: true })} className={INPUT} />
+                    </div>
+                    <div>
+                      <label className={LABEL}>{sd.property.state}</label>
+                      <input type="text" value={formData.state} onChange={(e) => updateField("state", e.target.value)} onBlur={() => lookupAddress(fullAddress(), { retryOnly: true, updateMap: true })} className={INPUT} />
+                    </div>
+                    <div>
+                      <label className={LABEL}>{sd.property.zip}</label>
+                      <input type="text" value={formData.zip} onChange={(e) => updateField("zip", e.target.value)} onBlur={() => lookupAddress(fullAddress(), { retryOnly: true, updateMap: true })} className={INPUT} />
+                    </div>
                   </div>
-                  <div>
-                    <label className={LABEL}>{sd.property.state}</label>
-                    <input type="text" value={formData.state} onChange={(e) => updateField("state", e.target.value)} className={INPUT} />
-                  </div>
-                  <div>
-                    <label className={LABEL}>{sd.property.zip}</label>
-                    <input type="text" value={formData.zip} onChange={(e) => updateField("zip", e.target.value)} className={INPUT} />
-                  </div>
-                </div>
 
                 <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
