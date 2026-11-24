@@ -1,17 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSite } from "@/app/components/layout/SiteShell";
+import { useProfileEdit } from "@/app/components/dashboards/settings/useProfileEdit";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function SettingsView() {
-  const router = useRouter();
   const { t, lang } = useSite();
   const s = (t.dashboardLender.mimic as any).settings;
 
   const [user, setUser] = useState<{ name?: string; email?: string; phone?: string | null; isTwoFactorEnabled?: boolean } | null>(null);
+  const pe = useProfileEdit(user, setUser);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -82,45 +82,43 @@ export default function SettingsView() {
         {s.sub}
       </div>
 
-      {/* Verification banner */}
-      {verificationStatus !== "APPROVED" && (
-        <div className="mb-[16px] flex items-center justify-between rounded-[8px] border border-[#fcd34d] bg-[#fffbeb] p-[14px_18px]">
-          <div className="text-[13px] font-[500] text-[#b45309]">
-            <strong className="font-[700]">{s.verifyBanner.text1}</strong> {s.verifyBanner.text2}
-          </div>
-          <button onClick={() => router.push("/lenderDashboard/verification")} className="whitespace-nowrap rounded-[6px] border-none bg-[#635bff] px-[16px] py-[7px] font-sans text-[12px] font-[700] text-white cursor-pointer hover:opacity-90">
-            {s.verifyBanner.btn}
-          </button>
-        </div>
-      )}
-
       {/* Profile */}
       <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
         <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[18px_22px]">
           <div>
             <div className="text-[14px] font-[700] text-[#0a2540]">{s.profile.title}</div>
             <div className="mt-[2px] text-[12px] text-[#8898aa]">{s.profile.sub}</div>
+            {pe.error && <div className="text-[12px] text-[#dc2626]">{pe.error}</div>}
           </div>
-          <button className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">
-            {s.profile.edit}
-          </button>
+          <div className="flex gap-[8px]">
+            {pe.editing && <button onClick={pe.cancel} className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">Cancel</button>}
+            <button onClick={pe.editing ? pe.save : pe.start} disabled={pe.saving} className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">
+              {pe.editing ? (pe.saving ? "…" : "Save") : s.profile.edit}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
+        <div className="flex items-center justify-between border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.name}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.name || "N/A"}</div>
+          {pe.editing ? <input value={pe.form.name} onChange={(e) => pe.setForm({ ...pe.form, name: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">{user?.name || "N/A"}</div>}
         </div>
-        <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.email}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.email || "N/A"}</div>
-        </div>
-        <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.pass}</div>
-          <div className="text-[13px] text-[#8898aa]">••••••••</div>
-        </div>
-        <div className="flex items-center justify-between p-[14px_22px]">
+        <div className="flex items-center justify-between border-t border-[#f0f4f8] p-[14px_22px]">
           <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.phone}</div>
-          <div className="text-[13px] text-[#8898aa]">{user?.phone || s.profile.unassigned}</div>
+          {pe.editing ? <input value={pe.form.phone} onChange={(e) => pe.setForm({ ...pe.form, phone: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">{user?.phone || s.profile.unassigned}</div>}
         </div>
+        <div className="flex items-center justify-between border-t border-[#f0f4f8] p-[14px_22px]">
+          <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.email}</div>
+          {pe.editing ? <input type="text" placeholder="" value={pe.form.email} onChange={(e) => pe.setForm({ ...pe.form, email: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">{user?.email || "N/A"}</div>}
+        </div>
+        <div className="flex items-center justify-between border-t border-[#f0f4f8] p-[14px_22px]">
+          <div className="text-[13px] font-[500] text-[#0a2540]">{s.profile.pass}</div>
+          {pe.editing ? <input type="password" placeholder="New password" value={pe.form.newPassword} onChange={(e) => pe.setForm({ ...pe.form, newPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-[#8898aa]">••••••••</div>}
+        </div>
+        {pe.needsCurrent && (
+          <div className="flex items-center justify-between border-t border-[#f0f4f8] p-[14px_22px]">
+            <div className="text-[13px] font-[500] text-[#0a2540]">Current password</div>
+            <input type="password" placeholder="Required for email/password" value={pe.form.currentPassword} onChange={(e) => pe.setForm({ ...pe.form, currentPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" />
+          </div>
+        )}
       </div>
 
       {/* Verification */}
@@ -161,35 +159,6 @@ export default function SettingsView() {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Billing */}
-      <div className="mb-[16px] overflow-hidden rounded-[10px] border border-[#e6ebf1] bg-white">
-        <div className="flex items-center justify-between border-b border-[#e6ebf1] p-[18px_22px]">
-          <div>
-            <div className="text-[14px] font-[700] text-[#0a2540]">{s.billing.title}</div>
-            <div className="mt-[2px] text-[12px] text-[#8898aa]">{s.billing.sub}</div>
-          </div>
-          <button className="cursor-pointer rounded-[6px] border border-[#e6ebf1] bg-white px-[14px] py-[6px] font-sans text-[12px] font-[600] text-[#425466] hover:border-[#aab7c4]">
-            {s.billing.manage}
-          </button>
-        </div>
-        <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.billing.plan}</div>
-          <div className="text-[13px] text-[#8898aa]">
-            <span className="inline-flex items-center gap-[5px] rounded-[20px] bg-[#f0f4f8] px-[10px] py-[3px] text-[11px] font-[700] text-[#8898aa]">
-              {s.billing.free}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center justify-between border-b border-[#f0f4f8] p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.billing.subPlan}</div>
-          <div className="text-[13px] text-[#8898aa]">{s.billing.notActive}</div>
-        </div>
-        <div className="flex items-center justify-between p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-[#0a2540]">{s.billing.method}</div>
-          <div className="text-[13px] text-[#8898aa]">{s.billing.none}</div>
-        </div>
       </div>
 
       {/* Security Actions (Redirige a la nueva ruta) */}

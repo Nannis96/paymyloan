@@ -101,13 +101,19 @@ export default function SiteShell({
   // "en" va en el bundle inicial; "es" se descarga solo si se usa.
   const [es, setEs] = useState<Copy | null>(null);
   // Precio mensual: lo manda el back (SUBSCRIPTION_PRICE_CENTS) y reemplaza "{subPrice}" en content/.
+  // Igual para la tarifa única de verificación: "{verifyFee}".
   const [subPrice, setSubPrice] = useState("…");
+  const [verifyFee, setVerifyFee] = useState("…");
   useEffect(() => {
     fetch(API_ROUTES.subscription.price)
       .then((r) => r.json())
       .then(({ data }) => {
-        const usd = data.priceCents / 100;
-        setSubPrice(new Intl.NumberFormat("en", { style: "currency", currency: data.currency, minimumFractionDigits: Number.isInteger(usd) ? 0 : 2 }).format(usd));
+        const fmt = (cents: number) => {
+          const usd = cents / 100;
+          return new Intl.NumberFormat("en", { style: "currency", currency: data.currency, minimumFractionDigits: Number.isInteger(usd) ? 0 : 2 }).format(usd);
+        };
+        setSubPrice(fmt(data.priceCents));
+        setVerifyFee(fmt(data.verificationFeeCents));
       })
       .catch(() => {});
   }, []);
@@ -129,7 +135,7 @@ export default function SiteShell({
   }, [lang]);
 
   const base: Copy = lang === "es" && es ? es : en;
-  const t = useMemo<Copy>(() => JSON.parse(JSON.stringify(base).replaceAll("{subPrice}", subPrice)), [base, subPrice]);
+  const t = useMemo<Copy>(() => JSON.parse(JSON.stringify(base).replaceAll("{subPrice}", subPrice).replaceAll("{verifyFee}", verifyFee)), [base, subPrice, verifyFee]);
 
   useEffect(() => {
     document.documentElement.lang = lang;

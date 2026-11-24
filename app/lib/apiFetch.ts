@@ -48,9 +48,11 @@ export async function apiFetch(url: string, init: RequestInit = {}) {
       },
     });
   let res = await enviar();
-  if (res.status === 401) {
+  // 401 por contraseña incorrecta (step-up en /auth/me y /password) no es sesión vencida.
+  const badCreds = async (r: Response) => (await r.clone().json().catch(() => null))?.error?.code === "INVALID_CREDENTIALS";
+  if (res.status === 401 && !(await badCreds(res))) {
     if (await renovarSesion()) res = await enviar();
-    if (res.status === 401) cerrarSesion();
+    if (res.status === 401 && !(await badCreds(res))) cerrarSesion();
   }
   // Borrower sin suscripcion vigente: el back bloquea solo acciones que abren un
   // prestamo nuevo (pagos y lecturas siguen libres). Cualquier caller cae aqui.

@@ -21,8 +21,7 @@ function AddUserContent() {
   const INPUT = "w-full rounded-lg border border-rule bg-surface-2 px-4 py-3 text-[15px] text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-accent";
 
   // Estados del formulario
-  // El back solo acepta roles de staff aqui; LENDER/BORROWER nacen por auto-registro.
-  const [role, setRole] = useState("ADMIN");
+    const [role, setRole] = useState("ADMIN");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -138,6 +137,8 @@ function AddUserContent() {
                   className={`${INPUT} cursor-pointer appearance-none`}
                 >
                   <option value="ADMIN">{u.roles.admin}</option>
+                  <option value="LENDER">{u.roles.lender}</option>
+                  <option value="BORROWER">{u.roles.borrower}</option>
                   <option value="BOOKKEEPER">{u.roles.bookkeeper}</option>
                   <option value="INSURANCE_COMPANY">{u.roles.insurance}</option>
                 </select>

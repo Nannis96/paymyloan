@@ -4,6 +4,7 @@ import { apiFetch } from "@/app/lib/apiFetch";
 import { useEffect, useState } from "react";
 import { useSite } from "@/app/components/layout/SiteShell";
 import { API_ROUTES } from "@/app/lib/endpoints";
+import { useProfileEdit } from "@/app/components/dashboards/settings/useProfileEdit";
 import { api } from "@/app/lib/apiFetch";
 import type { SubscriptionView } from "@/app/types/api";
 import Link from "next/link";
@@ -30,6 +31,7 @@ export default function BorrowerSettingsView() {
 
   // Estado del usuario traído de la API real
   const [user, setUser] = useState<{ name?: string; email?: string; phone?: string | null } | null>(null);
+  const pe = useProfileEdit(user, setUser);
   const [isLoading, setIsLoading] = useState(true);
 
   // Estados locales para los toggles de notificaciones
@@ -89,27 +91,37 @@ export default function BorrowerSettingsView() {
           <div>
             <div className="text-[14px] font-[700] text-ink">{s.profile.title}</div>
             <div className="mt-[2px] text-[12px] text-ink-3">{s.profile.sub}</div>
+            {pe.error && <div className="text-[12px] text-[#dc2626]">{pe.error}</div>}
           </div>
-          <button className="cursor-pointer rounded-[6px] border border-rule-strong bg-surface px-[14px] py-[6px] font-sans text-[12px] font-[600] text-ink-2 hover:border-ink-3 transition-colors">
-            {s.profile.edit}
-          </button>
+          <div className="flex gap-[8px]">
+            {pe.editing && <button onClick={pe.cancel} className="cursor-pointer rounded-[6px] border border-rule-strong bg-surface px-[14px] py-[6px] font-sans text-[12px] font-[600] text-ink-2 hover:border-ink-3 transition-colors">Cancel</button>}
+            <button onClick={pe.editing ? pe.save : pe.start} disabled={pe.saving} className="cursor-pointer rounded-[6px] border border-rule-strong bg-surface px-[14px] py-[6px] font-sans text-[12px] font-[600] text-ink-2 hover:border-ink-3 transition-colors">
+              {pe.editing ? (pe.saving ? "…" : "Save") : s.profile.edit}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
+        <div className="flex items-center justify-between border-rule p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.profile.name}</div>
-          <div className="text-[13px] text-ink-3">{user?.name || "John Smith"}</div>
+          {pe.editing ? <input value={pe.form.name} onChange={(e) => pe.setForm({ ...pe.form, name: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-ink-3">{user?.name || "John Smith"}</div>}
         </div>
-        <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-ink">{s.profile.email}</div>
-          <div className="text-[13px] text-ink-3">{user?.email || "john@example.com"}</div>
-        </div>
-        <div className="flex items-center justify-between border-b border-rule p-[14px_22px]">
-          <div className="text-[13px] font-[500] text-ink">{s.profile.pass}</div>
-          <div className="text-[13px] text-ink-3">••••••••</div>
-        </div>
-        <div className="flex items-center justify-between p-[14px_22px]">
+        <div className="flex items-center justify-between border-t border-rule p-[14px_22px]">
           <div className="text-[13px] font-[500] text-ink">{s.profile.phone}</div>
-          <div className="text-[13px] text-ink-3">{user?.phone || s.profile.unassigned}</div>
+          {pe.editing ? <input value={pe.form.phone} onChange={(e) => pe.setForm({ ...pe.form, phone: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-ink-3">{user?.phone || s.profile.unassigned}</div>}
         </div>
+        <div className="flex items-center justify-between border-t border-rule p-[14px_22px]">
+          <div className="text-[13px] font-[500] text-ink">{s.profile.email}</div>
+          {pe.editing ? <input type="text" placeholder="" value={pe.form.email} onChange={(e) => pe.setForm({ ...pe.form, email: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-ink-3">{user?.email || "john@example.com"}</div>}
+        </div>
+        <div className="flex items-center justify-between border-t border-rule p-[14px_22px]">
+          <div className="text-[13px] font-[500] text-ink">{s.profile.pass}</div>
+          {pe.editing ? <input type="password" placeholder="New password" value={pe.form.newPassword} onChange={(e) => pe.setForm({ ...pe.form, newPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" /> : <div className="text-[13px] text-ink-3">••••••••</div>}
+        </div>
+        {pe.needsCurrent && (
+          <div className="flex items-center justify-between border-t border-rule p-[14px_22px]">
+            <div className="text-[13px] font-[500] text-ink">Current password</div>
+            <input type="password" placeholder="Required for email/password" value={pe.form.currentPassword} onChange={(e) => pe.setForm({ ...pe.form, currentPassword: e.target.value })} className="w-[220px] rounded-[6px] border border-[#e6ebf1] px-[8px] py-[4px] text-[13px]" />
+          </div>
+        )}
       </div>
 
       {/* Verification */}
