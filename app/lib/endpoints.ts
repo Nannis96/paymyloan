@@ -34,6 +34,7 @@ export const API_ROUTES = {
     me: `${BASE_URL}/api/lenders/me`,
     meCompanies: `${BASE_URL}/api/lenders/me/companies`,
     meCompanyById: (companyId: string) => `${BASE_URL}/api/lenders/me/companies/${companyId}`,
+    meCompanyPreferences: (companyId: string) => `${BASE_URL}/api/lenders/me/companies/${companyId}/preferences`,
     meBorrowers: `${BASE_URL}/api/lenders/me/borrowers`,
     meBorrowerById: (id: string) => `${BASE_URL}/api/lenders/me/borrowers/${id}`,
     meBecomeBorrower: `${BASE_URL}/api/lenders/me/become-borrower`,

@@ -1,37 +1,103 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Building2, Plus, ChevronDown } from 'lucide-react';
+import { api, ApiError } from '@/app/lib/apiFetch';
+import { API_ROUTES } from '@/app/lib/endpoints';
 
 interface EntityOption {
   id: string;
   name: string;
-  isPrimary?: boolean;
 }
 
-const DEFAULT_ENTITIES: EntityOption[] = [
-  { id: 'ent-1', name: 'Apex Capital Lending LLC', isPrimary: true },
-  { id: 'ent-2', name: 'Lone Star Funding Group', isPrimary: false },
-  { id: 'ent-3', name: 'Metroplex Investments Inc.', isPrimary: false },
-];
+interface LendingPreferences {
+  maxLtv: number;
+  minAmount: number;
+  maxAmount: number;
+  rateRange: string;
+  loanTerms: string;
+  borrowerExperience: string;
+  states: string[];
+}
+
+// Valores iniciales de una empresa que aún no guardó preferencias.
+const DEFAULTS: LendingPreferences = {
+  maxLtv: 75,
+  minAmount: 50000,
+  maxAmount: 500000,
+  rateRange: '10% - 12%',
+  loanTerms: '6 months only',
+  borrowerExperience: 'No minimum - first deals welcome',
+  states: [],
+};
+
+const toNumber = (v: string) => Number(v.replace(/[^0-9]/g, ''));
+const fmt = (n: number) => n.toLocaleString('en-US');
 
 export default function PreferencesView() {
-  const [entities] = useState<EntityOption[]>(DEFAULT_ENTITIES);
-  const [selectedEntityId, setSelectedEntityId] = useState<string>(DEFAULT_ENTITIES[0].id);
+  const [entities, setEntities] = useState<EntityOption[]>([]);
+  const [selectedEntityId, setSelectedEntityId] = useState<string>('');
+  const [loaded, setLoaded] = useState<LendingPreferences>(DEFAULTS);
 
-  const [maxLtv, setMaxLtv] = useState<number>(75);
-  const [minAmount, setMinAmount] = useState<string>('50,000');
-  const [maxAmount, setMaxAmount] = useState<string>('500,000');
-  const [rateRange, setRateRange] = useState<string>('10% - 12%');
-  const [loanTerms, setLoanTerms] = useState<string>('6 months only');
-  const [experience, setExperience] = useState<string>('No minimum - first deals welcome');
-  const [selectedStates, setSelectedStates] = useState<string[]>([
-    'TN', 'MS', 'AR', 'AL', 'GA', 'TX', 'FL', 'MO', 'KY', 'OH', 'IN', 'IL'
-  ]);
+  const [maxLtv, setMaxLtv] = useState<number>(DEFAULTS.maxLtv);
+  const [minAmount, setMinAmount] = useState<string>(fmt(DEFAULTS.minAmount));
+  const [maxAmount, setMaxAmount] = useState<string>(fmt(DEFAULTS.maxAmount));
+  const [rateRange, setRateRange] = useState<string>(DEFAULTS.rateRange);
+  const [loanTerms, setLoanTerms] = useState<string>(DEFAULTS.loanTerms);
+  const [experience, setExperience] = useState<string>(DEFAULTS.borrowerExperience);
+  const [selectedStates, setSelectedStates] = useState<string[]>(DEFAULTS.states);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const activeEntity = entities.find((e) => e.id === selectedEntityId) || entities[0];
+  const activeEntity = entities.find((e) => e.id === selectedEntityId);
+
+  const applyPrefs = useCallback((p: LendingPreferences) => {
+    setMaxLtv(p.maxLtv);
+    setMinAmount(fmt(p.minAmount));
+    setMaxAmount(fmt(p.maxAmount));
+    setRateRange(p.rateRange);
+    setLoanTerms(p.loanTerms);
+    setExperience(p.borrowerExperience);
+    setSelectedStates(p.states);
+  }, []);
+
+  // Entidades reales del lender.
+  useEffect(() => {
+    (async () => {
+      try {
+        const me = await api<{ lenderCompanies?: { id: string; companyName: string }[] }>(API_ROUTES.lenders.me);
+        const list = (me.lenderCompanies || []).map((c) => ({ id: c.id, name: c.companyName }));
+        setEntities(list);
+        if (list[0]) setSelectedEntityId(list[0].id);
+      } catch (e) {
+        setMessage({ ok: false, text: e instanceof ApiError ? e.message : 'Could not load your entities.' });
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, []);
+
+  // Preferencias guardadas de la entidad seleccionada.
+  useEffect(() => {
+    if (!selectedEntityId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const saved = await api<LendingPreferences | null>(API_ROUTES.lenders.meCompanyPreferences(selectedEntityId));
+        if (cancelled) return;
+        // api() devuelve el sobre completo cuando data es null: sin maxLtv = aún no hay preferencias.
+        const p = typeof saved?.maxLtv === 'number' ? saved : DEFAULTS;
+        setLoaded(p);
+        applyPrefs(p);
+        setMessage(null);
+      } catch (e) {
+        if (!cancelled) setMessage({ ok: false, text: e instanceof ApiError ? e.message : 'Could not load preferences.' });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectedEntityId, applyPrefs]);
 
   const handleStateToggle = (st: string) => {
     setSelectedStates((prev) =>
@@ -41,22 +107,46 @@ export default function PreferencesView() {
 
   const handleSave = async () => {
     setIsSaving(true);
+    setMessage(null);
     try {
-      const payload = {
-        lenderCompanyId: selectedEntityId,
+      const payload: LendingPreferences = {
         maxLtv,
-        minAmount: Number(minAmount.replace(/[^0-9]/g, '')),
-        maxAmount: Number(maxAmount.replace(/[^0-9]/g, '')),
+        minAmount: toNumber(minAmount),
+        maxAmount: toNumber(maxAmount),
         rateRange,
         loanTerms,
         borrowerExperience: experience,
         states: selectedStates,
       };
-      console.log('Saving preferences:', payload);
+      const saved = await api<LendingPreferences>(API_ROUTES.lenders.meCompanyPreferences(selectedEntityId), {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+      });
+      setLoaded(saved);
+      setMessage({ ok: true, text: 'Preferences saved.' });
+    } catch (e) {
+      setMessage({ ok: false, text: e instanceof ApiError ? e.message : 'Could not save preferences.' });
     } finally {
       setIsSaving(false);
     }
   };
+
+  const handleCancel = () => {
+    applyPrefs(loaded);
+    setMessage(null);
+  };
+
+  if (!isLoading && entities.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-3">
+        <h1 className="text-2xl font-bold text-[#0a2540] tracking-tight">Lending preferences</h1>
+        <p className="text-sm text-[#425466]">
+          {message?.text ?? 'You need an entity before setting preferences.'}{' '}
+          <Link href="/lenderDashboard/entities" className="text-[#635bff] font-medium">Manage Entities</Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -89,7 +179,7 @@ export default function PreferencesView() {
             >
               {entities.map((ent) => (
                 <option key={ent.id} value={ent.id}>
-                  {ent.name} {ent.isPrimary ? '(Primary)' : ''}
+                  {ent.name}
                 </option>
               ))}
             </select>
@@ -117,7 +207,7 @@ export default function PreferencesView() {
           </h2>
           <p className="text-xs text-[#425466] mt-0.5">
             Applied to all new borrowers you haven't worked with before under{' '}
-            <span className="font-semibold text-[#0a2540]">{activeEntity.name}</span>.
+            <span className="font-semibold text-[#0a2540]">{activeEntity?.name}</span>.
           </p>
         </div>
 
@@ -256,8 +346,12 @@ export default function PreferencesView() {
 
       {/* Botones de acción */}
       <div className="flex justify-end items-center gap-3 pt-2">
+        {message && (
+          <span className={`text-sm mr-auto ${message.ok ? 'text-green-600' : 'text-red-600'}`}>{message.text}</span>
+        )}
         <button
           type="button"
+          onClick={handleCancel}
           className="px-4 py-2 text-sm font-medium text-[#425466] hover:text-[#0a2540] transition-colors"
         >
           Cancel
@@ -265,7 +359,7 @@ export default function PreferencesView() {
         <button
           type="button"
           onClick={handleSave}
-          disabled={isSaving}
+          disabled={isSaving || isLoading || !selectedEntityId}
           className="px-5 py-2 text-sm font-semibold text-white bg-[#635bff] hover:bg-[#5349e0] rounded-lg shadow-sm transition-all disabled:opacity-50"
         >
           {isSaving ? 'Saving...' : 'Save preferences'}
